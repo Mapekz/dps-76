@@ -7885,9 +7885,7 @@
     1
    ]
   },
-  "notes": [
-   "AbPerkFortifyEvadeChance: curve with unmapped input AV 0x000002C7 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "Exterminator",
@@ -8699,9 +8697,7 @@
     1
    ]
   },
-  "notes": [
-   "AbPerkFortifyVATSCritFillOnMiss: curve with unmapped input AV 0x000002C8 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "FriendlyFire",
@@ -19292,8 +19288,38 @@
       },
       "bucket": "incomingDamageMult",
       "op": "MUL_ADD",
-      "value": -1,
-      "conditions": []
+      "curve": {
+       "input": "charisma",
+       "points": [
+        {
+         "x": 1,
+         "y": -0.010000000000000009
+        },
+        {
+         "x": 15,
+         "y": -0.09999999999999998
+        },
+        {
+         "x": 30,
+         "y": -0.14
+        },
+        {
+         "x": 60,
+         "y": -0.17000000000000004
+        },
+        {
+         "x": 100,
+         "y": -0.19999999999999996
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "teammateCount",
+        "count": 0
+       }
+      ]
      }
     ]
    }
@@ -29408,7 +29434,47 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031E520:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031E520",
+       "edid": "Ricochet",
+       "name": "Ricochet",
+       "rank": 1
+      },
+      "bucket": "deflectChance",
+      "op": "ADD",
+      "curve": {
+       "input": "luck",
+       "points": [
+        {
+         "x": 1,
+         "y": 4
+        },
+        {
+         "x": 15,
+         "y": 14
+        },
+        {
+         "x": 30,
+         "y": 20
+        },
+        {
+         "x": 60,
+         "y": 30
+        },
+        {
+         "x": 100,
+         "y": 35
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -29424,9 +29490,7 @@
     1
    ]
   },
-  "notes": [
-   "AbPerkFortifyDeflectChance: curve with unmapped input AV 0x000002C8 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "Rifleman",
@@ -30774,9 +30838,7 @@
     1
    ]
   },
-  "notes": [
-   "AbPerkFortifyEvadeChance: curve with unmapped input AV 0x000002C8 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "SFL02_Track_VertibotAttachPerk",
@@ -35811,35 +35873,7 @@
     "rank": 1,
     "modifiers": [
      {
-      "id": "0x008DC2CE:r1:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x008DC2CE",
-       "edid": "WorldPets_Cat_PetProwess",
-       "name": "Pet Prowess",
-       "rank": 1
-      },
-      "bucket": "dbm",
-      "op": "SET",
-      "value": 0,
-      "conditions": []
-     },
-     {
-      "id": "0x008DC2CE:r1:2:1",
-      "source": {
-       "kind": "perk",
-       "formId": "0x008DC2CE",
-       "edid": "WorldPets_Cat_PetProwess",
-       "name": "Pet Prowess",
-       "rank": 1
-      },
-      "bucket": "incomingDamageMult",
-      "op": "SET",
-      "value": 0,
-      "conditions": []
-     },
-     {
-      "id": "0x008DC2CE:r1:3:2",
+      "id": "0x008DC2CE:r1:3:0",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CE",
@@ -35862,7 +35896,7 @@
       ]
      },
      {
-      "id": "0x008DC2CE:r1:4:3",
+      "id": "0x008DC2CE:r1:4:1",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CE",
@@ -35885,7 +35919,7 @@
       ]
      },
      {
-      "id": "0x008DC2CE:r1:5:4",
+      "id": "0x008DC2CE:r1:5:2",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CE",
@@ -35908,7 +35942,7 @@
       ]
      },
      {
-      "id": "0x008DC2CE:r1:6:5",
+      "id": "0x008DC2CE:r1:6:3",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CE",
@@ -35931,7 +35965,7 @@
       ]
      },
      {
-      "id": "0x008DC2CE:r1:7:6",
+      "id": "0x008DC2CE:r1:7:4",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CE",
@@ -35954,7 +35988,7 @@
       ]
      },
      {
-      "id": "0x008DC2CE:r1:8:7",
+      "id": "0x008DC2CE:r1:8:5",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CE",
@@ -35977,7 +36011,7 @@
       ]
      },
      {
-      "id": "0x008DC2CE:r1:9:8",
+      "id": "0x008DC2CE:r1:9:6",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CE",
@@ -35996,7 +36030,7 @@
       ]
      },
      {
-      "id": "0x008DC2CE:r1:10:9",
+      "id": "0x008DC2CE:r1:10:7",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CE",
@@ -36018,7 +36052,10 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "entry point Mod Weapon DMG Bonus Mult curve input AV <unresolved:0x000003A0> unmapped — needs mapping",
+   "entry point Mod Incoming Weapon Damage curve input AV <unresolved:0x000003A0> unmapped — needs mapping"
+  ]
  },
  {
   "family": "WorldPets_Deathclaw_PetProwess",
@@ -36035,35 +36072,7 @@
     "rank": 1,
     "modifiers": [
      {
-      "id": "0x008DC2CD:r1:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x008DC2CD",
-       "edid": "WorldPets_Deathclaw_PetProwess",
-       "name": "Pet Prowess",
-       "rank": 1
-      },
-      "bucket": "dbm",
-      "op": "SET",
-      "value": 0,
-      "conditions": []
-     },
-     {
-      "id": "0x008DC2CD:r1:2:1",
-      "source": {
-       "kind": "perk",
-       "formId": "0x008DC2CD",
-       "edid": "WorldPets_Deathclaw_PetProwess",
-       "name": "Pet Prowess",
-       "rank": 1
-      },
-      "bucket": "incomingDamageMult",
-      "op": "SET",
-      "value": 0,
-      "conditions": []
-     },
-     {
-      "id": "0x008DC2CD:r1:3:2",
+      "id": "0x008DC2CD:r1:3:0",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CD",
@@ -36086,7 +36095,7 @@
       ]
      },
      {
-      "id": "0x008DC2CD:r1:4:3",
+      "id": "0x008DC2CD:r1:4:1",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CD",
@@ -36109,7 +36118,7 @@
       ]
      },
      {
-      "id": "0x008DC2CD:r1:5:4",
+      "id": "0x008DC2CD:r1:5:2",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CD",
@@ -36132,7 +36141,7 @@
       ]
      },
      {
-      "id": "0x008DC2CD:r1:6:5",
+      "id": "0x008DC2CD:r1:6:3",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CD",
@@ -36155,7 +36164,7 @@
       ]
      },
      {
-      "id": "0x008DC2CD:r1:7:6",
+      "id": "0x008DC2CD:r1:7:4",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CD",
@@ -36178,7 +36187,7 @@
       ]
      },
      {
-      "id": "0x008DC2CD:r1:8:7",
+      "id": "0x008DC2CD:r1:8:5",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CD",
@@ -36201,7 +36210,7 @@
       ]
      },
      {
-      "id": "0x008DC2CD:r1:9:8",
+      "id": "0x008DC2CD:r1:9:6",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CD",
@@ -36220,7 +36229,7 @@
       ]
      },
      {
-      "id": "0x008DC2CD:r1:10:9",
+      "id": "0x008DC2CD:r1:10:7",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CD",
@@ -36242,7 +36251,10 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "entry point Mod Weapon DMG Bonus Mult curve input AV <unresolved:0x000003A0> unmapped — needs mapping",
+   "entry point Mod Incoming Weapon Damage curve input AV <unresolved:0x000003A0> unmapped — needs mapping"
+  ]
  },
  {
   "family": "WorldPets_Dog_PetProwess",
@@ -36259,35 +36271,7 @@
     "rank": 1,
     "modifiers": [
      {
-      "id": "0x008DC2CC:r1:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x008DC2CC",
-       "edid": "WorldPets_Dog_PetProwess",
-       "name": "Pet Prowess",
-       "rank": 1
-      },
-      "bucket": "dbm",
-      "op": "SET",
-      "value": 0,
-      "conditions": []
-     },
-     {
-      "id": "0x008DC2CC:r1:2:1",
-      "source": {
-       "kind": "perk",
-       "formId": "0x008DC2CC",
-       "edid": "WorldPets_Dog_PetProwess",
-       "name": "Pet Prowess",
-       "rank": 1
-      },
-      "bucket": "incomingDamageMult",
-      "op": "SET",
-      "value": 0,
-      "conditions": []
-     },
-     {
-      "id": "0x008DC2CC:r1:3:2",
+      "id": "0x008DC2CC:r1:3:0",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CC",
@@ -36310,7 +36294,7 @@
       ]
      },
      {
-      "id": "0x008DC2CC:r1:4:3",
+      "id": "0x008DC2CC:r1:4:1",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CC",
@@ -36333,7 +36317,7 @@
       ]
      },
      {
-      "id": "0x008DC2CC:r1:5:4",
+      "id": "0x008DC2CC:r1:5:2",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CC",
@@ -36356,7 +36340,7 @@
       ]
      },
      {
-      "id": "0x008DC2CC:r1:6:5",
+      "id": "0x008DC2CC:r1:6:3",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CC",
@@ -36379,7 +36363,7 @@
       ]
      },
      {
-      "id": "0x008DC2CC:r1:7:6",
+      "id": "0x008DC2CC:r1:7:4",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CC",
@@ -36402,7 +36386,7 @@
       ]
      },
      {
-      "id": "0x008DC2CC:r1:8:7",
+      "id": "0x008DC2CC:r1:8:5",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CC",
@@ -36425,7 +36409,7 @@
       ]
      },
      {
-      "id": "0x008DC2CC:r1:9:8",
+      "id": "0x008DC2CC:r1:9:6",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CC",
@@ -36444,7 +36428,7 @@
       ]
      },
      {
-      "id": "0x008DC2CC:r1:10:9",
+      "id": "0x008DC2CC:r1:10:7",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CC",
@@ -36466,7 +36450,10 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "entry point Mod Weapon DMG Bonus Mult curve input AV <unresolved:0x000003A0> unmapped — needs mapping",
+   "entry point Mod Incoming Weapon Damage curve input AV <unresolved:0x000003A0> unmapped — needs mapping"
+  ]
  },
  {
   "family": "WorldPets_Healing_SpeedHealing",
@@ -36502,35 +36489,7 @@
     "rank": 1,
     "modifiers": [
      {
-      "id": "0x008DC2CA:r1:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x008DC2CA",
-       "edid": "WorldPets_Radhog_PetProwess",
-       "name": "Pet Prowess",
-       "rank": 1
-      },
-      "bucket": "dbm",
-      "op": "SET",
-      "value": 0,
-      "conditions": []
-     },
-     {
-      "id": "0x008DC2CA:r1:2:1",
-      "source": {
-       "kind": "perk",
-       "formId": "0x008DC2CA",
-       "edid": "WorldPets_Radhog_PetProwess",
-       "name": "Pet Prowess",
-       "rank": 1
-      },
-      "bucket": "incomingDamageMult",
-      "op": "SET",
-      "value": 0,
-      "conditions": []
-     },
-     {
-      "id": "0x008DC2CA:r1:3:2",
+      "id": "0x008DC2CA:r1:3:0",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CA",
@@ -36553,7 +36512,7 @@
       ]
      },
      {
-      "id": "0x008DC2CA:r1:4:3",
+      "id": "0x008DC2CA:r1:4:1",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CA",
@@ -36576,7 +36535,7 @@
       ]
      },
      {
-      "id": "0x008DC2CA:r1:5:4",
+      "id": "0x008DC2CA:r1:5:2",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CA",
@@ -36599,7 +36558,7 @@
       ]
      },
      {
-      "id": "0x008DC2CA:r1:6:5",
+      "id": "0x008DC2CA:r1:6:3",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CA",
@@ -36622,7 +36581,7 @@
       ]
      },
      {
-      "id": "0x008DC2CA:r1:7:6",
+      "id": "0x008DC2CA:r1:7:4",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CA",
@@ -36645,7 +36604,7 @@
       ]
      },
      {
-      "id": "0x008DC2CA:r1:8:7",
+      "id": "0x008DC2CA:r1:8:5",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CA",
@@ -36668,7 +36627,7 @@
       ]
      },
      {
-      "id": "0x008DC2CA:r1:9:8",
+      "id": "0x008DC2CA:r1:9:6",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CA",
@@ -36687,7 +36646,7 @@
       ]
      },
      {
-      "id": "0x008DC2CA:r1:10:9",
+      "id": "0x008DC2CA:r1:10:7",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CA",
@@ -36709,7 +36668,10 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "entry point Mod Weapon DMG Bonus Mult curve input AV <unresolved:0x000003A0> unmapped — needs mapping",
+   "entry point Mod Incoming Weapon Damage curve input AV <unresolved:0x000003A0> unmapped — needs mapping"
+  ]
  },
  {
   "family": "WreckingBall",

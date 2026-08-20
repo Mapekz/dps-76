@@ -9,6 +9,7 @@ import {
   type RawCondition,
 } from './normalize/conditions';
 import {
+  CURVE_INPUT_AVS,
   ENTRY_POINT_BUCKETS,
   ENTRY_POINT_EXTRA_CONDITIONS,
   resolveStimpakHealEntryPoint,
@@ -107,7 +108,16 @@ const ENTRY_POINT_IGNORED = new Set([
 
 interface PerkEffect {
   effectType: string;
-  entryPoint?: { name: string; functionName: string; float: number; actorValue: string | null };
+  entryPoint?: {
+    name: string;
+    functionName: string;
+    float: number;
+    actorValue: string | null;
+    /** EP-level Curve Table points — always beat `float` when present. */
+    curvePoints: Array<{ x: number; y: number }> | null;
+    /** Function Parameter 4 — the curve's input Actor Value (LW: Charisma). */
+    curveInputAv: string | null;
+  };
   ability?: string;
   conditionRows: RawCondition[];
 }
@@ -115,6 +125,19 @@ interface PerkEffect {
 function junkPerk(edid: string): boolean {
   return EXCLUDED_PERK_EDIDS.some((p) => p.test(edid));
 }
+
+/**
+ * Card-text conditions the PERK record provably lacks, keyed by record
+ * editor id and appended to that record's entry-point modifiers.
+ * Lone Wanderer's "when adventuring alone" gates the AP-regen ability
+ * SPEL row but NOT the Mod Incoming Weapon Damage EP — 0x001D246B carries
+ * no record-level or tab conditions on that effect at all (verified
+ * 2026-08-20). USER-CONFIRMED: the damage reduction is solo-gated like the
+ * rest of the card.
+ */
+const PERK_EP_EXTRA_CONDITIONS: Record<string, Condition[]> = {
+  LoneWanderer01: [{ kind: 'teammateCount', count: 0 }],
+};
 
 export interface ToGeneratedPerkCardResult {
   /** Card data minus `rankSources`, which is per-family (composed at the join site). */
@@ -252,6 +275,10 @@ function parsePerkEffect(effect: Record<string, unknown>): PerkEffect {
 
   if (effectType === 'Entry Point') {
     const ep = (effect['Entry Point'] ?? {}) as Record<string, unknown>;
+    const curveNode = effect['Curve Table'] as
+      | { curve?: Array<{ x: number; y: number }> }
+      | null
+      | undefined;
     return {
       effectType,
       entryPoint: {
@@ -263,6 +290,14 @@ function parsePerkEffect(effect: Record<string, unknown>): PerkEffect {
           'Unknown',
         float: typeof effect['Float'] === 'number' ? (effect['Float'] as number) : 0,
         actorValue: (effect['Function Parameter 3 (Actor Value)'] as string) ?? null,
+        // An attached Curve Table ALWAYS beats the flat Float (docs/
+        // assumptions.md "Curve tables override flat values") — Lone
+        // Wanderer's Mod Incoming Weapon Damage carries Float null with its
+        // real ×0.99→×0.8 values here. The curve's input axis is the EP's
+        // own Function Parameter 4 (LW: Charisma).
+        curvePoints:
+          Array.isArray(curveNode?.curve) && curveNode.curve.length > 0 ? curveNode.curve : null,
+        curveInputAv: (effect['Function Parameter 4 (Actor Value)'] as string) ?? null,
       },
       conditionRows,
     };
@@ -535,14 +570,89 @@ export async function extractPerks(client: EsmSource): Promise<ExtractPerksResul
             unresolved.forEach((u) => allUnresolved.add(`${family}: ${u}`));
             // Baked scope conditions for entry points the bucket alone can't
             // express (Mod Player Explosion Damage → explosive-scoped dbm).
-            const conditions = [...translated, ...(ENTRY_POINT_EXTRA_CONDITIONS[ep.name] ?? [])];
+            const conditions = [
+              ...translated,
+              ...(ENTRY_POINT_EXTRA_CONDITIONS[ep.name] ?? []),
+              ...(PERK_EP_EXTRA_CONDITIONS[record.editor_id] ?? []),
+            ];
+
+            // EP Curve Table beats the flat Float (docs/assumptions.md
+            // "Curve tables override flat values"): single-point curves are
+            // authored constants; a multi-point curve's input axis is the
+            // EP's own Function Parameter 4 Actor Value (Lone Wanderer:
+            // Charisma — USER-CORRECTED 2026-08-20 after a wrong
+            // player-level guess), resolved through the same CURVE_INPUT_AVS
+            // map SPEL-effect curves use, with each Y run through the
+            // function shape's own float transform. Unmapped input AVs note
+            // and skip. Mirrors translateGrantedPerk's EP branch (mgef.ts).
+            let epFloat = ep.float;
+            let epCurve: Modifier['curve'] | undefined;
+            if (ep.curvePoints && ep.curvePoints.length === 1) {
+              epFloat = ep.curvePoints[0].y;
+            } else if (ep.curvePoints) {
+              let input = ep.curveInputAv ? CURVE_INPUT_AVS[ep.curveInputAv] : undefined;
+              if (!input && ep.curveInputAv) {
+                // LGND_* piece-counter axes → wornPieces (armor legendaries'
+                // authored stacking tables; see translateGrantedPerk's EP
+                // branch in normalize/mgef.ts for the full rationale). No
+                // direct PERK card carries one today — mirrored for parity.
+                let avEdid = edidByFormId.get(ep.curveInputAv);
+                if (avEdid === undefined) {
+                  try {
+                    avEdid = await client.resolveEdid(ep.curveInputAv);
+                    edidByFormId.set(ep.curveInputAv, avEdid);
+                  } catch {
+                    avEdid = ep.curveInputAv;
+                  }
+                }
+                const maxX = Math.max(...ep.curvePoints.map((p) => p.x));
+                if (avEdid.startsWith('LGND_') && maxX <= 5) input = 'wornPieces';
+              }
+              if (!input) {
+                notes.add(
+                  `entry point ${ep.name} curve input AV ${
+                    ep.curveInputAv
+                      ? (edidByFormId.get(ep.curveInputAv) ?? ep.curveInputAv)
+                      : 'none'
+                  } unmapped — needs mapping`,
+                );
+                continue;
+              }
+              epCurve = { input, points: ep.curvePoints };
+            }
 
             if (ep.functionName === 'Add Value') {
-              pushModifier(bucket, 'ADD', { value: ep.float }, conditions, sourceIndex);
+              pushModifier(
+                bucket,
+                'ADD',
+                epCurve ? { curve: epCurve, curveScale: 1 } : { value: epFloat },
+                conditions,
+                sourceIndex,
+              );
             } else if (ep.functionName === 'Set Value') {
-              pushModifier(bucket, 'SET', { value: ep.float }, conditions, sourceIndex);
+              pushModifier(
+                bucket,
+                'SET',
+                epCurve ? { curve: epCurve, curveScale: 1 } : { value: epFloat },
+                conditions,
+                sourceIndex,
+              );
             } else if (ep.functionName === 'Multiply Value') {
-              pushModifier(bucket, 'MUL_ADD', { value: ep.float - 1 }, conditions, sourceIndex);
+              pushModifier(
+                bucket,
+                'MUL_ADD',
+                epCurve
+                  ? {
+                      curve: {
+                        ...epCurve,
+                        points: epCurve.points.map((p) => ({ x: p.x, y: p.y - 1 })),
+                      },
+                      curveScale: 1,
+                    }
+                  : { value: epFloat - 1 },
+                conditions,
+                sourceIndex,
+              );
             } else {
               // Actor-value-scaled entry points (SPECIAL-scaled perks) — not modeled yet.
               notes.add(`entry point ${ep.name} uses ${ep.functionName} — skipped`);

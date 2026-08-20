@@ -102,6 +102,16 @@ const CURVE_AXIS_LABELS: Partial<Record<CurveInput, string>> = {
   hackingSkill: 'hacking skill',
   stimpakHealMult: 'Stimpak healing',
   itemLevel: 'weapon level',
+  // SPECIAL-keyed curve axes, Title Case per the house style (all seven
+  // wired even where no curve consumer exists yet — drop-in rule).
+  strength: 'Strength',
+  perception: 'Perception',
+  endurance: 'Endurance',
+  charisma: 'Charisma',
+  intelligence: 'Intelligence',
+  agility: 'Agility',
+  luck: 'Luck',
+  wornPieces: 'worn pieces',
 };
 
 export const WEAPON_KEYWORD_LABELS: Record<string, string> = {

@@ -68658,28 +68658,16 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [
-   {
-    "id": "0x008A418A:perk:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x008A418A",
-     "edid": "mod_Custom_LastStand",
-     "name": "Last Stand"
-    },
-    "bucket": "incomingDamageMult",
-    "op": "MUL_ADD",
-    "value": -1,
-    "conditions": []
-   }
-  ],
+  "modifiers": [],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",
    "CustomItemName_LastStand"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk LastStand_Perk: entry point Mod Incoming Weapon Damage curve input AV STAT_EvadeChance unmapped — needs mapping"
+  ],
   "obtainable": true
  },
  {
@@ -69140,98 +69128,7 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [
-   {
-    "id": "0x00529A14:ench:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00529A14",
-     "edid": "mod_Legendary_Armor1_Heavyweight",
-     "name": "Heavyweight"
-    },
-    "bucket": "incomingDamageMult",
-    "op": "MUL_ADD",
-    "value": -1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "GetValue(LGND_EquippedArmorCount_Heavyweight)=1"
-     }
-    ]
-   },
-   {
-    "id": "0x00529A14:ench:1",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00529A14",
-     "edid": "mod_Legendary_Armor1_Heavyweight",
-     "name": "Heavyweight"
-    },
-    "bucket": "incomingDamageMult",
-    "op": "MUL_ADD",
-    "value": -1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "GetValue(LGND_EquippedArmorCount_Heavyweight)=2"
-     }
-    ]
-   },
-   {
-    "id": "0x00529A14:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00529A14",
-     "edid": "mod_Legendary_Armor1_Heavyweight",
-     "name": "Heavyweight"
-    },
-    "bucket": "incomingDamageMult",
-    "op": "MUL_ADD",
-    "value": -1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "GetValue(LGND_EquippedArmorCount_Heavyweight)=3"
-     }
-    ]
-   },
-   {
-    "id": "0x00529A14:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00529A14",
-     "edid": "mod_Legendary_Armor1_Heavyweight",
-     "name": "Heavyweight"
-    },
-    "bucket": "incomingDamageMult",
-    "op": "MUL_ADD",
-    "value": -1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "GetValue(LGND_EquippedArmorCount_Heavyweight)=4"
-     }
-    ]
-   },
-   {
-    "id": "0x00529A14:ench:4",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00529A14",
-     "edid": "mod_Legendary_Armor1_Heavyweight",
-     "name": "Heavyweight"
-    },
-    "bucket": "incomingDamageMult",
-    "op": "MUL_ADD",
-    "value": -1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "GetValue(LGND_EquippedArmorCount_Heavyweight)=5"
-     }
-    ]
-   }
-  ],
+  "modifiers": [],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_Heavyweight"
@@ -69244,7 +69141,8 @@
    "perk Legendary_Armor_Heavyweight: GetValue(LGND_EquippedArmorCount_Heavyweight)=2",
    "perk Legendary_Armor_Heavyweight: GetValue(LGND_EquippedArmorCount_Heavyweight)=3",
    "perk Legendary_Armor_Heavyweight: GetValue(LGND_EquippedArmorCount_Heavyweight)=4",
-   "perk Legendary_Armor_Heavyweight: GetValue(LGND_EquippedArmorCount_Heavyweight)=5"
+   "perk Legendary_Armor_Heavyweight: GetValue(LGND_EquippedArmorCount_Heavyweight)=5",
+   "perk Legendary_Armor_Heavyweight: entry point Mod Incoming Weapon Damage curve input AV <unresolved:0x0000039E> unmapped — needs mapping"
   ],
   "obtainable": true
  },
@@ -69269,7 +69167,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyType",
@@ -69310,7 +69233,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyTypeAny",
@@ -69354,7 +69302,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyTypeAny",
@@ -69398,7 +69371,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyType",
@@ -69439,7 +69437,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyType",
@@ -69480,7 +69503,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyType",
@@ -69521,7 +69569,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyType",
@@ -69838,7 +69911,48 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "feralTier",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.0040000000000000036
+      },
+      {
+       "x": 2,
+       "y": -0.006000000000000005
+      },
+      {
+       "x": 3,
+       "y": -0.009000000000000008
+      },
+      {
+       "x": 4,
+       "y": -0.013000000000000012
+      },
+      {
+       "x": 5,
+       "y": -0.019000000000000017
+      },
+      {
+       "x": 6,
+       "y": -0.028000000000000025
+      },
+      {
+       "x": 7,
+       "y": -0.041000000000000036
+      },
+      {
+       "x": 8,
+       "y": -0.06000000000000005
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -69856,7 +69970,48 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "feralTier",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.008000000000000007
+      },
+      {
+       "x": 2,
+       "y": -0.01200000000000001
+      },
+      {
+       "x": 3,
+       "y": -0.017000000000000015
+      },
+      {
+       "x": 4,
+       "y": -0.025000000000000022
+      },
+      {
+       "x": 5,
+       "y": -0.03700000000000003
+      },
+      {
+       "x": 6,
+       "y": -0.05500000000000005
+      },
+      {
+       "x": 7,
+       "y": -0.07999999999999996
+      },
+      {
+       "x": 8,
+       "y": -0.11599999999999999
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -69874,7 +70029,48 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "feralTier",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.01200000000000001
+      },
+      {
+       "x": 2,
+       "y": -0.017000000000000015
+      },
+      {
+       "x": 3,
+       "y": -0.025000000000000022
+      },
+      {
+       "x": 4,
+       "y": -0.03700000000000003
+      },
+      {
+       "x": 5,
+       "y": -0.05500000000000005
+      },
+      {
+       "x": 6,
+       "y": -0.08099999999999996
+      },
+      {
+       "x": 7,
+       "y": -0.118
+      },
+      {
+       "x": 8,
+       "y": -0.16900000000000004
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -69892,7 +70088,48 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "feralTier",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.016000000000000014
+      },
+      {
+       "x": 2,
+       "y": -0.02300000000000002
+      },
+      {
+       "x": 3,
+       "y": -0.03400000000000003
+      },
+      {
+       "x": 4,
+       "y": -0.050000000000000044
+      },
+      {
+       "x": 5,
+       "y": -0.07299999999999995
+      },
+      {
+       "x": 6,
+       "y": -0.10599999999999998
+      },
+      {
+       "x": 7,
+       "y": -0.15400000000000003
+      },
+      {
+       "x": 8,
+       "y": -0.21899999999999997
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -69910,7 +70147,48 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "feralTier",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.019000000000000017
+      },
+      {
+       "x": 2,
+       "y": -0.029000000000000026
+      },
+      {
+       "x": 3,
+       "y": -0.04200000000000004
+      },
+      {
+       "x": 4,
+       "y": -0.062000000000000055
+      },
+      {
+       "x": 5,
+       "y": -0.08999999999999997
+      },
+      {
+       "x": 6,
+       "y": -0.131
+      },
+      {
+       "x": 7,
+       "y": -0.18899999999999995
+      },
+      {
+       "x": 8,
+       "y": -0.266
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70091,7 +70369,40 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthFraction",
+     "points": [
+      {
+       "x": 0,
+       "y": -0.09999999999999998
+      },
+      {
+       "x": 0.15,
+       "y": -0.09999999999999998
+      },
+      {
+       "x": 0.3,
+       "y": -0.08999999999999997
+      },
+      {
+       "x": 0.5,
+       "y": -0.025000000000000022
+      },
+      {
+       "x": 0.75,
+       "y": 0
+      },
+      {
+       "x": 0.9,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 0
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70109,7 +70420,40 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthFraction",
+     "points": [
+      {
+       "x": 0,
+       "y": -0.18999999999999995
+      },
+      {
+       "x": 0.15,
+       "y": -0.18999999999999995
+      },
+      {
+       "x": 0.3,
+       "y": -0.17200000000000004
+      },
+      {
+       "x": 0.5,
+       "y": -0.049000000000000044
+      },
+      {
+       "x": 0.75,
+       "y": 0
+      },
+      {
+       "x": 0.9,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 0
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70127,7 +70471,40 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthFraction",
+     "points": [
+      {
+       "x": 0,
+       "y": -0.271
+      },
+      {
+       "x": 0.15,
+       "y": -0.271
+      },
+      {
+       "x": 0.3,
+       "y": -0.246
+      },
+      {
+       "x": 0.5,
+       "y": -0.07299999999999995
+      },
+      {
+       "x": 0.75,
+       "y": 0
+      },
+      {
+       "x": 0.9,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 0
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70145,7 +70522,40 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthFraction",
+     "points": [
+      {
+       "x": 0,
+       "y": -0.344
+      },
+      {
+       "x": 0.15,
+       "y": -0.344
+      },
+      {
+       "x": 0.3,
+       "y": -0.31399999999999995
+      },
+      {
+       "x": 0.5,
+       "y": -0.09599999999999997
+      },
+      {
+       "x": 0.75,
+       "y": 0
+      },
+      {
+       "x": 0.9,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 0
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70163,7 +70573,40 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthFraction",
+     "points": [
+      {
+       "x": 0,
+       "y": -0.41000000000000003
+      },
+      {
+       "x": 0.15,
+       "y": -0.41000000000000003
+      },
+      {
+       "x": 0.3,
+       "y": -0.376
+      },
+      {
+       "x": 0.5,
+       "y": -0.119
+      },
+      {
+       "x": 0.75,
+       "y": 0
+      },
+      {
+       "x": 0.9,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 0
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70209,7 +70652,80 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "mutationCount",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.0020000000000000018
+      },
+      {
+       "x": 2,
+       "y": -0.0050000000000000044
+      },
+      {
+       "x": 3,
+       "y": -0.007000000000000006
+      },
+      {
+       "x": 4,
+       "y": -0.010000000000000009
+      },
+      {
+       "x": 5,
+       "y": -0.01200000000000001
+      },
+      {
+       "x": 6,
+       "y": -0.016000000000000014
+      },
+      {
+       "x": 7,
+       "y": -0.020000000000000018
+      },
+      {
+       "x": 8,
+       "y": -0.025000000000000022
+      },
+      {
+       "x": 9,
+       "y": -0.03200000000000003
+      },
+      {
+       "x": 10,
+       "y": -0.040000000000000036
+      },
+      {
+       "x": 11,
+       "y": -0.04500000000000004
+      },
+      {
+       "x": 12,
+       "y": -0.04700000000000004
+      },
+      {
+       "x": 13,
+       "y": -0.04800000000000004
+      },
+      {
+       "x": 14,
+       "y": -0.049000000000000044
+      },
+      {
+       "x": 15,
+       "y": -0.049000000000000044
+      },
+      {
+       "x": 16,
+       "y": -0.050000000000000044
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70227,7 +70743,80 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "mutationCount",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.0050000000000000044
+      },
+      {
+       "x": 2,
+       "y": -0.010000000000000009
+      },
+      {
+       "x": 3,
+       "y": -0.015000000000000013
+      },
+      {
+       "x": 4,
+       "y": -0.020000000000000018
+      },
+      {
+       "x": 5,
+       "y": -0.025000000000000022
+      },
+      {
+       "x": 6,
+       "y": -0.03200000000000003
+      },
+      {
+       "x": 7,
+       "y": -0.040000000000000036
+      },
+      {
+       "x": 8,
+       "y": -0.049000000000000044
+      },
+      {
+       "x": 9,
+       "y": -0.06399999999999995
+      },
+      {
+       "x": 10,
+       "y": -0.07799999999999996
+      },
+      {
+       "x": 11,
+       "y": -0.08799999999999997
+      },
+      {
+       "x": 12,
+       "y": -0.09199999999999997
+      },
+      {
+       "x": 13,
+       "y": -0.09399999999999997
+      },
+      {
+       "x": 14,
+       "y": -0.09599999999999997
+      },
+      {
+       "x": 15,
+       "y": -0.09699999999999998
+      },
+      {
+       "x": 16,
+       "y": -0.09699999999999998
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70245,7 +70834,80 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "mutationCount",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.007000000000000006
+      },
+      {
+       "x": 2,
+       "y": -0.015000000000000013
+      },
+      {
+       "x": 3,
+       "y": -0.02200000000000002
+      },
+      {
+       "x": 4,
+       "y": -0.030000000000000027
+      },
+      {
+       "x": 5,
+       "y": -0.03700000000000003
+      },
+      {
+       "x": 6,
+       "y": -0.04700000000000004
+      },
+      {
+       "x": 7,
+       "y": -0.05900000000000005
+      },
+      {
+       "x": 8,
+       "y": -0.07299999999999995
+      },
+      {
+       "x": 9,
+       "y": -0.09399999999999997
+      },
+      {
+       "x": 10,
+       "y": -0.11499999999999999
+      },
+      {
+       "x": 11,
+       "y": -0.129
+      },
+      {
+       "x": 12,
+       "y": -0.134
+      },
+      {
+       "x": 13,
+       "y": -0.138
+      },
+      {
+       "x": 14,
+       "y": -0.14
+      },
+      {
+       "x": 15,
+       "y": -0.14100000000000001
+      },
+      {
+       "x": 16,
+       "y": -0.14300000000000002
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70263,7 +70925,80 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "mutationCount",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.010000000000000009
+      },
+      {
+       "x": 2,
+       "y": -0.020000000000000018
+      },
+      {
+       "x": 3,
+       "y": -0.030000000000000027
+      },
+      {
+       "x": 4,
+       "y": -0.039000000000000035
+      },
+      {
+       "x": 5,
+       "y": -0.049000000000000044
+      },
+      {
+       "x": 6,
+       "y": -0.062000000000000055
+      },
+      {
+       "x": 7,
+       "y": -0.07799999999999996
+      },
+      {
+       "x": 8,
+       "y": -0.09599999999999997
+      },
+      {
+       "x": 9,
+       "y": -0.124
+      },
+      {
+       "x": 10,
+       "y": -0.15100000000000002
+      },
+      {
+       "x": 11,
+       "y": -0.16800000000000004
+      },
+      {
+       "x": 12,
+       "y": -0.17500000000000004
+      },
+      {
+       "x": 13,
+       "y": -0.17900000000000005
+      },
+      {
+       "x": 14,
+       "y": -0.18200000000000005
+      },
+      {
+       "x": 15,
+       "y": -0.18400000000000005
+      },
+      {
+       "x": 16,
+       "y": -0.18500000000000005
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70281,7 +71016,80 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "mutationCount",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.01200000000000001
+      },
+      {
+       "x": 2,
+       "y": -0.025000000000000022
+      },
+      {
+       "x": 3,
+       "y": -0.03700000000000003
+      },
+      {
+       "x": 4,
+       "y": -0.049000000000000044
+      },
+      {
+       "x": 5,
+       "y": -0.061000000000000054
+      },
+      {
+       "x": 6,
+       "y": -0.07699999999999996
+      },
+      {
+       "x": 7,
+       "y": -0.09599999999999997
+      },
+      {
+       "x": 8,
+       "y": -0.119
+      },
+      {
+       "x": 9,
+       "y": -0.15200000000000002
+      },
+      {
+       "x": 10,
+       "y": -0.18500000000000005
+      },
+      {
+       "x": 11,
+       "y": -0.20599999999999996
+      },
+      {
+       "x": 12,
+       "y": -0.21399999999999997
+      },
+      {
+       "x": 13,
+       "y": -0.21899999999999997
+      },
+      {
+       "x": 14,
+       "y": -0.22199999999999998
+      },
+      {
+       "x": 15,
+       "y": -0.22399999999999998
+      },
+      {
+       "x": 16,
+       "y": -0.22599999999999998
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70410,7 +71218,52 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthCurrent",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 100,
+       "y": -0.0010000000000000009
+      },
+      {
+       "x": 136,
+       "y": -0.0010000000000000009
+      },
+      {
+       "x": 185,
+       "y": -0.0020000000000000018
+      },
+      {
+       "x": 252,
+       "y": -0.0020000000000000018
+      },
+      {
+       "x": 342,
+       "y": -0.0040000000000000036
+      },
+      {
+       "x": 465,
+       "y": -0.007000000000000006
+      },
+      {
+       "x": 633,
+       "y": -0.017000000000000015
+      },
+      {
+       "x": 861,
+       "y": -0.05700000000000005
+      },
+      {
+       "x": 1000,
+       "y": -0.06000000000000005
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70428,7 +71281,52 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthCurrent",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 100,
+       "y": -0.0020000000000000018
+      },
+      {
+       "x": 136,
+       "y": -0.0020000000000000018
+      },
+      {
+       "x": 185,
+       "y": -0.0030000000000000027
+      },
+      {
+       "x": 252,
+       "y": -0.0050000000000000044
+      },
+      {
+       "x": 342,
+       "y": -0.007000000000000006
+      },
+      {
+       "x": 465,
+       "y": -0.014000000000000012
+      },
+      {
+       "x": 633,
+       "y": -0.03400000000000003
+      },
+      {
+       "x": 861,
+       "y": -0.10999999999999999
+      },
+      {
+       "x": 1000,
+       "y": -0.11599999999999999
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70446,7 +71344,52 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthCurrent",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 100,
+       "y": -0.0030000000000000027
+      },
+      {
+       "x": 136,
+       "y": -0.0040000000000000036
+      },
+      {
+       "x": 185,
+       "y": -0.0050000000000000044
+      },
+      {
+       "x": 252,
+       "y": -0.007000000000000006
+      },
+      {
+       "x": 342,
+       "y": -0.01100000000000001
+      },
+      {
+       "x": 465,
+       "y": -0.02100000000000002
+      },
+      {
+       "x": 633,
+       "y": -0.050000000000000044
+      },
+      {
+       "x": 861,
+       "y": -0.16100000000000003
+      },
+      {
+       "x": 1000,
+       "y": -0.16900000000000004
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70464,7 +71407,52 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthCurrent",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 100,
+       "y": -0.0040000000000000036
+      },
+      {
+       "x": 136,
+       "y": -0.0050000000000000044
+      },
+      {
+       "x": 185,
+       "y": -0.006000000000000005
+      },
+      {
+       "x": 252,
+       "y": -0.009000000000000008
+      },
+      {
+       "x": 342,
+       "y": -0.015000000000000013
+      },
+      {
+       "x": 465,
+       "y": -0.028000000000000025
+      },
+      {
+       "x": 633,
+       "y": -0.06599999999999995
+      },
+      {
+       "x": 861,
+       "y": -0.20799999999999996
+      },
+      {
+       "x": 1000,
+       "y": -0.21899999999999997
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -70482,7 +71470,52 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthCurrent",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 100,
+       "y": -0.0050000000000000044
+      },
+      {
+       "x": 136,
+       "y": -0.006000000000000005
+      },
+      {
+       "x": 185,
+       "y": -0.008000000000000007
+      },
+      {
+       "x": 252,
+       "y": -0.01100000000000001
+      },
+      {
+       "x": 342,
+       "y": -0.018000000000000016
+      },
+      {
+       "x": 465,
+       "y": -0.03500000000000003
+      },
+      {
+       "x": 633,
+       "y": -0.08199999999999996
+      },
+      {
+       "x": 861,
+       "y": -0.253
+      },
+      {
+       "x": 1000,
+       "y": -0.266
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -71387,7 +72420,36 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.050000000000000044
+      },
+      {
+       "x": 2,
+       "y": -0.09999999999999998
+      },
+      {
+       "x": 3,
+       "y": -0.14
+      },
+      {
+       "x": 4,
+       "y": -0.18999999999999995
+      },
+      {
+       "x": 5,
+       "y": -0.22999999999999998
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -72455,7 +73517,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyType",
@@ -72497,7 +73584,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyTypeAny",
@@ -72542,7 +73654,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyTypeAny",
@@ -72587,7 +73724,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyType",
@@ -72629,7 +73791,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyType",
@@ -72671,7 +73858,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyType",
@@ -72713,7 +73925,32 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.15000000000000002
+      },
+      {
+       "x": 2,
+       "y": -0.27749999999999997
+      },
+      {
+       "x": 3,
+       "y": -0.3859
+      },
+      {
+       "x": 4,
+       "y": -0.478
+      },
+      {
+       "x": 5,
+       "y": -0.5563
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "enemyType",
@@ -72781,7 +74018,48 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "feralTier",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.0040000000000000036
+      },
+      {
+       "x": 2,
+       "y": -0.006000000000000005
+      },
+      {
+       "x": 3,
+       "y": -0.009000000000000008
+      },
+      {
+       "x": 4,
+       "y": -0.013000000000000012
+      },
+      {
+       "x": 5,
+       "y": -0.019000000000000017
+      },
+      {
+       "x": 6,
+       "y": -0.028000000000000025
+      },
+      {
+       "x": 7,
+       "y": -0.041000000000000036
+      },
+      {
+       "x": 8,
+       "y": -0.06000000000000005
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -72799,7 +74077,48 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "feralTier",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.008000000000000007
+      },
+      {
+       "x": 2,
+       "y": -0.01200000000000001
+      },
+      {
+       "x": 3,
+       "y": -0.017000000000000015
+      },
+      {
+       "x": 4,
+       "y": -0.025000000000000022
+      },
+      {
+       "x": 5,
+       "y": -0.03700000000000003
+      },
+      {
+       "x": 6,
+       "y": -0.05500000000000005
+      },
+      {
+       "x": 7,
+       "y": -0.07999999999999996
+      },
+      {
+       "x": 8,
+       "y": -0.11599999999999999
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -72817,7 +74136,48 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "feralTier",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.01200000000000001
+      },
+      {
+       "x": 2,
+       "y": -0.017000000000000015
+      },
+      {
+       "x": 3,
+       "y": -0.025000000000000022
+      },
+      {
+       "x": 4,
+       "y": -0.03700000000000003
+      },
+      {
+       "x": 5,
+       "y": -0.05500000000000005
+      },
+      {
+       "x": 6,
+       "y": -0.08099999999999996
+      },
+      {
+       "x": 7,
+       "y": -0.118
+      },
+      {
+       "x": 8,
+       "y": -0.16900000000000004
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -72835,7 +74195,48 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "feralTier",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.016000000000000014
+      },
+      {
+       "x": 2,
+       "y": -0.02300000000000002
+      },
+      {
+       "x": 3,
+       "y": -0.03400000000000003
+      },
+      {
+       "x": 4,
+       "y": -0.050000000000000044
+      },
+      {
+       "x": 5,
+       "y": -0.07299999999999995
+      },
+      {
+       "x": 6,
+       "y": -0.10599999999999998
+      },
+      {
+       "x": 7,
+       "y": -0.15400000000000003
+      },
+      {
+       "x": 8,
+       "y": -0.21899999999999997
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -72853,7 +74254,48 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "feralTier",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.019000000000000017
+      },
+      {
+       "x": 2,
+       "y": -0.029000000000000026
+      },
+      {
+       "x": 3,
+       "y": -0.04200000000000004
+      },
+      {
+       "x": 4,
+       "y": -0.062000000000000055
+      },
+      {
+       "x": 5,
+       "y": -0.08999999999999997
+      },
+      {
+       "x": 6,
+       "y": -0.131
+      },
+      {
+       "x": 7,
+       "y": -0.18899999999999995
+      },
+      {
+       "x": 8,
+       "y": -0.266
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73036,7 +74478,40 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthFraction",
+     "points": [
+      {
+       "x": 0,
+       "y": -0.09999999999999998
+      },
+      {
+       "x": 0.15,
+       "y": -0.09999999999999998
+      },
+      {
+       "x": 0.3,
+       "y": -0.08999999999999997
+      },
+      {
+       "x": 0.5,
+       "y": -0.025000000000000022
+      },
+      {
+       "x": 0.75,
+       "y": 0
+      },
+      {
+       "x": 0.9,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 0
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73054,7 +74529,40 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthFraction",
+     "points": [
+      {
+       "x": 0,
+       "y": -0.18999999999999995
+      },
+      {
+       "x": 0.15,
+       "y": -0.18999999999999995
+      },
+      {
+       "x": 0.3,
+       "y": -0.17200000000000004
+      },
+      {
+       "x": 0.5,
+       "y": -0.049000000000000044
+      },
+      {
+       "x": 0.75,
+       "y": 0
+      },
+      {
+       "x": 0.9,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 0
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73072,7 +74580,40 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthFraction",
+     "points": [
+      {
+       "x": 0,
+       "y": -0.271
+      },
+      {
+       "x": 0.15,
+       "y": -0.271
+      },
+      {
+       "x": 0.3,
+       "y": -0.246
+      },
+      {
+       "x": 0.5,
+       "y": -0.07299999999999995
+      },
+      {
+       "x": 0.75,
+       "y": 0
+      },
+      {
+       "x": 0.9,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 0
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73090,7 +74631,40 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthFraction",
+     "points": [
+      {
+       "x": 0,
+       "y": -0.344
+      },
+      {
+       "x": 0.15,
+       "y": -0.344
+      },
+      {
+       "x": 0.3,
+       "y": -0.31399999999999995
+      },
+      {
+       "x": 0.5,
+       "y": -0.09599999999999997
+      },
+      {
+       "x": 0.75,
+       "y": 0
+      },
+      {
+       "x": 0.9,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 0
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73108,7 +74682,40 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthFraction",
+     "points": [
+      {
+       "x": 0,
+       "y": -0.41000000000000003
+      },
+      {
+       "x": 0.15,
+       "y": -0.41000000000000003
+      },
+      {
+       "x": 0.3,
+       "y": -0.376
+      },
+      {
+       "x": 0.5,
+       "y": -0.119
+      },
+      {
+       "x": 0.75,
+       "y": 0
+      },
+      {
+       "x": 0.9,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 0
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73155,7 +74762,80 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "mutationCount",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.0020000000000000018
+      },
+      {
+       "x": 2,
+       "y": -0.0050000000000000044
+      },
+      {
+       "x": 3,
+       "y": -0.007000000000000006
+      },
+      {
+       "x": 4,
+       "y": -0.010000000000000009
+      },
+      {
+       "x": 5,
+       "y": -0.01200000000000001
+      },
+      {
+       "x": 6,
+       "y": -0.016000000000000014
+      },
+      {
+       "x": 7,
+       "y": -0.020000000000000018
+      },
+      {
+       "x": 8,
+       "y": -0.025000000000000022
+      },
+      {
+       "x": 9,
+       "y": -0.03200000000000003
+      },
+      {
+       "x": 10,
+       "y": -0.040000000000000036
+      },
+      {
+       "x": 11,
+       "y": -0.04500000000000004
+      },
+      {
+       "x": 12,
+       "y": -0.04700000000000004
+      },
+      {
+       "x": 13,
+       "y": -0.04800000000000004
+      },
+      {
+       "x": 14,
+       "y": -0.049000000000000044
+      },
+      {
+       "x": 15,
+       "y": -0.049000000000000044
+      },
+      {
+       "x": 16,
+       "y": -0.050000000000000044
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73173,7 +74853,80 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "mutationCount",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.0050000000000000044
+      },
+      {
+       "x": 2,
+       "y": -0.010000000000000009
+      },
+      {
+       "x": 3,
+       "y": -0.015000000000000013
+      },
+      {
+       "x": 4,
+       "y": -0.020000000000000018
+      },
+      {
+       "x": 5,
+       "y": -0.025000000000000022
+      },
+      {
+       "x": 6,
+       "y": -0.03200000000000003
+      },
+      {
+       "x": 7,
+       "y": -0.040000000000000036
+      },
+      {
+       "x": 8,
+       "y": -0.049000000000000044
+      },
+      {
+       "x": 9,
+       "y": -0.06399999999999995
+      },
+      {
+       "x": 10,
+       "y": -0.07799999999999996
+      },
+      {
+       "x": 11,
+       "y": -0.08799999999999997
+      },
+      {
+       "x": 12,
+       "y": -0.09199999999999997
+      },
+      {
+       "x": 13,
+       "y": -0.09399999999999997
+      },
+      {
+       "x": 14,
+       "y": -0.09599999999999997
+      },
+      {
+       "x": 15,
+       "y": -0.09699999999999998
+      },
+      {
+       "x": 16,
+       "y": -0.09699999999999998
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73191,7 +74944,80 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "mutationCount",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.007000000000000006
+      },
+      {
+       "x": 2,
+       "y": -0.015000000000000013
+      },
+      {
+       "x": 3,
+       "y": -0.02200000000000002
+      },
+      {
+       "x": 4,
+       "y": -0.030000000000000027
+      },
+      {
+       "x": 5,
+       "y": -0.03700000000000003
+      },
+      {
+       "x": 6,
+       "y": -0.04700000000000004
+      },
+      {
+       "x": 7,
+       "y": -0.05900000000000005
+      },
+      {
+       "x": 8,
+       "y": -0.07299999999999995
+      },
+      {
+       "x": 9,
+       "y": -0.09399999999999997
+      },
+      {
+       "x": 10,
+       "y": -0.11499999999999999
+      },
+      {
+       "x": 11,
+       "y": -0.129
+      },
+      {
+       "x": 12,
+       "y": -0.134
+      },
+      {
+       "x": 13,
+       "y": -0.138
+      },
+      {
+       "x": 14,
+       "y": -0.14
+      },
+      {
+       "x": 15,
+       "y": -0.14100000000000001
+      },
+      {
+       "x": 16,
+       "y": -0.14300000000000002
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73209,7 +75035,80 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "mutationCount",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.010000000000000009
+      },
+      {
+       "x": 2,
+       "y": -0.020000000000000018
+      },
+      {
+       "x": 3,
+       "y": -0.030000000000000027
+      },
+      {
+       "x": 4,
+       "y": -0.039000000000000035
+      },
+      {
+       "x": 5,
+       "y": -0.049000000000000044
+      },
+      {
+       "x": 6,
+       "y": -0.062000000000000055
+      },
+      {
+       "x": 7,
+       "y": -0.07799999999999996
+      },
+      {
+       "x": 8,
+       "y": -0.09599999999999997
+      },
+      {
+       "x": 9,
+       "y": -0.124
+      },
+      {
+       "x": 10,
+       "y": -0.15100000000000002
+      },
+      {
+       "x": 11,
+       "y": -0.16800000000000004
+      },
+      {
+       "x": 12,
+       "y": -0.17500000000000004
+      },
+      {
+       "x": 13,
+       "y": -0.17900000000000005
+      },
+      {
+       "x": 14,
+       "y": -0.18200000000000005
+      },
+      {
+       "x": 15,
+       "y": -0.18400000000000005
+      },
+      {
+       "x": 16,
+       "y": -0.18500000000000005
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73227,7 +75126,80 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "mutationCount",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.01200000000000001
+      },
+      {
+       "x": 2,
+       "y": -0.025000000000000022
+      },
+      {
+       "x": 3,
+       "y": -0.03700000000000003
+      },
+      {
+       "x": 4,
+       "y": -0.049000000000000044
+      },
+      {
+       "x": 5,
+       "y": -0.061000000000000054
+      },
+      {
+       "x": 6,
+       "y": -0.07699999999999996
+      },
+      {
+       "x": 7,
+       "y": -0.09599999999999997
+      },
+      {
+       "x": 8,
+       "y": -0.119
+      },
+      {
+       "x": 9,
+       "y": -0.15200000000000002
+      },
+      {
+       "x": 10,
+       "y": -0.18500000000000005
+      },
+      {
+       "x": 11,
+       "y": -0.20599999999999996
+      },
+      {
+       "x": 12,
+       "y": -0.21399999999999997
+      },
+      {
+       "x": 13,
+       "y": -0.21899999999999997
+      },
+      {
+       "x": 14,
+       "y": -0.22199999999999998
+      },
+      {
+       "x": 15,
+       "y": -0.22399999999999998
+      },
+      {
+       "x": 16,
+       "y": -0.22599999999999998
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73359,7 +75331,52 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthCurrent",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 100,
+       "y": -0.0010000000000000009
+      },
+      {
+       "x": 136,
+       "y": -0.0010000000000000009
+      },
+      {
+       "x": 185,
+       "y": -0.0020000000000000018
+      },
+      {
+       "x": 252,
+       "y": -0.0020000000000000018
+      },
+      {
+       "x": 342,
+       "y": -0.0040000000000000036
+      },
+      {
+       "x": 465,
+       "y": -0.007000000000000006
+      },
+      {
+       "x": 633,
+       "y": -0.017000000000000015
+      },
+      {
+       "x": 861,
+       "y": -0.05700000000000005
+      },
+      {
+       "x": 1000,
+       "y": -0.06000000000000005
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73377,7 +75394,52 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthCurrent",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 100,
+       "y": -0.0020000000000000018
+      },
+      {
+       "x": 136,
+       "y": -0.0020000000000000018
+      },
+      {
+       "x": 185,
+       "y": -0.0030000000000000027
+      },
+      {
+       "x": 252,
+       "y": -0.0050000000000000044
+      },
+      {
+       "x": 342,
+       "y": -0.007000000000000006
+      },
+      {
+       "x": 465,
+       "y": -0.014000000000000012
+      },
+      {
+       "x": 633,
+       "y": -0.03400000000000003
+      },
+      {
+       "x": 861,
+       "y": -0.10999999999999999
+      },
+      {
+       "x": 1000,
+       "y": -0.11599999999999999
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73395,7 +75457,52 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthCurrent",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 100,
+       "y": -0.0030000000000000027
+      },
+      {
+       "x": 136,
+       "y": -0.0040000000000000036
+      },
+      {
+       "x": 185,
+       "y": -0.0050000000000000044
+      },
+      {
+       "x": 252,
+       "y": -0.007000000000000006
+      },
+      {
+       "x": 342,
+       "y": -0.01100000000000001
+      },
+      {
+       "x": 465,
+       "y": -0.02100000000000002
+      },
+      {
+       "x": 633,
+       "y": -0.050000000000000044
+      },
+      {
+       "x": 861,
+       "y": -0.16100000000000003
+      },
+      {
+       "x": 1000,
+       "y": -0.16900000000000004
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73413,7 +75520,52 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthCurrent",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 100,
+       "y": -0.0040000000000000036
+      },
+      {
+       "x": 136,
+       "y": -0.0050000000000000044
+      },
+      {
+       "x": 185,
+       "y": -0.006000000000000005
+      },
+      {
+       "x": 252,
+       "y": -0.009000000000000008
+      },
+      {
+       "x": 342,
+       "y": -0.015000000000000013
+      },
+      {
+       "x": 465,
+       "y": -0.028000000000000025
+      },
+      {
+       "x": 633,
+       "y": -0.06599999999999995
+      },
+      {
+       "x": 861,
+       "y": -0.20799999999999996
+      },
+      {
+       "x": 1000,
+       "y": -0.21899999999999997
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -73431,7 +75583,52 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "healthCurrent",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 100,
+       "y": -0.0050000000000000044
+      },
+      {
+       "x": 136,
+       "y": -0.006000000000000005
+      },
+      {
+       "x": 185,
+       "y": -0.008000000000000007
+      },
+      {
+       "x": 252,
+       "y": -0.01100000000000001
+      },
+      {
+       "x": 342,
+       "y": -0.018000000000000016
+      },
+      {
+       "x": 465,
+       "y": -0.03500000000000003
+      },
+      {
+       "x": 633,
+       "y": -0.08199999999999996
+      },
+      {
+       "x": 861,
+       "y": -0.253
+      },
+      {
+       "x": 1000,
+       "y": -0.266
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -74341,7 +76538,36 @@
     },
     "bucket": "incomingDamageMult",
     "op": "MUL_ADD",
-    "value": -1,
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": -0.050000000000000044
+      },
+      {
+       "x": 2,
+       "y": -0.09999999999999998
+      },
+      {
+       "x": 3,
+       "y": -0.14
+      },
+      {
+       "x": 4,
+       "y": -0.18999999999999995
+      },
+      {
+       "x": 5,
+       "y": -0.22999999999999998
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "unresolved",

@@ -659,6 +659,36 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
     expect(foldBucket([curveMod], 'powerAttackBonus', 0, atFive)).toBeCloseTo(0.25, 10); // interpolate(5)=25, ×0.01
   });
 
+  it("Lone Wanderer's EP curve (charisma input, Function Parameter 4) scales with buff-folded CHA", () => {
+    // Real ESM curve: LoneWanderer01's Mod Incoming Weapon Damage EP —
+    // Curve Table LoneWandererDRBonus (x 1→100, ×0.99→×0.8) keyed on the
+    // EP's Function Parameter 4 Actor Value = Charisma (USER-CORRECTED
+    // 2026-08-20), extracted as MUL_ADD y−1 with the user-confirmed solo
+    // gate. At CHA 100 the curve reads its top endpoint: −20% damage taken.
+    const curveMod: Modifier = {
+      id: 'lone-wanderer',
+      source: { kind: 'perk', formId: '0x001D246B', edid: 'LoneWanderer01', name: 'Lone Wanderer' },
+      bucket: 'incomingDamageMult',
+      op: 'MUL_ADD',
+      curve: {
+        input: 'charisma',
+        points: [
+          { x: 1, y: -0.01 },
+          { x: 100, y: -0.2 },
+        ],
+      },
+      curveScale: 1,
+      conditions: [{ kind: 'teammateCount', count: 0 }],
+    };
+    const solo = makeCtx(weapon, { player: { ...makeResolvedPlayer(), charisma: 100 } });
+    expect(foldBucket([curveMod], 'incomingDamageMult', 1, solo)).toBeCloseTo(0.8, 10);
+    // In a team the solo gate kills the modifier outright.
+    const teamed = makeCtx(weapon, {
+      player: { ...makeResolvedPlayer(), charisma: 100, teammateCount: 2 },
+    });
+    expect(foldBucket([curveMod], 'incomingDamageMult', 1, teamed)).toBeCloseTo(1, 10);
+  });
+
   it("Pirate Punch's curve (lockpickSkill input) scales with the derived lockpick-skill stat", () => {
     // Real ESM curve: PiratePunchBonus (0,0),(1,5),(20,100) — +5%/point, scale 0.01
     // (folded into STAT_DmgPistolsNonAuto via the plumbing-perk route, not the

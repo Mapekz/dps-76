@@ -216,6 +216,12 @@ const PLAYER_STATE_READERS: Record<
   strength: (p) => p.strength,
   // The Peace Maker's explosive-damage-vs-CHA curve X.
   charisma: (p) => p.charisma,
+  agility: (p) => p.agility,
+  luck: (p) => p.luck,
+  // Resolved at armor assembly (armor-roster.ts evaluates the curve at the
+  // checklist count) — this reader is the exhaustiveness stub, answering
+  // "one piece" if a wornPieces curve ever leaks past assembly.
+  wornPieces: () => 1,
   // Awareness perk's VATS-accuracy-vs-PER curve X (Phase 4 — VATS
   // hit-chance aggregate, display-only) — mirrors the strength/endurance/
   // charisma readers above.

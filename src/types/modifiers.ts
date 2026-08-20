@@ -1693,6 +1693,30 @@ export type CurveInput =
    */
   | 'perception'
   /**
+   * The player's (buff-folded) Agility stat — AV 0x000002C7. No curve
+   * consumer in live data yet; wired so any SPECIAL-keyed curve (perk EP
+   * Function Parameter 4, SPEL effect Actor Value) is drop-in — all seven
+   * SPECIALs resolve through CURVE_INPUT_AVS the same way.
+   */
+  | 'agility'
+  /**
+   * The player's (buff-folded) Luck stat — AV 0x000002C8. Same drop-in
+   * wiring rationale as `agility` above.
+   */
+  | 'luck'
+  /**
+   * Worn pieces carrying THIS effect (armor legendaries' LGND_* per-effect
+   * counter AVs — LGND_DmgFromAnimals, LGND_EquippedArmorCount_Sentinel).
+   * The curve IS the authored stacking table: x = piece count (0/1..5),
+   * y = the TOTAL effect at that count (Hunter's 1−0.85ⁿ) — never multiply
+   * per-piece by hand (USER-CONFIRMED 2026-08-20). Resolved at ARMOR
+   * ASSEMBLY (armor-roster.ts evaluates the curve at the checklist count
+   * and emits a flat value); the engine reader exists only for the
+   * exhaustive reader map and answers 1 (one piece) should a curve ever
+   * leak past assembly.
+   */
+  | 'wornPieces'
+  /**
    * The shared Bullet Storm / Heavy Gunner stack counter (ammo-spent stacks,
    * max 10) — AV 0x0000039B, no AVIF record (hardcoded slot, mirrors
    * onslaughtStacks). Distinct CurveInput from the `bulletStorm` StackCounter

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'bun:test';
-import { getArmorEffects } from '@/data/armor-modifiers';
+import { getArmorEffectModifiers, getArmorEffects } from '@/data/armor-modifiers';
 import {
   BATTLE_LOADERS,
   EMERGENCY_PROTOCOLS,
@@ -74,5 +74,34 @@ describe('getArmorEffects (curated inventory)', () => {
   it('the roster now includes non-engine-effective entries, badged inert', () => {
     const inert = effects.filter((e) => e.badge === 'inert');
     expect(inert.length).toBeGreaterThan(0);
+  });
+});
+
+describe('wornPieces stacking curves (armor legendaries)', () => {
+  // The curve IS the authored stacking table — x = worn pieces, y = the
+  // TOTAL effect at that count (Hunter's 1−0.85ⁿ; USER-CONFIRMED
+  // 2026-08-20). Assembly evaluates it AT the checklist count and emits a
+  // flat value; nothing multiplies per-piece by hand, and no wornPieces
+  // curve may leak past assembly into the engine.
+  it("Hunter's evaluates its piece-count curve at the selected count", () => {
+    const valueAt = (n: number): number => {
+      const m = getArmorEffectModifiers('live', { mod_Legendary_Armor1_LessDMGAnimals: n })[0];
+      // Assembly emits the value arm of the union — narrow before reading.
+      if (!m || !('value' in m) || typeof m.value !== 'number') throw new Error('no flat value');
+      return m.value;
+    };
+    expect(valueAt(1)).toBeCloseTo(-0.15, 10);
+    expect(valueAt(3)).toBeCloseTo(-0.3859, 10);
+    expect(valueAt(5)).toBeCloseTo(-0.5563, 10);
+    // 1−0.85ⁿ shape: 2 pieces is NOT 2×15%.
+    expect(valueAt(2)).toBeCloseTo(-(1 - 0.85 ** 2), 3);
+  });
+
+  it('no wornPieces curve survives assembly for any full selection', () => {
+    const all: Record<string, number> = {};
+    for (const e of getArmorEffects('live')) all[e.id] = e.maxCount;
+    for (const m of getArmorEffectModifiers('live', all)) {
+      expect(m.curve?.input === 'wornPieces').toBe(false);
+    }
   });
 });

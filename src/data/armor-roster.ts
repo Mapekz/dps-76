@@ -1,6 +1,7 @@
 import type { GameMode } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
+import { interpolateCurve } from '@/lib/curve-tables';
 import { getDataset } from './dataset';
 import { isRecordVisible } from './overlay';
 import {
@@ -93,8 +94,26 @@ export function selectedCount(
   return Math.max(0, Math.min(effect.maxCount, selections[effect.id] ?? 0));
 }
 
-/** Scales a per-piece modifier's magnitude ×count — value for plain modifiers, curveScale for curve-driven ones (Unyielding). */
+/**
+ * Scales a per-piece modifier's magnitude ×count — value for plain modifiers,
+ * curveScale for curve-driven ones (Unyielding). EXCEPT `wornPieces` curves
+ * (armor legendaries' authored stacking tables — Hunter's 1−0.85ⁿ,
+ * Sentinel's stand-still tiers): the curve IS the total at each piece count,
+ * so it's evaluated AT the checklist count and emitted as a flat value —
+ * never multiplied (USER-CONFIRMED 2026-08-20; the `wornPieces` CurveInput
+ * doc in types/modifiers.ts owns the full contract).
+ */
 function scaleModifier(m: Modifier, count: number): Modifier {
+  if (m.curve?.input === 'wornPieces') {
+    // The union doesn't narrow through the optional-chain check — assert the
+    // curve arm to peel curve/curveScale off and emit the value arm.
+    const cm = m as Modifier & {
+      curve: { points: Array<{ x: number; y: number }> };
+      curveScale: number;
+    };
+    const { curve: _curve, curveScale: _scale, ...rest } = cm;
+    return { ...rest, value: interpolateCurve(cm.curve.points, count) * cm.curveScale } as Modifier;
+  }
   return m.curve ? { ...m, curveScale: m.curveScale * count } : { ...m, value: m.value * count };
 }
 
