@@ -49,8 +49,9 @@ const PERCENT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
  * Weapon-stat buckets folded by effective-weapon's foldBucket, where the OP
  * decides the unit: MUL_ADD is a fraction of the weapon's own base stat
  * (render as %), ADD is flat in the stat's units, and SET replaces the stat
- * outright — omitted, since a bare replacement value is not a delta and
- * reads as nonsense without the base it replaces. These carry the standard
+ * outright — rendered as a percent delta vs `BuffDescriptionCtx.weaponStatBases`
+ * when the weapon-mod picker supplies the selected weapon's bases, otherwise
+ * omitted (a bare replacement value is not a delta). These carry the standard
  * weapon mods' effects (receivers' ±% base damage, barrels' ranges/AP cost,
  * magazines' capacity), which rendered nothing before 2026-08-19.
  */
@@ -64,6 +65,9 @@ const WEAPON_STAT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
   sneakBase: 'sneak attack damage',
   weaponMaxRange: 'max range',
   weaponMinRange: 'min range',
+  // Crit Savvy SETs 85/70/55 over the meter's abstract base of 100
+  // (crit-meter.ts); MUL_ADD (Limit Breaking, −0.1) is a true percent.
+  critConsumption: 'crit meter cost',
 };
 
 /** Buckets whose Modifier.value is a flat point add, not a percentage. */
@@ -315,11 +319,20 @@ const SPECIAL_BUCKETS: readonly Bucket[] = [
  *   penalty's Class-Freak-reduced value instead of the raw (rank-0) one,
  *   without needing the app-side `classFreakRank`-conditioned variants the
  *   engine expands penalties into (`applyClassFreakPenaltyScaling`).
+ * - `weaponStatBases` are the bases of the SELECTED weapon, supplied by the
+ *   weapon-mod picker so SET-op stat replacements can render as percent
+ *   deltas; callers without a weapon omit it.
  */
 export interface BuffDescriptionCtx {
   strangeInNumbers?: boolean;
   classFreakRank?: number;
   penaltyScale?: number;
+  /**
+   * Bases of the SELECTED weapon, supplied by the weapon-mod picker so SET-op
+   * stat replacements can render as percent deltas; callers without a weapon
+   * omit it.
+   */
+  weaponStatBases?: Partial<Record<Bucket, number>>;
 }
 
 /** Qualifier clause for one modifier's conditions. */
@@ -412,6 +425,12 @@ function describeConditions(conditions: readonly Condition[], bucket: Bucket): s
     }
   }
   return clauses.join(', ');
+}
+
+/** Magnitude plus any condition clauses, for SET-only special cases that skip the percent/flat path. */
+function withConditionClauses(m: Modifier, magnitude: string): string {
+  const clause = describeConditions(m.conditions, m.bucket);
+  return clause ? `${magnitude} (${clause})` : magnitude;
 }
 
 /** "+5–100%" — lo keeps its sign but drops the '%' (only the range's tail carries it), hi drops the redundant '+'. */
@@ -509,15 +528,43 @@ function describeDotDamage(m: Modifier, scale: number): string | null {
  * percent/flat this bucket actually uses (SPECIAL buckets are always flat),
  * so the percent-vs-flat magnitude formatting stays correct either way.
  */
-function describeModifier(m: Modifier, scale: number, labelOverride?: string): string | null {
+function describeModifier(
+  m: Modifier,
+  scale: number,
+  ctx: BuffDescriptionCtx,
+  labelOverride?: string,
+): string | null {
   if (m.bucket === 'dotDamage') return describeDotDamage(m, scale);
+
+  // SET-only special cases that aren't in WEAPON_STAT_BUCKET_LABELS. MUL_ADD/ADD
+  // on these buckets stay unmodeled (render nothing) — charging enablers and
+  // the auto/semi flag aren't percent/flat deltas.
+  if (m.op === 'SET' && m.curve === undefined) {
+    if (m.bucket === 'isAutomatic') {
+      return withConditionClauses(m, m.value === 0 ? 'semi-automatic fire' : 'automatic fire');
+    }
+    if (m.bucket === 'chargeFullPowerSec') {
+      return withConditionClauses(m, `full-power charge time set to ${m.value}s`);
+    }
+    if (m.bucket === 'chargeFullPowerDamageMult') {
+      return withConditionClauses(m, `full-power damage ×${m.value}`);
+    }
+  }
 
   let percentLabel = PERCENT_BUCKET_LABELS[m.bucket];
   let flatLabel = FLAT_POINT_BUCKET_LABELS[m.bucket];
   const statLabel = WEAPON_STAT_BUCKET_LABELS[m.bucket];
+  // SET on a labeled weapon-stat is a replacement; with a positive finite
+  // selected-weapon base it renders as a true percent delta, otherwise omit.
+  let setFraction: number | undefined;
   if (!percentLabel && !flatLabel && statLabel) {
-    if (m.op === 'SET') return null; // replacement value, not a delta — omit
-    if (m.op === 'MUL_ADD') percentLabel = statLabel;
+    if (m.op === 'SET') {
+      const base = ctx.weaponStatBases?.[m.bucket];
+      if (typeof base !== 'number' || !Number.isFinite(base) || base <= 0) return null;
+      if (m.curve !== undefined) return null;
+      percentLabel = statLabel;
+      setFraction = (m.value - base) / base;
+    } else if (m.op === 'MUL_ADD') percentLabel = statLabel;
     else flatLabel = statLabel;
   }
   if (labelOverride) {
@@ -558,7 +605,7 @@ function describeModifier(m: Modifier, scale: number, labelOverride?: string): s
       magnitude = `${v > 0 ? '+' : ''}${v} ${flatLabel} per point of ${axisLabel}`;
     }
   } else if (percentLabel) {
-    magnitude = `${formatPercent(m.value * scale)} ${percentLabel}`;
+    magnitude = `${formatPercent(setFraction ?? m.value * scale)} ${percentLabel}`;
   } else if (flatLabel) {
     const v = m.value * scale;
     magnitude = `${v > 0 ? '+' : ''}${v} ${flatLabel}`;
@@ -817,9 +864,9 @@ export function describeBuffModifiers(
   const { pairs: rangePairs, rest: ungrouped } = collapseRangePairs(rest);
   const parts = [
     ...describeAsParts,
-    ...groups.map((g) => describeModifier(g.representative, scale, g.label)),
-    ...rangePairs.map((m) => describeModifier(m, scale, 'range')),
-    ...ungrouped.map((m) => describeModifier(m, scale)),
+    ...groups.map((g) => describeModifier(g.representative, scale, ctx, g.label)),
+    ...rangePairs.map((m) => describeModifier(m, scale, ctx, 'range')),
+    ...ungrouped.map((m) => describeModifier(m, scale, ctx)),
   ].filter((s): s is string => s !== null);
   return parts.length > 0 ? parts.join('; ') : null;
 }

@@ -857,8 +857,39 @@ describe('describeBuffModifiers: weapon-stat buckets (standard OMODs)', () => {
     expect(describeBuffModifiers(buff([stat('projectileCount', 'ADD', 4)]))).toBe('+4 projectiles');
   });
 
-  it('SET is a replacement value, not a delta — omitted', () => {
-    expect(describeBuffModifiers(buff([stat('fireRateSpeed', 'SET', 0.86)]))).toBeNull();
+  it('SET is omitted without a weapon base', () => {
+    expect(describeBuffModifiers(buff([stat('fireRateSpeed', 'SET', 0.8617)]))).toBeNull();
+  });
+
+  it('SET fireRateSpeed renders as a percent delta vs the selected weapon base', () => {
+    expect(
+      describeBuffModifiers(buff([stat('fireRateSpeed', 'SET', 0.8617)]), {
+        weaponStatBases: { fireRateSpeed: 1 },
+      }),
+    ).toBe('-13.8% fire rate');
+  });
+
+  it('isAutomatic SET renders as prose with no magnitude', () => {
+    expect(describeBuffModifiers(buff([stat('isAutomatic', 'SET', 1)]))).toBe('automatic fire');
+    expect(describeBuffModifiers(buff([stat('isAutomatic', 'SET', 0)]))).toBe(
+      'semi-automatic fire',
+    );
+  });
+
+  it('chargeFullPower SET enablers render as absolute values, not deltas', () => {
+    expect(
+      describeBuffModifiers(
+        buff([stat('chargeFullPowerSec', 'SET', 1), stat('chargeFullPowerDamageMult', 'SET', 2)]),
+      ),
+    ).toBe('full-power charge time set to 1s; full-power damage ×2');
+  });
+
+  it('critConsumption SET 85 vs meter base 100 reads as a percent delta', () => {
+    expect(
+      describeBuffModifiers(buff([stat('critConsumption', 'SET', 85)]), {
+        weaponStatBases: { critConsumption: 100 },
+      }),
+    ).toBe('-15% crit meter cost');
   });
 
   it('same-signature min/max range modifiers collapse to one "range" line (long barrels)', () => {

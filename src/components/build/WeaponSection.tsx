@@ -82,7 +82,22 @@ function OmodDescription({
   if (!omod) return null;
   const hasOverride = omod.id in omodDescriptionOverrides;
   if (classifyOmodDisplay(omod, weapon).badge === 'inert' && !hasOverride) return null;
-  const description = describeBuffModifiers(omod) ?? (hasOverride ? omod.description : undefined);
+  // SET-op stat replacements render as percent deltas vs the SELECTED
+  // weapon's own bases (not a stacked effective). Omit 0/undefined so a
+  // zero base cannot divide; critConsumption's abstract meter base is 100
+  // (crit-meter.ts). Do not pass baseDamage — component sums aren't cheap
+  // and SET-0 damage conversions deliberately render nothing.
+  const weaponStatBases = {
+    critConsumption: 100,
+    ...(weapon.speed ? { fireRateSpeed: weapon.speed } : {}),
+    ...(weapon.minRange ? { weaponMinRange: weapon.minRange } : {}),
+    ...(weapon.maxRange ? { weaponMaxRange: weapon.maxRange } : {}),
+    ...(weapon.projectileCount ? { projectileCount: weapon.projectileCount } : {}),
+    ...(weapon.capacity ? { ammoCapacity: weapon.capacity } : {}),
+  };
+  const description =
+    describeBuffModifiers(omod, { weaponStatBases }) ??
+    (hasOverride ? omod.description : undefined);
   if (!description) return null;
   return <HelperText>{description}</HelperText>;
 }
