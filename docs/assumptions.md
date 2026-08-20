@@ -734,6 +734,20 @@ are all documented there. `src/lib/enemy-defenses.ts`, `scenarios.ts`
   this bucket with a positive value instead of `damageResistGain`.
 - **DoT is NOT mitigated in v1** — `ScenarioResult.dotDps` stays a
   separate, unmitigated add. Matches the plan.
+  - **Design constraint for whenever DoT mitigation lands** (user-flagged
+    2026-08-20, re: Holy Fire + Standard/Napalm Tank both being equippable
+    at once): multiple simultaneous `dotDamage` sources on one weapon are
+    genuinely SEPARATE ticking instances (each its own magnitude/duration),
+    not one merged pool. `computeDotDps` sums them into a single steady-state
+    number today (harmless while unmitigated), but resist mitigation must
+    NOT be applied to that summed total — it has to apply per-source, before
+    summing. Reason: FO76's mitigation formula has a flat/non-linear
+    component (see `mitigation.ts`'s exponent/factor/clamp), so two separate
+    smaller ticks each individually mitigated retain LESS total damage than
+    one combined tick of the same total magnitude mitigated once — resist is
+    more punitive against split ticks. Get this backwards (sum-then-mitigate)
+    and multi-DoT loadouts (e.g. Holy Fire on a Flamer with either tank)
+    would over-state damage.
 - **Level-slider default = max** (`resolveTargetLevel`): an unset target
   level resolves to the race's `levelMaxGlobal` — **ASSUMPTION**
   ("endgame" use case). Fallback bounds 1–100 when a race has no Renorm
