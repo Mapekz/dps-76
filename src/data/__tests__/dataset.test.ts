@@ -25,6 +25,16 @@ describe('getUnresolvedOverrideKeys', () => {
   });
 });
 
+describe('omod descriptions in the Merged Dataset', () => {
+  it("serves the Medic's Heal-Allies / DoT interaction override", () => {
+    expect(
+      getDataset('live').omods.find((o) => o.id === 'mod_Legendary_Weapon1_Medic')?.description,
+    ).toBe(
+      'heals allies for a portion of base damage dealt — DoTs (bleed/burn/poison) never trigger it',
+    );
+  });
+});
+
 describe('consumable descriptions in the Merged Dataset', () => {
   it('serves the polished house style, from derivation or override', () => {
     const byId = new Map(getDataset('live').consumables.map((c) => [c.id, c]));

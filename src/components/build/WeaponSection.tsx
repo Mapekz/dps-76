@@ -27,6 +27,7 @@ import {
   type OmodBadge,
   type OmodSlot,
 } from '@/data/omods';
+import { omodDescriptionOverrides } from '@/data/overrides/corrections';
 import { describeBuffModifiers } from '@/lib/buff-description';
 import type { GameMode, Weapon } from '@/types';
 import { ActionDelta } from '@/components/diff/ActionDelta';
@@ -78,8 +79,10 @@ function OmodDescription({
 }) {
   if (!omodId || omodId === '__standard__') return null;
   const omod = getOmodById(mode, omodId);
-  if (!omod || classifyOmodDisplay(omod, weapon).badge === 'inert') return null;
-  const description = describeBuffModifiers(omod);
+  if (!omod) return null;
+  const hasOverride = omod.id in omodDescriptionOverrides;
+  if (classifyOmodDisplay(omod, weapon).badge === 'inert' && !hasOverride) return null;
+  const description = describeBuffModifiers(omod) ?? (hasOverride ? omod.description : undefined);
   if (!description) return null;
   return <HelperText>{description}</HelperText>;
 }
