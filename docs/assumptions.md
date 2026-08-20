@@ -366,6 +366,7 @@ picker badge.
 | Crippling / Basher's | extracted to `limbDamage`/`bashDamage` — INERT until limb-targeting/bash is modeled | ESM-PROVEN | extracted, inert pending limb-targeting/bash modeling |
 | Scaly Skin (+ Chameleon/Grounded ripple) | +DamageResist/+EnergyResist extracted to `damageResistGain`/`energyResistGain` (50/62 normal/Class-Freak) — INERT until wearer-side resist mitigation is modeled | ESM-PROVEN | extracted, inert pending wearer-side resist mitigation |
 | Pyromaniac's / Viper's / Severing's | +50% dbm while target has an active fire/poison/bleed status (toggle, default off); Viper's `ImmuneToPoison` gate CONSUMED | ESM-PROVEN | granted-perk chase |
+| **Enemy-side exclusion markers consumed** | `BleedImmune` / `NoDisintegrate` / `ImmuneParalysis` / `IsAlly` `HasKeyword(x)=0` rows on the struck target are consumed under the same "generic hostile target is assumed vulnerable" reading as Viper's ImmuneToPoison row | ASSUMPTION | `conditions.ts` `TARGET_EXCLUSION_KEYWORDS` |
 | Last Shot | +100% dbm on the magazine's last round, on a 25% roll (`LGND_LastShotChance`), folded to `procChance / shotsPerMagazine` per shot — see `docs/adr/0019-last-shot-is-a-magazine-cycle-average.md`. Whether `GetRandomPercent` re-rolls per shot or per reload is unproven; both readings give the same steady-state EV (the flag is only read on the one shot where `GetLoadedAmmoCount()==0`), a persists-once-set reading would be higher | INFERENCE | ESM proves the 25% gate; the roll's cadence is not record-proven |
 | Encircler's | +10%×N from `enemyGroupCount` tiers; default count **1** | ESM-PROVEN | — |
 | Fencer's (melee) | +12.5–50% from exact `teammateCount` tiers; range-check CONSUMED | ESM-PROVEN | — |
@@ -380,6 +381,7 @@ picker badge.
 | Follow Through / Taking One for the Team | Both `wholeDamage` ×(1+value) target-side debuffs (10/20/30/40%/rank), manual toggle default 0, composing multiplicatively. Both grant a PERK to the struck actor via a spell chain carrying "Mod Incoming Weapon Damage" | ESM-PROVEN | esm-walk-confirmed spell chain |
 | **Follow Through / TOftT suggestion sneak gate** | Suggestions offer YOUR OWN card only when it can proc: Follow Through requires `isSneaking`, TOftT requires NOT sneaking (`manualUptimePerkSuggestible`, manual-uptime.ts; variants.ts add+swap-in loops). Knobs stay unconditional — any player's card places the debuff | USER-CONFIRMED | proc gating is card-text/game behavior, not record-proven |
 | SPECIAL buffs (Buffout, Bufftats, Mentats, Berry Mentats) | flat unconditional ADDs into STR/LCK; other stats stored-inert until perk-SPECIAL scaling | ESM-PROVEN | — |
+| **Mire Magic Moonshine's Gulper Smacker gate** | +50/100% melee dbm modeled as `weaponKeyword E08A_ma_GulperSmacker` (speculative). Naming pair (`E08A_Gulpershine_GulperSmackerBuff_ME` gated on `E08A_GulperSmacker_GulpershineBuff_ME`) implies the synergy; the only record applying the marker is `zzzE08A_Weapon_Gulpershine_Damage`, a cut-prefixed ENCH with zero references — a VMAD script may apply it (script refs are invisible). Kept per user 2026-08-19 pending in-game verification | ASSUMPTION | `src/data/overrides/buff-overrides.ts` `E08A_Brew_Gulpershine*` |
 | Juggernaut's max-HP input | `maxHealth` is DERIVED (**Max HP (derived)**), read-only | CLOSED | not a hand-supplied value — cross-reference only |
 | **Strange in Numbers** | DERIVED: active iff card equipped AND `teammateCount≥1` (teammate mutation status not modeled) | ASSUMPTION | card text is ESM-provable; whether teammate mutation status also matters is an unmodeled project-owner decision |
 | Kill-streak slider gating | existence scan over assembled modifiers, unlike Onslaught's dedicated bucket fold; the `0` default is deliberate — `docs/adr/0009` | CLOSED | settled engine-wiring decision, not an open question |
@@ -408,6 +410,12 @@ freely UNLESS they grant the "same bonus", which displaces.
   addiction AND ≥1 `dispelKeys` entry is kept even with zero routed
   modifiers (Med-X, Nukashine) — taking a 0-damage chem still drops a
   Junkie's stack.
+- **HasActiveMagicEffect anti-restack guards consumed** — **ASSUMPTION**:
+  "effect not currently active" rows (`Equal To 0`, `Not Equal To 1`,
+  `Less Than 1`) are consumed — a steady-state calculator has no
+  re-application moment (selecting the source IS the effect being
+  active); positive `=1` dependencies stay unresolved.
+  `scripts/extract/normalize/conditions.ts` `HasActiveMagicEffect` case.
 - `addictionCount` (Junkie's curve input) is DERIVED: selected addictions
   minus those SUPPRESSED by a currently-active addictive consumable —
   category-agnostic. **CLOSED** (user decision).
@@ -441,6 +449,12 @@ chem/food/drink/alcohol classification.
 - **Live & Love 5 magnitude (+2 LCK)**: **INFERENCE** — Script-archetype
   MGEF, no extractable Peak Value Modifier; taken from card description
   (`buff-overrides.ts`).
+- **Live & Love 5's companion variant ignored**: **ASSUMPTION** — the
+  alcohol-side `FortifyLuckMagazineLiveLove` +1 Luck (HasPerk
+  PerkMagLiveNLove05 AND GetGlobalValue(PlayerHasActiveCompanion) > 0) is
+  dropped — the FO4-era global is assumed permanently 0 in 76 (allies do
+  not set it); L&L5 models only +2 Luck under alcohol.
+  `scripts/extract/extract-buffs.ts` `CONSUMABLE_MGEFS_MODELED_ELSEWHERE`.
 - Live & Love 2 (`dbm` +5%) gates on `teammateCount ≥ 1` — 0% ΔDPS solo is
   correct team-buff behavior, not an extraction gap.
 
