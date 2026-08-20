@@ -122,6 +122,7 @@ function procComponentsFromGenerated(
     curve: c.curve ? { input: 'itemLevel' as const, points: c.curve } : undefined,
     value: c.curve ? undefined : c.amount,
     isAoe: c.isAoe,
+    unresisted: c.unresisted,
   }));
 }
 

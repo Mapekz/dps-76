@@ -60,19 +60,42 @@ export async function decodeProcComponentsFromExpl(
  * already has async access to pre-resolve it) — kept sync/pure here to match
  * `decodeProcComponentsFromExpl`'s no-throw contract and the rest of this
  * module's testing style.
+ *
+ * Resist provenance (docs/assumptions.md "DoT/proc resist provenance",
+ * user-decided 2026-08-20): NO Resist Value AV at all (`mgef.resistValue`
+ * null) is mechanically unresisted, same rule as `translate()`'s DoT branch —
+ * the component still materializes (`unresisted: true`, `damageType`
+ * `'unknown'`) rather than silently vanishing, which is what this function
+ * did before 2026-08-20 (a real, if so-far-unobserved, damage-loss risk: no
+ * currently-extracted Circuit-Breaker-shaped effect hits this branch — see
+ * the commit's ESM sweep — so this is a latent-gap fix, not a regenerated-
+ * value change). A Resist Value that's PRESENT but unmapped stays a silent
+ * `null` drop — a narrower, different gap (real resist data our map doesn't
+ * cover yet), left as-is.
  */
 export function decodeInstantDamageComponent(
   mgef: MgefInfo,
   effect: SpellEffect,
   edidByFormId: Map<string, string>,
 ): GeneratedProcComponent | null {
-  if (!mgef.resistValue) return null;
+  const hasDamage = (effect.curvePoints && effect.curvePoints.length > 0) || effect.magnitude > 0;
+  if (!hasDamage) return null;
+
+  if (!mgef.resistValue) {
+    return {
+      damageType: 'unknown',
+      damageTypeEdid: null,
+      amount: effect.magnitude,
+      tier: null,
+      curve: effect.curvePoints,
+      isAoe: (effect.area ?? 0) > 0,
+      unresisted: true,
+    };
+  }
+
   const resistEdid = edidByFormId.get(mgef.resistValue) ?? mgef.resistValue;
   const damageType = RESIST_AV_DAMAGE_TYPES[resistEdid];
   if (!damageType) return null;
-
-  const hasDamage = (effect.curvePoints && effect.curvePoints.length > 0) || effect.magnitude > 0;
-  if (!hasDamage) return null;
 
   return {
     damageType,

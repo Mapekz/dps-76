@@ -1282,6 +1282,27 @@ describe('translate (Damage-archetype DoT effects)', () => {
     });
   });
 
+  it("flags `unresisted: true` and emits no damageTypeScope condition when the MGEF carries NO Resist Value AV at all (user-decided 2026-08-20: mechanically unresisted, expected to capture bleeds naturally — docs/assumptions.md 'DoT/proc resist provenance')", () => {
+    const r = translate(
+      mgef({ archetype: 'Damage', resistValue: null }),
+      effect({ magnitude: 12, duration: 5 }),
+      noRoutes,
+      new Map(),
+    );
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({
+      bucket: 'dotDamage',
+      op: 'ADD',
+      value: 12,
+      durationSec: 5,
+      conditions: [],
+      unresisted: true,
+    });
+    // NOT the same as the unmapped-Resist-Value case below — no note, since
+    // this isn't an extraction gap.
+    expect(r.notes).toEqual([]);
+  });
+
   it('still emits the dotDamage modifier (without a damageTypeScope condition) for an unmapped Resist Value, plus a note', () => {
     const dotEdids = new Map<string, string>([['0xResist', 'SomeUnmappedResist']]);
     const r = translate(
@@ -1969,6 +1990,7 @@ describe('translate (Detrimental sign handling, 2026-07-14)', () => {
       value: 10,
       durationSec: 5,
       conditions: [],
+      unresisted: true,
     });
   });
 

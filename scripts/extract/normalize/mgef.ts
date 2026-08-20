@@ -1122,6 +1122,16 @@ export function translate(
   // The element lives on the MGEF's Resist Value AV; the damageTypeScope
   // condition here denotes the DoT's OWN element.
   if (mgef.archetype === 'Damage' && (effect.magnitude > 0 || effect.curvePoints)) {
+    // Resist provenance (docs/assumptions.md "DoT/proc resist provenance",
+    // user-decided 2026-08-20): the record's OWN Resist Value AV is the ONLY
+    // source of truth for a DoT's mitigation-relevant type. NO Resist Value AV
+    // at all (`mgef.resistValue === null`) means the effect is mechanically
+    // unresisted — flagged `unresisted: true` rather than left as an
+    // unexplained absent scope. A Resist Value that's PRESENT but unmapped
+    // (falls through `RESIST_AV_DAMAGE_TYPES`) is a DIFFERENT, narrower gap —
+    // real resist data our map doesn't cover yet — and stays a note, not
+    // `unresisted`.
+    const unresisted = mgef.resistValue === null;
     const resistEdid = mgef.resistValue
       ? (edidByFormId.get(mgef.resistValue) ?? mgef.resistValue)
       : null;
@@ -1176,6 +1186,7 @@ export function translate(
             curveScale: 1,
             conditions: dotConds,
             durationSec: effect.duration,
+            ...(unresisted ? { unresisted: true as const } : {}),
           }
         : {
             bucket: 'dotDamage',
@@ -1183,6 +1194,7 @@ export function translate(
             value: dotMagnitude,
             conditions: dotConds,
             durationSec: effect.duration,
+            ...(unresisted ? { unresisted: true as const } : {}),
           },
     );
     return result;

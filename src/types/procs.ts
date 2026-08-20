@@ -24,6 +24,8 @@ export interface ProcComponent {
   value?: number;
   /** Display/assumptions only — folded as a flat single-target add, not a real AoE model. */
   isAoe?: boolean;
+  /** See `Modifier.unresisted` (src/types/modifiers.ts) — same resist-provenance rule, proc-component twin. */
+  unresisted?: true;
 }
 
 export interface ProcSource {

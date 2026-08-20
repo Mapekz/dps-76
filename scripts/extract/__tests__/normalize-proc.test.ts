@@ -181,10 +181,18 @@ describe('decodeInstantDamageComponent (Circuit Breaker shape)', () => {
     expect(component?.damageType).toBe('energy');
   });
 
-  it('returns null when the MGEF carries no Resist Value', () => {
+  it("flags `unresisted: true` (damageType 'unknown') instead of dropping the component when the MGEF carries no Resist Value at all (user-decided 2026-08-20: mechanically unresisted, docs/assumptions.md 'DoT/proc resist provenance' — pre-2026-08-20 this silently returned null)", () => {
     const m = mgef({ archetype: 'Damage', resistValue: null });
     const e = effect({ magnitude: 10 });
-    expect(decodeInstantDamageComponent(m, e, edidByFormId)).toBeNull();
+    expect(decodeInstantDamageComponent(m, e, edidByFormId)).toEqual({
+      damageType: 'unknown',
+      damageTypeEdid: null,
+      amount: 10,
+      tier: null,
+      curve: null,
+      isAoe: false,
+      unresisted: true,
+    });
   });
 
   it('returns null when the Resist Value edid has no RESIST_AV_DAMAGE_TYPES mapping', () => {

@@ -1768,6 +1768,19 @@ export type Modifier = {
    * it. Only hand-authored override modifiers set it — extraction never emits it.
    */
   describeAs?: string;
+  /**
+   * `dotDamage`-only resist provenance (docs/assumptions.md "DoT/proc resist
+   * provenance", user-decided 2026-08-20): the source MGEF carries NO Resist
+   * Value AV at all, so this DoT is mechanically unresisted — expected to
+   * capture bleeds naturally, not an extraction gap. Set ONLY by
+   * `normalize/mgef.ts`'s `translate()` Damage-archetype branch when
+   * `mgef.resistValue` is null; absent (never `false`) otherwise, including
+   * when a Resist Value IS present but unmapped (that stays a plain note —
+   * real resist data our map doesn't cover, a different situation). Engine
+   * fold behavior is unchanged by this field today — it's provenance for the
+   * future DoT-mitigation pass, not consumed by `computeDotDps` yet.
+   */
+  unresisted?: true;
 } & ModifierValue;
 
 /** A modifier fragment without its id/source (as produced by MGEF translation). */
@@ -1783,4 +1796,6 @@ export type ModifierFragment = {
    * Medical Malpractice: dbm ADD 0.01 scaledBy 'stimpakHealMult'.
    */
   scaledBy?: CurveInput;
+  /** See `Modifier.unresisted`. */
+  unresisted?: true;
 } & ModifierValue;

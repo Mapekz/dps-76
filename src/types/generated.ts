@@ -325,6 +325,20 @@ export interface GeneratedProcComponent {
   curve: CurvePoint[] | null;
   /** Display/assumptions only — the proc's EXPL Outer Radius or effect Area was > 0. */
   isAoe?: boolean;
+  /**
+   * Resist provenance (docs/assumptions.md "DoT/proc resist provenance",
+   * user-decided 2026-08-20): the source MGEF carries NO Resist Value AV at
+   * all — mechanically unresisted, not an extraction gap. Set only by
+   * `normalize/proc.ts`'s `decodeInstantDamageComponent` (the "Circuit
+   * Breaker shape") when `mgef.resistValue` is null; `damageType` is
+   * `'unknown'` in that case (no AV to derive an element from — the existing
+   * "type not determined" sentinel, defaulted to `'ballistic'` at runtime by
+   * `effective-weapon.ts`'s `EXPLOSION_SWAP_DAMAGE_TYPE_MAP`). EXPL-chased
+   * components (`decodeProcComponentsFromExpl`) always carry either a typed
+   * `Damage Types` entry or the `'explosive'` main-damage convention, so they
+   * never need this flag.
+   */
+  unresisted?: true;
 }
 
 /**

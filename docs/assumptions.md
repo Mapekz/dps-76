@@ -189,6 +189,27 @@ repeated here. See ADR-0020 for why this is a parallel stream (`Weapon.procs`
   sub-effect (no damage, out of scope) — deliberately unmapped, no damage
   payload to chase in either case.
 
+## DoT/proc resist provenance
+Engine: `normalize/mgef.ts` `translate()`'s Damage-archetype branch,
+`normalize/proc.ts`'s `decodeInstantDamageComponent` — both document the full
+rule at their own site, not repeated here.
+
+- **USER-CONFIRMED 2026-08-20**: the mitigation-relevant type comes from the
+  effect record's OWN Resist Value AV or (EXPL-chased) typed `Damage Types`
+  entry — never inferred from the parent weapon/OMOD. Neither present →
+  `unresisted: true` on the `dotDamage` modifier / `GeneratedProcComponent`
+  (mechanically unresisted, expected to capture bleeds naturally — not a
+  gap).
+- **ESM-validated survey, 2026-08-20**: all 191 `dotDamage` modifiers and all
+  7 `procChase` components in live data (weapons/omods/consumables.json)
+  resolve to an explicit AV/typed entry today — zero `unresisted` cases yet.
+  Bleed example: Assaultron Blade's on-hit ench (`0x0010F3F2` → MGEF
+  `0x002387E2`, Resist Value `DamageResist` → `ballistic`). Typed example:
+  Electrician's EXPL `0x00799382`'s energy `Damage Types` entry (`dtEnergy`).
+- A Resist Value PRESENT but unmapped by `RESIST_AV_DAMAGE_TYPES` stays a
+  separate `notes`-only gap (real resist data the map doesn't cover yet), not
+  `unresisted`.
+
 ## Mixed damage-type OMOD conversion (DamageTypeValues)
 Engine: `materializeDamageTypeComponents`'s doc-comment (`effective-weapon.ts`)
 covers the missing-type materialization mechanic in full — not repeated here.
