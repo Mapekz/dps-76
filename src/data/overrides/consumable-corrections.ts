@@ -211,12 +211,14 @@ export const consumableDescriptionOverrides: Readonly<Record<string, string>> = 
   Brew_FirecrackerWhiskeyVintage:
     'ballistic and melee attacks deal fire damage; melee attacks trigger self-immolation',
 
-  // Lead Champagne: Alcohol_ResistRadiationExpose mag 250 +
+  // Lead Champagne: Alcohol_ResistRadiationExpose reads 100 from its
+  // single-point Curve Table (the flat 250 is stale authoring residue —
+  // curves always beat hardcoded magnitudes, user-corrected 2026-08-20) +
   // LeadChampagne_IncreaseSprintAP (Detrimental on STAT_SprintAPCost, mag 10
   // — cheaper sprint, same stat as Scouts' Life 8). The MGEF's Name is the
   // truncated "Increase", hence the override.
-  Brew_LeadChampagneFresh: '+250 Rad Resist; -10% sprint AP cost',
-  Brew_LeadChampagneMimosa: '+250 Rad Resist; -10% sprint AP cost',
+  Brew_LeadChampagneFresh: '+100 Rad Resist; -10% sprint AP cost',
+  Brew_LeadChampagneMimosa: '+100 Rad Resist; -10% sprint AP cost',
 
   // Tick Blood Tequila family: TickbloodTequila_FoodRegenEffect ("Melee
   // attacks replenish hunger") / _HealthRegenEffect ("Melee Attacks Restore

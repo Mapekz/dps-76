@@ -7486,7 +7486,7 @@
    "name": "Alcohol Addiction"
   },
   "ingredientKeywords": [],
-  "description": "+10 Increase; +250 Rad Resist",
+  "description": "+10 Increase; +100 Rad Resist",
   "obtainable": true
  },
  {
@@ -7562,7 +7562,7 @@
    "name": "Alcohol Addiction"
   },
   "ingredientKeywords": [],
-  "description": "+250 Rad Resist; +10 Increase",
+  "description": "+100 Rad Resist; +10 Increase",
   "obtainable": true
  },
  {

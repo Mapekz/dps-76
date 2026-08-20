@@ -159,12 +159,21 @@ async function resolveEffectDescription(
     }
   }
 
-  // A GLOB-valued Magnitude overrides the flat float, same as in
-  // translateMagicEffect — RestoreHealthFood-style effects carry 0 flat and
-  // the real value in SURV_Food_Heal_Mag_* Globals; without this every such
-  // line either reads "+0" or gets zero-suppressed.
+  // Magnitude resolution mirrors translateMagicEffect's precedence: an
+  // attached Curve Table ALWAYS beats the hardcoded magnitude (docs/
+  // assumptions.md "Curve tables override flat values"; USER-CONFIRMED
+  // 2026-08-20 — the flat float is stale authoring residue when a curve is
+  // attached: Alcohol_ResistRadiationExpose carries flat 250 vs curve 100),
+  // then a GLOB-valued Magnitude beats the flat float (RestoreHealthFood-
+  // style effects carry 0 flat and the real value in SURV_Food_Heal_Mag_*
+  // Globals). Every consumable curve in live data is single-point (an
+  // authored constant — same "Single-point curve tables" reading translate()
+  // uses); a multi-point curve has no single number to substitute, so fall
+  // through to the GLOB/flat chain rather than guess.
   let magnitude = effect.magnitude;
-  if (effect.magnitudeGlobal) {
+  if (effect.curvePoints && effect.curvePoints.length === 1) {
+    magnitude = effect.curvePoints[0].y;
+  } else if (effect.magnitudeGlobal) {
     try {
       const glob = await client.get(effect.magnitudeGlobal);
       const value = glob.fields['Value'];

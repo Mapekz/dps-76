@@ -26,8 +26,12 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
 - **Explosive/DoT carve-outs** — explosion components skip sneak/body-part/
   weakpoint; DoT (`computeDotDps`) additionally drops crit and has no body
   part in its signature at all. **USER-CONFIRMED, 2026-07-14.**
-- **Curve tables override flat magnitudes** wherever both exist. See
-  **Single-point curve tables**.
+- **Curve tables override flat values** — an attached Curve Table ALWAYS
+  beats the hardcoded magnitude/duration/stat field next to it; the flat
+  value is stale authoring residue (Alcohol_ResistRadiationExpose: flat 250,
+  curve 100 — the game applies 100). **USER-CONFIRMED 2026-08-20.** Applies
+  in `translate()` and the description derivation
+  (`resolveEffectDescription`) alike. See **Single-point curve tables**.
 - **STR melee scaling** — STR/20 (1h/2h melee), STR/10 (unarmed).
   **ASSUMPTION** (user-specified, not ESM-confirmed) — rejected GMST
   candidates are in `paper-damage.ts`'s `strengthTerm` doc.
