@@ -2,10 +2,19 @@ import * as React from 'react';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
+import type { ScenarioKey } from '@/state/build-reducer';
+import type { GameMode, PlayerConfig, EnemyConfig } from '@/types';
 import type { SuggestionReport } from '@/lib/suggest/types';
 import type { EvaluateRequest, EvaluateResponse } from '@/workers/suggestions.worker';
 
 const RECOMPUTE_DEBOUNCE_MS = 300;
+
+interface Inputs {
+  player: PlayerConfig;
+  enemy: EnemyConfig;
+  mode: GameMode;
+  metric: ScenarioKey;
+}
 
 /**
  * Debounced full what-if sweep, run on a dedicated Web Worker (#76's L3
@@ -27,25 +36,25 @@ const RECOMPUTE_DEBOUNCE_MS = 300;
  * latest ISSUED id (not the latest APPLIED one) matters here: it's what
  * keeps the panel dimmed through to the truly-latest result instead of
  * flashing a superseded-but-still-newer-than-nothing response on the way.
- * While a recompute is pending the previous report is returned with
- * `stale: true` so the panel can dim instead of flickering empty.
+ * `stale` is derived at render time (not effect-set state): it's true
+ * whenever the inputs that produced the held report don't match the current
+ * ones, by reference identity — see the derivation at the bottom of this
+ * function for why that identity comparison is safe.
  */
 export function useSuggestions(): { report: SuggestionReport | null; stale: boolean } {
   const { mode } = useGameMode();
   const state = useBuild();
   const { emphasized } = useScenarioResults();
 
-  const [report, setReport] = React.useState<SuggestionReport | null>(null);
-  const [stale, setStale] = React.useState(false);
+  const [result, setResult] = React.useState<({ report: SuggestionReport } & Inputs) | null>(null);
 
   const workerRef = React.useRef<Worker | null>(null);
   const requestIdRef = React.useRef(0);
-  // Latest full state for the worker request without making it an effect
-  // dependency — the recompute effect below keys on the build-relevant
-  // slices only, so UI-only dispatches (view/set breakdown toggle, renames)
-  // don't re-run the sweep or dim the panel.
-  const stateRef = React.useRef(state);
-  stateRef.current = state;
+  // Inputs for the most recently SENT request (not the most recently applied
+  // one) — `onmessage` already drops any response whose id is superseded, so
+  // whenever a response is actually applied this is by construction the
+  // Inputs that produced it.
+  const lastSentRef = React.useRef<Inputs | null>(null);
 
   React.useEffect(() => {
     const worker = new Worker(new URL('../workers/suggestions.worker.ts', import.meta.url), {
@@ -56,8 +65,9 @@ export function useSuggestions(): { report: SuggestionReport | null; stale: bool
       // Drop a response superseded by a newer request already sent — see the
       // module doc-comment above.
       if (id !== requestIdRef.current) return;
-      setReport(nextReport);
-      setStale(false);
+      const sent = lastSentRef.current;
+      if (!sent) return;
+      setResult({ report: nextReport, ...sent });
     };
     workerRef.current = worker;
     return () => {
@@ -66,6 +76,18 @@ export function useSuggestions(): { report: SuggestionReport | null; stale: bool
     };
   }, []);
 
+  // An Effect Event reads the latest player/enemy/mode/metric non-reactively
+  // — the debounce timer below is the only thing that needs to react to
+  // them changing.
+  const sendRequest = React.useEffectEvent(() => {
+    const worker = workerRef.current;
+    if (!worker) return;
+    const id = ++requestIdRef.current;
+    lastSentRef.current = { player: state.player, enemy: state.enemy, mode, metric: emphasized };
+    const request: EvaluateRequest = { type: 'evaluate', id, state, mode, metric: emphasized };
+    worker.postMessage(request);
+  });
+
   // Keyed on `state.player`/`state.enemy` (NOT the whole BuildState): the
   // reducer's immutable updates preserve both slices' reference identity
   // across UI-only actions (`view/set`, `build/rename`), and the sweep reads
@@ -73,24 +95,22 @@ export function useSuggestions(): { report: SuggestionReport | null; stale: bool
   // non-build UI churn neither recompute nor flash the panel stale.
   const { player, enemy } = state;
   React.useEffect(() => {
-    // Immediate stale flag so the panel dims while the debounced recompute runs.
-    // (Deliberate setState-in-effect; no oxlint rule for this pattern today.)
-    setStale(true);
-    const timer = window.setTimeout(() => {
-      const worker = workerRef.current;
-      if (!worker) return;
-      const id = ++requestIdRef.current;
-      const request: EvaluateRequest = {
-        type: 'evaluate',
-        id,
-        state: stateRef.current,
-        mode,
-        metric: emphasized,
-      };
-      worker.postMessage(request);
-    }, RECOMPUTE_DEBOUNCE_MS);
+    const timer = window.setTimeout(sendRequest, RECOMPUTE_DEBOUNCE_MS);
     return () => window.clearTimeout(timer);
   }, [player, enemy, mode, emphasized]);
 
-  return { report, stale };
+  // `stale` is true whenever the held report was computed for different
+  // inputs than the current ones — reference-identity comparison is correct
+  // for the same reason the effect above keys on player/enemy: UI-only
+  // dispatches preserve their identity, so this only flips on an actual
+  // build-relevant change (see `build-reducer.test.ts`'s pin of that
+  // invariant).
+  const stale =
+    result === null ||
+    result.player !== player ||
+    result.enemy !== enemy ||
+    result.mode !== mode ||
+    result.metric !== emphasized;
+
+  return { report: result?.report ?? null, stale };
 }

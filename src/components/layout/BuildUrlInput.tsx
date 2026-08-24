@@ -95,9 +95,16 @@ export function BuildUrlInput() {
   // `runImport` intentionally does NOT depend on `build` (which changes on
   // every keystroke elsewhere in the app) — a ref keeps the snapshot fresh
   // without recreating the callback (and therefore `handleParse`, which
-  // depends on it) on every unrelated state change.
+  // depends on it) on every unrelated state change. `runImport` is called
+  // from JSX onClick handlers and from a setTimeout inside `handleParse`'s
+  // useCallback — neither is an Effect, so `useEffectEvent` (which may only
+  // be called from an Effect or another Effect Event in the same component)
+  // isn't applicable here; the write instead moves into a dep-less effect
+  // (runs after every commit) so the compiler can prove render stays pure.
   const buildRef = React.useRef(build);
-  buildRef.current = build;
+  React.useEffect(() => {
+    buildRef.current = build;
+  });
 
   const runImport = React.useCallback(
     (imp: PendingImport, isGhoul: boolean) => {

@@ -18,7 +18,7 @@ export function useScrollPastSentinel<T extends HTMLElement>(
     const observer = new IntersectionObserver(
       ([entry]) => {
         // setState runs in the observer's async callback, not synchronously in
-        // the effect body — not the useSuggestions.ts set-state-in-effect pattern.
+        // the effect body — not a react/react-compiler EffectSetState case.
         setIsPast(!entry.isIntersecting && entry.boundingClientRect.top < 0);
       },
       { rootMargin: `-${headerOffsetPx}px 0px 0px 0px`, threshold: 0 },

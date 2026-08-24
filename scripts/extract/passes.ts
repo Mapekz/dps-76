@@ -345,19 +345,15 @@ export const curvetablesPass: ExtractionPass<'curvetables'> = {
       raw,
       result: {
         outputs: [
-          ...raw.files.map(
-            (file): PassOutput => ({
-              path: path.join(curveDir, file.relativePath),
-              content: file.content,
-            }),
-          ),
-          ...barrels.map(
-            (barrel): PassOutput => ({
-              path: path.join(curveDir, barrel.relativePath),
-              content: barrel.source,
-              raw: true,
-            }),
-          ),
+          ...raw.files.map((file): PassOutput => ({
+            path: path.join(curveDir, file.relativePath),
+            content: file.content,
+          })),
+          ...barrels.map((barrel): PassOutput => ({
+            path: path.join(curveDir, barrel.relativePath),
+            content: barrel.source,
+            raw: true,
+          })),
         ],
         counts: { curvetables: raw.files.length, curvetableBarrels: barrels.length },
         unresolved: raw.unresolved,

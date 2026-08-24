@@ -177,18 +177,37 @@ import { useGameMode } from '@/hooks/useGameMode';
 - TypeScript **7** (the native Go compiler — `tsc` *is* the Go binary in TS7, ships no `tsserver`;
   editors need the dedicated TS7 language-server extension). Nothing in the toolchain pins the TS
   version — `oxlint` (see below) has no dependency on the `typescript` package.
+- **JSX transform and Fast Refresh run natively on Oxc — no Babel.** `@vitejs/plugin-react@6`
+  does both via `oxc`'s built-in transformer (no `babel` option exists on the plugin at all). The
+  React Compiler itself (auto-memoization) is **not** enabled — `@vitejs/plugin-react@6.1`'s
+  `compiler: true` option (a Rust port of React Compiler via the sibling `oxc-transform-react`
+  package, no Babel needed either) was tried and reverted: in dev, its Fast Refresh wrapping runs
+  on every file it transforms regardless of whether the compiler actually compiled it, and
+  doesn't distinguish the main window's client environment from a Web Worker's — `useSuggestions`'s
+  dedicated Worker (`src/workers/suggestions.worker.ts`) shares most of its import graph with the
+  main app, so dual-consumed plain-TS files (`src/state/build-reducer.ts`,
+  `src/lib/engine/scenarios.ts`, ...) got wrapped with `$RefreshReg$` calls that only exist in the
+  main window, throwing inside the Worker. See dps-76#87 for the full root-cause trace and what
+  didn't work (excluding the worker file just moves the error to the next shared file; Vite's
+  `worker.plugins` override is build-only, inert in dev). Revisit when upstream fixes it.
 - Linting is **oxlint**, not ESLint — `.oxlintrc.json` at the repo root. `bun run lint` /
   `bun run lint:fix`. Formatting is **oxfmt** — `.oxfmtrc.json`; `bun run fmt` / `bun run fmt:check`.
   Both are Oxc/Rust-based, chosen for speed (lint dropped from ~5s to well under 1s). oxlint's
   `react` plugin covers eslint-plugin-react-hooks + react-refresh under different rule names
   (`react/exhaustive-deps`, `react/only-export-components` — note the renamed prefix vs the old
-  `react-hooks/`/`react-refresh/` ESLint plugins). It has **no equivalent** for
-  `react-hooks/set-state-in-effect`; that pattern (see `src/hooks/useSuggestions.ts`) is now just a
-  plain comment, not a suppressed lint rule. oxfmt formats JSON by default with no per-language
-  opt-out, so `.oxfmtrc.json`'s `ignorePatterns` — excluding `src/data/*/generated/**`,
-  `src/data/*/curvetables/**`, and all `.md`/`.yml`/`.yaml` — is load-bearing: without it, every
-  `bun run extract` would reformat hundreds of generated files, and prose docs/vendored skill files
-  (`skills-lock.json` pins their hashes) would get silently reflowed by oxfmt's bundled Prettier.
+  `react-hooks/`/`react-refresh/` ESLint plugins), plus `react/react-compiler` — the same static
+  analysis the compiler transform uses, run as a lint rule (nursery category, named explicitly
+  since `.oxlintrc.json` has `"categories": { "correctness": "off" }` and enumerates every rule).
+  It reports where the compiler bails out of optimizing (uses of a ref during render, setState
+  synchronously in an effect, etc.) — a bailout is a lint error to be fixed, not suppressed; see
+  `src/hooks/useSuggestions.ts` and `src/components/layout/BuildUrlInput.tsx` for the
+  `React.useEffectEvent`-based fix for the ref-during-render case, and the derived-render-time
+  `stale` pattern in `useSuggestions.ts` for the setState-in-effect case. oxfmt formats JSON by
+  default with no per-language opt-out, so `.oxfmtrc.json`'s `ignorePatterns` — excluding
+  `src/data/*/generated/**`, `src/data/*/curvetables/**`, and all `.md`/`.yml`/`.yaml` — is
+  load-bearing: without it, every `bun run extract` would reformat hundreds of generated files,
+  and prose docs/vendored skill files (`skills-lock.json` pins their hashes) would get silently
+  reflowed by oxfmt's bundled Prettier.
 - Tailwind CSS v4 with @tailwindcss/vite plugin
 - Base URL is `/dps-76/` for production builds (GitHub Pages) and `/` for dev
 

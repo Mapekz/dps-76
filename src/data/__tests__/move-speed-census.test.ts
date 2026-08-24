@@ -338,17 +338,15 @@ function collectMoveSpeedSources(): CollectedEntry[] {
 }
 
 function expectedCollected(): CollectedEntry[] {
-  return EXPECTED_MOVE_SPEED_SOURCES.map(
-    (e): CollectedEntry => ({
-      formId: e.formId,
-      kind: e.kind,
-      name: e.name,
-      rank: e.rank,
-      value: e.value,
-      conditions: e.conditions,
-      hasCard: e.hasCard,
-    }),
-  ).sort((a, b) => censusSortKey(a).localeCompare(censusSortKey(b)));
+  return EXPECTED_MOVE_SPEED_SOURCES.map((e): CollectedEntry => ({
+    formId: e.formId,
+    kind: e.kind,
+    name: e.name,
+    rank: e.rank,
+    value: e.value,
+    conditions: e.conditions,
+    hasCard: e.hasCard,
+  })).sort((a, b) => censusSortKey(a).localeCompare(censusSortKey(b)));
 }
 
 describe('moveSpeedBonus census (live dataset)', () => {

@@ -311,13 +311,11 @@ export function enumerateVariants(
                 raises.every(({ stat, d }) => allocation[stat] + d <= SPECIAL_POINTS_CAP);
               if (!fixable) continue;
               swapActions.unshift(
-                ...raises.map(
-                  ({ stat, d }): BuildAction => ({
-                    type: 'special/set',
-                    stat,
-                    value: allocation[stat] + d,
-                  }),
-                ),
+                ...raises.map(({ stat, d }): BuildAction => ({
+                  type: 'special/set',
+                  stat,
+                  value: allocation[stat] + d,
+                })),
               );
               label += ` (${raises.map(({ stat, d }) => `+${d} ${SPECIAL_ABBR[stat]}`).join(', ')})`;
               cost += needed;
