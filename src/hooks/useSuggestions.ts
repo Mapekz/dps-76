@@ -9,11 +9,37 @@ import type { EvaluateRequest, EvaluateResponse } from '@/workers/suggestions.wo
 
 const RECOMPUTE_DEBOUNCE_MS = 300;
 
-interface Inputs {
+export interface Inputs {
   player: PlayerConfig;
   enemy: EnemyConfig;
   mode: GameMode;
   metric: ScenarioKey;
+}
+
+/** A held report plus the exact inputs the worker computed it from. */
+export type HeldResult = ({ report: SuggestionReport } & Inputs) | null;
+
+/**
+ * True whenever the held report was computed from different inputs than the
+ * current ones — i.e. a recompute is owed and the panel should dim.
+ *
+ * Comparison is by **reference identity, deliberately not deep equality**, for
+ * the same reason the recompute effect keys on `player`/`enemy` rather than the
+ * whole `BuildState`: the reducer's immutable updates preserve each slice's
+ * identity across UI-only actions (`view/set`, `build/rename`), so identity
+ * flips exactly when something build-relevant changed and never on incidental
+ * UI churn. A structurally-equal-but-freshly-allocated slice therefore reads as
+ * stale — correct, since the reducer only allocates a new one when it changed.
+ * See `build-reducer.test.ts`'s pin of that invariant.
+ */
+export function isReportStale(result: HeldResult, current: Inputs): boolean {
+  return (
+    result === null ||
+    result.player !== current.player ||
+    result.enemy !== current.enemy ||
+    result.mode !== current.mode ||
+    result.metric !== current.metric
+  );
 }
 
 /**
@@ -46,7 +72,7 @@ export function useSuggestions(): { report: SuggestionReport | null; stale: bool
   const state = useBuild();
   const { emphasized } = useScenarioResults();
 
-  const [result, setResult] = React.useState<({ report: SuggestionReport } & Inputs) | null>(null);
+  const [result, setResult] = React.useState<HeldResult>(null);
 
   const workerRef = React.useRef<Worker | null>(null);
   const requestIdRef = React.useRef(0);
@@ -106,18 +132,8 @@ export function useSuggestions(): { report: SuggestionReport | null; stale: bool
     // oxlint-disable-next-line react/exhaustive-effect-dependencies
   }, [player, enemy, mode, emphasized]);
 
-  // `stale` is true whenever the held report was computed for different
-  // inputs than the current ones — reference-identity comparison is correct
-  // for the same reason the effect above keys on player/enemy: UI-only
-  // dispatches preserve their identity, so this only flips on an actual
-  // build-relevant change (see `build-reducer.test.ts`'s pin of that
-  // invariant).
-  const stale =
-    result === null ||
-    result.player !== player ||
-    result.enemy !== enemy ||
-    result.mode !== mode ||
-    result.metric !== emphasized;
+  // Derived at render time, never effect-set state — see `isReportStale`.
+  const stale = isReportStale(result, { player, enemy, mode, metric: emphasized });
 
   return { report: result?.report ?? null, stale };
 }
