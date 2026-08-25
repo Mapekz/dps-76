@@ -205,8 +205,9 @@ const IDENTIFIER_ALLOWLIST = new Set([
   'tsserver',
   'typescript',
   'ignorePatterns',
-  // @vitejs/plugin-react's own Fast Refresh option name, not repo code.
+  // @vitejs/plugin-react / oxc-transform-react option names, not repo code.
   'babel',
+  'compilationMode',
   // Triage label value, not a code identifier.
   'wontfix',
   // Formula pseudo-variable — the doc defines this inline as notation for a
