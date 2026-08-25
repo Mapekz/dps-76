@@ -5,18 +5,16 @@ import { defineConfig } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig(({ command }) => ({
-  // `compiler: true` (native React Compiler via oxc-transform-react) is
-  // deliberately NOT enabled here — see dps-76#87. In dev, plugin-react's
-  // Fast Refresh wrapping runs on every file it transforms regardless of
-  // whether the compiler actually compiles it, and doesn't distinguish the
-  // main window's client environment from a Worker's; suggestions.worker.ts
-  // (see its doc-comment) shares most of its import graph with the main app
-  // (src/state/build-reducer.ts, src/lib/engine/scenarios.ts, ...), so those
-  // dual-consumed files get wrapped with `$RefreshReg$` calls that only
-  // exist in the main window, throwing inside the Worker. `worker.plugins`
-  // does not help — it only applies to the production Rolldown worker-bundle
-  // pass, not the dev server's per-file transform pipeline.
-  plugins: [react(), tailwindcss()],
+  // `compiler: true` lazy-loads `oxc-transform-react` — the Rust port of React
+  // Compiler, running on the Oxc AST, no Babel anywhere in the pipeline. Left at
+  // the default `compilationMode` ('infer': compile every component/hook it can,
+  // skip what it can't) rather than 'all', which would force plain functions
+  // through the compiler too.
+  //
+  // This needs `src/workers/refresh-shim.ts` to be safe — in dev the plugin
+  // Fast-Refresh-wraps every file it transforms without distinguishing the main
+  // window from a Worker. See that file's doc-comment and dps-76#87.
+  plugins: [react({ compiler: true }), tailwindcss()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

@@ -1,5 +1,9 @@
 /// <reference lib="webworker" />
 
+// MUST stay first: ESM evaluates imports in order, so this has to install the
+// no-op Fast Refresh globals before the shared app modules below run and call
+// them. See refresh-shim.ts (and dps-76#87) for why they arrive here at all.
+import './refresh-shim';
 import { evaluateSuggestions } from '@/lib/suggest/evaluate';
 import type { GameMode } from '@/types';
 import type { BuildState, ScenarioKey } from '@/state/build-reducer';
