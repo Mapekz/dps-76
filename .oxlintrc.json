@@ -96,15 +96,37 @@
     "typescript/triple-slash-reference": "error",
     "react/rules-of-hooks": "error",
     "react/exhaustive-deps": "warn",
-    "react/react-compiler": "error",
     "react/only-export-components": [
       "error",
       {
         "allowConstantExport": true
       }
-    ]
+    ],
+    "react/capitalized-calls": "error",
+    "react/error-boundaries": "error",
+    "react/exhaustive-effect-dependencies": "error",
+    "react/globals": "error",
+    "react/hooks": "error",
+    "react/immutability": "error",
+    "react/incompatible-library": "error",
+    "react/memo-dependencies": "error",
+    "react/no-deriving-state-in-effects": "error",
+    "react/preserve-manual-memoization": "error",
+    "react/purity": "error",
+    "react/refs": "error",
+    "react/set-state-in-effect": "error",
+    "react/set-state-in-render": "error",
+    "react/static-components": "error",
+    "react/use-memo": "error",
+    "react/void-use-memo": "error"
   },
   "overrides": [
+    {
+      "files": ["**/*.{ts,tsx,mts,cts}"],
+      "rules": {
+        "no-redeclare": "off"
+      }
+    },
     {
       "files": ["src/**/*.{ts,tsx}"],
       "env": {

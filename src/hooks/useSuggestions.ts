@@ -97,6 +97,13 @@ export function useSuggestions(): { report: SuggestionReport | null; stale: bool
   React.useEffect(() => {
     const timer = window.setTimeout(sendRequest, RECOMPUTE_DEBOUNCE_MS);
     return () => window.clearTimeout(timer);
+    // These deps are deliberate *triggers*, not values the body reads —
+    // `sendRequest` is an Effect Event, so it reads them non-reactively and
+    // the effect body references nothing else. `exhaustive-effect-dependencies`
+    // therefore calls them "extra", but dropping them to `[]` would run the
+    // debounce once on mount and never recompute again, which is the whole
+    // feature. The rule has no way to express a restart-on-change dependency.
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies
   }, [player, enemy, mode, emphasized]);
 
   // `stale` is true whenever the held report was computed for different
