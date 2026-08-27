@@ -978,25 +978,6 @@
   ]
  },
  {
-  "id": "E09C_mod_Custom_LoveTap",
-  "name": "Love Tap",
-  "baseWeaponId": "E09C_SubmachineGun_LoveTap",
-  "mods": {
-   "ap_gun_Receiver": "mod_SubmachineGun_Receiver_Automatic1",
-   "ap_gun_Grip": "mod_SubmachineGun_Grip_StockShort",
-   "ap_gun_Barrel": "mod_SubmachineGun_Barrel_Short",
-   "ap_gun_Mag": "mod_SubmachineGun_Mag_Medium",
-   "ap_gun_Scope": "mod_SubmachineGun_Scope_SightsIron",
-   "ap_gun_Muzzle": "mod_Null_Muzzle",
-   "ap_customName": "E09C_mod_Custom_LoveTap"
-  },
-  "legendaryEffects": [
-   "mod_Legendary_Weapon1_Vampire",
-   "mod_Legendary_Weapon2_Guns_RoF",
-   "mod_Legendary_Weapon3_Durability"
-  ]
- },
- {
   "id": "mod_Custom_CrushingBlow",
   "name": "Crushing Blow",
   "baseWeaponId": "M79",
@@ -1366,6 +1347,25 @@
   "legendaryEffects": [
    "mod_Legendary_Weapon1_DmgConsecutiveHits",
    null,
+   null
+  ]
+ },
+ {
+  "id": "E09C_mod_Custom_LoveTap",
+  "name": "Love Tap",
+  "baseWeaponId": "SubmachineGun",
+  "mods": {
+   "ap_gun_Receiver": "mod_SubmachineGun_Receiver_Automatic1",
+   "ap_gun_Grip": "mod_SubmachineGun_Grip_StockShort",
+   "ap_gun_Barrel": "mod_SubmachineGun_Barrel_Short",
+   "ap_gun_Mag": "mod_SubmachineGun_Mag_Medium",
+   "ap_gun_Scope": "mod_SubmachineGun_Scope_SightsIron",
+   "ap_gun_Muzzle": "mod_Null_Muzzle",
+   "ap_customName": "E09C_mod_Custom_LoveTap"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Guns_RoF",
    null
   ]
  },

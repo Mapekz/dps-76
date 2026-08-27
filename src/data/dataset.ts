@@ -293,7 +293,9 @@ export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset
     ),
     omods: mergedOmods,
     armorOmods: mergedArmorOmods,
-    uniques: source.generatedUniques,
+    uniques: [...source.generatedUniques].sort(
+      (a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id),
+    ),
     perks: source.generatedPerks,
     perkRegistry: derivePerkRegistry(perkNames, source.generatedPerks),
     mutations: applyModifierOverride(source.generatedMutations, source.buffValueOverrides),

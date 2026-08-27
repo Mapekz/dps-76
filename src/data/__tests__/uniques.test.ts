@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'bun:test';
 import { getEquippedUnique, getUniques, getUniquesForWeapon } from '@/data/uniques';
+import { getWeapons } from '@/data';
 import { getOmodById } from '@/data/omods';
 import { hiddenOmodIds, forceVisibleOmodIds } from '@/data/overrides/corrections';
 import type { WeaponConfig } from '@/types';
@@ -28,6 +29,19 @@ describe('getUniques', () => {
     if (!hiddenId) return;
     const all = getUniques('live');
     expect(all.some((u) => u.id === hiddenId)).toBe(false);
+  });
+
+  it('every unique baseWeaponId resolves to a weapon in the dataset', () => {
+    const weapons = getWeapons('live');
+    for (const unique of getUniques('live')) {
+      expect(weapons[unique.baseWeaponId]).toBeDefined();
+    }
+  });
+
+  it('returns uniques sorted non-descending by name', () => {
+    const names = getUniques('live').map((u) => u.name);
+    const sorted = [...names].sort((a, b) => a.localeCompare(b));
+    expect(names).toEqual(sorted);
   });
 
   it('forceVisibleOmodIds can surface a hidden identity mod', () => {

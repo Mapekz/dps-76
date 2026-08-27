@@ -175,7 +175,16 @@ export async function extractUniques(
   const skipped: SkippedUniqueCombination[] = [];
   const seenIdentityIds = new Set<string>();
 
-  for (const weapon of weapons) {
+  // Identity mods can appear in several weapons' Object Templates (e.g. Love Tap
+  // sits on both generic SubmachineGun and the dead E09C_SubmachineGun_LoveTap
+  // legacy shell). The seenIdentityIds dedup below is first-wins, so walk
+  // obtainable weapons first — otherwise a preset can land on a base weapon
+  // buildWeapons drops from the dataset, leaving an unselectable picker row.
+  // `obtainable` is optional on GeneratedWeapon (absent = true).
+  const orderedWeapons = [...weapons].sort(
+    (a, b) => Number(a.obtainable === false) - Number(b.obtainable === false),
+  );
+  for (const weapon of orderedWeapons) {
     const record = await client.get(weapon.formId);
     const combinations = walkWeaponCombinations(record.fields);
     // Standalone unique WEAPs (Fixer, Cold Shoulder instance record, …) ship a

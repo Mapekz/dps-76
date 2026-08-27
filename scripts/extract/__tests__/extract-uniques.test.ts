@@ -293,6 +293,107 @@ describe('extractUniques', () => {
     expect(uniques.find((u) => u.id === 'mod_Custom_NightLight')?.name).toBe('Night Light');
   });
 
+  it('prefers obtainable base weapons when identity mod is shared (Love Tap regression)', async () => {
+    const sharedIdentityOmod: GeneratedOmod = {
+      id: 'mod_Custom_TestShared',
+      formId: '0x00TEST001',
+      name: 'Test Shared Unique',
+      description: '',
+      attachPointFormId: '0x0047A264',
+      attachPointEdid: 'ap_customName',
+      targetKeywords: [],
+      modifiers: [],
+      addedKeywords: ['ObjectTypeUnique'],
+      hasEnchantments: false,
+      obtainable: true,
+    };
+    const identityCombo = {
+      Combination: {
+        Name: 'Default',
+        'Object Mod Template Item': {
+          Includes: [{ Mod: '0x00TEST001' }],
+        },
+      },
+    };
+    const makeTwoComboFixture = (formId: string, editorId: string) => ({
+      ...doubleBarrel,
+      header: { ...doubleBarrel.header, form_id: formId },
+      editor_id: editorId,
+      fields: {
+        ...doubleBarrel.fields,
+        'Object Template': {
+          Count: 2,
+          Combinations: [doubleBarrel.fields['Object Template'].Combinations[0], identityCombo],
+        },
+      },
+    });
+    const client = createInMemoryEsmSource({
+      records: {
+        '0xAAAA0001': makeTwoComboFixture(
+          '0xAAAA0001',
+          'LegacyShell_Weapon',
+        ) as unknown as EsmRecord,
+        '0xAAAA0002': makeTwoComboFixture('0xAAAA0002', 'GenericWeapon') as unknown as EsmRecord,
+      },
+      resolveEdidFallback: () => '<unresolved>',
+    });
+    const baseWeaponFields = {
+      weaponTypeName: 'Gun',
+      keywords: [],
+      components: [
+        { damageType: 'ballistic' as const, damageTypeEdid: null, amount: 1, tier: 1, curve: null },
+      ],
+      isAutomaticFlag: false,
+      critDamageMult: 2,
+      critChargeBonus: 1,
+      sneakAttackMult: 2,
+      speed: 1,
+      attackDelaySec: 0,
+      animationAttackSec: 0,
+      animationFireSec: 0,
+      reloadSpeed: 1,
+      capacity: 2,
+      ammoPerShot: 1,
+      actionPointCost: 0,
+      projectileCount: 1,
+      reach: 1,
+      secondaryDamage: 0,
+      damageBonusMult: 1,
+      eligibleLevels: [50],
+      templateModFormIds: [],
+      defaultModFormIds: [],
+      attachParentSlots: [],
+      modifiers: [],
+    };
+    const unobtainableWeapon: GeneratedWeapon = {
+      id: 'LegacyShell_Weapon',
+      formId: '0xAAAA0001',
+      name: 'Legacy Shell',
+      ...baseWeaponFields,
+      obtainable: false,
+    };
+    const obtainableWeapon: GeneratedWeapon = {
+      id: 'GenericWeapon',
+      formId: '0xAAAA0002',
+      name: 'Generic Weapon',
+      ...baseWeaponFields,
+    };
+    const { uniques, skipped } = await extractUniques(
+      client,
+      [unobtainableWeapon, obtainableWeapon],
+      [...omods, sharedIdentityOmod],
+    );
+    expect(uniques.find((u) => u.id === 'mod_Custom_TestShared')?.baseWeaponId).toBe(
+      'GenericWeapon',
+    );
+    expect(skipped).toContainEqual(
+      expect.objectContaining({
+        weaponId: 'LegacyShell_Weapon',
+        reason: 'duplicate identity mod mod_Custom_TestShared',
+      }),
+    );
+  });
+
   it('emits COBJ-granted sibling identity mods sharing a target-keyword gate', async () => {
     const cosmicMods: GeneratedOmod[] = [
       {
