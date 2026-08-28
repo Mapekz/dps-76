@@ -2,24 +2,30 @@ import { describe, expect, it } from 'bun:test';
 import type { EsmRecord, EsmSource } from '../esm-client';
 import type { GeneratedOmod, GeneratedWeapon } from '../../../src/types/generated';
 import {
+  adjudicateOverrideProjectile,
   auditDerivedName,
   auditIdentity,
   auditOmodTier2,
   auditTier3Carriers,
   auditWeaponTier2,
+  damageTypeValuesAccounted,
   deriveOmodExpectedName,
+  enchantmentsCoveredByAck,
   enumerateOmodCarriers,
   enumerateWeaponCarriers,
   expandOmodIncludeGraph,
   extractOmodTier2Source,
   extractWeaponTier2Source,
+  hasExtractorAckNote,
   isCarrierAccounted,
+  isCosmeticEnchantmentRecord,
   isOmodPropertyDamageRelevant,
   omodDisplayName,
   sortFindings,
   unresolvedForRecord,
   type AuditFinding,
 } from '../../audit-records';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 
 function weapRecord(formId: string, editorId: string, fields: Record<string, unknown>): EsmRecord {
   return {
@@ -312,13 +318,154 @@ describe('isCarrierAccounted', () => {
   });
 
   it('flags silent drops when nothing accounts for a carrier', async () => {
-    const findings = await auditTier3Carriers(
+    const { findings } = await auditTier3Carriers(
       'Gun01',
       [{ key: 'enchantment:0xENCH', label: 'Enchantment 0xENCH' }],
       { notes: [], modifiers: [], unresolved: [] },
     );
     expect(findings).toHaveLength(1);
     expect(findings[0]).toMatchObject({ kind: 'silent-drop' });
+  });
+
+  it('credits Enchantments via per-record needs-override notes (not carrier edid)', () => {
+    const ctx = {
+      notes: ['MGEF EnchFracturer archetype Script — needs override'],
+      modifiers: [],
+      unresolved: [],
+      hasEnchantments: true,
+    };
+    expect(
+      isCarrierAccounted('mod_Foo', { key: 'property:Enchantments', label: 'Enchantments' }, ctx),
+    ).toBe(true);
+    expect(enchantmentsCoveredByAck(ctx)).toBe(true);
+    expect(hasExtractorAckNote(ctx.notes)).toBe(true);
+  });
+
+  it('credits DamageTypeValues when child carries baseDamage+damageTypeScope', () => {
+    const modifiers = [
+      {
+        bucket: 'baseDamage',
+        op: 'MUL_ADD',
+        value: 0.25,
+        conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+      },
+    ] as never[];
+    expect(damageTypeValuesAccounted(modifiers)).toBe(true);
+    expect(
+      isCarrierAccounted(
+        'mod_Foo',
+        { key: 'property:DamageTypeValues', label: 'DamageTypeValues' },
+        { notes: [], modifiers, unresolved: [] },
+      ),
+    ).toBe(true);
+  });
+
+  it('credits perk Ability carriers when the family has notes', () => {
+    expect(
+      isCarrierAccounted(
+        'Aquaboy',
+        { key: 'ability:0xPERK', label: 'Ability 0xPERK' },
+        {
+          notes: ['MGEF AbPerkAquaboy archetype Script — needs override'],
+          modifiers: [],
+          unresolved: [],
+        },
+      ),
+    ).toBe(true);
+  });
+
+  it('adjudicates OverrideProjectile without Explosion flag as benign-cosmetic-swap', async () => {
+    const client = createInMemoryEsmSource({
+      records: {
+        '0xPROJ': {
+          header: { signature: 'PROJ', form_id: '0xPROJ' },
+          editor_id: 'TestSuppressorProjectile',
+          fields: { Data: { Flags: { flags: [] }, Explosion: '0xEXPL' } },
+        } as EsmRecord,
+        '0xEXPL': {
+          header: { signature: 'EXPL', form_id: '0xEXPL' },
+          editor_id: 'TestZeroDamageExpl',
+          fields: { Data: { Damage: 0, 'Base Weapon Damage Mult': 0.15 } },
+        } as EsmRecord,
+      },
+      rows: [],
+    });
+    expect(await adjudicateOverrideProjectile(client, '0xPROJ')).toBe('benign-cosmetic-swap');
+
+    const clientWithExplosion = createInMemoryEsmSource({
+      records: {
+        '0xPROJ2': {
+          header: { signature: 'PROJ', form_id: '0xPROJ2' },
+          editor_id: 'TestSuppressorProjectile2',
+          fields: { Data: { Flags: { flags: ['Explosion'] }, Explosion: '0xEXPL2' } },
+        } as EsmRecord,
+        '0xEXPL2': {
+          header: { signature: 'EXPL', form_id: '0xEXPL2' },
+          editor_id: 'TestZeroMultOnlyExpl',
+          fields: { Data: { Damage: 0, 'Base Weapon Damage Mult': 0.15 } },
+        } as EsmRecord,
+      },
+      rows: [],
+    });
+    expect(await adjudicateOverrideProjectile(clientWithExplosion, '0xPROJ2')).toBe(
+      'benign-cosmetic-swap',
+    );
+
+    const { findings, info } = await auditTier3Carriers(
+      'mod_Suppressor',
+      [{ key: 'property:OverrideProjectile', label: 'OverrideProjectile', detail: '0xPROJ' }],
+      { notes: [], modifiers: [], unresolved: [] },
+      { client },
+    );
+    expect(findings).toHaveLength(0);
+    expect(info['benign-cosmetic-swap']).toBe(1);
+  });
+
+  it('routes silent non-damage ability carriers to silent-nondamage info', async () => {
+    const client = createInMemoryEsmSource({
+      records: {
+        '0xDEF': {
+          header: { signature: 'PERK', form_id: '0xDEF' },
+          editor_id: 'AbPerkFortifyDamageResist',
+          fields: {
+            Effects: [
+              {
+                Effect: {
+                  'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+                  'Entry Point': {
+                    'Entry Point': { name: 'Mod Incoming Weapon Damage' },
+                  },
+                },
+              },
+            ],
+          },
+        } as EsmRecord,
+      },
+      rows: [],
+    });
+    const { findings, info } = await auditTier3Carriers(
+      'DamageResistPerk',
+      [{ key: 'ability:0xDEF', label: 'Ability 0xDEF' }],
+      { notes: [], modifiers: [], unresolved: [] },
+      { client },
+    );
+    expect(findings).toHaveLength(0);
+    expect(info['silent-nondamage']).toEqual({ count: 1, families: ['DamageResistPerk'] });
+  });
+
+  it('classifies armor-omod cosmetic FX enchantments as cosmetic info', async () => {
+    expect(isCosmeticEnchantmentRecord('ATX__mod_PA_Paint_Helmet', 'enchPA_FX_Glow')).toBe(true);
+    const { findings, info } = await auditTier3Carriers(
+      'ATX__mod_PA_Paint_Helmet',
+      [{ key: 'property:Enchantments', label: 'Enchantments', detail: '0xENCH' }],
+      { notes: [], modifiers: [], unresolved: [], hasEnchantments: true },
+      {
+        domain: 'armor-omods',
+        resolveDetail: async () => 'enchPA_FX_Glow',
+      },
+    );
+    expect(findings).toHaveLength(0);
+    expect(info.cosmetic).toBe(1);
   });
 });
 

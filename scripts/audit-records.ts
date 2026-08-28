@@ -25,6 +25,7 @@ import type {
   GeneratedNpc,
   GeneratedOmod,
   GeneratedPerk,
+  GeneratedProc,
   GeneratedUnique,
   GeneratedWeapon,
 } from '../src/types/generated';
@@ -38,6 +39,11 @@ import {
 import { asNumber } from './extract/normalize/explosion';
 import type { Bucket } from '../src/types/modifiers';
 import { parseMagicEffects, ENTRY_POINT_BUCKETS } from './extract/normalize/mgef';
+import {
+  decodeExplosionDamage,
+  explosionIsChain,
+  projectileExplosionFormId,
+} from './extract/normalize/explosion';
 import { ACTOR_VALUE_BUCKETS, resolveVariantDisplayName } from './extract/extract-omods';
 import { collectProperties, includeFormIds, omodData } from './extract/omod-properties';
 import {
@@ -88,6 +94,22 @@ export interface TierStats {
   skipped?: number;
 }
 
+export interface Tier3InfoBuckets {
+  /** Enchantment carriers credited by per-record needs-override/not-modeled/procChase ack. */
+  'covered-by-note'?: number;
+  /** Armor-omod cosmetic FX enchantments (ATX/paint/jetpack-skin/_FX/…). */
+  cosmetic?: number;
+  /** OverrideProjectile swaps with no Explosion flag or zero-damage EXPL. */
+  'benign-cosmetic-swap'?: number;
+  /** Silent non-damage ability carriers (family names for human scan). */
+  'silent-nondamage'?: { count: number; families: string[] };
+}
+
+export interface Tier3AuditResult {
+  findings: AuditFinding[];
+  info: Tier3InfoBuckets;
+}
+
 export interface DomainAuditResult {
   domain: AuditDomain;
   tier1: TierStats;
@@ -96,6 +118,7 @@ export interface DomainAuditResult {
   findings: AuditFinding[];
   skippedFields: string[];
   tier3Note?: string;
+  tier3Info?: Tier3InfoBuckets;
 }
 
 export interface AuditSummary {
@@ -631,6 +654,143 @@ export interface CarrierAccountContext {
   hasEnchantments?: boolean;
   hasExplosionChase?: boolean;
   hasChainSuppressesExplosion?: boolean;
+  procChase?: readonly GeneratedProc[];
+}
+
+/**
+ * Extractor acknowledgment notes describe the chased mechanism (MGEF/PERK/spell),
+ * not the carrier's own edid — credit Enchantments when notes or procChase are
+ * attributable to the enchantment chase (not bare ActorValues-only lines).
+ */
+const EXTRACTOR_ACK_NOTE_RE = /needs override|not modeled/i;
+const ENCHANTMENT_CHASE_NOTE_RE = /^(MGEF |perk |condition:|self-targeted damage)|\benchant\b/i;
+
+export function hasExtractorAckNote(notes: readonly string[]): boolean {
+  return notes.some((n) => EXTRACTOR_ACK_NOTE_RE.test(n));
+}
+
+export function hasProcChaseAck(procChase?: readonly GeneratedProc[]): boolean {
+  return procChase != null && procChase.length > 0;
+}
+
+/** Notes/procChase from translateEnchantment / proc chase, not other property paths. */
+export function enchantmentsCoveredByAck(ctx: CarrierAccountContext): boolean {
+  if (hasProcChaseAck(ctx.procChase)) return true;
+  return ctx.notes.some(
+    (n) =>
+      ENCHANTMENT_CHASE_NOTE_RE.test(n) || (EXTRACTOR_ACK_NOTE_RE.test(n) && /MGEF|perk /i.test(n)),
+  );
+}
+
+/** Include-derived DamageTypeValues land as baseDamage + damageTypeScope on the child. */
+export function damageTypeValuesAccounted(modifiers: readonly Modifier[]): boolean {
+  return modifiers.some(
+    (m) => m.bucket === 'baseDamage' && m.conditions.some((c) => c.kind === 'damageTypeScope'),
+  );
+}
+
+const COSMETIC_ENCH_NAME_RE = /(?:^ATX_|_ATX_|paint|jetpack|jetpack-skin|_FX|Klakson|VoiceModule)/i;
+
+/** ATX cosmetic FX enchantments on armor-omods — info bucket, not findings. */
+export function isCosmeticEnchantmentRecord(recordId: string, detail?: string): boolean {
+  return COSMETIC_ENCH_NAME_RE.test(`${recordId}:${detail ?? ''}`);
+}
+
+const DEFENSIVE_EP_RE =
+  /\b(incoming|resist|defense|survival|disease|cure|hunger|thirst|rads|heal|carry weight|ap regen|sneak detection|detection)\b/i;
+const OFFENSIVE_EP_RE =
+  /\b(crit|damage|weapon|explosion|sneak attack|limb|vats|power attack|consecutive hit|ammo|reload|gun-fu|blitz|bash|bashing|outgoing|attack)\b/i;
+
+export function isOffensiveEntryPoint(name: string): boolean {
+  if (DEFENSIVE_EP_RE.test(name)) return false;
+  if (name in ENTRY_POINT_BUCKETS) return true;
+  return OFFENSIVE_EP_RE.test(name);
+}
+
+const DEFENSIVE_MGEF_NAME_RE =
+  /\b(incoming|resist|resistance|defense|survival|disease|cure|hunger|thirst|rads|heal|limb damage res|limb damge res)\b/i;
+const OFFENSIVE_MGEF_NAME_RE =
+  /\b(crit|damage|weapon|vats|explosion|melee|attack|bash|sneak attack)\b/i;
+
+function spellEffectBaseFormIds(record: EsmRecord): string[] {
+  const effects = record.fields['Effects'];
+  if (!Array.isArray(effects)) return [];
+  const formIds: string[] = [];
+  for (const row of effects) {
+    const effect = (row as Record<string, unknown>)['Effect'] as Record<string, unknown>;
+    const base = effect['Base Effect'];
+    if (typeof base === 'string') formIds.push(base);
+  }
+  return formIds;
+}
+
+async function spellAbilityIsOffensive(client: EsmSource, spell: EsmRecord): Promise<boolean> {
+  for (const mgefFormId of spellEffectBaseFormIds(spell)) {
+    try {
+      const mgef = await client.get(mgefFormId);
+      const label = ((mgef.fields['Name'] as string | undefined) ?? mgef.editor_id).toLowerCase();
+      if (DEFENSIVE_MGEF_NAME_RE.test(label)) return false;
+      if (OFFENSIVE_MGEF_NAME_RE.test(label)) return true;
+    } catch {
+      /* skip unresolved MGEF */
+    }
+  }
+  return false;
+}
+
+export async function isAbilityOffensive(
+  client: EsmSource,
+  abilityFormId: string,
+): Promise<boolean> {
+  try {
+    const record = await client.get(abilityFormId);
+    if (record.header.signature === 'SPEL') {
+      return spellAbilityIsOffensive(client, record);
+    }
+    for (const effect of perkEffectRows(record)) {
+      const header = (effect['Effect Header'] ?? {}) as Record<string, unknown>;
+      const effectType =
+        ((header['Effect Type'] as Record<string, unknown> | undefined)?.['name'] as string) ??
+        'Unknown';
+      if (effectType !== 'Entry Point') continue;
+      const ep = (effect['Entry Point'] ?? {}) as Record<string, unknown>;
+      const name =
+        ((ep['Entry Point'] as Record<string, unknown> | undefined)?.['name'] as string) ??
+        'Unknown';
+      if (isOffensiveEntryPoint(name)) return true;
+    }
+    return false;
+  } catch {
+    return true;
+  }
+}
+
+export type OverrideProjectileAdjudication = 'benign-cosmetic-swap' | 'finding';
+
+/**
+ * Self-adjudicate OverrideProjectile: cosmetic when PROJ lacks Explosion flag or
+ * EXPL carries no decodable damage (mirrors omod-projectile-chase.ts gate).
+ */
+export async function adjudicateOverrideProjectile(
+  client: EsmSource,
+  projFormId: string,
+): Promise<OverrideProjectileAdjudication> {
+  try {
+    const explFormId = await projectileExplosionFormId(client, projFormId);
+    if (!explFormId) return 'benign-cosmetic-swap';
+
+    const expl = await client.get(explFormId);
+    if (explosionIsChain(expl)) return 'benign-cosmetic-swap';
+
+    const decoded = await decodeExplosionDamage(client, expl, []);
+    const hasDirectDamage =
+      decoded.main != null ||
+      decoded.typed.some((t) => t.damageType !== 'unknown' && (t.curve || t.amount > 0));
+    if (!hasDirectDamage) return 'benign-cosmetic-swap';
+    return 'finding';
+  } catch {
+    return 'finding';
+  }
 }
 
 export function enumerateOmodCarriers(
@@ -724,10 +884,15 @@ export function isCarrierAccounted(
     if (notes.some((n) => n.includes(prop))) return true;
 
     if (prop === 'Enchantments') {
+      // Per-record ack: extractor notes/procChase describe chased MGEFs, not carrier edids.
+      if (enchantmentsCoveredByAck(ctx)) return true;
       if (ctx.hasEnchantments && (modifiers.length > 0 || notes.some((n) => /enchant/i.test(n))))
         return true;
       if (recordUnresolved.some((u) => u.toLowerCase().includes('enchant'))) return true;
       return false;
+    }
+    if (prop === 'DamageTypeValues') {
+      return damageTypeValuesAccounted(modifiers);
     }
     if (prop === 'OverrideProjectile') {
       if (ctx.hasExplosionChase || ctx.hasChainSuppressesExplosion) return true;
@@ -760,6 +925,7 @@ export function isCarrierAccounted(
 
   if (carrier.key.startsWith('ability:')) {
     if (modifiers.length > 0) return true;
+    if (notes.length > 0) return true;
     if (recordUnresolved.some((u) => u.toLowerCase().includes('ability'))) return true;
     return false;
   }
@@ -769,16 +935,85 @@ export function isCarrierAccounted(
   return haystacks.some((h) => needles.some((n) => h.includes(n)));
 }
 
+function mergeTier3Info(into: Tier3InfoBuckets, from: Tier3InfoBuckets): void {
+  if (from['covered-by-note']) {
+    into['covered-by-note'] = (into['covered-by-note'] ?? 0) + from['covered-by-note'];
+  }
+  if (from.cosmetic) {
+    into.cosmetic = (into.cosmetic ?? 0) + from.cosmetic;
+  }
+  if (from['benign-cosmetic-swap']) {
+    into['benign-cosmetic-swap'] =
+      (into['benign-cosmetic-swap'] ?? 0) + from['benign-cosmetic-swap'];
+  }
+  if (from['silent-nondamage']) {
+    const prev = into['silent-nondamage'] ?? { count: 0, families: [] };
+    into['silent-nondamage'] = {
+      count: prev.count + from['silent-nondamage'].count,
+      families: [...prev.families, ...from['silent-nondamage'].families],
+    };
+  }
+}
+
+export interface AuditTier3Options {
+  client?: EsmSource;
+  domain?: AuditDomain;
+  resolveDetail?: (carrier: SourceCarrier) => Promise<string | undefined> | string | undefined;
+}
+
 export async function auditTier3Carriers(
   recordId: string,
   carriers: SourceCarrier[],
   ctx: CarrierAccountContext,
-  resolveDetail?: (carrier: SourceCarrier) => Promise<string | undefined> | string | undefined,
-): Promise<AuditFinding[]> {
+  options?: AuditTier3Options,
+): Promise<Tier3AuditResult> {
   const findings: AuditFinding[] = [];
+  const info: Tier3InfoBuckets = {};
+  const { client, domain, resolveDetail } = options ?? {};
+
   for (const carrier of carriers) {
-    if (isCarrierAccounted(recordId, carrier, ctx)) continue;
+    if (isCarrierAccounted(recordId, carrier, ctx)) {
+      if (
+        carrier.label === 'Enchantments' &&
+        enchantmentsCoveredByAck(ctx) &&
+        ctx.modifiers.length === 0
+      ) {
+        info['covered-by-note'] = (info['covered-by-note'] ?? 0) + 1;
+      }
+      continue;
+    }
+
     const adjudication = resolveDetail ? await resolveDetail(carrier) : carrier.detail;
+
+    if (
+      carrier.label === 'Enchantments' &&
+      domain === 'armor-omods' &&
+      isCosmeticEnchantmentRecord(recordId, adjudication)
+    ) {
+      info.cosmetic = (info.cosmetic ?? 0) + 1;
+      continue;
+    }
+
+    if (carrier.label === 'OverrideProjectile' && carrier.detail && client) {
+      const verdict = await adjudicateOverrideProjectile(client, carrier.detail);
+      if (verdict === 'benign-cosmetic-swap') {
+        info['benign-cosmetic-swap'] = (info['benign-cosmetic-swap'] ?? 0) + 1;
+        continue;
+      }
+    }
+
+    if (carrier.key.startsWith('ability:') && client) {
+      const abilityFormId = carrier.key.slice('ability:'.length);
+      const offensive = await isAbilityOffensive(client, abilityFormId);
+      if (!offensive) {
+        const bucket = info['silent-nondamage'] ?? { count: 0, families: [] };
+        bucket.count++;
+        bucket.families.push(recordId);
+        info['silent-nondamage'] = bucket;
+        continue;
+      }
+    }
+
     const field =
       adjudication != null && adjudication.length > 0
         ? `${carrier.label} → ${adjudication}`
@@ -792,7 +1027,7 @@ export async function auditTier3Carriers(
       actual: 'none',
     });
   }
-  return findings;
+  return { findings, info };
 }
 
 // ── Bulk fetch ─────────────────────────────────────────────────────────────
@@ -870,8 +1105,12 @@ async function auditWeapons(ctx: RunContext): Promise<DomainAuditResult> {
         modifiers: weapon.modifiers,
         unresolved: unresolvedForRecord(ctx.metaUnresolved, weapon.id),
       });
-      result.findings.push(...t3);
-      countResult(result.tier3, t3.length > 0);
+      result.findings.push(...t3.findings);
+      if (Object.keys(t3.info).length > 0) {
+        result.tier3Info = result.tier3Info ?? {};
+        mergeTier3Info(result.tier3Info, t3.info);
+      }
+      countResult(result.tier3, t3.findings.length > 0);
     }
   }
 
@@ -959,19 +1198,28 @@ async function auditOmodDomain(
           hasEnchantments: omod.hasEnchantments,
           hasExplosionChase: omod.explosionChase != null,
           hasChainSuppressesExplosion: omod.chainSuppressesExplosion === true,
+          procChase: omod.procChase,
         },
-        async (carrier) => {
-          if (carrier.detail == null) return undefined;
-          try {
-            const edid = await ctx.client.resolveEdid(carrier.detail);
-            return `${carrier.detail} (${edid})`;
-          } catch {
-            return carrier.detail;
-          }
+        {
+          client: ctx.client,
+          domain,
+          resolveDetail: async (carrier) => {
+            if (carrier.detail == null) return undefined;
+            try {
+              const edid = await ctx.client.resolveEdid(carrier.detail);
+              return `${carrier.detail} (${edid})`;
+            } catch {
+              return carrier.detail;
+            }
+          },
         },
       );
-      result.findings.push(...t3);
-      countResult(result.tier3, t3.length > 0);
+      result.findings.push(...t3.findings);
+      if (Object.keys(t3.info).length > 0) {
+        result.tier3Info = result.tier3Info ?? {};
+        mergeTier3Info(result.tier3Info, t3.info);
+      }
+      countResult(result.tier3, t3.findings.length > 0);
     }
   }
 
@@ -1087,13 +1335,22 @@ async function auditPerks(ctx: RunContext): Promise<DomainAuditResult> {
           carriers.push(c);
         }
       }
-      const t3 = await auditTier3Carriers(perk.family, carriers, {
-        notes: perk.notes,
-        modifiers: allMods,
-        unresolved: ctx.metaUnresolved,
-      });
-      result.findings.push(...t3);
-      countResult(result.tier3, t3.length > 0);
+      const t3 = await auditTier3Carriers(
+        perk.family,
+        carriers,
+        {
+          notes: perk.notes,
+          modifiers: allMods,
+          unresolved: ctx.metaUnresolved,
+        },
+        { client: ctx.client },
+      );
+      result.findings.push(...t3.findings);
+      if (Object.keys(t3.info).length > 0) {
+        result.tier3Info = result.tier3Info ?? {};
+        mergeTier3Info(result.tier3Info, t3.info);
+      }
+      countResult(result.tier3, t3.findings.length > 0);
     }
   }
 
@@ -1475,6 +1732,26 @@ function formatTierStats(stats: TierStats): string {
   return `checked ${stats.checked}, passed ${stats.passed}, failed ${stats.failed}${skip}`;
 }
 
+function formatTier3Info(info: Tier3InfoBuckets | undefined): string[] {
+  if (!info) return [];
+  const lines: string[] = [];
+  if (info['covered-by-note']) {
+    lines.push(`- covered-by-note: ${info['covered-by-note']}`);
+  }
+  if (info.cosmetic) {
+    lines.push(`- cosmetic: ${info.cosmetic}`);
+  }
+  if (info['benign-cosmetic-swap']) {
+    lines.push(`- benign-cosmetic-swap: ${info['benign-cosmetic-swap']}`);
+  }
+  if (info['silent-nondamage']) {
+    lines.push(
+      `- silent-nondamage: ${info['silent-nondamage'].count} (${info['silent-nondamage'].families.join(', ')})`,
+    );
+  }
+  return lines;
+}
+
 export function formatMarkdownReport(summary: AuditSummary): string {
   const lines: string[] = [
     '# ESM record audit',
@@ -1500,6 +1777,13 @@ export function formatMarkdownReport(summary: AuditSummary): string {
       `- Tier 3: ${formatTierStats(domain.tier3)}`,
       '',
     );
+
+    const infoLines = formatTier3Info(domain.tier3Info);
+    if (infoLines.length > 0) {
+      lines.push('**Tier-3 info (not findings):**');
+      lines.push(...infoLines);
+      lines.push('');
+    }
 
     if (domain.findings.length === 0) {
       lines.push('_No findings._', '');
