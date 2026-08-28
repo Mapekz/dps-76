@@ -69613,8 +69613,8 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "MGEF abFortifyDamageAll: zero magnitude, no curve — script/scaled, needs override",
-   "MGEF abFortifyDamageRecieved: zero magnitude, no curve — script/scaled, needs override"
+   "abFortifyDamageAll: unmeasured script-set damage bonus — needs in-game measurement",
+   "abFortifyDamageRecieved: unmeasured script-set damage bonus — needs in-game measurement"
   ],
   "obtainable": true
  },
@@ -78998,17 +78998,60 @@
    "ma_PA_Excavator",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00338657:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00338657",
+     "edid": "mod_PowerArmor_Excavator_Arm_Misc_Bleed",
+     "name": "Rusty Knuckles"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 2,
+       "y": 6
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Bleed"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_RustyKnuckles_AV — unmapped",
+   "per-arm bleed counter; DoT modeled via ENCH chase wornPieces curve",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9"
   ],
   "obtainable": true
  },
@@ -79420,8 +79463,8 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
+   "native-engine AP-regen flag, magnitude not ESM-derivable"
   ],
   "obtainable": true
  },
@@ -79874,7 +79917,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk ModKineticLiningPerk: entry point Mod Restore Action Cost Value — not modeled"
+   "perk ModKineticLiningPerk: restores AP by 20% of damage taken — on-damage-taken resource mechanic, not modeled (issue #89)"
   ],
   "obtainable": true
  },
@@ -80163,17 +80206,60 @@
    "ma_PowerArmorMod",
    "ma_PA_Hellcat"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0060DB45:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0060DB45",
+     "edid": "mod_PowerArmor_Hellcat_Arm_Misc_Bleed",
+     "name": "Rusty Knuckles"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 2,
+       "y": 6
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Bleed"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_RustyKnuckles_AV — unmapped",
+   "per-arm bleed counter; DoT modeled via ENCH chase wornPieces curve",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9"
   ],
   "obtainable": true
  },
@@ -80215,7 +80301,7 @@
   ],
   "modifiers": [
    {
-    "id": "0x0060DB43:0",
+    "id": "0x0060DB43:1",
     "source": {
      "kind": "omod",
      "formId": "0x0060DB43",
@@ -80250,11 +80336,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -80587,8 +80669,8 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
+   "native-engine AP-regen flag, magnitude not ESM-derivable"
   ],
   "obtainable": true
  },
@@ -80968,7 +81050,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk ModKineticLiningPerk: entry point Mod Restore Action Cost Value — not modeled"
+   "perk ModKineticLiningPerk: restores AP by 20% of damage taken — on-damage-taken resource mechanic, not modeled (issue #89)"
   ],
   "obtainable": true
  },
@@ -81290,17 +81372,60 @@
    "ma_PA_Arm",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00184191:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00184191",
+     "edid": "mod_PowerArmor_Raider_Arm_Misc_Bleed",
+     "name": "Rusty Knuckles"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 2,
+       "y": 6
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Bleed"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_RustyKnuckles_AV — unmapped",
+   "per-arm bleed counter; DoT modeled via ENCH chase wornPieces curve",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9"
   ],
   "obtainable": true
  },
@@ -81821,8 +81946,8 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
+   "native-engine AP-regen flag, magnitude not ESM-derivable"
   ],
   "obtainable": true
  },
@@ -82246,7 +82371,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk ModKineticLiningPerk: entry point Mod Restore Action Cost Value — not modeled"
+   "perk ModKineticLiningPerk: restores AP by 20% of damage taken — on-damage-taken resource mechanic, not modeled (issue #89)"
   ],
   "obtainable": true
  },
@@ -82409,17 +82534,60 @@
    "ma_PA_T45",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x001CCE1A:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001CCE1A",
+     "edid": "mod_PowerArmor_T45_Arm_Misc_Bleed",
+     "name": "Rusty Knuckles"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 2,
+       "y": 6
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Bleed"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_RustyKnuckles_AV — unmapped",
+   "per-arm bleed counter; DoT modeled via ENCH chase wornPieces curve",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9"
   ],
   "obtainable": true
  },
@@ -82461,7 +82629,7 @@
   ],
   "modifiers": [
    {
-    "id": "0x0023A514:0",
+    "id": "0x0023A514:1",
     "source": {
      "kind": "omod",
      "formId": "0x0023A514",
@@ -82496,11 +82664,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -83379,8 +83543,8 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
+   "native-engine AP-regen flag, magnitude not ESM-derivable"
   ],
   "obtainable": true
  },
@@ -84062,7 +84226,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk ModKineticLiningPerk: entry point Mod Restore Action Cost Value — not modeled"
+   "perk ModKineticLiningPerk: restores AP by 20% of damage taken — on-damage-taken resource mechanic, not modeled (issue #89)"
   ],
   "obtainable": true
  },
@@ -84248,17 +84412,60 @@
    "ma_PA_T51",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x001CCE18:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001CCE18",
+     "edid": "mod_PowerArmor_T51_Arm_Misc_Bleed",
+     "name": "Rusty Knuckles"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 2,
+       "y": 6
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Bleed"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_RustyKnuckles_AV — unmapped",
+   "per-arm bleed counter; DoT modeled via ENCH chase wornPieces curve",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9"
   ],
   "obtainable": true
  },
@@ -84300,7 +84507,7 @@
   ],
   "modifiers": [
    {
-    "id": "0x0023A515:0",
+    "id": "0x0023A515:1",
     "source": {
      "kind": "omod",
      "formId": "0x0023A515",
@@ -84335,11 +84542,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -85655,8 +85858,8 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
+   "native-engine AP-regen flag, magnitude not ESM-derivable"
   ],
   "obtainable": true
  },
@@ -86792,7 +86995,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk ModKineticLiningPerk: entry point Mod Restore Action Cost Value — not modeled"
+   "perk ModKineticLiningPerk: restores AP by 20% of damage taken — on-damage-taken resource mechanic, not modeled (issue #89)"
   ],
   "obtainable": true
  },
@@ -86998,17 +87201,60 @@
    "ma_PA_T60",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x001CCE16:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001CCE16",
+     "edid": "mod_PowerArmor_T60_Arm_Misc_Bleed",
+     "name": "Rusty Knuckles"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 2,
+       "y": 6
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Bleed"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_RustyKnuckles_AV — unmapped",
+   "per-arm bleed counter; DoT modeled via ENCH chase wornPieces curve",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9"
   ],
   "obtainable": true
  },
@@ -87050,7 +87296,7 @@
   ],
   "modifiers": [
    {
-    "id": "0x0023A516:0",
+    "id": "0x0023A516:1",
     "source": {
      "kind": "omod",
      "formId": "0x0023A516",
@@ -87085,11 +87331,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -88642,8 +88884,8 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
+   "native-engine AP-regen flag, magnitude not ESM-derivable"
   ],
   "obtainable": true
  },
@@ -90042,7 +90284,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk ModKineticLiningPerk: entry point Mod Restore Action Cost Value — not modeled"
+   "perk ModKineticLiningPerk: restores AP by 20% of damage taken — on-damage-taken resource mechanic, not modeled (issue #89)"
   ],
   "obtainable": true
  },
@@ -90228,17 +90470,60 @@
    "ma_PowerArmorMod",
    "ma_PA_T65"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00585921:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00585921",
+     "edid": "mod_PowerArmor_T65_Arm_Misc_Bleed",
+     "name": "Rusty Knuckles"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 2,
+       "y": 6
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Bleed"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_RustyKnuckles_AV — unmapped",
+   "per-arm bleed counter; DoT modeled via ENCH chase wornPieces curve",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9"
   ],
   "obtainable": true
  },
@@ -90280,7 +90565,7 @@
   ],
   "modifiers": [
    {
-    "id": "0x00585923:0",
+    "id": "0x00585923:1",
     "source": {
      "kind": "omod",
      "formId": "0x00585923",
@@ -90315,11 +90600,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -90846,8 +91127,8 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
+   "native-engine AP-regen flag, magnitude not ESM-derivable"
   ],
   "obtainable": true
  },
@@ -91310,7 +91591,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk ModKineticLiningPerk: entry point Mod Restore Action Cost Value — not modeled"
+   "perk ModKineticLiningPerk: restores AP by 20% of damage taken — on-damage-taken resource mechanic, not modeled (issue #89)"
   ],
   "obtainable": true
  },
@@ -91495,17 +91776,60 @@
    "ma_PA_Ultracite",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x003385EC:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x003385EC",
+     "edid": "mod_PowerArmor_Ultracite_Arm_Misc_Bleed",
+     "name": "Rusty Knuckles"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 2,
+       "y": 6
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Bleed"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_RustyKnuckles_AV — unmapped",
+   "per-arm bleed counter; DoT modeled via ENCH chase wornPieces curve",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9"
   ],
   "obtainable": true
  },
@@ -91907,8 +92231,8 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
+   "native-engine AP-regen flag, magnitude not ESM-derivable"
   ],
   "obtainable": true
  },
@@ -92531,7 +92855,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk ModKineticLiningPerk: entry point Mod Restore Action Cost Value — not modeled"
+   "perk ModKineticLiningPerk: restores AP by 20% of damage taken — on-damage-taken resource mechanic, not modeled (issue #89)"
   ],
   "obtainable": true
  },
@@ -92813,17 +93137,60 @@
    "ma_PA_X01",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x001CCE17:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001CCE17",
+     "edid": "mod_PowerArmor_X01_Arm_Misc_Bleed",
+     "name": "Rusty Knuckles"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 2,
+       "y": 6
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Bleed"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_RustyKnuckles_AV — unmapped",
+   "per-arm bleed counter; DoT modeled via ENCH chase wornPieces curve",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9"
   ],
   "obtainable": true
  },
@@ -92865,7 +93232,7 @@
   ],
   "modifiers": [
    {
-    "id": "0x0018350D:0",
+    "id": "0x0018350D:1",
     "source": {
      "kind": "omod",
      "formId": "0x0018350D",
@@ -92900,11 +93267,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -94023,8 +94386,8 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
+   "native-engine AP-regen flag, magnitude not ESM-derivable"
   ],
   "obtainable": true
  },
@@ -94968,7 +95331,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk ModKineticLiningPerk: entry point Mod Restore Action Cost Value — not modeled"
+   "perk ModKineticLiningPerk: restores AP by 20% of damage taken — on-damage-taken resource mechanic, not modeled (issue #89)"
   ],
   "obtainable": true
  },
@@ -96068,88 +96431,6 @@
   "obtainable": false
  },
  {
-  "id": "POST-mod_PowerArmor_Excavator_Helmet_Misc_RadScrubbers",
-  "formId": "0x0033865C",
-  "name": "Rad Scrubbers",
-  "description": "Removes radiation from water when drinking.",
-  "attachPointFormId": "0x0017DAA7",
-  "attachPointEdid": "ap_PowerArmor_Misc",
-  "targetKeywords": [
-   "ma_PA_Helmet",
-   "ma_PA_Excavator",
-   "ma_PowerArmorMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [
-   "dn_HasMisc_RadScrubbers"
-  ],
-  "hasEnchantments": true,
-  "notes": [
-   "MGEF PowerArmor_RadScrubbersEffect archetype Script — needs override"
-  ],
-  "obtainable": false
- },
- {
-  "id": "POST-mod_PowerArmor_T45_Material_Paint_VaultTec",
-  "formId": "0x0018424B",
-  "name": "Vault-Tec Paint",
-  "description": "",
-  "attachPointFormId": "0x0017DAA8",
-  "attachPointEdid": "ap_PowerArmor_Paint",
-  "targetKeywords": [
-   "ma_PA_T45",
-   "ma_PA_Material",
-   "ma_PowerArmorMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [
-   "dn_HasMaterial_VaultTec"
-  ],
-  "hasEnchantments": false,
-  "notes": [],
-  "obtainable": false
- },
- {
-  "id": "POST-mod_PowerArmor_T60_Material_Paint_President",
-  "formId": "0x000070B7",
-  "name": "Presidential Paint",
-  "description": "",
-  "attachPointFormId": "0x0017DAA8",
-  "attachPointEdid": "ap_PowerArmor_Paint",
-  "targetKeywords": [
-   "ma_PA_T60",
-   "ma_PA_Material",
-   "ma_PowerArmorMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [
-   "dn_HasMaterial_President"
-  ],
-  "hasEnchantments": false,
-  "notes": [],
-  "obtainable": false
- },
- {
-  "id": "POST-mod_PowerArmor_T60_Material_Paint_VaultTec",
-  "formId": "0x001979AB",
-  "name": "Vault-Tec Paint",
-  "description": "",
-  "attachPointFormId": "0x0017DAA8",
-  "attachPointEdid": "ap_PowerArmor_Paint",
-  "targetKeywords": [
-   "ma_PA_T60",
-   "ma_PA_Material",
-   "ma_PowerArmorMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [
-   "dn_HasMaterial_VaultTec"
-  ],
-  "hasEnchantments": false,
-  "notes": [],
-  "obtainable": false
- },
- {
   "id": "RD01_ATX_mod_PowerArmor_EnclaveVulcan_Torso_Misc_JetPack_AlienInvader",
   "formId": "0x007BA668",
   "name": "Alien Invader Jet Pack",
@@ -96845,17 +97126,60 @@
    "ma_PowerArmorMod",
    "RD01_ma_PA_EnclaveVulcan"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00788D75:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00788D75",
+     "edid": "RD01_Mod_PowerArmor_EnclaveVulcan_Arm_Misc_Bleed",
+     "name": "Rusty Knuckles"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "wornPieces",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 2,
+       "y": 6
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Bleed"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_RustyKnuckles_AV — unmapped",
+   "per-arm bleed counter; DoT modeled via ENCH chase wornPieces curve",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9"
   ],
   "obtainable": true
  },
@@ -96897,7 +97221,7 @@
   ],
   "modifiers": [
    {
-    "id": "0x00788D77:0",
+    "id": "0x00788D77:1",
     "source": {
      "kind": "omod",
      "formId": "0x00788D77",
@@ -96932,11 +97256,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
-   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -96977,15 +97297,206 @@
    "ma_PowerArmorMod",
    "RD01_ma_PA_EnclaveVulcan"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00793E55:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00793E55",
+     "edid": "RD01_Mod_PowerArmor_EnclaveVulcan_Arm_Misc_UltraciteBracers",
+     "name": "Ultracite Bracers"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 5
+      },
+      {
+       "x": 50,
+       "y": 25
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasMisc_Ultracite",
+      "count": 1
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "poison"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 10
+   },
+   {
+    "id": "0x00793E55:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00793E55",
+     "edid": "RD01_Mod_PowerArmor_EnclaveVulcan_Arm_Misc_UltraciteBracers",
+     "name": "Ultracite Bracers"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 50,
+       "y": 50
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasMisc_Ultracite",
+      "count": 2
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "poison"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 10
+   },
+   {
+    "id": "0x00793E55:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00793E55",
+     "edid": "RD01_Mod_PowerArmor_EnclaveVulcan_Arm_Misc_UltraciteBracers",
+     "name": "Ultracite Bracers"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 5
+      },
+      {
+       "x": 50,
+       "y": 25
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasMisc_Ultracite",
+      "count": 1
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "radiation"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 10
+   },
+   {
+    "id": "0x00793E55:ench:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00793E55",
+     "edid": "RD01_Mod_PowerArmor_EnclaveVulcan_Arm_Misc_UltraciteBracers",
+     "name": "Ultracite Bracers"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 50,
+       "y": 50
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasMisc_Ultracite",
+      "count": 2
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "radiation"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 10
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Ultracite"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -97544,8 +98055,8 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
+   "native-engine AP-regen flag, magnitude not ESM-derivable"
   ],
   "obtainable": true
  },
@@ -97970,7 +98481,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk ModKineticLiningPerk: entry point Mod Restore Action Cost Value — not modeled"
+   "perk ModKineticLiningPerk: restores AP by 20% of damage taken — on-damage-taken resource mechanic, not modeled (issue #89)"
   ],
   "obtainable": true
  },
@@ -98034,7 +98545,41 @@
    "ma_PowerArmorMod",
    "RD01_ma_PA_EnclaveVulcan"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00793E59:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00793E59",
+     "edid": "RD01_Mod_PowerArmor_EnclaveVulcan_Torso_Misc_Reflection",
+     "name": "Reflection Assembly"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "value": 30,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(IsAlly)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[HasKeyword(WeaponTypeHandToHand)=1 | HasKeyword(WeaponTypeMelee1H)=1 | HasKeyword(WeaponTypeMelee2H)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | HasKeyword(WeaponTypeUnarmed)=1 | HasActiveMagicEffect(RD01_PowerArmor_ReflectionOnHitTakenEffect)=0]"
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ],
+    "durationSec": 5
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Reflection"
   ],
@@ -98042,8 +98587,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "condition: HasKeyword(IsAlly)=0",
-   "perk RD01_PowerArmor_Reflection: OR-group[HasKeyword(WeaponTypeHandToHand)=1 | HasKeyword(WeaponTypeMelee1H)=1 | HasKeyword(WeaponTypeMelee2H)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | HasKeyword(WeaponTypeUnarmed)=1 | HasActiveMagicEffect(RD01_PowerArmor_ReflectionOnHitTakenEffect)=0]",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
+   "perk RD01_PowerArmor_Reflection: OR-group[HasKeyword(WeaponTypeHandToHand)=1 | HasKeyword(WeaponTypeMelee1H)=1 | HasKeyword(WeaponTypeMelee2H)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | HasKeyword(WeaponTypeUnarmed)=1 | HasActiveMagicEffect(RD01_PowerArmor_ReflectionOnHitTakenEffect)=0]"
   ],
   "obtainable": true
  },

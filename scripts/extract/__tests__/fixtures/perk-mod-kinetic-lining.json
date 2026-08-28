@@ -1,0 +1,38 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x00064002",
+    "flags": 4,
+    "form_version": 209,
+    "data_size": 105,
+    "offset": 892839348
+  },
+  "editor_id": "ModKineticLiningPerk",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "ModKineticLiningPerk",
+    "Name": "Kinetic Lining",
+    "Description": "Restore Action Points by 20% of Damage Taken",
+    "Data": {
+      "Playable": { "value": 0, "name": "False" },
+      "Hidden": { "value": 1, "name": "True" },
+      "Unknown": { "hex": "01" }
+    },
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 116, "name": "Mod Restore Action Cost Value" },
+            "Function": { "value": 2, "name": "Add Value" },
+            "Perk Condition Tab Count": 1
+          },
+          "Function Type": { "value": 1, "name": "Float" },
+          "Perk Entry ID": 0,
+          "Float": 0.2,
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

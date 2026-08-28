@@ -23553,7 +23553,9 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "perk ModKineticLiningPerk: restores AP by 20% of damage taken — on-damage-taken resource mechanic, not modeled (issue #89)"
+  ]
  },
  {
   "family": "MoM_VoiceofSetPerk",
@@ -31023,9 +31025,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "AbPerkFortifyResistFire: curve with unmapped input AV 0x0000032C — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "RoboticsExpert",
@@ -31937,13 +31937,76 @@
        "name": "Roast_Proof",
        "rank": 1
       },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "curve": {
+       "input": "playerLevel",
+       "points": [
+        {
+         "x": 1,
+         "y": 10
+        },
+        {
+         "x": 5,
+         "y": 11
+        },
+        {
+         "x": 10,
+         "y": 13
+        },
+        {
+         "x": 15,
+         "y": 14
+        },
+        {
+         "x": 20,
+         "y": 16
+        },
+        {
+         "x": 25,
+         "y": 17
+        },
+        {
+         "x": 30,
+         "y": 19
+        },
+        {
+         "x": 35,
+         "y": 22
+        },
+        {
+         "x": 40,
+         "y": 24
+        },
+        {
+         "x": 45,
+         "y": 27
+        },
+        {
+         "x": 50,
+         "y": 30
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0080F8F5:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0080F8F5",
+       "edid": "SCORE_S21_Unshakeable_Beliefs_Perk",
+       "name": "Roast_Proof",
+       "rank": 1
+      },
       "bucket": "specialIntelligence",
       "op": "ADD",
       "value": 1,
       "conditions": []
      },
      {
-      "id": "0x0080F8F5:r1:1:1",
+      "id": "0x0080F8F5:r1:1:2",
       "source": {
        "kind": "perk",
        "formId": "0x0080F8F5",
@@ -31960,9 +32023,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "AbPerkFortifyResistEnergy: curve with unmapped input AV 0x0000032C — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "SCORE_S5_COMP_Inspector_Perk_CapsStashBoost",

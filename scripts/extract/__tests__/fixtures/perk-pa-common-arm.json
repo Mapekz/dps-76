@@ -1,0 +1,59 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x0024848E",
+    "flags": 4,
+    "form_version": 209,
+    "data_size": 156,
+    "offset": 892795894
+  },
+  "editor_id": "PA_CommonArmPerk",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "PA_CommonArmPerk",
+    "Name": "PA Common Arm Perk",
+    "Data": {
+      "Playable": { "value": 0, "name": "False" },
+      "Hidden": { "value": 1, "name": "True" },
+      "Unknown": { "hex": "01" }
+    },
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 51, "name": "Apply Combat Hit Spell" },
+            "Function": { "value": 10, "name": "Select Spell" },
+            "Perk Condition Tab Count": 3
+          },
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 1,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0005240E",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": { "value": 5, "name": "Spell Item" },
+          "Perk Entry ID": 0,
+          "Spell": "0x0024848D",
+          "Unknown Spell Value": 0,
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

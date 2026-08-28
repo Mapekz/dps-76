@@ -5,7 +5,11 @@ import type {
 } from '../../src/types/generated';
 import type { Modifier } from '../../src/types/modifiers';
 import type { EsmRecord, EsmSource } from './esm-client';
-import { translateEnchantment, type MgefTranslationDeps } from './normalize/mgef';
+import {
+  collapseRustyKnucklesBleedTiers,
+  translateEnchantment,
+  type MgefTranslationDeps,
+} from './normalize/mgef';
 import {
   decodeExplosionDamage,
   explosionComponents,
@@ -30,11 +34,20 @@ export async function enchantmentModifiers(
   modNotes: Set<string>,
   deps: ProjectileChaseDeps,
 ): Promise<{ procs: GeneratedProc[]; auras: GeneratedAura[] }> {
-  const { modifiers, notes, targetType, procs, auras } = await translateEnchantment(
-    deps.mgefDeps,
-    enchFormId,
-  );
+  const {
+    modifiers: rawModifiers,
+    notes,
+    targetType,
+    effectiveTargetType,
+    procs,
+    auras,
+  } = await translateEnchantment(deps.mgefDeps, enchFormId);
   notes.forEach((n) => modNotes.add(n));
+  // Rusty Knuckles' AV==9/18 tier rows arrive here with the tier gates still
+  // raw (the perk-chase sites don't cover the ENCH-chase path — live-fail
+  // 2026-08-28); collapse them into the wornPieces curve at this chokepoint.
+  const modifiers = collapseRustyKnucklesBleedTiers(rawModifiers);
+  const deliveryForGate = effectiveTargetType ?? targetType;
   for (const fragment of modifiers) {
     // A Self-delivery ENCH applies to the WIELDER, so a damage-dealing
     // fragment there is self-damage — never weapon output. Xerxos
@@ -45,9 +58,13 @@ export async function enchantmentModifiers(
     // delivery is the NORMAL shape for granted legendary buffs. Enemy-directed
     // dotDamage from a Self-delivery ENCH → Script perk chase (Voice of Set's
     // robot shock proc — docs/assumptions.md "Voice of Set robot shock proc")
-    // carries enemyType conditions — do NOT drop those.
+    // carries enemyType conditions — do NOT drop those. When the innermost
+    // chased SPEL is Contact (Rusty Knuckles bleed via PA_CommonArmPerk),
+    // `effectiveTargetType` overrides the outer Self delivery — see
+    // `chaseGrantedSpell`'s `deliveryTargetType` propagation (esm-walk
+    // 2026-08-28).
     if (
-      targetType === 'Self' &&
+      deliveryForGate === 'Self' &&
       fragment.bucket === 'dotDamage' &&
       fragment.op === 'ADD' &&
       !fragment.conditions.some((c) => c.kind === 'enemyType' || c.kind === 'enemyTypeAny')

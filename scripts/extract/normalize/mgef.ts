@@ -880,7 +880,97 @@ export const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   // DEL_Legendary_Weapon_PolishedPerk gated the same base effect on a
   // GetEquippedWeaponHealthPercent condition row.
   '0x0000039F': 'weaponCondition',
+  // Engine-hardcoded PlayerLevel slot (no AVIF) — Sheepsquatch Shard poison
+  // DoT curve domain 1→50 (esm-walk 2026-08-28).
+  '0x0000032C': 'playerLevel',
 };
+
+/** Per-arm +9 bleed counter written by Rusty Knuckles PA arm OMODs. */
+export const PA_RUSTY_KNUCKLES_AV = '0x0020D96F';
+
+/** Shared PA arm ENCH (Rusty Knuckles + Tesla Bracers). */
+export const ENCH_POWER_ARMOR_COMMON_ARM = '0x00248490';
+
+/** Tesla Bracers flat energy unarmed points (ShockDmg parent template). */
+export const UNARMED_ENERGY_DAMAGE_AV = '0x00239EBA';
+
+/** Enemy-directed delivery — Contact on-hit procs survive a Self outer ENCH. */
+function isEnemyDirectedDelivery(targetType: string | null | undefined): boolean {
+  return targetType === 'Contact' || targetType === 'Target';
+}
+
+function mergeDeliveryTargetType(
+  outer: string | null | undefined,
+  inner: string | null | undefined,
+): string | null | undefined {
+  if (isEnemyDirectedDelivery(inner)) return inner;
+  return outer;
+}
+
+function isRustyKnucklesTierCondition(c: Condition): boolean {
+  return (
+    c.kind === 'unresolved' &&
+    (/^GetValue\(PA_RustyKnuckles_AV\)=\d+$/.test(c.raw) ||
+      /^GetValue\(0x0020D96F\)=\d+$/.test(c.raw))
+  );
+}
+
+function rustyKnucklesTierRaw(tier: 9 | 18): string {
+  return tier === 9 ? 'GetValue(PA_RustyKnuckles_AV)=9' : 'GetValue(PA_RustyKnuckles_AV)=18';
+}
+
+/**
+ * The tier magnitude regardless of shape: a flat `value`, or a constant
+ * (single-Y) curve's Y × curveScale — the live ENCH chase emits the bleed as
+ * flat itemLevel curves (3→3 / 6→6), not bare values (2026-08-28 live-fail).
+ */
+function flatMagnitude(m: ModifierFragment): number | undefined {
+  if (!m.curve) return m.value;
+  const ys = new Set(m.curve.points.map((p) => p.y));
+  if (ys.size !== 1) return undefined;
+  return [...ys][0] * (m.curveScale ?? 1);
+}
+
+/** PA_CommonArmPerk bleed tiers (AV==9 → 3/tick, AV==18 → 6/tick) → wornPieces curve. */
+export function collapseRustyKnucklesBleedTiers(modifiers: ModifierFragment[]): ModifierFragment[] {
+  let tier1Idx = -1;
+  let tier2Idx = -1;
+  for (let i = 0; i < modifiers.length; i++) {
+    const m = modifiers[i];
+    if (m.bucket !== 'dotDamage' || m.op !== 'ADD') continue;
+    const mag = flatMagnitude(m);
+    if (mag === undefined) continue;
+    const has9 = m.conditions.some(
+      (c) =>
+        c.kind === 'unresolved' &&
+        (c.raw === rustyKnucklesTierRaw(9) || c.raw === 'GetValue(0x0020D96F)=9'),
+    );
+    const has18 = m.conditions.some(
+      (c) =>
+        c.kind === 'unresolved' &&
+        (c.raw === rustyKnucklesTierRaw(18) || c.raw === 'GetValue(0x0020D96F)=18'),
+    );
+    if (has9 && mag === 3) tier1Idx = i;
+    if (has18 && mag === 6) tier2Idx = i;
+  }
+  if (tier1Idx < 0 || tier2Idx < 0) return modifiers;
+  const template = modifiers[tier1Idx];
+  const merged: ModifierFragment = {
+    bucket: 'dotDamage',
+    op: 'ADD',
+    curve: {
+      input: 'wornPieces',
+      points: [
+        { x: 1, y: 3 },
+        { x: 2, y: 6 },
+      ],
+    },
+    curveScale: 1,
+    conditions: template.conditions.filter((c) => !isRustyKnucklesTierCondition(c)),
+    durationSec: template.durationSec,
+  };
+  return modifiers.filter((_, i) => i !== tier1Idx && i !== tier2Idx).concat(merged);
+}
 
 /**
  * Counter axes an AV pass-through effect (see the `effect.magnitude === 0`
@@ -1140,6 +1230,13 @@ export interface MgefTranslationResult {
    * utility-only so the caller can fall through to the legacy note.
    */
   auras?: GeneratedAura[];
+  /**
+   * Innermost chased-SPEL delivery (Contact/Target) when modifiers were
+   * produced through `chaseGrantedSpell` or a perk-grant chase — used by
+   * `translateEnchantment` to avoid dropping enemy-directed DoTs from a
+   * Self-delivery outer ENCH (Rusty Knuckles, Voice of Set).
+   */
+  deliveryTargetType?: string | null;
 }
 
 export interface TranslateOptions {
@@ -1282,6 +1379,16 @@ export function translate(
   }
 
   if (mgef.archetype !== 'Peak Value Modifier' && mgef.archetype !== 'Value Modifier') {
+    const unmeasuredScriptNote: Record<string, string> = {
+      abFortifyDamageAll: 'unmeasured script-set damage bonus — needs in-game measurement',
+      abFortifyDamageRecieved: 'unmeasured script-set damage bonus — needs in-game measurement',
+    };
+    const scriptNote = unmeasuredScriptNote[mgef.edid];
+    if (scriptNote) {
+      // docs/assumptions.md "Rage (mod_Custom_Rage)"
+      result.notes.push(`${mgef.edid}: ${scriptNote}`);
+      return result;
+    }
     if (effect.magnitude !== 0 || mgef.archetype === 'Script') {
       result.notes.push(`MGEF ${mgef.edid} archetype ${mgef.archetype} — needs override`);
     }
@@ -1345,6 +1452,15 @@ export function translate(
         ],
       };
     } else {
+      const unmeasuredScriptNote: Record<string, string> = {
+        abFortifyDamageAll: 'unmeasured script-set damage bonus — needs in-game measurement',
+        abFortifyDamageRecieved: 'unmeasured script-set damage bonus — needs in-game measurement',
+      };
+      const scriptNote = unmeasuredScriptNote[mgef.edid];
+      if (scriptNote) {
+        result.notes.push(`${mgef.edid}: ${scriptNote}`);
+        return result;
+      }
       result.notes.push(
         `MGEF ${mgef.edid}: zero magnitude, no curve — script/scaled, needs override`,
       );
@@ -1762,6 +1878,16 @@ export function resolveDirectEntryPointModifiers(
     };
   }
 
+  if (name === 'Mod Restore Action Cost Value' && functionName === 'Add Value') {
+    return {
+      handled: true,
+      modifiers: [],
+      notes: [
+        `${perkLabel}: restores AP by ${float * 100}% of damage taken — on-damage-taken resource mechanic, not modeled (issue #89)`,
+      ],
+    };
+  }
+
   if (name === 'Mod VATS Penetration Min Visibility') {
     return {
       handled: true,
@@ -1872,6 +1998,7 @@ export async function chaseGrantedSpell(
     result.notes.push(`${contextEdid}: spell ${spellFormId} not found`);
     return result;
   }
+  result.deliveryTargetType = recordTargetType(spell);
 
   for (const se of parseMagicEffects(spell)) {
     const effectMgef = await getMgefInfo(client, se.mgefFormId);
@@ -1920,6 +2047,10 @@ export async function chaseGrantedSpell(
     );
     sub.notes.forEach((n) => result.notes.push(`${contextEdid}: ${n}`));
     sub.unmappedAvifs.forEach((a) => result.unmappedAvifs.push(a));
+    result.deliveryTargetType = mergeDeliveryTargetType(
+      result.deliveryTargetType,
+      sub.deliveryTargetType,
+    );
     for (const fragment of sub.modifiers) {
       result.modifiers.push({
         ...fragment,
@@ -2085,6 +2216,10 @@ export async function translateGrantedPerk(
         );
         sub.notes.forEach((n) => result.notes.push(n));
         sub.unmappedAvifs.forEach((a) => result.unmappedAvifs.push(a));
+        result.deliveryTargetType = mergeDeliveryTargetType(
+          result.deliveryTargetType,
+          sub.deliveryTargetType,
+        );
         result.modifiers.push(...sub.modifiers);
         if (sub.procComponents && sub.procComponents.length > 0) {
           const isOnCripple = name === 'Apply Spell On Actor When Limb Crippled';
@@ -2348,6 +2483,10 @@ export async function translateGrantedPerk(
       const sub = await chaseGrantedSpell(deps, `perk ${perkEdid}`, e['Ability'], conditions, true);
       sub.notes.forEach((n) => result.notes.push(n));
       sub.unmappedAvifs.forEach((a) => result.unmappedAvifs.push(a));
+      result.deliveryTargetType = mergeDeliveryTargetType(
+        result.deliveryTargetType,
+        sub.deliveryTargetType,
+      );
       result.modifiers.push(...sub.modifiers);
       if (sub.procComponents && sub.procComponents.length > 0) {
         result.procComponents = [...(result.procComponents ?? []), ...sub.procComponents];
@@ -2361,6 +2500,7 @@ export async function translateGrantedPerk(
 
     result.notes.push(`perk ${perkEdid}: effect type ${effectType} — not modeled`);
   }
+  result.modifiers = collapseRustyKnucklesBleedTiers(result.modifiers);
   return result;
 }
 
@@ -2437,7 +2577,11 @@ export async function translateMagicEffect(
         ...m,
         conditions: [...grantConds, ...m.conditions],
       }));
-      return granted;
+      granted.modifiers = collapseRustyKnucklesBleedTiers(granted.modifiers);
+      return {
+        ...granted,
+        deliveryTargetType: mergeDeliveryTargetType(undefined, granted.deliveryTargetType),
+      };
     }
   }
 
@@ -2540,6 +2684,12 @@ export interface EnchantmentTranslation {
   notes: string[];
   /** The record's own Delivery ("Target Type") name (e.g. "Contact", "Self"), or null when the record wasn't found. */
   targetType: string | null;
+  /**
+   * Innermost chased-SPEL delivery when a Self outer ENCH grants a Contact
+   * on-hit proc through a perk (Rusty Knuckles, Voice of Set). Falls back to
+   * `targetType` when no deeper chase ran.
+   */
+  effectiveTargetType: string | null;
   /** Classified procs (issue #42) chased off this ENCH/SPEL's own Effects list — empty when none. */
   procs: GeneratedProc[];
   /** Tick-based aura damage (ADR-0023) chased off Cloak effects in this ENCH/SPEL. */
@@ -2646,11 +2796,13 @@ export async function translateEnchantment(
       modifiers: [],
       notes: [`enchantment ${enchOrSpelFormId} not found`],
       targetType: null,
+      effectiveTargetType: null,
       procs: [],
       auras: [],
     };
   }
   const targetType = recordTargetType(record);
+  let effectiveTargetType = targetType;
   // deps.crossFamilyRank flows via translateMagicEffect's conditionCtx default.
   const conditionCtx = targetType === 'Contact' ? { subjectIsTarget: true } : undefined;
   const modifiers: ModifierFragment[] = [];
@@ -2661,6 +2813,9 @@ export async function translateEnchantment(
   for (const effect of effects) {
     const result = await translateMagicEffect(deps, effect, conditionCtx);
     result.notes.forEach((n) => notes.push(n));
+    effectiveTargetType =
+      mergeDeliveryTargetType(effectiveTargetType, result.deliveryTargetType) ??
+      effectiveTargetType;
     modifiers.push(...result.modifiers);
     // Already-classified procs bubbled up from a nested Script+perkToApply
     // chase (Fracturer's/Circuit Breaker's Function-Type-5 branch,
@@ -2683,5 +2838,5 @@ export async function translateEnchantment(
       }
     }
   }
-  return { modifiers, notes, targetType, procs, auras };
+  return { modifiers, notes, targetType, effectiveTargetType, procs, auras };
 }

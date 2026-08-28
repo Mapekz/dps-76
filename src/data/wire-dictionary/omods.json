@@ -524,19 +524,6 @@
     "P62_mod_Legendary_Weapon4_Satiated": 520,
     "POST-DLC04_mod_melee_BaseballBat_Rocket_SpikesLarge_ShockAndStun": 521,
     "POST-DLC04_mod_melee_Sledgehammer_ExtraHeavyHead_Rocket_Blades_ShockAndStun": 522,
-    "POST-Parent_mod_melee_Weapon_ShockAndStun": 523,
-    "POST-mod_JunkJet_Barrel_Long": 524,
-    "POST-mod_JunkJet_Barrel_Short": 525,
-    "POST-mod_JunkJet_Receiver_Standard": 526,
-    "POST-mod_JunkJet_Scope_SightReflex": 527,
-    "POST-mod_JunkJet_Scope_SightsIron": 528,
-    "POST-mod_JunkJet_SpecialMuzzle_Electricity": 529,
-    "POST-mod_JunkJet_SpecialMuzzle_Fire": 530,
-    "POST-mod_Junkjet_Grip_Recoil": 531,
-    "POST-mod_Junkjet_Grip_Standard": 532,
-    "POST-mod_melee_Baton_ShockAndStun": 533,
-    "POST-mod_melee_RevolutionarySword_ShockAndStun": 534,
-    "POST-mod_melee_SuperSledge_ShockAndStun": 535,
     "RA_mod_Legendary_Weapon4_ThrillSeeker": 536,
     "RD01_Mod_Custom_BoilingPoint_Appearance": 537,
     "RD01_Mod_Custom_BoilingPoint_CustomName": 538,
@@ -2482,5 +2469,19 @@
     "mod_melee_leadpipe_HydrauloSpanner": 2478,
     "zzmod_DoubleBarrelShotgun_SCOPE_ironsights_Base_Babylon": 2479
   },
-  "acknowledgedRemovals": []
+  "acknowledgedRemovals": [
+    "POST-Parent_mod_melee_Weapon_ShockAndStun",
+    "POST-mod_JunkJet_Barrel_Long",
+    "POST-mod_JunkJet_Barrel_Short",
+    "POST-mod_JunkJet_Receiver_Standard",
+    "POST-mod_JunkJet_Scope_SightReflex",
+    "POST-mod_JunkJet_Scope_SightsIron",
+    "POST-mod_JunkJet_SpecialMuzzle_Electricity",
+    "POST-mod_JunkJet_SpecialMuzzle_Fire",
+    "POST-mod_Junkjet_Grip_Recoil",
+    "POST-mod_Junkjet_Grip_Standard",
+    "POST-mod_melee_Baton_ShockAndStun",
+    "POST-mod_melee_RevolutionarySword_ShockAndStun",
+    "POST-mod_melee_SuperSledge_ShockAndStun"
+  ]
 }

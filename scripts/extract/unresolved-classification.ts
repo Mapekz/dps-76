@@ -364,6 +364,14 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     issue: '#89',
     reason: 'AP-refund-on-kill; deferred pending enemy TTK modeling',
   },
+  // Kinetic Lining (ModKineticLiningPerk): on-damage-taken AP restore — same
+  // hits-taken-rate class as #88/#89; descriptive note on the torso records.
+  {
+    match: /^mod_PowerArmor_.*_Torso_Misc_Kinetic:.*restores AP by 20% of damage taken/,
+    disposition: 'deferred-with-issue',
+    issue: '#89',
+    reason: 'on-damage-taken AP restore; deferred pending hits-taken modeling',
+  },
   // Fallout Worlds custom-ruleset hunger/thirst suppressor on chems.
   {
     match: /HasMagicEffect\(VaultFed_NoHungerNoThirst_Effect\)/,

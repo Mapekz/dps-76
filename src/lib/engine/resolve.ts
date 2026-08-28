@@ -20,6 +20,7 @@ import type {
 import { BUCKET_REGISTRY } from '@/types/modifiers';
 import { interpolateCurve } from '@/lib/curve-tables';
 import { CLOSE_THRESHOLD_UNITS, DEFAULT_DISTANCE_UNITS, FAR_THRESHOLD_UNITS } from '@/lib/distance';
+import { PLAYER_LEVEL } from '@/lib/player-stats';
 import { KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS } from './affordances';
 import { resolveBulletStormStacks, resolveOnslaughtStacks } from './stacks';
 import type { BucketTrace, TraceContribution } from './trace';
@@ -206,6 +207,12 @@ const PLAYER_STATE_READERS: Record<
   // name). Manual knob, default 0 (naked).
   playerDamageResist: (p) => p.playerDamageResist ?? 0,
   itemLevel: (_, ctx) => ctx.itemLevel ?? 50,
+  // Engine-hardcoded PlayerLevel AV (0x32C) — Sheepsquatch Shard poison DoT.
+  // The PLAYER's level, not the equipped item's: the PLAYER_LEVEL=300 build
+  // assumption (player-stats.ts), clamped by the curve to its own top point
+  // (34→112 over levels 1→50 ⇒ always 112 at the default). Distinct from
+  // `itemLevel`, which is the weapon's own level knob.
+  playerLevel: () => PLAYER_LEVEL,
   mutationCount: (p) => p.mutationCount ?? 0,
   // Lifegiver's max-HP curve X — the buff-folded END stat (resolveLoadout).
   endurance: (p) => p.endurance,

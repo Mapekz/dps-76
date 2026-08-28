@@ -325,6 +325,18 @@ function extractDefaultModFormIds(
   const named = items((c) => (c['Combination'] as Record<string, unknown>)?.['Name'] === 'Default');
   if (named.length > 0) return flattenIncludes(named);
   if (combos.length === 1) return flattenIncludes(items(() => true));
+  // Multiple combos, none Default-flagged or -named: prefer the smallest
+  // include list — unique presets layer legendaries/custom-name mods on top
+  // of the standard bolt+scope+appearance core (CompoundBow: 3 vs 7).
+  const smallest = [...combos].sort((a, b) => {
+    const aInc = itemOf(a)?.['Includes'];
+    const bInc = itemOf(b)?.['Includes'];
+    const aLen = Array.isArray(aInc) ? aInc.length : 0;
+    const bLen = Array.isArray(bInc) ? bInc.length : 0;
+    return aLen - bLen;
+  })[0];
+  const smallestItem = itemOf(smallest);
+  if (smallestItem) return flattenIncludes([smallestItem]);
   unresolved.push(`no Default combination for ${edid} (${combos.length} combos)`);
   return [];
 }

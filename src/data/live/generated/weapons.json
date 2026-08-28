@@ -9739,7 +9739,11 @@
    "0x0067A475",
    "0x00685D58"
   ],
-  "defaultModFormIds": [],
+  "defaultModFormIds": [
+   "0x00014017",
+   "0x0057275D",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -39518,6 +39522,76 @@
   "modifiers": [
    {
     "id": "0x0045FF61:weaponEnch:0",
+    "source": {
+     "kind": "weapon",
+     "formId": "0x0045FF61",
+     "edid": "SheepsquatchShard",
+     "name": "Sheepsquatch Shard"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "playerLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 34
+      },
+      {
+       "x": 5,
+       "y": 38
+      },
+      {
+       "x": 10,
+       "y": 42
+      },
+      {
+       "x": 15,
+       "y": 48
+      },
+      {
+       "x": 20,
+       "y": 54
+      },
+      {
+       "x": 25,
+       "y": 61
+      },
+      {
+       "x": 30,
+       "y": 69
+      },
+      {
+       "x": 35,
+       "y": 78
+      },
+      {
+       "x": 40,
+       "y": 88
+      },
+      {
+       "x": 45,
+       "y": 99
+      },
+      {
+       "x": 50,
+       "y": 112
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "poison"
+      ]
+     }
+    ],
+    "durationSec": 35
+   },
+   {
+    "id": "0x0045FF61:weaponEnch:1",
     "source": {
      "kind": "weapon",
      "formId": "0x0045FF61",

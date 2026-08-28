@@ -42,6 +42,10 @@ import gunFu02 from './fixtures/perk-gunfu02.json';
 import gunFu03 from './fixtures/perk-gunfu03.json';
 import enchSteady from './fixtures/ench-steady.json';
 import mgefSteadyMeleeDamage from './fixtures/mgef-steady-melee-damage.json';
+import paCommonArmPerk from './fixtures/perk-pa-common-arm.json';
+import spellPaCommonArm from './fixtures/spell-pa-common-arm.json';
+import enchPaCommonArm from './fixtures/ench-pa-common-arm.json';
+import modKineticLiningPerk from './fixtures/perk-mod-kinetic-lining.json';
 
 // Pins the PURE (sync) MGEF → IR translation with plain fixtures — no esm CLI
 // client, no shell-out. The async gather lives in translateMagicEffect.
@@ -4577,5 +4581,244 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
         m.conditions.some((c) => c.kind === 'unresolved' && c.raw.includes('IsMoving')),
       ),
     ).toBe(false);
+  });
+});
+
+describe('PA_CommonArmPerk Rusty Knuckles bleed (2026-08-28)', () => {
+  function fixtureClient(records: Record<string, unknown>): EsmSource {
+    return createInMemoryEsmSource({
+      records: Object.fromEntries(
+        Object.entries(records).map(([k, v]) => [k, v as unknown as EsmRecord]),
+      ),
+      resolveEdidFallback: (formId) => formId,
+    });
+  }
+
+  const PERK = '0x0024848E';
+  const SPELL = '0x0024848D';
+  const BLEED_MGEF = '0x001A03FD';
+  const GRANT_MGEF = '0x0024848F';
+  const ENCH = '0x00248490';
+  const DAMAGE_RESIST = '0x000002E3';
+  const UNARMED_KW = '0x0005240E';
+
+  const bleedMgef = {
+    header: { signature: 'MGEF', form_id: BLEED_MGEF },
+    editor_id: 'DamageHealthContact',
+    fields: {
+      'Magic Effect Data': {
+        Data: {
+          Archetype: { name: 'Damage' },
+          'Resist Value': DAMAGE_RESIST,
+          Delivery: { name: 'Contact' },
+          Flags: { flags: ['Hostile', 'Detrimental'] },
+        },
+      },
+    },
+  };
+
+  const grantMgef = {
+    header: { signature: 'MGEF', form_id: GRANT_MGEF },
+    editor_id: 'PowerArmor_CommonArmEffect',
+    fields: {
+      'Magic Effect Data': {
+        Data: {
+          Archetype: { name: 'Script' },
+          'Perk to Apply': PERK,
+          Delivery: { name: 'Self' },
+        },
+      },
+    },
+  };
+
+  const records = {
+    [PERK]: paCommonArmPerk,
+    [SPELL]: spellPaCommonArm,
+    [BLEED_MGEF]: bleedMgef,
+    [GRANT_MGEF]: grantMgef,
+    [ENCH]: enchPaCommonArm,
+    [DAMAGE_RESIST]: {
+      header: { signature: 'AVIF', form_id: DAMAGE_RESIST },
+      editor_id: 'DamageResist',
+      fields: {},
+    },
+    [UNARMED_KW]: {
+      header: { signature: 'KYWD', form_id: UNARMED_KW },
+      editor_id: 'WeaponTypeUnarmed',
+      fields: {},
+    },
+  };
+
+  it('translateGrantedPerk → wornPieces bleed curve (3/6 per 1/2 arms)', async () => {
+    const result = await translateGrantedPerk(
+      {
+        client: fixtureClient(records),
+        routes: new Map(),
+        edidByFormId: new Map([
+          [DAMAGE_RESIST, 'DamageResist'],
+          [UNARMED_KW, 'WeaponTypeUnarmed'],
+        ]),
+      },
+      'PA_CommonArmPerk',
+      PERK,
+    );
+    expect(result.deliveryTargetType).toBe('Contact');
+    expect(result.modifiers).toEqual([
+      expect.objectContaining({
+        bucket: 'dotDamage',
+        op: 'ADD',
+        curve: {
+          input: 'wornPieces',
+          points: [
+            { x: 1, y: 3 },
+            { x: 2, y: 6 },
+          ],
+        },
+        durationSec: 3,
+        conditions: expect.arrayContaining([
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeUnarmed', present: true },
+          { kind: 'damageTypeScope', types: ['ballistic'] },
+        ]),
+      }),
+    ]);
+    expect(result.notes.some((n) => n.includes('PA_RustyKnuckles_AV'))).toBe(false);
+  });
+
+  it('translateEnchantment keeps bleed through Self outer ENCH via effectiveTargetType', async () => {
+    const result = await translateEnchantment(
+      {
+        client: fixtureClient(records),
+        routes: new Map(),
+        edidByFormId: new Map([
+          [DAMAGE_RESIST, 'DamageResist'],
+          [UNARMED_KW, 'WeaponTypeUnarmed'],
+        ]),
+      },
+      ENCH,
+    );
+    expect(result.targetType).toBe('Self');
+    expect(result.effectiveTargetType).toBe('Contact');
+    expect(result.modifiers.some((m) => m.bucket === 'dotDamage')).toBe(true);
+  });
+});
+
+describe('Sheepsquatch Shard poison DoT playerLevel curve (2026-08-28)', () => {
+  function fixtureClient(records: Record<string, unknown>): EsmSource {
+    return createInMemoryEsmSource({
+      records: Object.fromEntries(
+        Object.entries(records).map(([k, v]) => [k, v as unknown as EsmRecord]),
+      ),
+      resolveEdidFallback: (formId) => formId,
+    });
+  }
+
+  const ENCH = '0x0045FF64';
+  const POISON_MGEF = '0x000856FA';
+  const POISON_RESIST = '0x000002E4';
+  const PLAYER_LEVEL_AV = '0x0000032C';
+  const curvePoints = [
+    { x: 1, y: 34 },
+    { x: 50, y: 112 },
+  ];
+
+  it('extracts dotDamage with playerLevel curve 34→112', async () => {
+    const result = await translateEnchantment(
+      {
+        client: fixtureClient({
+          [ENCH]: {
+            header: { signature: 'ENCH', form_id: ENCH },
+            editor_id: 'ench_Weapon_SheepsquatchShard',
+            fields: {
+              'Effect Data': {
+                'Target Type': { name: 'Contact' },
+                'Cast Type': { name: 'Fire and Forget' },
+              },
+              Effects: [
+                {
+                  Effect: {
+                    'Base Effect': POISON_MGEF,
+                    'Effect Item Data': { Magnitude: 0, Duration: 35 },
+                    'Curve Table': { curve: curvePoints },
+                    'Actor Value': PLAYER_LEVEL_AV,
+                  },
+                },
+              ],
+            },
+          },
+          [POISON_MGEF]: {
+            header: { signature: 'MGEF', form_id: POISON_MGEF },
+            editor_id: 'dtPoisonEffectChanceAlways',
+            fields: {
+              'Magic Effect Data': {
+                Data: {
+                  Archetype: { name: 'Damage' },
+                  'Resist Value': POISON_RESIST,
+                  Delivery: { name: 'Contact' },
+                  Flags: { flags: ['Hostile', 'Detrimental'] },
+                },
+              },
+            },
+          },
+          [POISON_RESIST]: {
+            header: { signature: 'AVIF', form_id: POISON_RESIST },
+            editor_id: 'PoisonResist',
+            fields: {},
+          },
+        }),
+        routes: new Map(),
+        edidByFormId: new Map([[POISON_RESIST, 'PoisonResist']]),
+      },
+      ENCH,
+    );
+    expect(result.modifiers).toContainEqual(
+      expect.objectContaining({
+        bucket: 'dotDamage',
+        curve: { input: 'playerLevel', points: curvePoints },
+        durationSec: 35,
+        conditions: expect.arrayContaining([{ kind: 'damageTypeScope', types: ['poison'] }]),
+      }),
+    );
+  });
+});
+
+describe('ModKineticLiningPerk (2026-08-28)', () => {
+  function fixtureClient(records: Record<string, unknown>): EsmSource {
+    return createInMemoryEsmSource({
+      records: Object.fromEntries(
+        Object.entries(records).map(([k, v]) => [k, v as unknown as EsmRecord]),
+      ),
+      resolveEdidFallback: (formId) => formId,
+    });
+  }
+
+  it('Mod Restore Action Cost Value → descriptive note, no bucket', async () => {
+    const result = await translateGrantedPerk(
+      {
+        client: fixtureClient({ '0x00064002': modKineticLiningPerk }),
+        routes: new Map(),
+        edidByFormId: new Map(),
+      },
+      'ModKineticLiningPerk',
+      '0x00064002',
+    );
+    expect(result.modifiers).toEqual([]);
+    expect(result.notes).toContainEqual(
+      'perk ModKineticLiningPerk: restores AP by 20% of damage taken — on-damage-taken resource mechanic, not modeled (issue #89)',
+    );
+  });
+});
+
+describe('mod_Custom_Rage zero-magnitude script MGEFs (2026-08-28)', () => {
+  it('abFortifyDamageAll → unmeasured script-set note, not needs override', () => {
+    const result = translate(
+      mgef({ edid: 'abFortifyDamageAll', archetype: 'Script', actorValue: '0x0' }),
+      effect({ magnitude: 0 }),
+      new Map(),
+      new Map(),
+    );
+    expect(result.notes).toContainEqual(
+      'abFortifyDamageAll: unmeasured script-set damage bonus — needs in-game measurement',
+    );
+    expect(result.notes.some((n) => n.includes('needs override'))).toBe(false);
   });
 });

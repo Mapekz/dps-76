@@ -11,6 +11,9 @@ import {
   ARMOR_PENETRATION_AV,
   FALLBACK_AVIF_ROUTES,
   MOD_ARMOR_PEN_ENCH,
+  ENCH_POWER_ARMOR_COMMON_ARM,
+  PA_RUSTY_KNUCKLES_AV,
+  UNARMED_ENERGY_DAMAGE_AV,
   buildAvifRoutes,
   parseMagicEffects,
   translateGrantedPerk,
@@ -109,6 +112,11 @@ const ACTOR_VALUE_SKIP: Record<string, string> = {
   // Executioner's: value + threshold live on the granted LegendaryExecutePerk
   // (dbm +0.5, target HP ≤ GLOB LGND_ExecuteHealthThreshold) via the ENCH chase.
   LGND_ExecuteDmg: 'carried by granted LegendaryExecutePerk',
+  // Rusty Knuckles: per-arm +9 counter; bleed DoT modeled via ENCH chase.
+  PA_RustyKnuckles_AV: 'per-arm bleed counter; DoT modeled via ENCH chase wornPieces curve',
+  // Kinetic Servos PA legs: native AP-regen flag, no ESM-visible magnitude.
+  // docs/assumptions.md "Kinetic Servos (PA_KineticServos_AV)"
+  PA_KineticServos_AV: 'native-engine AP-regen flag, magnitude not ESM-derivable',
 };
 
 /** OMOD Property name → formula bucket. Unknown damage-ish names are reported. */
@@ -277,7 +285,8 @@ const PROPERTY_IGNORED = new Set([
 // a real content prefix (the Severing 4★ legendary, fishing-rod mods, Slasher
 // event gear), not dev/test. It was silently dropping the Severing OMOD
 // entirely; found while wiring the target-is-bleeding condition.
-const OMOD_JUNK_EDID_RE = /^(zzz|del_|deleted|debug|cut_|test|wip|post_|hto_|mtnm|xpd_)/i;
+const OMOD_JUNK_EDID_RE =
+  /^(zzz|del_|deleted|debug|cut_|test|wip|post_|post-(?!dlc)|hto_|mtnm|xpd_)/i;
 
 /** Exposed for tests: does the pre-filter drop this editor_id? */
 export function isExcludedOmodEdid(edid: string): boolean {
@@ -899,7 +908,9 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
             pushAv(fallback.bucket, fallback.scale, [...(fallback.conditions ?? [])]);
           } else if (avMapping) {
             pushAv(avMapping.bucket, avMapping.scale, []);
-          } else if (!(avEdid in ACTOR_VALUE_SKIP)) {
+          } else if (avEdid in ACTOR_VALUE_SKIP) {
+            modNotes.add(ACTOR_VALUE_SKIP[avEdid]);
+          } else {
             modNotes.add(`ActorValues on ${avEdid} — unmapped`);
           }
         }
@@ -1056,6 +1067,35 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
         value,
         conditions: [],
       });
+    }
+
+    const sharesPaCommonArmEnch = properties.some(
+      (p) =>
+        p.property === 'Enchantments' &&
+        p.value1 === ENCH_POWER_ARMOR_COMMON_ARM &&
+        p.functionType !== 'REM',
+    );
+    const writesRustyKnucklesAv = properties.some(
+      (p) =>
+        p.property === 'ActorValues' &&
+        p.value1 === PA_RUSTY_KNUCKLES_AV &&
+        p.functionType === 'ADD',
+    );
+    const writesUnarmedEnergyDmg = properties.some(
+      (p) => p.property === 'ActorValues' && p.value1 === UNARMED_ENERGY_DAMAGE_AV,
+    );
+    if (sharesPaCommonArmEnch && writesUnarmedEnergyDmg && !writesRustyKnucklesAv) {
+      for (let i = modifiers.length - 1; i >= 0; i--) {
+        if (modifiers[i].bucket === 'dotDamage') modifiers.splice(i, 1);
+      }
+      for (const note of [...modNotes]) {
+        if (
+          note.includes('PA_RustyKnuckles_AV') ||
+          (note.includes('PA_CommonArmPerk') && note.includes('GetValue(PA_RustyKnuckles_AV)'))
+        ) {
+          modNotes.delete(note);
+        }
+      }
     }
 
     for (const note of modNotes) notes.add(`${record.editor_id}: ${note}`);

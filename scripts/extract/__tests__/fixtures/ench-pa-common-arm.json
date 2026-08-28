@@ -1,0 +1,27 @@
+{
+  "header": {
+    "signature": "ENCH",
+    "form_id": "0x00248490",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 163,
+    "offset": 9124780
+  },
+  "editor_id": "EnchPowerArmor_CommonArm",
+  "fields": {
+    "_record_type": "Enchantment",
+    "Editor ID": "EnchPowerArmor_CommonArm",
+    "Effect Data": {
+      "Cast Type": { "value": 0, "name": "Constant Effect" },
+      "Target Type": { "value": 0, "name": "Self" }
+    },
+    "Effects": [
+      {
+        "Effect": {
+          "Base Effect": "0x0024848F",
+          "Effect Item Data": { "Magnitude": 1.0, "Duration": 0 }
+        }
+      }
+    ]
+  }
+}

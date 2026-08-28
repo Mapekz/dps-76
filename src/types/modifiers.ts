@@ -1665,6 +1665,12 @@ export type CurveInput =
    */
   | 'playerDamageResist'
   | 'itemLevel' // weapon item level — level-scaled OMOD properties (heated melee mods' AttackDamage curves)
+  /**
+   * Player character level — engine-hardcoded AV 0x0000032C (no AVIF). Curve
+   * domain 1→50 on Sheepsquatch Shard poison DoT; resolved from
+   * `PlayerConfig.itemLevel` (the app's 1–50 level axis).
+   */
+  | 'playerLevel'
   | 'mutationCount' // owned mutations (Mutant's) — AV MutationCount 0x006C2DBA; derived from the selected mutation list
   | 'hungerThirstTier' // food/drink fullness tier (Gourmand's) — AV HungerThirstTier 0x006D37DC
   | 'feralTier' // ghoul feral meter tier (Lucid, Feral's) — AV GHL_FeralTier 0x007A767A

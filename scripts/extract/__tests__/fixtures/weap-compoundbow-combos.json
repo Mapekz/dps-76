@@ -1,0 +1,64 @@
+{
+  "header": {
+    "signature": "WEAP",
+    "form_id": "0x00013CE9",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 100,
+    "offset": 0
+  },
+  "editor_id": "CompoundBow",
+  "fields": {
+    "Name": "Compound Bow",
+    "Data": { "Speed": 1.0 },
+    "Object Template": {
+      "Combinations": [
+        {
+          "Combination": {
+            "Name": "Burning Love",
+            "Object Mod Template Item": {
+              "Default": { "value": 0, "name": "False" },
+              "Includes": [
+                { "Mod": "0x00014017" },
+                { "Mod": "0x0057275D" },
+                { "Mod": "0x0037D0C1" }
+              ]
+            }
+          }
+        },
+        {
+          "Combination": {
+            "Object Mod Template Item": {
+              "Default": { "value": 0, "name": "False" },
+              "Includes": [
+                { "Mod": "0x008989DA" },
+                { "Mod": "0x008989D9" },
+                { "Mod": "0x007904EA" },
+                { "Mod": "0x006069EC" },
+                { "Mod": "0x007904EC" },
+                { "Mod": "0x00014017" },
+                { "Mod": "0x0057275D" }
+              ]
+            }
+          }
+        },
+        {
+          "Combination": {
+            "Object Mod Template Item": {
+              "Default": { "value": 0, "name": "False" },
+              "Includes": [
+                { "Mod": "0x00014017" },
+                { "Mod": "0x0057275D" },
+                { "Mod": "0x004F5770" },
+                { "Mod": "0x007904EB" },
+                { "Mod": "0x007904EC" },
+                { "Mod": "0x0067A475" },
+                { "Mod": "0x00685D58" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

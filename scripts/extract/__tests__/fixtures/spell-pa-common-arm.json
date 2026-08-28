@@ -1,0 +1,63 @@
+{
+  "header": {
+    "signature": "SPEL",
+    "form_id": "0x0024848D",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 332,
+    "offset": 9756341
+  },
+  "editor_id": "SpellPowerArmor_CommonArm",
+  "fields": {
+    "_record_type": "Spell",
+    "Editor ID": "SpellPowerArmor_CommonArm",
+    "Data": {
+      "Cast Type": { "value": 1, "name": "Fire and Forget" },
+      "Target Type": { "value": 1, "name": "Contact" }
+    },
+    "Effects": [
+      {
+        "Effect": {
+          "Base Effect": "0x001A03FD",
+          "Effect Item Data": { "Magnitude": 3.0, "Duration": 3 },
+          "Conditions": {
+            "Conditions": [
+              {
+                "Condition": {
+                  "Condition Data": {
+                    "Operator": "Equal To",
+                    "Comparison Value": 9.0,
+                    "Function": "GetValue",
+                    "Parameter 1": "0x0020D96F",
+                    "Run On": "Target"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Effect": {
+          "Base Effect": "0x001A03FD",
+          "Effect Item Data": { "Magnitude": 6.0, "Duration": 3 },
+          "Conditions": {
+            "Conditions": [
+              {
+                "Condition": {
+                  "Condition Data": {
+                    "Operator": "Equal To",
+                    "Comparison Value": 18.0,
+                    "Function": "GetValue",
+                    "Parameter 1": "0x0020D96F",
+                    "Run On": "Target"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

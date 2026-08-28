@@ -20,6 +20,7 @@ import weapRegularBow from './fixtures/weap-regularbow.json';
 import ammoFatmanMiniNuke from './fixtures/ammo-fatman-mininuke.json';
 import projFatman from './fixtures/proj-fatman.json';
 import explFatman from './fixtures/expl-fatman.json';
+import weapCompoundBowCombos from './fixtures/weap-compoundbow-combos.json';
 import weapGammaGun from './fixtures/weap-gammagun.json';
 import ammoGammaCell from './fixtures/ammo-gammacell.json';
 import projGammaGun from './fixtures/proj-gammagun.json';
@@ -120,6 +121,17 @@ describe('toGeneratedWeapon', () => {
       '0x0084CCA1',
     ]);
     expect(w.defaultModFormIds).not.toContain('0x0007AD6E');
+  });
+
+  it('CompoundBow: smallest-combo fallback when no Default flag (3 combos)', async () => {
+    const unresolved: string[] = [];
+    const w = await toGeneratedWeapon(
+      stubClient,
+      weapCompoundBowCombos as unknown as EsmRecord,
+      unresolved,
+    );
+    expect(unresolved).toEqual([]);
+    expect(w.defaultModFormIds).toEqual(['0x00014017', '0x0057275D', '0x0037D0C1']);
   });
 
   it('Shishkebab: Base Damage > 0 plus typed fire entry → two components sharing the tier-20 curve', async () => {
@@ -431,6 +443,14 @@ describe('isExcludedOmodEdid', () => {
   it('does not exclude p62_ — a real content prefix (The Drifter boss drops + a real legendary family), not junk (2026-07-12, found chasing Splinter)', () => {
     expect(isExcludedOmodEdid('P62_Mod_Custom_Splinter_SpecialEffect')).toBe(false);
     expect(isExcludedOmodEdid('P62_mod_Legendary_Weapon4_Satiated')).toBe(false);
+  });
+
+  it('excludes hyphenated POST-mod_ cut tree but keeps POST-DLC04_ content (2026-08-28)', () => {
+    expect(isExcludedOmodEdid('POST-mod_melee_SuperSledge_ShockAndStun')).toBe(true);
+    expect(isExcludedOmodEdid('POST-Parent_mod_melee_Weapon_ShockAndStun')).toBe(true);
+    expect(
+      isExcludedOmodEdid('POST-DLC04_mod_melee_BaseballBat_Rocket_SpikesLarge_ShockAndStun'),
+    ).toBe(false);
   });
 });
 

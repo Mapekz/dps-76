@@ -1308,3 +1308,14 @@ Extractor: `scripts/extract/normalize/mgef.ts` (`PERK_GRANT_ARCHETYPES` chase).
   WornHasKeyword MoMEyeOfRaItemKeyword) — base branch extracted; upgrade
   gated on unmodeled armor keyword. Paralyze CC note-only. **ASSUMPTION**.
 
+## Rage (mod_Custom_Rage)
+
+- **Script-set outgoing/incoming damage per rage stack** (abFortifyDamageAll /
+  abFortifyDamageRecieved, zero magnitude) — **unmeasured**; needs in-game
+  measurement before wiring (`mod_Custom_Rage` notes).
+
+## Kinetic Servos (PA_KineticServos_AV)
+
+- **Native AP-regen flag** on PA leg misc mods — magnitude not ESM-derivable.
+  **unmeasured** (`PA_KineticServos_AV` ActorValues note on leg records).
+
