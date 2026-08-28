@@ -72,6 +72,11 @@ export interface BuildAffordances {
    */
   hasWellTunedSource: boolean;
   /**
+   * True when any equipped source carries an `eyeOfRaWorn` condition (Voice of
+   * Set — Eye of Ra upgrade tier) — shows the Eye of Ra toggle in Conditions.
+   */
+  hasEyeOfRaSource: boolean;
+  /**
    * True when any equipped source carries a `vatsTargetIndex` condition (Gun
    * Fu) — shows the VATS target-position chip selector in Conditions.
    */
@@ -148,6 +153,10 @@ export function describeAffordances(input: ScenarioInput): BuildAffordances {
     m.conditions.some((c) => c.kind === 'wellTuned'),
   );
 
+  const hasEyeOfRaSource = input.modifiers.some((m) =>
+    m.conditions.some((c) => c.kind === 'eyeOfRaWorn'),
+  );
+
   const hasVatsTargetIndexSources = input.modifiers.some((m) =>
     m.conditions.some((c) => c.kind === 'vatsTargetIndex'),
   );
@@ -181,6 +190,7 @@ export function describeAffordances(input: ScenarioInput): BuildAffordances {
     hasOnCrippleProcSource,
     hasBashBuffUptimeSource,
     hasWellTunedSource,
+    hasEyeOfRaSource,
     hasVatsTargetIndexSources,
     charging,
     range,

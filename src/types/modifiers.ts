@@ -1467,6 +1467,12 @@ export type Condition =
    * docs/assumptions.md "Tone Death Well Tuned melee buff".
    */
   | { kind: 'wellTuned'; value: boolean }
+  /**
+   * Wearing the Eye of Ra headwear (WornHasKeyword MoMEyeOfRaItemKeyword
+   * 0x004E60E2 — MoM_ClothesMistressOfMysteryEyeOfRa). Gates Voice of Set's
+   * upgraded robot shock proc tier; default OFF (ADR-0024).
+   */
+  | { kind: 'eyeOfRaWorn'; value: boolean }
   /** Target carries ≥1 active effect with this keyword (Pyromaniac's: DamageTypeFire; Viper's: DamageTypePoison). */
   | { kind: 'enemyHasActiveEffect'; keyword: string }
   /** Enemies in the engaged group == count, or ≥ count for the top tier (Encircler's — GetGroupTargetCount). */

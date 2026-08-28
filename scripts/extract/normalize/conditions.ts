@@ -333,13 +333,14 @@ function translateSingle(
       if (!onEnemySide && wants && isScopeWeaponKeyword(edid)) {
         return { kind: 'weaponKeyword', keyword: edid, present: true };
       }
-      // Eye of Ra worn-armor gate — no armor-loadout UI; NOT-worn rows consumed
-      // on the base Voice of Set proc branch, =1 stays unresolved for upgrade notes.
+      // Eye of Ra worn-armor gate — MoM_ClothesMistressOfMysteryEyeOfRa headwear.
       if (edid === 'MoMEyeOfRaItemKeyword' && fn === 'WornHasKeyword') {
+        const wearing = /^equal to$/i.test(cond.Operator ?? '') && cmp === 1;
         const notWearing =
           (/^not equal to$/i.test(cond.Operator ?? '') && cmp === 1) ||
           (/^equal to$/i.test(cond.Operator ?? '') && cmp === 0);
-        if (notWearing) return null;
+        if (wearing) return { kind: 'eyeOfRaWorn', value: true };
+        if (notWearing) return { kind: 'eyeOfRaWorn', value: false };
       }
       if (
         !onEnemySide &&

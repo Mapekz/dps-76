@@ -1330,13 +1330,18 @@ Extractor: `scripts/extract/normalize/mgef.ts` (`PERK_GRANT_ARCHETYPES` chase).
 
 ## Voice of Set robot shock proc
 
+Engine: `src/lib/engine/resolve.ts` `eyeOfRaWorn` condition; extractor:
+`scripts/extract/normalize/conditions.ts`, `translateGrantedPerk`.
+
 - **Base 35 energy `dotDamage`** (SPEL Mom_VoiceofSet_ShockRobots 0x0052266B,
-  Contact Target Type 1, `enemyType` ActorTypeRobot). **ESM-PROVEN**
-  2026-08-28 — prior "self-targeted" note was a misread of ENCH Self delivery
-  vs spell Contact delivery.
-- **Eye of Ra 70 + paralyze upgrade** (Mom_VoiceofSet_ShockStunRobots,
-  WornHasKeyword MoMEyeOfRaItemKeyword) — extractor emits a descriptive note;
-  no armor-loadout toggle for `MoMEyeOfRaItemKeyword`. Paralyze CC note-only.
+  Contact Target Type 1, `enemyType` ActorTypeRobot), gated
+  `eyeOfRaWorn: false` (WornHasKeyword MoMEyeOfRaItemKeyword Not-Equal-1).
+  **ESM-PROVEN** 2026-08-28.
+- **Eye of Ra 70 upgrade** (SPEL Mom_VoiceofSet_ShockStunRobots 0x00521937,
+  same robot/energy gates + `eyeOfRaWorn: true`). **ESM-PROVEN**.
+- **Default OFF** — exogenous armor headwear, ADR-0009 honest zero;
+  `PlayerInput.eyeOfRaWorn` (ADR-0024).
+- **25% paralyze** (ParalyzeEffect25 on the upgrade spell) — CC note-only.
   **ASSUMPTION**.
 
 ## Player baseline sneak mult

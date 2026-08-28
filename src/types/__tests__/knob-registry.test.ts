@@ -9,7 +9,7 @@ import {
 
 describe('KNOB_REGISTRY', () => {
   it('has exactly one player row per ResolvedPlayer key', () => {
-    expect(Object.keys(PLAYER_KNOB_REGISTRY).length).toBe(61);
+    expect(Object.keys(PLAYER_KNOB_REGISTRY).length).toBe(62);
     for (const key of Object.keys(makeResolvedPlayer())) {
       expect(PLAYER_KNOB_REGISTRY).toHaveProperty(key);
     }
@@ -122,6 +122,7 @@ describe('KNOB_REGISTRY', () => {
       { key: 'wellTuned', wire: 60 },
       { key: 'standingStill', wire: 61 },
       { key: 'vatsTargetIndex', wire: 62 },
+      { key: 'eyeOfRaWorn', wire: 63 },
     ];
     const fromRegistry = (Object.keys(PLAYER_KNOB_REGISTRY) as Array<keyof ResolvedPlayer>).map(
       (key) => ({ key, wire: PLAYER_KNOB_REGISTRY[key]!.wire }),

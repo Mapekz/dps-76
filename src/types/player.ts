@@ -82,6 +82,12 @@ export interface PlayerInput {
    */
   wellTuned?: boolean;
   /**
+   * Wearing the Eye of Ra headwear (MoMEyeOfRaItemKeyword). Gates Voice of
+   * Set's upgraded robot shock proc. Default false: exogenous armor loadout,
+   * ADR-0009 honest zero (ADR-0024).
+   */
+  eyeOfRaWorn?: boolean;
+  /**
    * Standing still (IsMoving()=0). Default false (moving) — keeps
    * standing-still-gated modifiers inactive until toggled on (ADR-0022).
    */
@@ -237,6 +243,7 @@ export function createDefaultPlayerInput(): PlayerInput {
     procCripplesPerMin: 0,
     onBashBuffUptime: 0,
     wellTuned: false,
+    eyeOfRaWorn: false,
     standingStill: false,
     vatsTargetIndex: 1,
     strength: 1,

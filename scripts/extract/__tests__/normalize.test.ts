@@ -35,6 +35,7 @@ import enchPowerArmorUnarmedDamage from './fixtures/ench-powerarmor-unarmeddamag
 import modArmorBrawlerPerk from './fixtures/perk-mod-armor-brawler.json';
 import momVoiceofSetPerk from './fixtures/perk-mom-voiceofset.json';
 import momVoiceofSetShockRobots from './fixtures/spel-mom-voiceofset-shockrobots.json';
+import momVoiceofSetShockStunRobots from './fixtures/spel-mom-voiceofset-shockstunrobots.json';
 import lgnLegendaryStrength01 from './fixtures/perk-lgn-legendarystrength01.json';
 import abLgnPerkStrength from './fixtures/spel-ablgnperkstrength.json';
 import lgnRetribution01 from './fixtures/perk-lgn-retribution01.json';
@@ -4219,6 +4220,7 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
   const STRENGTH_AV = '0x000002C2';
   const UNARMED_DAMAGE_AV = '0x000002DF';
   const SHOCK_MGEF = '0x000856FC';
+  const PARALYZE_MGEF = '0x0005240C';
   const BRAWLER_AV = '0x00245B9C';
   const H2H_KW = '0x00226453';
   const UNARMED_KW = '0x0005240E';
@@ -4616,11 +4618,13 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
   it('MoM_VoiceofSetPerk EP51 shock spell → dotDamage with enemyType robot', async () => {
     const perkFormId = '0x00522668';
     const spellFormId = '0x0052266B';
+    const upgradeSpellFormId = '0x00521937';
     const result = await translateGrantedPerk(
       {
         client: fixtureClient({
           [perkFormId]: momVoiceofSetPerk,
           [spellFormId]: momVoiceofSetShockRobots,
+          [upgradeSpellFormId]: momVoiceofSetShockStunRobots,
           [SHOCK_MGEF]: {
             header: { signature: 'MGEF', form_id: SHOCK_MGEF },
             editor_id: 'dtElectricalEffectChanceAlways',
@@ -4630,6 +4634,18 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
                   Archetype: { name: 'Damage' },
                   'Resist Value': '0x000002EB',
                   Flags: { flags: ['Hostile', 'Detrimental'] },
+                },
+              },
+            },
+          },
+          [PARALYZE_MGEF]: {
+            header: { signature: 'MGEF', form_id: PARALYZE_MGEF },
+            editor_id: 'ParalyzeEffect25',
+            fields: {
+              'Magic Effect Data': {
+                Data: {
+                  Archetype: { name: 'Paralysis' },
+                  Flags: { flags: ['Hostile', 'Recover', 'No Magnitude', 'No Area'] },
                 },
               },
             },
@@ -4668,10 +4684,24 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
         value: 35,
         durationSec: 1,
         conditions: expect.arrayContaining([
+          { kind: 'eyeOfRaWorn', value: false },
           expect.objectContaining({ kind: 'enemyType', keywordOrRace: 'ActorTypeRobot' }),
         ]),
       }),
     );
+    expect(result.modifiers).toContainEqual(
+      expect.objectContaining({
+        bucket: 'dotDamage',
+        op: 'ADD',
+        value: 70,
+        durationSec: 1,
+        conditions: expect.arrayContaining([
+          { kind: 'eyeOfRaWorn', value: true },
+          expect.objectContaining({ kind: 'enemyType', keywordOrRace: 'ActorTypeRobot' }),
+        ]),
+      }),
+    );
+    expect(result.notes.some((n) => n.includes('25% paralyze'))).toBe(true);
   });
 
   it('translateConditions consumes GetDead()=0, GetDead() Not Equal To 1, and drops IsEssential()=1', () => {
@@ -5057,7 +5087,7 @@ describe('translateConditions (condition-whitelist round K, 2026-08-28)', () => 
     expect(melee.conditions).toEqual([{ kind: 'weaponAnimTypeMax', max: 6 }]);
   });
 
-  it('consumes WornHasKeyword(MoMEyeOfRaItemKeyword) NOT-worn rows and leaves =1 unresolved', () => {
+  it('maps WornHasKeyword(MoMEyeOfRaItemKeyword) to eyeOfRaWorn true/false tiers', () => {
     const base = translateConditions(
       [
         {
@@ -5069,7 +5099,7 @@ describe('translateConditions (condition-whitelist round K, 2026-08-28)', () => 
       ],
       { edidByFormId: new Map([['0xEYE', 'MoMEyeOfRaItemKeyword']]) },
     );
-    expect(base.conditions).toEqual([]);
+    expect(base.conditions).toEqual([{ kind: 'eyeOfRaWorn', value: false }]);
     const upgrade = translateConditions(
       [
         {
@@ -5081,9 +5111,7 @@ describe('translateConditions (condition-whitelist round K, 2026-08-28)', () => 
       ],
       { edidByFormId: new Map([['0xEYE', 'MoMEyeOfRaItemKeyword']]) },
     );
-    expect(upgrade.conditions).toEqual([
-      { kind: 'unresolved', raw: 'WornHasKeyword(MoMEyeOfRaItemKeyword)=1' },
-    ]);
+    expect(upgrade.conditions).toEqual([{ kind: 'eyeOfRaWorn', value: true }]);
   });
 
   it('PlayerPerk Mod Sneak Attack Mult → ESM-provenance note via resolveDirectEntryPointModifiers', async () => {
@@ -5126,25 +5154,6 @@ describe('translateConditions (condition-whitelist round K, 2026-08-28)', () => 
         },
       ],
     });
-  });
-
-  it('MoM_VoiceofSetPerk upgrade spell branch → note only, no 70-dotDamage modifier', async () => {
-    const result = await translateGrantedPerk(
-      {
-        client: createInMemoryEsmSource({
-          records: { '0x00522668': momVoiceofSetPerk as unknown as EsmRecord },
-          resolveEdidFallback: (formId) => formId,
-        }),
-        routes: new Map(),
-        edidByFormId: new Map([['0x004E60E2', 'MoMEyeOfRaItemKeyword']]),
-      },
-      'MoM_VoiceofSetPerk',
-      '0x00522668',
-    );
-    expect(
-      result.modifiers.some((m) => m.bucket === 'dotDamage' && 'value' in m && m.value === 70),
-    ).toBe(false);
-    expect(result.notes.some((n) => n.includes('Eye of Ra upgrade'))).toBe(true);
   });
 });
 

@@ -426,6 +426,8 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return (ctx.player.underAlcoholEffect ?? false) === cond.value ? 1 : null;
     case 'wellTuned':
       return (ctx.player.wellTuned ?? false) === cond.value ? 1 : null;
+    case 'eyeOfRaWorn':
+      return (ctx.player.eyeOfRaWorn ?? false) === cond.value ? 1 : null;
     case 'drinkTierExact':
       return (ctx.player.drinkTier ?? 0) === cond.tier ? 1 : null;
     case 'foodTierExact':

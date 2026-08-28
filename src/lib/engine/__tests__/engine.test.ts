@@ -372,6 +372,27 @@ describe('condition evaluation', () => {
     expect(foldBucket([toneDeath], 'dbm', 1.0, on)).toBeCloseTo(1.2, 10);
   });
 
+  it('eyeOfRaWorn selects Voice of Set robot shock proc tier (35 off, 70 on)', () => {
+    const baseTier = mod({
+      bucket: 'dotDamage',
+      op: 'ADD',
+      value: 35,
+      conditions: [{ kind: 'eyeOfRaWorn', value: false }],
+    });
+    const upgradeTier = mod({
+      bucket: 'dotDamage',
+      op: 'ADD',
+      value: 70,
+      conditions: [{ kind: 'eyeOfRaWorn', value: true }],
+    });
+
+    expect(computeDotDps([baseTier, upgradeTier], weapon, makeCtx(weapon))).toBeCloseTo(35, 10);
+    const withEye = makeCtx(weapon, {
+      player: { ...makeResolvedPlayer(), eyeOfRaWorn: true },
+    });
+    expect(computeDotDps([baseTier, upgradeTier], weapon, withEye)).toBeCloseTo(70, 10);
+  });
+
   it("radResistAtLeast gates Daisy Cutter's 8-step Rad-Resistance ladder, capping at +160% (8000+)", () => {
     // Perk_Daisycutter's real ESM shape (esm chase 0x00471882): 8 discrete
     // dbm ADD 0.2 modifiers, each gated GetValue(RadResistExposure) >= N for
@@ -3043,6 +3064,18 @@ describe('hasKillStreakSources detection', () => {
       ],
     };
     expect(describeAffordances({ ...base, modifiers: [gunFuMod] }).hasVatsTargetIndexSources).toBe(
+      true,
+    );
+  });
+
+  it('detects eyeOfRaWorn conditions (Voice of Set)', () => {
+    const voiceOfSetDot = mod({
+      bucket: 'dotDamage',
+      op: 'ADD',
+      value: 35,
+      conditions: [{ kind: 'eyeOfRaWorn', value: false }],
+    });
+    expect(describeAffordances({ ...base, modifiers: [voiceOfSetDot] }).hasEyeOfRaSource).toBe(
       true,
     );
   });

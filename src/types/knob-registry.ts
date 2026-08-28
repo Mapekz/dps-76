@@ -711,6 +711,16 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     activeBadge: 'conditions',
     clamp: { min: 1, max: 4 },
   },
+  eyeOfRaWorn: {
+    key: 'eyeOfRaWorn',
+    wire: 63,
+    owner: 'player',
+    origin: 'input',
+    section: 'conditions',
+    default: PLAYER_DEFAULTS.eyeOfRaWorn ?? false,
+    label: 'Eye of Ra equipped',
+    activeBadge: 'conditions',
+  },
 };
 
 // retired wire ordinals: (none yet)

@@ -23760,7 +23760,6 @@
   "hasCard": false,
   "notes": [
    "MGEF MoM_VoiceofSet_Base_Desc archetype Script — needs override",
-   "condition: WornHasKeyword(MoMEyeOfRaItemKeyword)=1",
    "MGEF MoM_VoiceofSet_EyeRA_Desc archetype Script — needs override"
   ]
  },

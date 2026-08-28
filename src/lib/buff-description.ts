@@ -428,6 +428,9 @@ function describeConditions(conditions: readonly Condition[], bucket: Bucket): s
       case 'wellTuned':
         clauses.push(c.value ? 'while Well Tuned' : 'while not Well Tuned');
         break;
+      case 'eyeOfRaWorn':
+        clauses.push(c.value ? 'with Eye of Ra equipped' : 'without Eye of Ra equipped');
+        break;
       case 'healthBelowPct':
         clauses.push(`below ${c.pct}% health`);
         break;

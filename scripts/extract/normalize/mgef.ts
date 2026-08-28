@@ -1595,39 +1595,11 @@ export function translate(
     result.notes.push(`MGEF ${mgef.edid}: no route for AV ${avifEdid} — needs mapping`);
   }
 
-  applyVoiceOfSetEyeOfRaPostProcess(result);
   return result;
 }
 
-const EYE_OF_RA_UPGRADE_NOTE =
-  'Eye of Ra upgrade proc (70 energy dotDamage + 25% paralyze) — gated on MoMEyeOfRaItemKeyword (armor loadout unmodeled; docs/assumptions.md)';
-
-/** Strip or de-gate Voice of Set upgrade rows that need worn Eye of Ra armor. */
-function applyVoiceOfSetEyeOfRaPostProcess(result: MgefTranslationResult): void {
-  const kept: ModifierFragment[] = [];
-  for (const m of result.modifiers) {
-    if (m.bucket !== 'dotDamage') {
-      kept.push(m);
-      continue;
-    }
-    const eyeIdx = m.conditions.findIndex(
-      (c) => c.kind === 'unresolved' && c.raw === 'WornHasKeyword(MoMEyeOfRaItemKeyword)=1',
-    );
-    if (eyeIdx < 0) {
-      kept.push(m);
-      continue;
-    }
-    if ('value' in m && typeof m.value === 'number' && m.value >= 70) {
-      if (!result.notes.includes(EYE_OF_RA_UPGRADE_NOTE)) result.notes.push(EYE_OF_RA_UPGRADE_NOTE);
-      continue;
-    }
-    kept.push({
-      ...m,
-      conditions: m.conditions.filter((_, i) => i !== eyeIdx),
-    });
-  }
-  result.modifiers = kept;
-}
+const EYE_OF_RA_PARALYZE_NOTE =
+  'Eye of Ra upgrade proc 25% paralyze (ParalyzeEffect25) — CC note-only; docs/assumptions.md "Voice of Set robot shock proc"';
 
 export function hasEyeOfRaUpgradeGate(
   conditionRows: RawCondition[],
@@ -2308,13 +2280,7 @@ export async function translateGrantedPerk(
         'name'
       ];
       if (functionTypeName === 'Spell Item' && typeof e['Spell'] === 'string') {
-        if (hasEyeOfRaUpgradeGate(conditionRows, edidByFormId)) {
-          unresolved.forEach((u) => result.notes.push(`perk ${perkEdid}: ${u}`));
-          if (!result.notes.includes(EYE_OF_RA_UPGRADE_NOTE)) {
-            result.notes.push(`perk ${perkEdid}: ${EYE_OF_RA_UPGRADE_NOTE}`);
-          }
-          continue;
-        }
+        const isEyeOfRaUpgrade = hasEyeOfRaUpgradeGate(conditionRows, edidByFormId);
         // Bash-triggered uptime scaling (Love Tap — issue #80/#42 follow-up,
         // user-directed 2026-08-20) is scoped to EP173 "Apply Combat Melee
         // Spell" specifically — see MgefTranslationDeps.bashTriggered.
@@ -2358,6 +2324,9 @@ export async function translateGrantedPerk(
         }
         if (sub.auras && sub.auras.length > 0) {
           result.auras = [...(result.auras ?? []), ...sub.auras];
+        }
+        if (isEyeOfRaUpgrade && !result.notes.includes(EYE_OF_RA_PARALYZE_NOTE)) {
+          result.notes.push(`perk ${perkEdid}: ${EYE_OF_RA_PARALYZE_NOTE}`);
         }
         continue;
       }

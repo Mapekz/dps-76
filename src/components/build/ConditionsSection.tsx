@@ -99,6 +99,8 @@ export function ConditionsSection() {
   const onBashBuffUptime = conditions.onBashBuffUptime ?? 0;
   const hasWellTunedSource = affordances?.hasWellTunedSource ?? false;
   const wellTuned = conditions.wellTuned ?? false;
+  const hasEyeOfRaSource = affordances?.hasEyeOfRaSource ?? false;
+  const eyeOfRaWorn = conditions.eyeOfRaWorn ?? false;
   const standingStill = conditions.standingStill ?? false;
   const hasVatsTargetIndex = affordances?.hasVatsTargetIndexSources ?? false;
   const vatsTargetIndex = conditions.vatsTargetIndex ?? 1;
@@ -534,6 +536,21 @@ export function ConditionsSection() {
                   <HelperText>
                     Playing an instrument grants this 1-hour buff. Tone Death's +20% melee only
                     applies while it is active. Off by default (honest zero).
+                  </HelperText>
+                </div>
+              )}
+
+              {hasEyeOfRaSource && (
+                <div className="space-y-1.5">
+                  <SwitchRow
+                    id="char-eye-of-ra"
+                    label="Eye of Ra equipped"
+                    checked={eyeOfRaWorn}
+                    onCheckedChange={(checked) => set('eyeOfRaWorn', checked)}
+                  />
+                  <HelperText>
+                    Wearing the Eye of Ra headwear upgrades Voice of Set's robot shock proc from 35
+                    to 70 energy damage. Off by default (honest zero).
                   </HelperText>
                 </div>
               )}
