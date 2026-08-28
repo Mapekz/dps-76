@@ -65,6 +65,39 @@ its cut-rank-truncation function.
    on-record but never released. Confirm against release history or ask the
    user before rescuing anything unfamiliar.
 
+## Effect-graph reachability (before modeling ANY effect arm)
+
+An obtainable item does not make every effect arm on it live. Before wiring a
+newly-surfaced arm, traverse BOTH directions and refs-check the ends — the
+generic mechanics (leaf-refs trap, dead-end AV writes, root-refs recipe) are
+in the `esm-cli` skill's reachability section; this is the dps-76 judgment
+layer:
+
+1. **Upstream — who grants/attaches this?** Walk the arm to its ROOT (the
+   OMOD property, ENCH, or SPEL that starts the chain) and `esm refs` the
+   ROOT, not the leaf. Every hop of an orphan chain references the next, so
+   refs on any middle node look alive; only the root tells the truth. A
+   keyword-gated apply-perk whose gate passes still does nothing unless
+   something actually GRANTS the perk.
+2. **Downstream — who consumes this?** An AV write needs a reader (a
+   perk/MGEF/EP whose Actor Value or curve input is that AV); a keyword add
+   needs a gate that reads it AND a live effect behind the gate. A write
+   with zero consumers is a native-engine flag or VFX enable, not damage.
+3. **Both checks are necessary, neither sufficient.** Zero record-level refs
+   can still be live (script/VMAD/ATX grants — the `forceVisible*` rescue
+   class; user-confirm in-game), and a perfectly-wired record graph can be
+   unshipped (P62). Naming conventions (`CUT_`/`zzz_`/`POST-`/`DEL`) and
+   release history break the ties.
+
+Precedents (all 2026-08-28, formids re-walkable):
+
+| case | failure shape |
+|---|---|
+| Pin-Pointer's +50% appendage arm | orphan ROOT: `ench_LegendaryWeapon_PinPointers` 0x007ACA02 has zero refs — the ENCH→AddPerk→SPEL→ApplyPerk island never fires despite an obtainable carrier and a satisfiable keyword gate; in-game effect is the +20% weakpoint arm only |
+| Kinetic Servos / KillStreakPerKillCount / VATSCriticalMultAdjust* / RefractingProjectileChance / BloodyMess* | dead-end AV writes: zero downstream consumers → native-engine/VFX flags |
+| Eat The Rich (Anti-Aristocrat's) | fully-specified offense, zero refs on the mod itself → dormant/unreleased |
+| Ruiner's (P62) | extractor emitted real modifiers, but the whole record family is unreleased — and its gates parked unresolved, so a naive rescue ships an unconditional +500 |
+
 ## Power-armor exclusivity (armor OMODs)
 
 Whether an armor-legendary/misc mod can ONLY be worn on power armor

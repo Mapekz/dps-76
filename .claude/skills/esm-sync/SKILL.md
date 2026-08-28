@@ -61,8 +61,10 @@ b.filter(x=>!sa.has(x)).slice(0,40).forEach(x=>console.log(" +",x))'
 remainder test (unresolved-classification.test.ts) fails when a NEW gap
 appears — that failure is the signal a patch added something unhandled.
 
-- A NEW unclassified entry = walk it (**esm-walk** skill), then either fix
-  extraction or add a rule with the evidence in its comment. Never a blanket
+- A NEW unclassified entry = walk it (**esm-walk** skill — run its
+  "Effect-graph reachability" checklist FIRST: root-refs + consumer check
+  before any modeling verdict), then either fix extraction or add a rule
+  with the evidence in its comment. Never a blanket
   rule over a live class (e.g. `archetype Script`) — new members must keep
   surfacing.
 - Validate rules with a harness run; a zero-match rule = wrong matcher or
