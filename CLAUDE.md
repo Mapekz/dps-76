@@ -23,7 +23,7 @@ This is a Fallout 76 DPS (Damage Per Second) calculator web application. It comp
 - `bun run vet:weapons` - Check the vetted weapon roster against the current extraction (see the weapon-vetting skill)
 - `bun run audit:inert` - Audit for modifiers on inert/no-effect buckets
 - `bun run audit:records [--domain …] [--tier 1,2,3]` - Round-trip generated-vs-ESM auditor (identity / re-derivation equality / provenance completeness); run after every ESM sync — see the esm-sync skill
-- `bun run extract -- --strict-unresolved` - Fail extraction on unresolved entries not covered by `scripts/extract/unresolved-classification.ts` (the checked-in dispositions; default off — the classification remainder test is the CI-side gate)
+- `bun run extract -- --no-strict-unresolved` - Bypass the strict unresolved gate, which is default-ON since 2026-08-28 (backlog reached zero): extraction fails on unresolved entries not covered by `scripts/extract/unresolved-classification.ts` (the checked-in dispositions). The classification remainder test additionally gates CI (which has no ESM and can't run extraction).
 - `bun run wire-dict:build` - Sync append-only wire dictionaries from the merged dataset (`scripts/build-wire-dictionary.ts`)
 
 This project uses **Bun** as the package manager and script runner (`bun install`, `bun run <script>`),
