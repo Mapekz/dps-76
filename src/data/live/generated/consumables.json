@@ -15262,9 +15262,7 @@
     "conditions": []
    }
   ],
-  "notes": [
-   "Magazine_TeslaScience05_Potion: perk Magazine_TeslaScience05Perk: GetRandomPercent()=20"
-  ],
+  "notes": [],
   "category": "magazine",
   "dispelKeys": [
    "MagazineDispelEffects"

@@ -21,15 +21,13 @@ describe('routing table regime compatibility', () => {
   /**
    * Regimes that AV routing tables (`FALLBACK_AVIF_ROUTES`, `ACTOR_VALUE_BUCKETS`)
    * produce today. Pinned deliberately — adding a route whose bucket sits in
-   * `dot`, `sustainChance`, `critEconomy`, or `spellMagnitude` (or any other
+   * `dot`, `sustainChance`, or `spellMagnitude` (or any other
    * regime not listed here) is a reviewed change, not an accidental table grow.
    *
-   * Those four excluded regimes are real `BucketRegime` values with live
-   * buckets in `BUCKET_REGISTRY`, but none are reachable via these two AV
-   * tables yet (`critFill`/`critConsumption` come from OMOD property names in
-   * `PROPERTY_BUCKETS`; `dotDamage` from MGEF translation; sustain/spell-
-   * magnitude buckets from other extraction paths). Every regime appearing in
-   * either table today is plausible for AV routing — no further subsetting.
+   * `critEconomy` is included because STAT_VATSCritFillOnMiss now routes via
+   * FALLBACK_AVIF_ROUTES (Four Leaf Clover, pile-1 2026-08-28). The other
+   * excluded regimes (`dotDamage` from MGEF translation; sustain/spell-
+   * magnitude buckets from other extraction paths) stay out of scope.
    */
   const ALLOWED_EXTRACTION_REGIMES: ReadonlySet<BucketRegime> = new Set([
     'damageFold',
@@ -40,6 +38,7 @@ describe('routing table regime compatibility', () => {
     'mitigation',
     'display',
     'unfolded',
+    'critEconomy',
   ]);
 
   it('every bucket named by either AV routing table has an allowed extraction regime', () => {

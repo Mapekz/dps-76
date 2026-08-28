@@ -1015,7 +1015,9 @@
     1
    ]
   },
-  "notes": []
+  "notes": [
+   "perk ArcherMaster01: Mod VATS Penetration Min Visibility — VATS pierce-through visibility (up to 3 targets), not armorPen (docs/assumptions.md \"Penetrating (mod_weapon_penetrating)\")"
+  ]
  },
  {
   "family": "Armorer",
@@ -1621,7 +1623,68 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x002593D5:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x002593D5",
+       "edid": "Bandito",
+       "name": "Bandito",
+       "rank": 1
+      },
+      "bucket": "weaponMinRange",
+      "op": "MUL_ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypePistol",
+        "present": true
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomatic",
+        "present": false
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       }
+      ]
+     },
+     {
+      "id": "0x002593D5:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x002593D5",
+       "edid": "Bandito",
+       "name": "Bandito",
+       "rank": 1
+      },
+      "bucket": "weaponMaxRange",
+      "op": "MUL_ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypePistol",
+        "present": true
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomatic",
+        "present": false
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -3054,7 +3117,6 @@
   "hasCard": false,
   "notes": [
    "condition: GetGlobalValue(Burn_Bounty_HeadHuntEffects)=1",
-   "condition: GetDead()=0",
    "MGEF Burn_Mutation_UnstableIsotopeSuperScriptEffect archetype Script — needs override"
   ]
  },
@@ -4484,15 +4546,210 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031D4AF:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031D4AF",
+       "edid": "Crackshot",
+       "name": "Crack Shot",
+       "rank": 1
+      },
+      "bucket": "weaponMinRange",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "aimingDownSights",
+        "value": true
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypeShotgun",
+         "WeaponTypePistol"
+        ]
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       }
+      ]
+     },
+     {
+      "id": "0x0031D4AF:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031D4AF",
+       "edid": "Crackshot",
+       "name": "Crack Shot",
+       "rank": 1
+      },
+      "bucket": "weaponMaxRange",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "aimingDownSights",
+        "value": true
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypeShotgun",
+         "WeaponTypePistol"
+        ]
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031D4AF:r2:4:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031D4AF",
+       "edid": "Crackshot",
+       "name": "Crack Shot",
+       "rank": 2
+      },
+      "bucket": "weaponMinRange",
+      "op": "MUL_ADD",
+      "value": 0.19999999999999996,
+      "conditions": [
+       {
+        "kind": "aimingDownSights",
+        "value": true
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypeShotgun",
+         "WeaponTypePistol"
+        ]
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       }
+      ]
+     },
+     {
+      "id": "0x0031D4AF:r2:4:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031D4AF",
+       "edid": "Crackshot",
+       "name": "Crack Shot",
+       "rank": 2
+      },
+      "bucket": "weaponMaxRange",
+      "op": "MUL_ADD",
+      "value": 0.19999999999999996,
+      "conditions": [
+       {
+        "kind": "aimingDownSights",
+        "value": true
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypeShotgun",
+         "WeaponTypePistol"
+        ]
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031D4AF:r3:6:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031D4AF",
+       "edid": "Crackshot",
+       "name": "Crack Shot",
+       "rank": 3
+      },
+      "bucket": "weaponMinRange",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": [
+       {
+        "kind": "aimingDownSights",
+        "value": true
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypeShotgun",
+         "WeaponTypePistol"
+        ]
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       }
+      ]
+     },
+     {
+      "id": "0x0031D4AF:r3:6:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031D4AF",
+       "edid": "Crackshot",
+       "name": "Crack Shot",
+       "rank": 3
+      },
+      "bucket": "weaponMaxRange",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": [
+       {
+        "kind": "aimingDownSights",
+        "value": true
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypeShotgun",
+         "WeaponTypePistol"
+        ]
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -6022,7 +6279,6 @@
   ],
   "hasCard": false,
   "notes": [
-   "condition: GetDead()=0",
    "condition: GetSecondsSinceLastAttack()=1.5",
    "condition: GetAttackState()=16"
   ]
@@ -8681,7 +8937,47 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D895:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D895",
+       "edid": "FourLeafClover",
+       "name": "Four Leaf Clover",
+       "rank": 1
+      },
+      "bucket": "critFill",
+      "op": "ADD",
+      "curve": {
+       "input": "luck",
+       "points": [
+        {
+         "x": 1,
+         "y": 0.15
+        },
+        {
+         "x": 15,
+         "y": 0.5
+        },
+        {
+         "x": 30,
+         "y": 0.7
+        },
+        {
+         "x": 60,
+         "y": 0.9
+        },
+        {
+         "x": 100,
+         "y": 1
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -11568,15 +11864,75 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E20:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E20",
+       "edid": "GHL_WildWestHands",
+       "name": "Wild West Hands",
+       "rank": 1
+      },
+      "bucket": "reloadSkipChance",
+      "op": "ADD",
+      "value": 0.12,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E20:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E20",
+       "edid": "GHL_WildWestHands",
+       "name": "Wild West Hands",
+       "rank": 2
+      },
+      "bucket": "reloadSkipChance",
+      "op": "ADD",
+      "value": 0.24,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E20:r3:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E20",
+       "edid": "GHL_WildWestHands",
+       "name": "Wild West Hands",
+       "rank": 3
+      },
+      "bucket": "reloadSkipChance",
+      "op": "ADD",
+      "value": 0.36,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -15938,27 +16294,15 @@
        "name": "Battle-Loader's Armor Perk",
        "rank": 1
       },
-      "bucket": "reloadSkipChance",
-      "op": "SET",
-      "value": 1,
+      "bucket": "reloadSkipChanceBash",
+      "op": "ADD",
+      "value": 0.75,
       "conditions": [
        {
         "kind": "wornPieceCount",
         "keyword": "HasLegendary_Armor_BattleLoaders",
         "count": 5,
         "orMore": true
-       },
-       {
-        "kind": "powerAttack",
-        "value": true
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetRandomPercent()=75"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
        }
       ]
      },
@@ -15971,26 +16315,14 @@
        "name": "Battle-Loader's Armor Perk",
        "rank": 1
       },
-      "bucket": "reloadSkipChance",
-      "op": "SET",
-      "value": 1,
+      "bucket": "reloadSkipChanceBash",
+      "op": "ADD",
+      "value": 0.6,
       "conditions": [
        {
         "kind": "wornPieceCount",
         "keyword": "HasLegendary_Armor_BattleLoaders",
         "count": 4
-       },
-       {
-        "kind": "powerAttack",
-        "value": true
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetRandomPercent()=60"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
        }
       ]
      },
@@ -16003,26 +16335,14 @@
        "name": "Battle-Loader's Armor Perk",
        "rank": 1
       },
-      "bucket": "reloadSkipChance",
-      "op": "SET",
-      "value": 1,
+      "bucket": "reloadSkipChanceBash",
+      "op": "ADD",
+      "value": 0.45,
       "conditions": [
        {
         "kind": "wornPieceCount",
         "keyword": "HasLegendary_Armor_BattleLoaders",
         "count": 3
-       },
-       {
-        "kind": "powerAttack",
-        "value": true
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetRandomPercent()=45"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
        }
       ]
      },
@@ -16035,26 +16355,14 @@
        "name": "Battle-Loader's Armor Perk",
        "rank": 1
       },
-      "bucket": "reloadSkipChance",
-      "op": "SET",
-      "value": 1,
+      "bucket": "reloadSkipChanceBash",
+      "op": "ADD",
+      "value": 0.3,
       "conditions": [
        {
         "kind": "wornPieceCount",
         "keyword": "HasLegendary_Armor_BattleLoaders",
         "count": 2
-       },
-       {
-        "kind": "powerAttack",
-        "value": true
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetRandomPercent()=30"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
        }
       ]
      },
@@ -16067,26 +16375,14 @@
        "name": "Battle-Loader's Armor Perk",
        "rank": 1
       },
-      "bucket": "reloadSkipChance",
-      "op": "SET",
-      "value": 1,
+      "bucket": "reloadSkipChanceBash",
+      "op": "ADD",
+      "value": 0.15,
       "conditions": [
        {
         "kind": "wornPieceCount",
         "keyword": "HasLegendary_Armor_BattleLoaders",
         "count": 1
-       },
-       {
-        "kind": "powerAttack",
-        "value": true
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetRandomPercent()=15"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
        }
       ]
      }
@@ -16403,7 +16699,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0077176B:r1:1:0",
+      "source": {
+       "kind": "legendaryPerk",
+       "formId": "0x0077176B",
+       "edid": "Legendary_LastShot_Roll_Perk",
+       "name": "Last Shot Perk",
+       "rank": 1
+      },
+      "bucket": "lastShotChance",
+      "op": "ADD",
+      "value": 0.25,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -16535,10 +16846,6 @@
         "kind": "weaponKeyword",
         "keyword": "HasLegendary_Weapon_Bully",
         "present": true
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=1"
        },
        {
         "kind": "unresolved",
@@ -18013,19 +18320,163 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7CE:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7CE",
+       "edid": "LGN_LegendaryEndurance_Perk",
+       "name": "Legendary Endurance",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7CE:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7CE",
+       "edid": "LGN_LegendaryEndurance_Perk",
+       "name": "Legendary Endurance",
+       "rank": 2
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7CE:r2:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7CE",
+       "edid": "LGN_LegendaryEndurance_Perk",
+       "name": "Legendary Endurance",
+       "rank": 2
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7CE:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7CE",
+       "edid": "LGN_LegendaryEndurance_Perk",
+       "name": "Legendary Endurance",
+       "rank": 3
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7CE:r3:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7CE",
+       "edid": "LGN_LegendaryEndurance_Perk",
+       "name": "Legendary Endurance",
+       "rank": 3
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7CE:r3:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7CE",
+       "edid": "LGN_LegendaryEndurance_Perk",
+       "name": "Legendary Endurance",
+       "rank": 3
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 4,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7CE:r4:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7CE",
+       "edid": "LGN_LegendaryEndurance_Perk",
+       "name": "Legendary Endurance",
+       "rank": 4
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7CE:r4:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7CE",
+       "edid": "LGN_LegendaryEndurance_Perk",
+       "name": "Legendary Endurance",
+       "rank": 4
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7CE:r4:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7CE",
+       "edid": "LGN_LegendaryEndurance_Perk",
+       "name": "Legendary Endurance",
+       "rank": 4
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7CE:r4:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7CE",
+       "edid": "LGN_LegendaryEndurance_Perk",
+       "name": "Legendary Endurance",
+       "rank": 4
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 2,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -18047,9 +18498,7 @@
     4
    ]
   },
-  "notes": [
-   "MGEF AbLgnPerkFortifyEndurance archetype Dual Value Modifier — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "LGN_LegendaryIntelligence_Perk",
@@ -18070,19 +18519,163 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7D2:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D2",
+       "edid": "LGN_LegendaryIntelligence_Perk",
+       "name": "Legendary Intelligence",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7D2:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D2",
+       "edid": "LGN_LegendaryIntelligence_Perk",
+       "name": "Legendary Intelligence",
+       "rank": 2
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7D2:r2:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D2",
+       "edid": "LGN_LegendaryIntelligence_Perk",
+       "name": "Legendary Intelligence",
+       "rank": 2
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7D2:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D2",
+       "edid": "LGN_LegendaryIntelligence_Perk",
+       "name": "Legendary Intelligence",
+       "rank": 3
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7D2:r3:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D2",
+       "edid": "LGN_LegendaryIntelligence_Perk",
+       "name": "Legendary Intelligence",
+       "rank": 3
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7D2:r3:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D2",
+       "edid": "LGN_LegendaryIntelligence_Perk",
+       "name": "Legendary Intelligence",
+       "rank": 3
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 4,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7D2:r4:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D2",
+       "edid": "LGN_LegendaryIntelligence_Perk",
+       "name": "Legendary Intelligence",
+       "rank": 4
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7D2:r4:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D2",
+       "edid": "LGN_LegendaryIntelligence_Perk",
+       "name": "Legendary Intelligence",
+       "rank": 4
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7D2:r4:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D2",
+       "edid": "LGN_LegendaryIntelligence_Perk",
+       "name": "Legendary Intelligence",
+       "rank": 4
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7D2:r4:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D2",
+       "edid": "LGN_LegendaryIntelligence_Perk",
+       "name": "Legendary Intelligence",
+       "rank": 4
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 2,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -18104,9 +18697,7 @@
     4
    ]
   },
-  "notes": [
-   "MGEF AbLgnPerkFortifyIntelligence archetype Dual Value Modifier — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "LGN_LegendaryLuck_Perk",
@@ -18127,19 +18718,163 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7D6:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D6",
+       "edid": "LGN_LegendaryLuck_Perk",
+       "name": "Legendary Luck",
+       "rank": 1
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7D6:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D6",
+       "edid": "LGN_LegendaryLuck_Perk",
+       "name": "Legendary Luck",
+       "rank": 2
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7D6:r2:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D6",
+       "edid": "LGN_LegendaryLuck_Perk",
+       "name": "Legendary Luck",
+       "rank": 2
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7D6:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D6",
+       "edid": "LGN_LegendaryLuck_Perk",
+       "name": "Legendary Luck",
+       "rank": 3
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7D6:r3:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D6",
+       "edid": "LGN_LegendaryLuck_Perk",
+       "name": "Legendary Luck",
+       "rank": 3
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7D6:r3:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D6",
+       "edid": "LGN_LegendaryLuck_Perk",
+       "name": "Legendary Luck",
+       "rank": 3
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 4,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7D6:r4:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D6",
+       "edid": "LGN_LegendaryLuck_Perk",
+       "name": "Legendary Luck",
+       "rank": 4
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7D6:r4:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D6",
+       "edid": "LGN_LegendaryLuck_Perk",
+       "name": "Legendary Luck",
+       "rank": 4
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7D6:r4:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D6",
+       "edid": "LGN_LegendaryLuck_Perk",
+       "name": "Legendary Luck",
+       "rank": 4
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7D6:r4:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7D6",
+       "edid": "LGN_LegendaryLuck_Perk",
+       "name": "Legendary Luck",
+       "rank": 4
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 2,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -18161,9 +18896,7 @@
     4
    ]
   },
-  "notes": [
-   "MGEF AbLgnPerkFortifyLuck archetype Dual Value Modifier — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "LGN_LegendaryPerception_Perk",
@@ -18184,19 +18917,163 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7DA:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DA",
+       "edid": "LGN_LegendaryPerception_Perk",
+       "name": "Legendary Perception",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7DA:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DA",
+       "edid": "LGN_LegendaryPerception_Perk",
+       "name": "Legendary Perception",
+       "rank": 2
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7DA:r2:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DA",
+       "edid": "LGN_LegendaryPerception_Perk",
+       "name": "Legendary Perception",
+       "rank": 2
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7DA:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DA",
+       "edid": "LGN_LegendaryPerception_Perk",
+       "name": "Legendary Perception",
+       "rank": 3
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7DA:r3:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DA",
+       "edid": "LGN_LegendaryPerception_Perk",
+       "name": "Legendary Perception",
+       "rank": 3
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7DA:r3:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DA",
+       "edid": "LGN_LegendaryPerception_Perk",
+       "name": "Legendary Perception",
+       "rank": 3
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 4,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7DA:r4:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DA",
+       "edid": "LGN_LegendaryPerception_Perk",
+       "name": "Legendary Perception",
+       "rank": 4
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7DA:r4:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DA",
+       "edid": "LGN_LegendaryPerception_Perk",
+       "name": "Legendary Perception",
+       "rank": 4
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7DA:r4:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DA",
+       "edid": "LGN_LegendaryPerception_Perk",
+       "name": "Legendary Perception",
+       "rank": 4
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7DA:r4:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DA",
+       "edid": "LGN_LegendaryPerception_Perk",
+       "name": "Legendary Perception",
+       "rank": 4
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 2,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -18218,9 +19095,7 @@
     4
    ]
   },
-  "notes": [
-   "MGEF AbLgnPerkFortifyPerception archetype Dual Value Modifier — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "LGN_LegendaryStrength_Perk",
@@ -18241,19 +19116,163 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7DE:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DE",
+       "edid": "LGN_LegendaryStrength_Perk",
+       "name": "Legendary Strength",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7DE:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DE",
+       "edid": "LGN_LegendaryStrength_Perk",
+       "name": "Legendary Strength",
+       "rank": 2
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7DE:r2:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DE",
+       "edid": "LGN_LegendaryStrength_Perk",
+       "name": "Legendary Strength",
+       "rank": 2
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7DE:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DE",
+       "edid": "LGN_LegendaryStrength_Perk",
+       "name": "Legendary Strength",
+       "rank": 3
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7DE:r3:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DE",
+       "edid": "LGN_LegendaryStrength_Perk",
+       "name": "Legendary Strength",
+       "rank": 3
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7DE:r3:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DE",
+       "edid": "LGN_LegendaryStrength_Perk",
+       "name": "Legendary Strength",
+       "rank": 3
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 4,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011C7DE:r4:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DE",
+       "edid": "LGN_LegendaryStrength_Perk",
+       "name": "Legendary Strength",
+       "rank": 4
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7DE:r4:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DE",
+       "edid": "LGN_LegendaryStrength_Perk",
+       "name": "Legendary Strength",
+       "rank": 4
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7DE:r4:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DE",
+       "edid": "LGN_LegendaryStrength_Perk",
+       "name": "Legendary Strength",
+       "rank": 4
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0011C7DE:r4:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011C7DE",
+       "edid": "LGN_LegendaryStrength_Perk",
+       "name": "Legendary Strength",
+       "rank": 4
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 2,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -18275,9 +19294,7 @@
     4
    ]
   },
-  "notes": [
-   "MGEF AbLgnPerkFortifyStrength archetype Dual Value Modifier — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "LGN_MasterInfiltrator_Perk",
@@ -18614,7 +19631,10 @@
    ]
   },
   "notes": [
-   "entry point Mod Power Attack Damage uses Select Spell — skipped"
+   "perk LGN_Retribution_Perk01: Mod Power Attack Damage Select Spell — block-triggered sustain buff, not powerAttackBonus (docs/assumptions.md \"LGN Retribution\")",
+   "perk LGN_Retribution_Perk02: Mod Power Attack Damage Select Spell — block-triggered sustain buff, not powerAttackBonus (docs/assumptions.md \"LGN Retribution\")",
+   "perk LGN_Retribution_Perk03: Mod Power Attack Damage Select Spell — block-triggered sustain buff, not powerAttackBonus (docs/assumptions.md \"LGN Retribution\")",
+   "perk LGN_Retribution_Perk04: Mod Power Attack Damage Select Spell — block-triggered sustain buff, not powerAttackBonus (docs/assumptions.md \"LGN Retribution\")"
   ]
  },
  {
@@ -19354,7 +20374,54 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x002A1DBE:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x002A1DBE",
+       "edid": "Longshot",
+       "name": "Long Shot",
+       "rank": 1
+      },
+      "bucket": "weaponMinRange",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": [
+       {
+        "kind": "aimingDownSights",
+        "value": true
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasScopeWeaponEquipped()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x002A1DBE:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x002A1DBE",
+       "edid": "Longshot",
+       "name": "Long Shot",
+       "rank": 1
+      },
+      "bucket": "weaponMaxRange",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": [
+       {
+        "kind": "aimingDownSights",
+        "value": true
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasScopeWeaponEquipped()=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -20581,7 +21648,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001F1BAA:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001F1BAA",
+       "edid": "Magazine_TeslaScience05Perk",
+       "name": "Tesla Science 5",
+       "rank": 1
+      },
+      "bucket": "ammoFreeChance",
+      "op": "ADD",
+      "value": 0.2,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -22097,7 +23179,9 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "perk mod_weapon_NitroPenetrating: Mod VATS Penetration Min Visibility — VATS pierce-through visibility (up to 3 targets), not armorPen (docs/assumptions.md \"Penetrating (mod_weapon_penetrating)\")"
+  ]
  },
  {
   "family": "mod_weapon_NitroPenetrating_Explosive",
@@ -22116,7 +23200,9 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "perk mod_weapon_NitroPenetrating_Explosive: Mod VATS Penetration Min Visibility — VATS pierce-through visibility (up to 3 targets), not armorPen (docs/assumptions.md \"Penetrating (mod_weapon_penetrating)\")"
+  ]
  },
  {
   "family": "mod_weapon_NitroPenetrating_Stagger",
@@ -22135,7 +23221,9 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "perk mod_weapon_NitroPenetrating_Stagger: Mod VATS Penetration Min Visibility — VATS pierce-through visibility (up to 3 targets), not armorPen (docs/assumptions.md \"Penetrating (mod_weapon_penetrating)\")"
+  ]
  },
  {
   "family": "ModCloseDamage",
@@ -24536,10 +25624,6 @@
        {
         "kind": "unresolved",
         "raw": "HasKeyword(IsSingleShotWeapon)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=1"
        }
       ]
      },
@@ -24571,10 +25655,6 @@
        {
         "kind": "unresolved",
         "raw": "HasKeyword(IsSingleShotWeapon)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=1"
        }
       ]
      },
@@ -24606,10 +25686,6 @@
        {
         "kind": "unresolved",
         "raw": "HasKeyword(IsSingleShotWeapon)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=1"
        }
       ]
      },
@@ -24641,10 +25717,6 @@
        {
         "kind": "unresolved",
         "raw": "HasKeyword(IsSingleShotWeapon)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=1"
        }
       ]
      },
@@ -24676,10 +25748,6 @@
        {
         "kind": "unresolved",
         "raw": "HasKeyword(IsSingleShotWeapon)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=1"
        }
       ]
      },
@@ -24711,10 +25779,6 @@
        {
         "kind": "unresolved",
         "raw": "HasKeyword(IsSingleShotWeapon)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=1"
        }
       ]
      },
@@ -24746,10 +25810,6 @@
        {
         "kind": "unresolved",
         "raw": "HasKeyword(IsSingleShotWeapon)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=1"
        }
       ]
      },
@@ -24781,10 +25841,6 @@
        {
         "kind": "unresolved",
         "raw": "HasKeyword(IsSingleShotWeapon)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=1"
        }
       ]
      },
@@ -24816,10 +25872,6 @@
        {
         "kind": "unresolved",
         "raw": "HasKeyword(IsSingleShotWeapon)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=1"
        }
       ]
      },
@@ -24851,10 +25903,6 @@
        {
         "kind": "unresolved",
         "raw": "HasKeyword(IsSingleShotWeapon)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=1"
        }
       ]
      }
@@ -24908,6 +25956,44 @@
       },
       "bucket": "dbm",
       "op": "ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "aimingDownSights",
+        "value": true
+       }
+      ]
+     },
+     {
+      "id": "0x00811F95:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00811F95",
+       "edid": "P62_Legendary_Weapon_SightSeersPerk",
+       "name": "Sightseer's Weapon Perk",
+       "rank": 1
+      },
+      "bucket": "weaponMinRange",
+      "op": "MUL_ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "aimingDownSights",
+        "value": true
+       }
+      ]
+     },
+     {
+      "id": "0x00811F95:r1:2:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00811F95",
+       "edid": "P62_Legendary_Weapon_SightSeersPerk",
+       "name": "Sightseer's Weapon Perk",
+       "rank": 1
+      },
+      "bucket": "weaponMaxRange",
+      "op": "MUL_ADD",
       "value": 0.5,
       "conditions": [
        {
@@ -25577,7 +26663,11 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "perk Penetrator01: Mod VATS Penetration Min Visibility — VATS pierce-through visibility (up to 3 targets), not armorPen (docs/assumptions.md \"Penetrating (mod_weapon_penetrating)\")",
+   "perk Penetrator02: Mod VATS Penetration Min Visibility — VATS pierce-through visibility (up to 3 targets), not armorPen (docs/assumptions.md \"Penetrating (mod_weapon_penetrating)\")",
+   "perk Penetrator03: Mod VATS Penetration Min Visibility — VATS pierce-through visibility (up to 3 targets), not armorPen (docs/assumptions.md \"Penetrating (mod_weapon_penetrating)\")"
+  ]
  },
  {
   "family": "PerceptiBobble",
@@ -28491,15 +29581,60 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x000221FC:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x000221FC",
+       "edid": "QuickHands",
+       "name": "Quick Hands",
+       "rank": 1
+      },
+      "bucket": "reloadSkipChance",
+      "op": "ADD",
+      "value": 0.06,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x000221FC:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x000221FC",
+       "edid": "QuickHands",
+       "name": "Quick Hands",
+       "rank": 2
+      },
+      "bucket": "reloadSkipChance",
+      "op": "ADD",
+      "value": 0.12,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x000221FC:r3:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x000221FC",
+       "edid": "QuickHands",
+       "name": "Quick Hands",
+       "rank": 3
+      },
+      "bucket": "reloadSkipChance",
+      "op": "ADD",
+      "value": 0.18,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -29612,7 +30747,54 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x002EBD2A:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x002EBD2A",
+       "edid": "RiflemanExpert",
+       "name": "Scoped-up",
+       "rank": 1
+      },
+      "bucket": "weaponMinRange",
+      "op": "MUL_ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "aimingDownSights",
+        "value": true
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasScopeWeaponEquipped()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x002EBD2A:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x002EBD2A",
+       "edid": "RiflemanExpert",
+       "name": "Scoped-up",
+       "rank": 1
+      },
+      "bucket": "weaponMaxRange",
+      "op": "MUL_ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "aimingDownSights",
+        "value": true
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasScopeWeaponEquipped()=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -31208,7 +32390,46 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001447AC:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001447AC",
+       "edid": "ShotgunnerExpert",
+       "name": "Love the Spread",
+       "rank": 1
+      },
+      "bucket": "weaponMinRange",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(<unresolved:0x00000398>) Greater Than Or Equal To 3"
+       }
+      ]
+     },
+     {
+      "id": "0x001447AC:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001447AC",
+       "edid": "ShotgunnerExpert",
+       "name": "Love the Spread",
+       "rank": 1
+      },
+      "bucket": "weaponMaxRange",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(<unresolved:0x00000398>) Greater Than Or Equal To 3"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -32311,9 +33532,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "condition: GetDead()=0"
-  ]
+  "notes": []
  },
  {
   "family": "Storm_SE04_DamageReduce_NonPlayer",
@@ -36879,12 +38098,7 @@
       "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1.5,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
-       }
-      ]
+      "conditions": []
      }
     ]
    }

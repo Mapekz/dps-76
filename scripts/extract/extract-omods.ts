@@ -7,7 +7,9 @@ import type {
 import type { Bucket, Modifier } from '../../src/types/modifiers';
 import { mapPool, type EsmRecord, type EsmSource } from './esm-client';
 import {
+  ARMOR_PENETRATION_AV,
   FALLBACK_AVIF_ROUTES,
+  MOD_ARMOR_PEN_ENCH,
   buildAvifRoutes,
   parseMagicEffects,
   translateGrantedPerk,
@@ -703,6 +705,20 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
     const addedKeywords: string[] = [];
     const modNotes = new Set<string>();
     let hasEnchantments = false;
+    const hasModArmorPenEnchant = properties.some(
+      (p) =>
+        p.property === 'Enchantments' &&
+        p.functionType !== 'REM' &&
+        p.value1 === MOD_ARMOR_PEN_ENCH,
+    );
+    const armorPenAvWrite = properties.find(
+      (p) =>
+        p.property === 'ActorValues' &&
+        p.value1 === ARMOR_PENETRATION_AV &&
+        typeof p.value2 === 'number',
+    )?.value2;
+    mgefDeps.armorPenetrationAvMagnitude =
+      hasModArmorPenEnchant && typeof armorPenAvWrite === 'number' ? armorPenAvWrite : undefined;
     let explosionChase: GeneratedExplosionSwap | undefined;
     let chainSuppressesExplosion = false;
     const procs: GeneratedProc[] = [];
@@ -801,6 +817,10 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
         // family carries flat (1,50)→(100,50) curves with Value 2 = 0).
         if (typeof prop.value1 === 'string' && typeof prop.value2 === 'number') {
           const avEdid = await client.resolveEdid(prop.value1);
+          if (avEdid === 'ArmorPenetration' && hasModArmorPenEnchant) {
+            // Composed via enchModArmorPenetration → ModArmorPenetrationPerk chase.
+            continue;
+          }
           const flatValue = prop.value2;
           const curvePoints = prop.curvePoints;
           // Bug fix (2026-07-16): this used to collapse every non-MUL_ADD

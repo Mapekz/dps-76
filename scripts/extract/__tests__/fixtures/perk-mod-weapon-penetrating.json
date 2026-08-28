@@ -1,0 +1,37 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x008B7A60",
+    "flags": 4,
+    "form_version": 209,
+    "data_size": 97,
+    "offset": 892394517
+  },
+  "editor_id": "mod_weapon_penetrating",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "mod_weapon_penetrating",
+    "Description": "Projectiles penetrate up to three targets",
+    "Data": {
+      "Playable": { "value": 0, "name": "False" },
+      "Hidden": { "value": 1, "name": "True" },
+      "Unknown": { "hex": "01" }
+    },
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 105, "name": "Mod VATS Penetration Min Visibility" },
+            "Function": { "value": 2, "name": "Add Value" },
+            "Perk Condition Tab Count": 2
+          },
+          "Function Type": { "value": 1, "name": "Float" },
+          "Perk Entry ID": 1,
+          "Float": 1.0,
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

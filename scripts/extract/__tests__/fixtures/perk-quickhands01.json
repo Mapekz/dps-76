@@ -1,0 +1,74 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x000221FC",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 265,
+    "offset": 892866515
+  },
+  "editor_id": "QuickHands01",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "QuickHands01",
+    "Name": "Quick Hands",
+    "Description": "Gain a 6% chance to instantly reload when your clip is empty.",
+    "Data": {
+      "Playable": { "value": 1, "name": "True" },
+      "Hidden": { "value": 0, "name": "False" },
+      "Unknown": { "hex": "01" }
+    },
+    "Sound": "0x001A72ED",
+    "Perk Activation Sound": "0x003A0826",
+    "SWF Sprite Name": "QuickHands",
+    "Perk Activation Icon": "Components/VaultBoys/Perks/QuickHands.swf",
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 182, "name": "Auto Fill Weapon Clip" },
+            "Function": { "value": 1, "name": "Set Value" },
+            "Perk Condition Tab Count": 2
+          },
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 0,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "HasPerk",
+                        "Parameter 1": "0x001D2478",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Less Than Or Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 6.0,
+                        "Function": "GetRandomPercent",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": { "value": 1, "name": "Float" },
+          "Perk Entry ID": 0,
+          "Float": 1.0,
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

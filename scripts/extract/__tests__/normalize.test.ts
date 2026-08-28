@@ -9,6 +9,7 @@ import {
   ENTRY_POINT_BUCKETS,
   resolveStimpakHealEntryPoint,
   SHARED_ONSLAUGHT_COUNTER_AV,
+  ARMOR_PENETRATION_AV,
   type MgefInfo,
   type SpellEffect,
   type AvifRoute,
@@ -22,6 +23,20 @@ import type { EsmRecord, EsmSource } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
 import { extractPerks } from '../extract-perks';
 import fortifyStrengthChemEffect from './fixtures/mgef-fortifystrengthchemeffect.json';
+import quickHands01 from './fixtures/perk-quickhands01.json';
+import bandito01 from './fixtures/perk-bandito01.json';
+import crackshot01 from './fixtures/perk-crackshot01.json';
+import fourLeafClover01 from './fixtures/perk-fourleafclover01.json';
+import abPerkFourLeafClover from './fixtures/spel-abperkfourleafclover.json';
+import abPerkFortifyCritFillOnMiss from './fixtures/mgef-abperkfortifyvatscritfillonmiss.json';
+import enchPowerArmorUnarmedDamage from './fixtures/ench-powerarmor-unarmeddamage.json';
+import modArmorBrawlerPerk from './fixtures/perk-mod-armor-brawler.json';
+import momVoiceofSetPerk from './fixtures/perk-mom-voiceofset.json';
+import momVoiceofSetShockRobots from './fixtures/spel-mom-voiceofset-shockrobots.json';
+import lgnLegendaryStrength01 from './fixtures/perk-lgn-legendarystrength01.json';
+import abLgnPerkStrength from './fixtures/spel-ablgnperkstrength.json';
+import lgnRetribution01 from './fixtures/perk-lgn-retribution01.json';
+import modWeaponPenetrating from './fixtures/perk-mod-weapon-penetrating.json';
 
 // Pins the PURE (sync) MGEF → IR translation with plain fixtures — no esm CLI
 // client, no shell-out. The async gather lives in translateMagicEffect.
@@ -4080,5 +4095,406 @@ describe('stimpak-heal entry-point routing (Field Surgeon / Doctor / Healing Fac
     expect(result.notes).toContain(
       'perk WorldPets_Healing_SpeedHealing: entry point Mod Spell Magnitude — not modeled',
     );
+  });
+});
+
+describe('extraction pile-1 routes (2026-08-28)', () => {
+  const LUCK_AV = '0x000002C8';
+  const CRIT_FILL_AV = '0x007ACE6E';
+  const STRENGTH_AV = '0x000002C2';
+  const UNARMED_DAMAGE_AV = '0x000002DF';
+  const SHOCK_MGEF = '0x000856FC';
+  const BRAWLER_AV = '0x00245B9C';
+  const H2H_KW = '0x00226453';
+  const UNARMED_KW = '0x0005240E';
+
+  function fixtureClient(records: Record<string, unknown>): EsmSource {
+    return createInMemoryEsmSource({
+      records: Object.fromEntries(
+        Object.entries(records).map(([k, v]) => [k, v as unknown as EsmRecord]),
+      ),
+      resolveEdidFallback: (formId) => formId,
+    });
+  }
+
+  it('QuickHands01 EP182 Auto Fill Weapon Clip → reloadSkipChance ADD 0.06', async () => {
+    const perkFormId = '0x000221FC';
+    const result = await translateGrantedPerk(
+      {
+        client: fixtureClient({ [perkFormId]: quickHands01 }),
+        routes: new Map(),
+        edidByFormId: new Map([['0x001D2478', 'QuickHands02']]),
+      },
+      'QuickHands01',
+      perkFormId,
+    );
+    const mod = result.modifiers.find((m) => m.bucket === 'reloadSkipChance');
+    expect(mod).toEqual(
+      expect.objectContaining({ bucket: 'reloadSkipChance', op: 'ADD', value: 0.06 }),
+    );
+    expect(
+      mod!.conditions.some((c) => c.kind === 'unresolved' && c.raw.startsWith('GetRandomPercent')),
+    ).toBe(false);
+    expect(result.notes.some((n) => n.includes('GetRandomPercent'))).toBe(false);
+  });
+
+  it('Bandito01 EP141 Mod Gun Range Mult → weaponMinRange + weaponMaxRange MUL_ADD 0.25', async () => {
+    const perkFormId = '0x002593D5';
+    const result = await translateGrantedPerk(
+      {
+        client: fixtureClient({ [perkFormId]: bandito01 }),
+        routes: new Map(),
+        edidByFormId: new Map([
+          ['0x002593D5', 'Bandito02'],
+          ['0x0004A0A0', 'WeaponTypePistol'],
+          ['0x0004A0A2', 'WeaponTypeShotgun'],
+          ['0x0004A0A3', 'WeaponTypeRifle'],
+        ]),
+      },
+      'Bandito01',
+      perkFormId,
+    );
+    expect(result.modifiers.filter((m) => m.bucket === 'weaponMinRange')).toEqual([
+      expect.objectContaining({ op: 'MUL_ADD', value: 0.25 }),
+    ]);
+    expect(result.modifiers.filter((m) => m.bucket === 'weaponMaxRange')).toEqual([
+      expect.objectContaining({ op: 'MUL_ADD', value: 0.25 }),
+    ]);
+  });
+
+  it('ModArmorPenetrationPerk × ArmorPenetration AV → armorPen ADD carrier×|float|', async () => {
+    const perkFormId = '0x001F4166';
+    const perk = {
+      editor_id: 'ModArmorPenetrationPerk',
+      fields: {
+        Effects: [
+          {
+            Effect: {
+              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+              'Entry Point': {
+                'Entry Point': { name: 'Mod Target Damage Resistance' },
+                Function: { name: 'Multiply 1 + Actor Value Mult' },
+              },
+              Float: -0.01,
+              'Function Parameter 3 (Actor Value)': ARMOR_PENETRATION_AV,
+            },
+          },
+        ],
+      },
+    };
+    const result = await translateGrantedPerk(
+      {
+        client: fixtureClient({ [perkFormId]: perk }),
+        routes: new Map(),
+        edidByFormId: new Map([[ARMOR_PENETRATION_AV, 'ArmorPenetration']]),
+        armorPenetrationAvMagnitude: 16,
+      },
+      '_PARENT_mod_melee_weapon_Spikes',
+      perkFormId,
+    );
+    expect(result.modifiers).toEqual([
+      { bucket: 'armorPen', op: 'ADD', value: 0.16, conditions: [] },
+    ]);
+  });
+
+  it('Crackshot01 EP141 Mod Gun Range Mult → weaponMinRange + weaponMaxRange MUL_ADD 0.1', async () => {
+    const perkFormId = '0x0031D4AF';
+    const result = await translateGrantedPerk(
+      {
+        client: fixtureClient({ [perkFormId]: crackshot01 }),
+        routes: new Map(),
+        edidByFormId: new Map([
+          ['0x0031D4B0', 'Crackshot02'],
+          ['0x0004A0A1', 'WeaponTypeSmallGun'],
+          ['0x00226454', 'WeaponTypeH2H'],
+          ['0x0004A0A0', 'WeaponTypePistol'],
+          ['0x0004A0A3', 'WeaponTypeRifle'],
+        ]),
+      },
+      'Crackshot01',
+      perkFormId,
+    );
+    const rangeMods = result.modifiers.filter((m) => m.bucket === 'weaponMinRange');
+    expect(rangeMods).toHaveLength(1);
+    const frag = rangeMods[0];
+    expect(frag && 'value' in frag ? frag.value : undefined).toBeCloseTo(0.1, 10);
+    expect(frag?.op).toBe('MUL_ADD');
+  });
+
+  it('DamageDamageResistEffect Value Modifier Contact → armorPenFlat 0.5 (Sheepsquatch Shard)', () => {
+    const r = translate(
+      mgef({
+        edid: 'DamageDamageResistEffect',
+        archetype: 'Value Modifier',
+        actorValue: '0x000002E3',
+        detrimental: true,
+      }),
+      effect({ magnitude: 0.5, duration: 5 }),
+      noRoutes,
+      new Map([['0x000002E3', 'DamageResist']]),
+      { conditionCtx: { subjectIsTarget: true } },
+    );
+    expect(r.modifiers).toEqual([
+      { bucket: 'armorPenFlat', op: 'ADD', value: 0.5, conditions: [] },
+    ]);
+  });
+
+  it('EnchPowerArmor_UnarmedDamage → baseDamage ADD 15 scoped to WeaponTypeUnarmed', async () => {
+    const enchId = '0x001D6CCA';
+    const mgefId = '0x001D6CCB';
+    const result = await translateEnchantment(
+      {
+        client: fixtureClient({
+          [enchId]: enchPowerArmorUnarmedDamage,
+          [mgefId]: {
+            header: { signature: 'MGEF', form_id: mgefId },
+            editor_id: 'PowerArmor_FortifyUnarmedDamage',
+            fields: {
+              'Magic Effect Data': {
+                Data: {
+                  Archetype: { name: 'Peak Value Modifier' },
+                  'Actor Value': UNARMED_DAMAGE_AV,
+                  Delivery: { name: 'Self' },
+                  Flags: { flags: [] },
+                },
+              },
+            },
+          },
+        }),
+        routes: new Map(),
+        edidByFormId: new Map([[UNARMED_DAMAGE_AV, 'UnarmedDamage']]),
+      },
+      enchId,
+    );
+    expect(result.modifiers).toContainEqual(
+      expect.objectContaining({
+        bucket: 'baseDamage',
+        op: 'ADD',
+        value: 15,
+        conditions: [{ kind: 'weaponKeyword', keyword: 'WeaponTypeUnarmed', present: true }],
+      }),
+    );
+  });
+
+  it('mod_armor_BrawlerPerk → dbm ADD 0.1 with unarmed/H2H weapon gates', async () => {
+    const perkFormId = '0x00245B9B';
+    const result = await translateGrantedPerk(
+      {
+        client: fixtureClient({ [perkFormId]: modArmorBrawlerPerk }),
+        routes: new Map(),
+        edidByFormId: new Map([
+          [BRAWLER_AV, 'Mod_Brawler_AV'],
+          [H2H_KW, 'WeaponTypeHandToHand'],
+          [UNARMED_KW, 'WeaponTypeUnarmed'],
+        ]),
+      },
+      'enchArmorBrawlerMod',
+      perkFormId,
+    );
+    expect(result.modifiers).toContainEqual(
+      expect.objectContaining({
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.1,
+        conditions: expect.arrayContaining([expect.objectContaining({ kind: 'weaponKeywordAny' })]),
+      }),
+    );
+  });
+
+  it('FourLeafClover01 ability → critFill with luck curve', async () => {
+    const perkFormId = '0x0004D895';
+    const spellFormId = '0x007ACE71';
+    const mgefFormId = '0x007ACE70';
+    const result = await translateGrantedPerk(
+      {
+        client: fixtureClient({
+          [perkFormId]: fourLeafClover01,
+          [spellFormId]: abPerkFourLeafClover,
+          [mgefFormId]: abPerkFortifyCritFillOnMiss,
+          [CRIT_FILL_AV]: {
+            header: { signature: 'AVIF', form_id: CRIT_FILL_AV },
+            editor_id: 'STAT_VATSCritFillOnMiss',
+            fields: {},
+          },
+          [LUCK_AV]: {
+            header: { signature: 'AVIF', form_id: LUCK_AV },
+            editor_id: 'Luck',
+            fields: {},
+          },
+        }),
+        routes: new Map(),
+        edidByFormId: new Map([
+          [CRIT_FILL_AV, 'STAT_VATSCritFillOnMiss'],
+          [LUCK_AV, 'Luck'],
+        ]),
+      },
+      'FourLeafClover01',
+      perkFormId,
+    );
+    expect(result.modifiers).toContainEqual(
+      expect.objectContaining({
+        bucket: 'critFill',
+        op: 'ADD',
+        curve: expect.objectContaining({ input: 'luck' }),
+      }),
+    );
+  });
+
+  it('LGN_LegendaryStrength_Perk01 ability → specialStrength ADD 1', async () => {
+    const perkFormId = '0x0011C7DE';
+    const spellFormId = '0x005CF181';
+    const mgefFormId = '0x005CF17F';
+    const result = await translateGrantedPerk(
+      {
+        client: fixtureClient({
+          [perkFormId]: lgnLegendaryStrength01,
+          [spellFormId]: abLgnPerkStrength,
+          [mgefFormId]: {
+            header: { signature: 'MGEF', form_id: mgefFormId },
+            editor_id: 'AbLgnPerkFortifyStrength',
+            fields: {
+              'Magic Effect Data': {
+                Data: {
+                  Archetype: { name: 'Dual Value Modifier' },
+                  'Actor Value': STRENGTH_AV,
+                  Delivery: { name: 'Self' },
+                },
+              },
+            },
+          },
+          [STRENGTH_AV]: {
+            header: { signature: 'AVIF', form_id: STRENGTH_AV },
+            editor_id: 'Strength',
+            fields: {},
+          },
+        }),
+        routes: new Map(),
+        edidByFormId: new Map([[STRENGTH_AV, 'Strength']]),
+      },
+      'LGN_LegendaryStrength_Perk01',
+      perkFormId,
+    );
+    expect(result.modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'specialStrength', op: 'ADD', value: 1 }),
+    );
+  });
+
+  it('LGN_Retribution_Perk01 Mod Power Attack Damage Select Spell is note-only', async () => {
+    const perkFormId = '0x005AE152';
+    const result = await translateGrantedPerk(
+      {
+        client: fixtureClient({ [perkFormId]: lgnRetribution01 }),
+        routes: new Map(),
+        edidByFormId: new Map([['0x005AF818', 'LGN_Retribution_Perk02']]),
+      },
+      'LGN_Retribution_Perk01',
+      perkFormId,
+    );
+    expect(result.modifiers.filter((m) => m.bucket === 'powerAttackBonus')).toEqual([]);
+    expect(result.notes.some((n) => n.includes('not powerAttackBonus'))).toBe(true);
+  });
+
+  it('mod_weapon_penetrating EP105 is note-only (not armorPen)', async () => {
+    const perkFormId = '0x008B7A60';
+    const result = await translateGrantedPerk(
+      {
+        client: fixtureClient({ [perkFormId]: modWeaponPenetrating }),
+        routes: new Map(),
+        edidByFormId: new Map(),
+      },
+      'mod_custom_V63GatlingLaser_customName',
+      perkFormId,
+    );
+    expect(result.notes.some((n) => n.includes('not armorPen'))).toBe(true);
+  });
+
+  it('MoM_VoiceofSetPerk EP51 shock spell → dotDamage with enemyType robot', async () => {
+    const perkFormId = '0x00522668';
+    const spellFormId = '0x0052266B';
+    const result = await translateGrantedPerk(
+      {
+        client: fixtureClient({
+          [perkFormId]: momVoiceofSetPerk,
+          [spellFormId]: momVoiceofSetShockRobots,
+          [SHOCK_MGEF]: {
+            header: { signature: 'MGEF', form_id: SHOCK_MGEF },
+            editor_id: 'dtElectricalEffectChanceAlways',
+            fields: {
+              'Magic Effect Data': {
+                Data: {
+                  Archetype: { name: 'Damage' },
+                  'Resist Value': '0x000002EB',
+                  Flags: { flags: ['Hostile', 'Detrimental'] },
+                },
+              },
+            },
+          },
+          '0x000002EB': {
+            header: { signature: 'AVIF', form_id: '0x000002EB' },
+            editor_id: 'EnergyResist',
+            fields: {},
+          },
+          '0x0002CB73': {
+            header: { signature: 'KYWD', form_id: '0x0002CB73' },
+            editor_id: 'ActorTypeRobot',
+            fields: {},
+          },
+          '0x004E60E2': {
+            header: { signature: 'KYWD', form_id: '0x004E60E2' },
+            editor_id: 'MoMEyeOfRaItemKeyword',
+            fields: {},
+          },
+        }),
+        routes: new Map(),
+        edidByFormId: new Map([
+          ['0x000002EB', 'EnergyResist'],
+          ['0x0002CB73', 'ActorTypeRobot'],
+          ['0x004E60E2', 'MoMEyeOfRaItemKeyword'],
+        ]),
+        timedIsActive: false,
+      },
+      'MoM_VoiceofSetPerk',
+      perkFormId,
+    );
+    expect(result.modifiers).toContainEqual(
+      expect.objectContaining({
+        bucket: 'dotDamage',
+        op: 'ADD',
+        value: 35,
+        durationSec: 1,
+        conditions: expect.arrayContaining([
+          expect.objectContaining({ kind: 'enemyType', keywordOrRace: 'ActorTypeRobot' }),
+        ]),
+      }),
+    );
+  });
+
+  it('translateConditions consumes GetDead()=0, GetDead() Not Equal To 1, and drops IsEssential()=1', () => {
+    const rows: RawCondition[] = [
+      {
+        Function: 'GetDead',
+        'Comparison Value': 0,
+        Operator: 'Equal To',
+        'Run On': 'Target',
+      },
+    ];
+    expect(translateConditions(rows, { edidByFormId: new Map() }).conditions).toEqual([]);
+    const notEqual = translateConditions(
+      [
+        {
+          Function: 'GetDead',
+          'Comparison Value': 1,
+          Operator: 'Not Equal To',
+          'Run On': 'Target',
+        },
+      ],
+      { edidByFormId: new Map() },
+    );
+    expect(notEqual.conditions).toEqual([]);
+    const essential = translateConditions(
+      [{ Function: 'IsEssential', 'Comparison Value': 1, Operator: 'Equal To' }],
+      { edidByFormId: new Map() },
+    );
+    expect(essential.conditions).toBeNull();
   });
 });

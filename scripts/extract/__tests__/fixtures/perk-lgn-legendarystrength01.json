@@ -1,0 +1,47 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x0011C7DE",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 126,
+    "offset": 892845524
+  },
+  "editor_id": "LGN_LegendaryStrength_Perk01",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "LGN_LegendaryStrength_Perk01",
+    "Name": "Legendary Strength",
+    "Description": "+1 STR and +1 STR Perk Points. Perk Points cap at 15.",
+    "Conditions": {
+      "Conditions": [
+        {
+          "Condition": {
+            "Condition Data": {
+              "Operator": "Less Than",
+              "AND/OR": "AND",
+              "Comparison Value": 10.0,
+              "Function": "GetBaseValue",
+              "Parameter 1": "0x000002C2",
+              "Run On": "Subject"
+            }
+          }
+        }
+      ]
+    },
+    "Data": {
+      "Playable": { "value": 1, "name": "True" },
+      "Hidden": { "value": 0, "name": "False" },
+      "Unknown": { "hex": "01" }
+    },
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 1, "name": "Ability" }, "Rank": 0 },
+          "Ability": "0x005CF181",
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

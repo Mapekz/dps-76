@@ -113,6 +113,12 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   // this generic mapping for that exact shape). Kept here too as a fallback
   // for a hypothetical un-gated future use of the entry point.
   'Instant Reload Clip On Bash': 'reloadSkipChance',
+  // Quick Hands / Wild West Hands (EP182 "Auto Fill Weapon Clip") — the real
+  // per-rank chance lives in each effect's GetRandomPercent gate (Set Value
+  // 1.0 is a boolean placeholder), same shape as EP199 below. Listed here
+  // only as a fallback for a hypothetical un-gated future use; the dedicated
+  // GetRandomPercent branch in translateGrantedPerk handles the live perks.
+  'Auto Fill Weapon Clip': 'reloadSkipChance',
   // VATS hit-chance aggregate (Phase 4, display-only — see the
   // `vatsHitChance` bucket doc comment, src/types/modifiers.ts). Multiply
   // Value entries verified via `esm get` 2026-07-18: FortifyVATSAccuracyChemPerk
@@ -641,6 +647,31 @@ export const FALLBACK_AVIF_ROUTES: Record<
   Intelligence: { bucket: 'specialIntelligence', scale: 1 },
   Agility: { bucket: 'specialAgility', scale: 1 },
   Luck: { bucket: 'specialLuck', scale: 1 },
+  // Four Leaf Clover (AbPerkFortifyVATSCritFillOnMiss 0x007ACE70, SPEL
+  // AbPerkFourLeafClover 0x007ACE71): LCK-scaled crit-meter fill on VATS
+  // miss — curve FourLeafCloverBonus on AV Luck (0x000002C8). Engine miss-
+  // weighting is a follow-up (docs/assumptions.md "Four Leaf Clover").
+  STAT_VATSCritFillOnMiss: { bucket: 'critFill', scale: 1, archetypes: ['Peak Value Modifier'] },
+  // PA Hydraulic Bracers (EnchPowerArmor_UnarmedDamage 0x001D6CCA → MGEF
+  // PowerArmor_FortifyUnarmedDamage 0x001D6CCB, AV UnarmedDamage 0x000002DF),
+  // bobblehead/Nukashine FortifyUnarmedDamage family — flat physical unarmed
+  // points on top of the WEAP base (not STAT_Dmg* plumbing).
+  UnarmedDamage: {
+    bucket: 'baseDamage',
+    scale: 1,
+    conditions: [{ kind: 'weaponKeyword', keyword: 'WeaponTypeUnarmed', present: true }],
+  },
+  // Tesla Bracers parent template (_PARENT_mod_PowerArmor_GENERIC_ShockDMG
+  // 0x003D4E5E ActorValues ADD UnarmedEnergyDamage 45.0) — flat energy
+  // unarmed points; the on-hit shock proc is a separate Damage-archetype path.
+  UnarmedEnergyDamage: {
+    bucket: 'baseDamage',
+    scale: 1,
+    conditions: [
+      { kind: 'weaponKeyword', keyword: 'WeaponTypeUnarmed', present: true },
+      { kind: 'damageTypeScope', types: ['energy'] },
+    ],
+  },
 };
 
 export interface AvifRoute {
@@ -681,6 +712,9 @@ const OUT_OF_SCOPE_INSTANT_RESTORE_AVS = new Set(['Health', 'ActionPoints']);
  * every source's actual bonus rides a separate effect that routes normally.
  */
 const NO_OP_FLAG_AVIFS = new Set(['EnableKillStreak']);
+
+/** MGEF archetypes whose stats live on a granted PERK (chase perkToApply). */
+const PERK_GRANT_ARCHETYPES = new Set(['Script', 'Unknown 36', 'Absorb']);
 
 const PLUMBING_PERKS = ['STAT_DamagePerk', 'STAT_CritDamagePerk', 'STAT_DamageVsPerk'];
 
@@ -1053,6 +1087,12 @@ export interface MgefTranslationDeps {
    * pass it there instead.
    */
   crossFamilyRank?: Map<string, { family: string; rank: number }>;
+  /**
+   * Carrier OMOD's ActorValues ADD magnitude on ArmorPenetration AV — composed
+   * with ModArmorPenetrationPerk's Multiply 1 + AV Mult (−0.01/point) when
+   * extract-omods.ts processes enchModArmorPenetration weapon mods.
+   */
+  armorPenetrationAvMagnitude?: number;
   /** Add-Perk chase recursion guard (perk → ability SPEL → MGEF → perk ...). Internal. */
   grantDepth?: number;
 }
@@ -1206,6 +1246,23 @@ export function translate(
     return result;
   }
 
+  // LGN legendary SPECIAL cards (AbLgnPerkFortifyStrength 0x005CF17F et al.):
+  // Dual Value Modifier on AV Strength/… — magnitude is flat SPECIAL points;
+  // Actor Value 2 (PerkPointBonus*) is perk-budget plumbing, out of scope.
+  if (mgef.archetype === 'Dual Value Modifier' && mgef.actorValue) {
+    const dualAvifEdid = edidByFormId.get(mgef.actorValue) ?? mgef.actorValue;
+    const dualFallback = FALLBACK_AVIF_ROUTES[dualAvifEdid];
+    if (dualFallback) {
+      result.modifiers.push({
+        bucket: dualFallback.bucket,
+        op: 'ADD',
+        value: effect.magnitude * dualFallback.scale,
+        conditions: [...effectConds, ...(dualFallback.conditions ?? [])],
+      });
+      return result;
+    }
+  }
+
   if (mgef.archetype !== 'Peak Value Modifier' && mgef.archetype !== 'Value Modifier') {
     if (effect.magnitude !== 0 || mgef.archetype === 'Script') {
       result.notes.push(`MGEF ${mgef.edid} archetype ${mgef.archetype} — needs override`);
@@ -1292,6 +1349,26 @@ export function translate(
   }
 
   const allConds = [...effectConds];
+
+  // Contact-delivered on-hit DR shred — before the timedBuff gate so duration>0
+  // debuffs (Sheepsquatch Shard DamageDamageResistEffect 0x0018C35D, mag 0.5
+  // over 5s) are not parked as toggle-gated timed buffs.
+  if (
+    avifEdid === 'DamageResist' &&
+    (mgef.archetype === 'Peak Value Modifier' || mgef.archetype === 'Value Modifier') &&
+    mgef.detrimental &&
+    opts.conditionCtx?.subjectIsTarget &&
+    !curve
+  ) {
+    result.modifiers.push({
+      bucket: 'armorPenFlat',
+      op: 'ADD',
+      value: Math.abs(effect.magnitude),
+      conditions: allConds,
+    });
+    return result;
+  }
+
   if (effect.duration > 0 && !opts.timedIsActive) {
     if (opts.bashTriggered) {
       allConds.push({ kind: 'bashBuffUptime', durationSec: effect.duration });
@@ -1319,34 +1396,6 @@ export function translate(
         : { bucket, op, value: effectiveMagnitude * scale, conditions },
     );
   };
-
-  // Contact-delivered (on-hit), Hostile/Detrimental "Reduce Damage Resist" effects
-  // (Cosmic Knife Super-Heated's ench_CosmicKnife_Superheated, Endangerol Syringe
-  // Barrel's EnchSyringer_Endangerol — verified via `esm get`: Delivery Contact,
-  // Archetype Peak Value Modifier, AV DamageResist, flags Hostile+Detrimental) apply
-  // to the STRUCK TARGET, not the wielder — route to armorPenFlat (mitigation.ts's
-  // physical resist-point debuff, the same bucket Taking One for the Team's companion
-  // perk feeds) instead of the generic self-buff `damageResistGain` FALLBACK_AVIF_ROUTES
-  // entry. armorPenFlat's sign convention is "positive = points removed from base
-  // resist" (opposite of damageResistGain's direct-AV-delta reading), so this uses the
-  // magnitude's absolute value, not `effectiveMagnitude` (already Detrimental-negated
-  // for the AV-delta reading). Scoped to DamageResist + flat magnitude only — no
-  // verified EnergyResist or curve-based instance exists today.
-  if (
-    avifEdid === 'DamageResist' &&
-    mgef.archetype === 'Peak Value Modifier' &&
-    mgef.detrimental &&
-    opts.conditionCtx?.subjectIsTarget &&
-    !curve
-  ) {
-    result.modifiers.push({
-      bucket: 'armorPenFlat',
-      op: 'ADD',
-      value: Math.abs(effectiveMagnitude),
-      conditions: allConds,
-    });
-    return result;
-  }
 
   const avifRoutes = routes.get(mgef.actorValue);
   const fallbackEntry = FALLBACK_AVIF_ROUTES[avifEdid];
@@ -1458,6 +1507,259 @@ function parseGetRandomPercentChance(
  */
 /** Shared Onslaught consecutive-hit counter (ConsecutiveHitCount AVIF). */
 export const SHARED_ONSLAUGHT_COUNTER_AV = '0x00000395';
+
+/** ArmorPenetration AV (0x00097341) — weapon-mod spikes/mags write this; ModArmorPenetrationPerk reads it. */
+export const ARMOR_PENETRATION_AV = '0x00097341';
+
+/** enchModArmorPenetration — grants ModArmorPenetrationPerk via ModArmorPenetrationAddPerkEffect MGEF. */
+export const MOD_ARMOR_PEN_ENCH = '0x001F4425';
+
+export type DirectEntryPointResolution =
+  | { handled: true; modifiers: ModifierFragment[]; notes?: string[] }
+  | { handled: false };
+
+export interface DirectEntryPointInput {
+  epName: string;
+  functionName: string;
+  float: number;
+  conditionRows: RawCondition[];
+  conditions: Condition[];
+  edidByFormId: Map<string, string>;
+  globalValues?: Map<string, number>;
+  avFormId?: string | null;
+  armorPenetrationAvMagnitude?: number;
+  perkEdid?: string;
+}
+
+/**
+ * Shared entry-point special cases for direct PERK records (extract-perks.ts)
+ * and granted-perk chase (translateGrantedPerk). Returns `handled: true` when
+ * this EP shape is fully resolved — callers must not fall through to the
+ * generic ENTRY_POINT_BUCKETS mapping.
+ */
+export function resolveDirectEntryPointModifiers(
+  input: DirectEntryPointInput,
+): DirectEntryPointResolution {
+  const {
+    epName: name,
+    functionName,
+    float,
+    conditionRows,
+    conditions,
+    edidByFormId,
+    globalValues,
+    avFormId,
+    armorPenetrationAvMagnitude,
+    perkEdid,
+  } = input;
+  const perkLabel = perkEdid ? `perk ${perkEdid}` : 'entry point';
+
+  if (
+    name === 'Mod Ammo Used Count' &&
+    (functionName === 'Multiply Value' || functionName === 'Set Value') &&
+    float === 0 &&
+    hasGetRandomPercentCondition(conditionRows)
+  ) {
+    const value = parseGetRandomPercentChance(conditionRows, globalValues);
+    if (value !== null) {
+      return {
+        handled: true,
+        modifiers: [
+          {
+            bucket: 'ammoFreeChance',
+            op: 'ADD',
+            value,
+            conditions: withoutRandomPercentGate(conditions),
+          },
+        ],
+      };
+    }
+    return {
+      handled: true,
+      modifiers: [],
+      notes: [`${perkLabel}: ${name} — GetRandomPercent present but chance unparsed, skipped`],
+    };
+  }
+
+  if (
+    name === 'Instant Reload Clip On Bash' &&
+    functionName === 'Set Value' &&
+    float === 1 &&
+    hasGetRandomPercentCondition(conditionRows)
+  ) {
+    const value = parseGetRandomPercentChance(conditionRows, globalValues);
+    if (value !== null) {
+      return {
+        handled: true,
+        modifiers: [
+          {
+            bucket: 'reloadSkipChanceBash',
+            op: 'ADD',
+            value,
+            conditions: withoutRandomPercentGate(conditions).filter(
+              (c) =>
+                c.kind !== 'powerAttack' &&
+                !(c.kind === 'unresolved' && c.raw.startsWith('GetDead(')),
+            ),
+          },
+        ],
+      };
+    }
+    return {
+      handled: true,
+      modifiers: [],
+      notes: [`${perkLabel}: ${name} — GetRandomPercent present but chance unparsed, skipped`],
+    };
+  }
+
+  if (
+    name === 'Auto Fill Weapon Clip' &&
+    functionName === 'Set Value' &&
+    float === 1 &&
+    hasGetRandomPercentCondition(conditionRows)
+  ) {
+    const value = parseGetRandomPercentChance(conditionRows, globalValues);
+    if (value !== null) {
+      return {
+        handled: true,
+        modifiers: [
+          {
+            bucket: 'reloadSkipChance',
+            op: 'ADD',
+            value,
+            conditions: withoutRandomPercentGate(conditions),
+          },
+        ],
+      };
+    }
+    return {
+      handled: true,
+      modifiers: [],
+      notes: [`${perkLabel}: ${name} — GetRandomPercent present but chance unparsed, skipped`],
+    };
+  }
+
+  if (name === 'Mod Gun Range Mult' && functionName === 'Multiply Value') {
+    const delta = float - 1;
+    const rangeMod = {
+      bucket: 'weaponMinRange' as const,
+      op: 'MUL_ADD' as const,
+      value: delta,
+      conditions,
+    };
+    return {
+      handled: true,
+      modifiers: [rangeMod, { ...rangeMod, bucket: 'weaponMaxRange' }],
+    };
+  }
+
+  const brawlerAv = avFormId;
+  if (
+    name === 'Mod Weapon DMG Bonus Mult' &&
+    functionName === 'Add Actor Value Mult' &&
+    typeof brawlerAv === 'string' &&
+    (edidByFormId.get(brawlerAv) === 'Mod_Brawler_AV' || brawlerAv === '0x00245B9C')
+  ) {
+    return {
+      handled: true,
+      modifiers: [{ bucket: 'dbm', op: 'ADD', value: 0.1, conditions }],
+    };
+  }
+
+  const ignoreArmorAv = avFormId;
+  if (
+    name === 'Mod Target Damage Resistance' &&
+    functionName === 'Multiply 1 + Actor Value Mult' &&
+    typeof ignoreArmorAv === 'string' &&
+    (edidByFormId.get(ignoreArmorAv) === 'Mod_IgnoreArmor_AV' || ignoreArmorAv === '0x00245BA4')
+  ) {
+    return {
+      handled: true,
+      modifiers: [],
+      notes: [
+        `${perkLabel}: ${name} on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)`,
+      ],
+    };
+  }
+
+  if (
+    name === 'Mod Target Damage Resistance' &&
+    functionName === 'Multiply 1 + Actor Value Mult' &&
+    typeof ignoreArmorAv === 'string' &&
+    (edidByFormId.get(ignoreArmorAv) === 'ArmorPenetration' ||
+      ignoreArmorAv === ARMOR_PENETRATION_AV)
+  ) {
+    if (armorPenetrationAvMagnitude != null) {
+      return {
+        handled: true,
+        modifiers: [
+          {
+            bucket: 'armorPen',
+            op: 'ADD',
+            value: Math.abs(float) * armorPenetrationAvMagnitude,
+            conditions,
+          },
+        ],
+      };
+    }
+    return {
+      handled: true,
+      modifiers: [],
+      notes: [
+        `${perkLabel}: ${name} on ArmorPenetration AV — carrier ActorValues magnitude required for composition`,
+      ],
+    };
+  }
+
+  if (name === 'Mod Power Attack Damage' && functionName === 'Select Spell') {
+    return {
+      handled: true,
+      modifiers: [],
+      notes: [
+        `${perkLabel}: ${name} Select Spell — block-triggered sustain buff, not powerAttackBonus (docs/assumptions.md "LGN Retribution")`,
+      ],
+    };
+  }
+
+  if (name === 'Mod VATS Penetration Min Visibility') {
+    return {
+      handled: true,
+      modifiers: [],
+      notes: [
+        `${perkLabel}: ${name} — VATS pierce-through visibility (up to 3 targets), not armorPen (docs/assumptions.md "Penetrating (mod_weapon_penetrating)")`,
+      ],
+    };
+  }
+
+  if (
+    name === 'Is Next Clip Last Shot' &&
+    functionName === 'Add Value' &&
+    float === 1 &&
+    hasGetRandomPercentCondition(conditionRows)
+  ) {
+    const value = parseGetRandomPercentChance(conditionRows, globalValues);
+    if (value !== null) {
+      return {
+        handled: true,
+        modifiers: [
+          {
+            bucket: 'lastShotChance',
+            op: 'ADD',
+            value,
+            conditions: withoutRandomPercentGate(conditions),
+          },
+        ],
+      };
+    }
+    return {
+      handled: true,
+      modifiers: [],
+      notes: [`${perkLabel}: ${name} — GetRandomPercent present but chance unparsed, skipped`],
+    };
+  }
+
+  return { handled: false };
+}
 
 function resolvePerkEffectAvFormId(effect: Record<string, unknown>): string | null {
   const avId = effect['Function Parameter 3 (Actor Value)'];
@@ -1646,7 +1948,6 @@ export async function translateGrantedPerk(
       crossFamilyRank: deps.crossFamilyRank,
     });
     if (conditions === null) continue;
-    unresolved.forEach((u) => result.notes.push(`perk ${perkEdid}: ${u}`));
 
     if (effectType === 'Entry Point') {
       const ep = (e['Entry Point'] ?? {}) as Record<string, unknown>;
@@ -1657,127 +1958,29 @@ export async function translateGrantedPerk(
         ((ep['Function'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
       const float = typeof e['Float'] === 'number' ? (e['Float'] as number) : 0;
 
-      // EP-172 "Mod Ammo Used Count" (Magazine_TeslaScience05Perk 0x001F1BAA /
-      // Tesla Science 5 ALCH 0x00432D07, verified 2026-08-17): Function
-      // "Multiply Value" Float=0.0 gated on GetRandomPercent ≤ 20 — the roll IS
-      // the value, lifted out of conditions the same way EP-198/EP-199 do;
-      // leaving it as an `unresolved` gate made the modifier inert before
-      // (`bun run audit:inert`'s `unresolved-cond` bucket). Deliberately
-      // UNGATED despite the perk's "Heavy guns have a 20% chance to not consume
-      // ammo" description: no EP-172 perk in the dump carries a weapon-tab
-      // condition (tab 1 is declared but empty), so the prose has nothing
-      // behind it and the ESM wins — user-confirmed 2026-08-17. Narrowed to
-      // GetRandomPercent-gated only and kept out of ENTRY_POINT_BUCKETS so
-      // Thirst Zapper's WeaponTypeThirstZapper-gated Set Value 0 and
-      // HeadHunter's condition-less Set Value 0 still reach the generic
-      // not-modeled note instead of being silently widened to 100% free ammo.
-      if (
-        name === 'Mod Ammo Used Count' &&
-        (functionName === 'Multiply Value' || functionName === 'Set Value') &&
-        float === 0 &&
-        hasGetRandomPercentCondition(conditionRows)
-      ) {
-        const value = parseGetRandomPercentChance(conditionRows, globalValues);
-        if (value !== null) {
-          result.modifiers.push({
-            bucket: 'ammoFreeChance',
-            op: 'ADD',
-            value,
-            conditions: withoutRandomPercentGate(conditions),
-          });
-        } else {
-          result.notes.push(
-            `perk ${perkEdid}: ${name} — GetRandomPercent present but chance unparsed, skipped`,
-          );
-        }
+      const directEp = resolveDirectEntryPointModifiers({
+        epName: name,
+        functionName,
+        float,
+        conditionRows,
+        conditions,
+        edidByFormId,
+        globalValues,
+        avFormId: resolvePerkEffectAvFormId(e),
+        armorPenetrationAvMagnitude: deps.armorPenetrationAvMagnitude,
+        perkEdid,
+      });
+      if (directEp.handled) {
+        const foldRandom = hasGetRandomPercentCondition(conditionRows);
+        unresolved
+          .filter((u) => !(foldRandom && u.startsWith('GetRandomPercent')))
+          .forEach((u) => result.notes.push(`perk ${perkEdid}: ${u}`));
+        result.modifiers.push(...directEp.modifiers);
+        directEp.notes?.forEach((n) => result.notes.push(n));
         continue;
       }
 
-      // EP-199 "Instant Reload Clip On Bash" (Battle-Loader's 4★ armor mod,
-      // verified via `esm chase`/`esm get` 2026-07-18): all 5 effects carry
-      // Function "Set Value" Float=1.0 — a boolean trigger placeholder. The
-      // REAL per-worn-piece chance (15/30/45/60/75%) lives in each effect's
-      // own GetRandomPercent gate, same shape as the EP-172 case above.
-      // Narrowed to the exact Set Value 1.0 + GetRandomPercent combination so
-      // a hypothetical un-gated future use of this entry point still falls
-      // through to the generic ENTRY_POINT_BUCKETS mapping (SET 1.0 =
-      // unconditional 100% skip) instead of being silently swallowed.
-      //
-      // Emits the FINAL shape here rather than leaving an inert modifier for
-      // `armorLegendaryValueOverrides` to replace (as it did until 2026-08-17
-      // — same fallout as EP-198's, patched downstream instead of upstream,
-      // which left the five chances duplicated as hand-maintained literals an
-      // ESM retune would silently strand):
-      //   - `reloadSkipChanceBash`, not `reloadSkipChance` — this entry point
-      //     IS the bash trigger, and that channel is what lets sustain.ts
-      //     charge a real bash cost (`PlayerInput.battleLoadersBashSec`)
-      //     instead of treating it as a free Quick-Hands-style skip (EP-182).
-      //   - the `IsPowerAttacking` row is dropped as a CONDITION because the
-      //     bucket above already encodes its bash-ness; bash cadence (how
-      //     often a bash replaces a reload) stays unmodeled either way.
-      //   - `GetDead()=0` is a target-alive sanity check with no UI input and
-      //     no failure mode this calculator models.
-      if (
-        name === 'Instant Reload Clip On Bash' &&
-        functionName === 'Set Value' &&
-        float === 1 &&
-        hasGetRandomPercentCondition(conditionRows)
-      ) {
-        const value = parseGetRandomPercentChance(conditionRows, globalValues);
-        if (value !== null) {
-          result.modifiers.push({
-            bucket: 'reloadSkipChanceBash',
-            op: 'ADD',
-            value,
-            conditions: withoutRandomPercentGate(conditions).filter(
-              (c) =>
-                c.kind !== 'powerAttack' &&
-                !(c.kind === 'unresolved' && c.raw.startsWith('GetDead(')),
-            ),
-          });
-        } else {
-          result.notes.push(
-            `perk ${perkEdid}: ${name} — GetRandomPercent present but chance unparsed, skipped`,
-          );
-        }
-        continue;
-      }
-
-      // EP-198 "Is Next Clip Last Shot" (Legendary_LastShot_Roll_Perk, chased from
-      // the Last Shot legendary): Function "Add Value" Float=1.0 is a boolean flag
-      // placeholder — the REAL chance lives in the effect's own GetRandomPercent
-      // gate against LGND_LastShotChance (GLOB 0x006C20BB = 25.0), the same shape as
-      // the EP-199 case above. The flag it sets is what the damage modifier's
-      // `lastRound` condition reads, so without this the +100% dbm looks
-      // unconditional on the mag's last round instead of a 25% roll.
-      // Narrowed to the exact Add Value 1.0 + GetRandomPercent combination so a
-      // hypothetical un-gated future use still falls through to ENTRY_POINT_BUCKETS.
-      if (
-        name === 'Is Next Clip Last Shot' &&
-        functionName === 'Add Value' &&
-        float === 1 &&
-        hasGetRandomPercentCondition(conditionRows)
-      ) {
-        const value = parseGetRandomPercentChance(conditionRows, globalValues);
-        if (value !== null) {
-          result.modifiers.push({
-            bucket: 'lastShotChance',
-            op: 'ADD',
-            value,
-            // The GetRandomPercent row IS this modifier's value — keeping it as
-            // a condition too would leave an `unresolved` gate that
-            // resolve.ts's evalCondition always fails, making the modifier
-            // inert (`bun run audit:inert`'s `unresolved-cond` bucket).
-            conditions: withoutRandomPercentGate(conditions),
-          });
-        } else {
-          result.notes.push(
-            `perk ${perkEdid}: ${name} — GetRandomPercent present but chance unparsed, skipped`,
-          );
-        }
-        continue;
-      }
-
+      unresolved.forEach((u) => result.notes.push(`perk ${perkEdid}: ${u}`));
       const stimpakHeal = resolveStimpakHealEntryPoint(
         name,
         perkFormId,
@@ -1913,6 +2116,18 @@ export async function translateGrantedPerk(
           bucket,
           op: 'ADD',
           value: 1 - float,
+          conditions: epConditions,
+        });
+        continue;
+      }
+
+      // Ignore Armor lining flat rows (mod_armor_IgnoreArmorPerk): Add Value −5/−10
+      // are enemy DR points, not armorPen fractions — route to armorPenFlat.
+      if (name === 'Mod Target Damage Resistance' && functionName === 'Add Value' && float < 0) {
+        result.modifiers.push({
+          bucket: 'armorPenFlat',
+          op: 'ADD',
+          value: Math.abs(float),
           conditions: epConditions,
         });
         continue;
@@ -2080,6 +2295,8 @@ export async function translateGrantedPerk(
       continue;
     }
 
+    unresolved.forEach((u) => result.notes.push(`perk ${perkEdid}: ${u}`));
+
     if (effectType === 'Ability' && typeof e['Ability'] === 'string') {
       const sub = await chaseGrantedSpell(deps, `perk ${perkEdid}`, e['Ability'], conditions, true);
       sub.notes.forEach((n) => result.notes.push(n));
@@ -2135,7 +2352,11 @@ export async function translateMagicEffect(
 
   // Script-archetype effects with a granted perk: the stats live on the PERK
   // record, not the MGEF — chase it (depth-capped against perk→spell→perk loops).
-  if (mgef.archetype === 'Script' && mgef.perkToApply && (deps.grantDepth ?? 0) < 2) {
+  // Armor lining enchants use Unknown 36 (Brawler) / Absorb (Ignore Armor) with
+  // the same Perk-to-Apply shape — intentionally NOT chasing the sibling
+  // ActorValues per-piece AV write on the PARENT template (double-count risk;
+  // docs/assumptions.md "Armor lining Brawler / Ignore Armor").
+  if (PERK_GRANT_ARCHETYPES.has(mgef.archetype) && mgef.perkToApply && (deps.grantDepth ?? 0) < 2) {
     const granted = await translateGrantedPerk(
       { ...deps, grantDepth: (deps.grantDepth ?? 0) + 1 },
       mgef.edid,

@@ -1,0 +1,32 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x0004D895",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 97,
+    "offset": 892868785
+  },
+  "editor_id": "FourLeafClover01",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "FourLeafClover01",
+    "Name": "Four Leaf Clover",
+    "Description": "Misses in V.A.T.S. now contribute to the Critical Meter based on your LCK.",
+    "Data": {
+      "Playable": { "value": 1, "name": "True" },
+      "Hidden": { "value": 0, "name": "False" },
+      "Unknown": { "hex": "01" }
+    },
+    "SWF Sprite Name": "FourLeafClover",
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 1, "name": "Ability" }, "Rank": 0 },
+          "Ability": "0x007ACE71",
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

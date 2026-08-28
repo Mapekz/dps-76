@@ -1,0 +1,72 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x00245B9B",
+    "flags": 4,
+    "form_version": 209,
+    "data_size": 199,
+    "offset": 892797491
+  },
+  "editor_id": "mod_armor_BrawlerPerk",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "mod_armor_BrawlerPerk",
+    "Name": "More Fists damage!",
+    "Description": null,
+    "Data": {
+      "Playable": { "value": 0, "name": "False" },
+      "Hidden": { "value": 1, "name": "True" },
+      "Unknown": { "hex": "01" }
+    },
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 167, "name": "Mod Weapon DMG Bonus Mult" },
+            "Function": { "value": 5, "name": "Add Actor Value Mult" },
+            "Perk Condition Tab Count": 3
+          },
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 1,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "OR",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x00226453",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "OR",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0005240E",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": { "value": 8, "name": "Actor Value and Value" },
+          "Perk Entry ID": 2,
+          "Float": 1.0,
+          "Function Parameter 3 (Actor Value)": "0x00245B9C",
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

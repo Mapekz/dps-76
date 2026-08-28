@@ -1,0 +1,141 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x00522668",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 376,
+    "offset": 892628737
+  },
+  "editor_id": "MoM_VoiceofSetPerk",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "MoM_VoiceofSetPerk",
+    "Name": "Voice of Set",
+    "Description": "Upgrades when Eye of Ra is Equipped\r\n",
+    "Data": {
+      "Playable": { "value": 1, "name": "True" },
+      "Hidden": { "value": 1, "name": "True" },
+      "Unknown": { "hex": "01" }
+    },
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 1, "name": "Ability" }, "Rank": 0 },
+          "Ability": "0x004E102B",
+          "Effect End": null
+        }
+      },
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 51, "name": "Apply Combat Hit Spell" },
+            "Function": { "value": 10, "name": "Select Spell" },
+            "Perk Condition Tab Count": 3
+          },
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 0,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Not Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "WornHasKeyword",
+                        "Parameter 1": "0x004E60E2",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 2,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0002CB73",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": { "value": 5, "name": "Spell Item" },
+          "Perk Entry ID": 0,
+          "Spell": "0x0052266B",
+          "Unknown Spell Value": 0,
+          "Effect End": null
+        }
+      },
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 51, "name": "Apply Combat Hit Spell" },
+            "Function": { "value": 10, "name": "Select Spell" },
+            "Perk Condition Tab Count": 3
+          },
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 0,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "WornHasKeyword",
+                        "Parameter 1": "0x004E60E2",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 2,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0002CB73",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": { "value": 5, "name": "Spell Item" },
+          "Perk Entry ID": 1,
+          "Spell": "0x00521937",
+          "Unknown Spell Value": 0,
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

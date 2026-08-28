@@ -1,0 +1,104 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x002593D5",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 287,
+    "offset": 892771763
+  },
+  "editor_id": "Bandito01",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "Bandito01",
+    "Name": "Bandito",
+    "Description": "Non-automatic pistols havean additional 25% increased range.",
+    "Data": {
+      "Playable": { "value": 1, "name": "True" },
+      "Hidden": { "value": 0, "name": "False" },
+      "Unknown": { "hex": "01" }
+    },
+    "Sound": "0x001A763F",
+    "SWF Sprite Name": "Gunslinger",
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 141, "name": "Mod Gun Range Mult" },
+            "Function": { "value": 3, "name": "Multiply Value" },
+            "Perk Condition Tab Count": 2
+          },
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 0,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "HasPerk",
+                        "Parameter 1": "0x002593D5",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 1,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0004A0A0",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0004A0A2",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0004A0A3",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": { "value": 1, "name": "Float" },
+          "Perk Entry ID": 1,
+          "Float": 1.25,
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

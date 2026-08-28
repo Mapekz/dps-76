@@ -142,6 +142,11 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     reason:
       'survival/QoL/defense actor value write; no player-offense component (Stabilized=scope sway, ReducedPowerAttack=AP cost, LimbDamageResistance=wearer defense, ReflectMeleeDamage=deliberately excluded per armor-corrections.ts)',
   },
+  {
+    match: /perk mod_armor_StabilizedPerk: entry point Mod Actor Scope Stability — not/,
+    disposition: 'out-of-scope',
+    reason: 'scope-sway QoL; matches Mod_Stabilized_AV reasoning',
+  },
 
   // ——— archetype-sweep classes (every distinct MGEF walked 2026-08-27; see
   // NOTES.md "archetype sweep") ————————————————————————————————————————————
@@ -207,22 +212,6 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     match: /condition: HasRefType\(/,
     disposition: 'out-of-scope',
     reason: 'location-scripted NPC encounter gate on an NPC-wielded weapon',
-  },
-  // Trivial NPC-state gates on enchantment rows: GetDead()=0 (target alive)
-  // is always true for calculator targets; IsEssential/IsProtected exemption
-  // branches are always false. The extractor should learn to treat these as
-  // constant and extract the underlying rows unconditionally.
-  {
-    match: /weapon enchantment: condition: GetDead\(\)=0/,
-    disposition: 'resolve-pending',
-    reason: 'trivially-true target-alive gate; extract row unconditionally',
-  },
-  {
-    match:
-      /weapon enchantment: condition: (?:IsEssential\(\)=1|OR-group\[IsProtected\(undefined\)=1 \| IsEssential\(undefined\)=1\])/,
-    disposition: 'resolve-pending',
-    reason:
-      'essential-NPC exemption branch, trivially false for calculator targets; extract main row',
   },
 
   // ——— unknown entry points: QoL classes (names enumerated 2026-08-27; the

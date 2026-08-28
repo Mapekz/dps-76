@@ -1,0 +1,62 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x005AE152",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 195,
+    "offset": 892544294
+  },
+  "editor_id": "LGN_Retribution_Perk01",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "LGN_Retribution_Perk01",
+    "Name": "Retribution",
+    "Description": "Blocking a melee attack restores 1 HP and 1 AP for 15 seconds.",
+    "Data": {
+      "Playable": { "value": 1, "name": "True" },
+      "Hidden": { "value": 0, "name": "False" },
+      "Unknown": { "hex": "01" }
+    },
+    "SWF Sprite Name": "Ninja",
+    "Perk Activation Icon": "LGNRetribution",
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 28, "name": "Mod Power Attack Damage" },
+            "Function": { "value": 10, "name": "Select Spell" },
+            "Perk Condition Tab Count": 3
+          },
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 0,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "HasPerk",
+                        "Parameter 1": "0x005AF818",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": { "value": 5, "name": "Spell Item" },
+          "Perk Entry ID": 0,
+          "Spell": "0x005AE153",
+          "Unknown Spell Value": 3,
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

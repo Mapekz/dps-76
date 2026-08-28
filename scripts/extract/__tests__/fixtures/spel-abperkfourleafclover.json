@@ -1,0 +1,55 @@
+{
+  "header": {
+    "signature": "SPEL",
+    "form_id": "0x007ACE71",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 219,
+    "offset": 9260892
+  },
+  "editor_id": "AbPerkFourLeafClover",
+  "fields": {
+    "_record_type": "Spell",
+    "Editor ID": "AbPerkFourLeafClover",
+    "Object Bounds": { "X1": 0, "Y1": 0, "Z1": 0, "X2": 0, "Y2": 0, "Z2": 0 },
+    "Name": "Four Leaf Clover",
+    "Keywords": { "Keyword Count": 1, "Keywords": ["0x00868BD1"] },
+    "Equipment Type": "0x00013F44",
+    "Description": null,
+    "Data": {
+      "Base Cost": 0,
+      "Flags": { "value": "0x0", "flags": [] },
+      "Type": { "value": 4, "name": "Ability" },
+      "Charge Time": 0.0,
+      "Cast Type": { "value": 0, "name": "Constant Effect" },
+      "Target Type": { "value": 0, "name": "Self" },
+      "Cast Duration": 0.0,
+      "Range": 0.0,
+      "Casting Perk": null
+    },
+    "Effects": [
+      {
+        "Effect": {
+          "Base Effect": "0x007ACE70",
+          "Effect Item Data": { "Effect ID": 1, "Magnitude": 0.0, "Area": 0, "Duration": 0 },
+          "Curve Table": {
+            "formid": "0x007ACE6F",
+            "editor_id": "FourLeafCloverBonus",
+            "curve_path": "Perks\\FourLeafCloverBonus.json",
+            "curve": [
+              { "x": 1.0, "y": 0.15 },
+              { "x": 15.0, "y": 0.5 },
+              { "x": 30.0, "y": 0.7 },
+              { "x": 60.0, "y": 0.9 },
+              { "x": 100.0, "y": 1.0 }
+            ]
+          },
+          "Actor Value": "0x000002C8",
+          "Effect Flags": { "value": "0x1", "flags": ["Unknown 0"] },
+          "Cooldown Duration": 0
+        }
+      }
+    ],
+    "Max Item ID": 4
+  }
+}

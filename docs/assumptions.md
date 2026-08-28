@@ -1227,3 +1227,55 @@ Engine: `src/lib/engine/resolve.ts` `wellTuned` condition; extractor:
 - **Default OFF** — exogenous timed furniture buff, ADR-0009 honest
   zero; `PlayerInput.wellTuned`.
 
+## Four Leaf Clover (crit fill on VATS miss)
+
+Engine: `src/lib/engine/crit-meter.ts` (`critFill` bucket).
+
+- **Extracted as LCK-scaled `critFill`** from AbPerkFortifyVATSCritFillOnMiss
+  (SPEL AbPerkFourLeafClover 0x007ACE71, curve FourLeafCloverBonus on AV
+  Luck). **ESM-PROVEN**.
+- **Miss-only gating not modeled** — the ability is always on while equipped;
+  engine folds fill into per-hit meter gain without `(1 − vatsHitChance)`
+  weighting. **ASSUMPTION** — pending crit-meter consumer follow-up.
+
+## Armor lining Brawler / Ignore Armor
+
+Extractor: `scripts/extract/normalize/mgef.ts` (`PERK_GRANT_ARCHETYPES` chase).
+
+- **Brawler** — ench/perk flat row only (mod_armor_BrawlerPerk EP167 Add AV
+  Mult × Mod_Brawler_AV → `dbm` ADD 0.1/piece, unarmed/H2H scoped).
+  PARENT template ActorValues ADD Mod_Brawler_AV intentionally skipped
+  (double-count). **ESM-PROVEN**.
+- **Ignore Armor (lining)** — flat −5/−10 `Mod Target Damage Resistance` Add
+  Value rows → `armorPenFlat`; Multiply 1 + AV Mult on Mod_IgnoreArmor_AV
+  intentionally skipped. **unverified** — in-game double-dip vs flat rows
+  unknown.
+- **Weapon-mod armor pen (spikes/mags)** — carrier OMOD ActorValues ADD
+  ArmorPenetration (16/22/25…) × ModArmorPenetrationPerk Multiply 1 + AV Mult
+  (−0.01/point) → `armorPen` ADD `|float| × AV` (e.g. 16 × 0.01 = 0.16).
+  Composed in `translateGrantedPerk` when `armorPenetrationAvMagnitude` is set;
+  standalone ActorValues row skipped to avoid double-count. **unverified** —
+  AV-write × perk-mult composition assumed from ESM magnitudes, not in-game
+  measured.
+
+## LGN Retribution
+
+- **EP28 Mod Power Attack Damage + Select Spell** applies an HP/AP restore
+  buff on block (SPEL LGN_RetributionBuffSpell01), not `powerAttackBonus`.
+  **ESM-PROVEN** — note-only.
+
+## Penetrating (mod_weapon_penetrating)
+
+- **EP105 Mod VATS Penetration Min Visibility** — projectile pierce-through
+  (up to 3 targets), not enemy `armorPen`. **ESM-PROVEN** — note-only.
+
+## Voice of Set robot shock proc
+
+- **Base 35 energy `dotDamage`** (SPEL Mom_VoiceofSet_ShockRobots 0x0052266B,
+  Contact Target Type 1, `enemyType` ActorTypeRobot). **ESM-PROVEN**
+  2026-08-28 — prior "self-targeted" note was a misread of ENCH Self delivery
+  vs spell Contact delivery.
+- **Eye of Ra 70 + paralyze upgrade** (Mom_VoiceofSet_ShockStunRobots,
+  WornHasKeyword MoMEyeOfRaItemKeyword) — base branch extracted; upgrade
+  gated on unmodeled armor keyword. Paralyze CC note-only. **ASSUMPTION**.
+

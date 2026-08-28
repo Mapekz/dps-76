@@ -13,6 +13,8 @@ import commandoCard from './fixtures/pcrd-commandocard.json';
 import actionBoyGirlCard from './fixtures/pcrd-actionboygirlcard.json';
 import lgnWhatRadsCard from './fixtures/pcrd-lgnwhatradscard.json';
 import ghlGlowingCriticals01 from './fixtures/perk-ghlglowingcriticals01.json';
+import quickHands01 from './fixtures/perk-quickhands01.json';
+import bandito01 from './fixtures/perk-bandito01.json';
 import ghlMadScientist01 from './fixtures/perk-ghlmadscientist01.json';
 import grenadier01 from './fixtures/perk-grenadier01.json';
 import grenadier02 from './fixtures/perk-grenadier02.json';
@@ -543,5 +545,93 @@ describe('extractPerks (Barbarian unarmored ×2 post-process, 2026-08-06)', () =
     };
     expect(foldBucket(mods, 'damageResistGain', 0, armoredCtx)).toBe(61);
     expect(foldBucket(mods, 'damageResistGain', 0, unarmoredCtx)).toBe(122);
+  });
+});
+
+function plumbingPerkRecords(): Record<string, EsmRecord> {
+  return Object.fromEntries(
+    ['STAT_DamagePerk', 'STAT_CritDamagePerk', 'STAT_DamageVsPerk'].map((edid) => [
+      edid,
+      {
+        header: { signature: 'PERK', form_id: edid },
+        editor_id: edid,
+        fields: { Effects: [] },
+      } as unknown as EsmRecord,
+    ]),
+  );
+}
+
+function makeDirectEntryPointPerkClient(
+  family: string,
+  rank1: EsmRecord,
+  formId: string,
+): EsmSource {
+  return createInMemoryEsmSource({
+    records: {
+      [formId]: rank1,
+      ...plumbingPerkRecords(),
+    },
+    rows: [{ form_id: formId, record_type: 'PERK', editor_id: `${family}01`, name: family }],
+    getFallback: (target) =>
+      ({
+        header: { signature: 'PERK', form_id: target },
+        editor_id: target,
+        fields: {},
+      }) as unknown as EsmRecord,
+  });
+}
+
+describe('extractPerks (direct entry-point special cases, 2026-08-28)', () => {
+  it('QuickHands01 folds GetRandomPercent into reloadSkipChance ADD 0.06', async () => {
+    const formId = '0x000221FC';
+    const result = await extractPerks(
+      makeDirectEntryPointPerkClient('QuickHands', quickHands01 as EsmRecord, formId),
+    );
+    const family = result.perks.find((p) => p.family === 'QuickHands');
+    expect(family?.ranks[0].modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'reloadSkipChance', op: 'ADD', value: 0.06 }),
+    );
+    expect(result.unresolved.some((u) => u.includes('GetRandomPercent'))).toBe(false);
+  });
+
+  it('Bandito01 EP141 → weaponMinRange + weaponMaxRange MUL_ADD 0.25', async () => {
+    const formId = '0x002593D5';
+    const client = createInMemoryEsmSource({
+      records: {
+        [formId]: bandito01 as EsmRecord,
+        ...plumbingPerkRecords(),
+        '0x0004A0A0': {
+          header: { signature: 'KYWD', form_id: '0x0004A0A0' },
+          editor_id: 'WeaponTypePistol',
+          fields: {},
+        } as EsmRecord,
+        '0x0004A0A2': {
+          header: { signature: 'KYWD', form_id: '0x0004A0A2' },
+          editor_id: 'WeaponTypeShotgun',
+          fields: {},
+        } as EsmRecord,
+        '0x0004A0A3': {
+          header: { signature: 'KYWD', form_id: '0x0004A0A3' },
+          editor_id: 'WeaponTypeRifle',
+          fields: {},
+        } as EsmRecord,
+      },
+      rows: [{ form_id: formId, record_type: 'PERK', editor_id: 'Bandito01', name: 'Bandito' }],
+      resolveEdidFallback: (id) =>
+        ({
+          '0x0004A0A0': 'WeaponTypePistol',
+          '0x0004A0A2': 'WeaponTypeShotgun',
+          '0x0004A0A3': 'WeaponTypeRifle',
+          '0x002593D5': 'Bandito02',
+        })[id] ?? id,
+    });
+    const result = await extractPerks(client);
+    const family = result.perks.find((p) => p.family === 'Bandito');
+    expect(family?.ranks[0].modifiers.filter((m) => m.bucket === 'weaponMinRange')).toEqual([
+      expect.objectContaining({ op: 'MUL_ADD', value: 0.25 }),
+    ]);
+    expect(family?.ranks[0].modifiers.filter((m) => m.bucket === 'weaponMaxRange')).toEqual([
+      expect.objectContaining({ op: 'MUL_ADD', value: 0.25 }),
+    ]);
   });
 });

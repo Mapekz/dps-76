@@ -22583,10 +22583,6 @@
       "raw": "GetValue(Health)=2"
      },
      {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -39519,7 +39515,21 @@
   "templateModFormIds": [],
   "defaultModFormIds": [],
   "attachParentSlots": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0045FF61:weaponEnch:0",
+    "source": {
+     "kind": "weapon",
+     "formId": "0x0045FF61",
+     "edid": "SheepsquatchShard",
+     "name": "Sheepsquatch Shard"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   }
+  ],
   "obtainable": true
  },
  {
@@ -46210,10 +46220,6 @@
       "raw": "GetValue(Health)=2"
      },
      {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -46502,10 +46508,6 @@
       "raw": "GetValue(Health)=2"
      },
      {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -46636,10 +46638,6 @@
      {
       "kind": "unresolved",
       "raw": "GetValue(Health)=2"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
      },
      {
       "kind": "damageTypeScope",
@@ -46900,10 +46898,6 @@
      {
       "kind": "unresolved",
       "raw": "GetValue(Health)=2"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
      },
      {
       "kind": "damageTypeScope",

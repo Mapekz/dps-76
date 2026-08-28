@@ -13,6 +13,7 @@ import {
   ENTRY_POINT_BUCKETS,
   ENTRY_POINT_EXTRA_CONDITIONS,
   resolveStimpakHealEntryPoint,
+  resolveDirectEntryPointModifiers,
   buildAvifRoutes,
   collectConditionFormIds,
   collectConditionGlobalIds,
@@ -557,16 +558,46 @@ export async function extractPerks(client: EsmSource): Promise<ExtractPerksResul
               }
               continue;
             }
-            const bucket = ENTRY_POINT_BUCKETS[ep.name];
-            if (!bucket) {
-              if (!ENTRY_POINT_IGNORED.has(ep.name)) unknownEntryPoints.add(ep.name);
-              continue;
-            }
             const { conditions: translated, unresolved } = translateConditions(
               parsed.conditionRows,
               translationCtx,
             );
             if (translated === null) continue; // inactive at this rank
+            const directEp = resolveDirectEntryPointModifiers({
+              epName: ep.name,
+              functionName: ep.functionName,
+              float: ep.float,
+              conditionRows: parsed.conditionRows,
+              conditions: translated,
+              edidByFormId,
+              globalValues,
+              perkEdid: record.editor_id,
+            });
+            if (directEp.handled) {
+              const foldRandom = parsed.conditionRows.some(
+                (r) => r.Function === 'GetRandomPercent',
+              );
+              unresolved
+                .filter((u) => !(foldRandom && u.startsWith('GetRandomPercent')))
+                .forEach((u) => allUnresolved.add(`${family}: ${u}`));
+              for (const mod of directEp.modifiers) {
+                const payload: ModifierValue = mod.curve
+                  ? { curve: mod.curve, curveScale: mod.curveScale ?? 1 }
+                  : { value: mod.value! };
+                pushModifier(mod.bucket, mod.op, payload, mod.conditions, sourceIndex);
+              }
+              directEp.notes?.forEach((n) => notes.add(n));
+              continue;
+            }
+            const bucket = ENTRY_POINT_BUCKETS[ep.name];
+            if (!bucket) {
+              // Unknown EP: the dedup `unknown entry point: <name>` line is the
+              // whole report — dumping its per-record condition leftovers here
+              // would flood unresolved with gates on EPs that never route
+              // (Scrounger loot rolls, Cannibal eat gates, …).
+              if (!ENTRY_POINT_IGNORED.has(ep.name)) unknownEntryPoints.add(ep.name);
+              continue;
+            }
             unresolved.forEach((u) => allUnresolved.add(`${family}: ${u}`));
             // Baked scope conditions for entry points the bucket alone can't
             // express (Mod Player Explosion Damage → explosive-scoped dbm).

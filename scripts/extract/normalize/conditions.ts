@@ -342,6 +342,24 @@ function translateSingle(
     case 'GetIsPlayerGhoul':
       // Character-type gate: Gourmand's (=0, human-only), Glowing Criticals (=1).
       return { kind: 'playerIsGhoul', value: wants };
+    // Trivial NPC-state gates on weapon-enchantment / on-hit proc rows (2026-08-28
+    // pile-1): calculator targets are always alive non-essential hostiles.
+    // | Function | Comparison | Meaning | Translation |
+    // | GetDead | =0 / Not Equal To 1 | target alive | consumed (null) |
+    // | IsEssential / IsProtected | =1 | essential-NPC exemption branch | inactive |
+    // | IsEssential / IsProtected | =0 | not essential/protected | consumed (null) |
+    case 'GetDead':
+      if (
+        (/^equal to$/i.test(cond.Operator ?? '') && cmp === 0) ||
+        (/^not equal to$/i.test(cond.Operator ?? '') && cmp === 1)
+      ) {
+        return null;
+      }
+      return { kind: 'unresolved', raw: `GetDead() ${cond.Operator} ${rawCmp}` };
+    case 'IsEssential':
+    case 'IsProtected':
+      if (wants) return 'inactive';
+      return null;
     case 'IsOverEncumbered':
       // Packin' Light's gate (AbPerkPackinLight: +25% AP regen while not over
       // encumbered). The calculator assumes optimal play — never over
@@ -738,6 +756,15 @@ export function translateConditions(
     const hasPerkResolution = resolveHasPerkRankGroup(group, ctx);
     if (hasPerkResolution === 'inactive') return { conditions: null, unresolved };
     if (hasPerkResolution === 'consumed') continue;
+
+    // Essential-NPC exemption OR-groups (weapon enchantments): IsProtected |
+    // IsEssential =1 branches never apply to calculator targets.
+    const essentialOnly = group.every(
+      (row) =>
+        (row.Function === 'IsEssential' || row.Function === 'IsProtected') &&
+        row['Comparison Value'] === 1,
+    );
+    if (essentialOnly) return { conditions: null, unresolved };
 
     // OR-group: supported when every row is a positive weapon-keyword check,
     // or every row is a positive enemy-type check (Ghoul Slayer's:

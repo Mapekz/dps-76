@@ -54290,15 +54290,36 @@
   "targetKeywords": [
    "DLC03_ma_armor_Marine_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00110965:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00110965",
+     "edid": "DLC03_mod_armor_Marine_Lining_LimbArm_Brawler",
+     "name": "Brawling"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_Brawler"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Mod_Brawler_AV — unmapped",
-   "MGEF ArmorBrawlerEffect archetype Unknown 36 — needs override"
+   "ActorValues on Mod_Brawler_AV — unmapped"
   ],
   "obtainable": true
  },
@@ -54312,7 +54333,64 @@
   "targetKeywords": [
    "DLC03_ma_armor_Marine_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00110966:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00110966",
+     "edid": "DLC03_mod_armor_Marine_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 1
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x00110966:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00110966",
+     "edid": "DLC03_mod_armor_Marine_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 2
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_IgnoreArmor"
   ],
@@ -54320,7 +54398,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_IgnoreArmor_AV — unmapped",
-   "MGEF ArmorIgnoreArmorEffect archetype Absorb — needs override"
+   "perk mod_armor_IgnoreArmorPerk: Mod Target Damage Resistance on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)"
   ],
   "obtainable": true
  },
@@ -54364,7 +54442,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_Stabilized_AV — unmapped",
-   "MGEF ArmorStabilizedEffect archetype Unknown 36 — needs override"
+   "perk mod_armor_StabilizedPerk: entry point Mod Actor Scope Stability — not modeled"
   ],
   "obtainable": true
  },
@@ -55823,15 +55901,36 @@
   "targetKeywords": [
    "ma_armor_BOSInfantry_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x005DD6BC:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005DD6BC",
+     "edid": "mod_armor_BOSInfantry_Lining_LimbArm_Brawler",
+     "name": "Brawling"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_Brawler"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Mod_Brawler_AV — unmapped",
-   "MGEF ArmorBrawlerEffect archetype Unknown 36 — needs override"
+   "ActorValues on Mod_Brawler_AV — unmapped"
   ],
   "obtainable": true
  },
@@ -55845,7 +55944,64 @@
   "targetKeywords": [
    "ma_armor_BOSInfantry_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x005DD6BD:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005DD6BD",
+     "edid": "mod_armor_BOSInfantry_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 1
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x005DD6BD:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005DD6BD",
+     "edid": "mod_armor_BOSInfantry_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 2
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_IgnoreArmor"
   ],
@@ -55853,7 +56009,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_IgnoreArmor_AV — unmapped",
-   "MGEF ArmorIgnoreArmorEffect archetype Absorb — needs override"
+   "perk mod_armor_IgnoreArmorPerk: Mod Target Damage Resistance on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)"
   ],
   "obtainable": true
  },
@@ -55897,7 +56053,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_Stabilized_AV — unmapped",
-   "MGEF ArmorStabilizedEffect archetype Unknown 36 — needs override"
+   "perk mod_armor_StabilizedPerk: entry point Mod Actor Scope Stability — not modeled"
   ],
   "obtainable": true
  },
@@ -56956,15 +57112,36 @@
   "targetKeywords": [
    "ma_armor_Combat_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00245B89:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245B89",
+     "edid": "mod_armor_Combat_Lining_LimbArm_Brawler",
+     "name": "Brawling"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_Brawler"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Mod_Brawler_AV — unmapped",
-   "MGEF ArmorBrawlerEffect archetype Unknown 36 — needs override"
+   "ActorValues on Mod_Brawler_AV — unmapped"
   ],
   "obtainable": true
  },
@@ -56978,7 +57155,64 @@
   "targetKeywords": [
    "ma_armor_Combat_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00245BA0:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245BA0",
+     "edid": "mod_armor_Combat_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 1
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x00245BA0:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245BA0",
+     "edid": "mod_armor_Combat_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 2
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_IgnoreArmor"
   ],
@@ -56986,7 +57220,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_IgnoreArmor_AV — unmapped",
-   "MGEF ArmorIgnoreArmorEffect archetype Absorb — needs override"
+   "perk mod_armor_IgnoreArmorPerk: Mod Target Damage Resistance on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)"
   ],
   "obtainable": true
  },
@@ -57030,7 +57264,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_Stabilized_AV — unmapped",
-   "MGEF ArmorStabilizedEffect archetype Unknown 36 — needs override"
+   "perk mod_armor_StabilizedPerk: entry point Mod Actor Scope Stability — not modeled"
   ],
   "obtainable": true
  },
@@ -57948,14 +58182,35 @@
   "targetKeywords": [
    "ma_armor_Lining_EnclaveScoutUniform_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0034ED78:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0034ED78",
+     "edid": "mod_armor_EnclaveScoutUniform_Lining_LimbArm_Brawler",
+     "name": "Brawling"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_Brawler"
   ],
   "hasEnchantments": true,
   "notes": [
-   "ActorValues on Mod_Brawler_AV — unmapped",
-   "MGEF ArmorBrawlerEffect archetype Unknown 36 — needs override"
+   "ActorValues on Mod_Brawler_AV — unmapped"
   ],
   "obtainable": false
  },
@@ -57969,14 +58224,71 @@
   "targetKeywords": [
    "ma_armor_Lining_EnclaveScoutUniform_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0034ED79:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0034ED79",
+     "edid": "mod_armor_EnclaveScoutUniform_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 1
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x0034ED79:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0034ED79",
+     "edid": "mod_armor_EnclaveScoutUniform_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 2
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_IgnoreArmor"
   ],
   "hasEnchantments": true,
   "notes": [
    "ActorValues on Mod_IgnoreArmor_AV — unmapped",
-   "MGEF ArmorIgnoreArmorEffect archetype Absorb — needs override"
+   "perk mod_armor_IgnoreArmorPerk: Mod Target Damage Resistance on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)"
   ],
   "obtainable": false
  },
@@ -58018,7 +58330,7 @@
   "hasEnchantments": true,
   "notes": [
    "ActorValues on Mod_Stabilized_AV — unmapped",
-   "MGEF ArmorStabilizedEffect archetype Unknown 36 — needs override"
+   "perk mod_armor_StabilizedPerk: entry point Mod Actor Scope Stability — not modeled"
   ],
   "obtainable": false
  },
@@ -59000,15 +59312,36 @@
   "targetKeywords": [
    "ma_armor_Lining_Leather_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00245B8A:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245B8A",
+     "edid": "mod_armor_Leather_Lining_LimbArm_Brawler",
+     "name": "Brawling"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_Brawler"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Mod_Brawler_AV — unmapped",
-   "MGEF ArmorBrawlerEffect archetype Unknown 36 — needs override"
+   "ActorValues on Mod_Brawler_AV — unmapped"
   ],
   "obtainable": true
  },
@@ -59022,7 +59355,64 @@
   "targetKeywords": [
    "ma_armor_Lining_Leather_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00245BA1:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245BA1",
+     "edid": "mod_armor_Leather_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 1
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x00245BA1:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245BA1",
+     "edid": "mod_armor_Leather_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 2
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_IgnoreArmor"
   ],
@@ -59030,7 +59420,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_IgnoreArmor_AV — unmapped",
-   "MGEF ArmorIgnoreArmorEffect archetype Absorb — needs override"
+   "perk mod_armor_IgnoreArmorPerk: Mod Target Damage Resistance on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)"
   ],
   "obtainable": true
  },
@@ -59074,7 +59464,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_Stabilized_AV — unmapped",
-   "MGEF ArmorStabilizedEffect archetype Unknown 36 — needs override"
+   "perk mod_armor_StabilizedPerk: entry point Mod Actor Scope Stability — not modeled"
   ],
   "obtainable": true
  },
@@ -60359,15 +60749,36 @@
   "targetKeywords": [
    "ma_armor_Lining_Metal_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00245B8B:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245B8B",
+     "edid": "mod_armor_Metal_Lining_LimbArm_Brawler",
+     "name": "Brawling"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_Brawler"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Mod_Brawler_AV — unmapped",
-   "MGEF ArmorBrawlerEffect archetype Unknown 36 — needs override"
+   "ActorValues on Mod_Brawler_AV — unmapped"
   ],
   "obtainable": true
  },
@@ -60381,7 +60792,64 @@
   "targetKeywords": [
    "ma_armor_Lining_Metal_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00245BA2:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245BA2",
+     "edid": "mod_armor_Metal_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 1
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x00245BA2:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245BA2",
+     "edid": "mod_armor_Metal_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 2
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_IgnoreArmor"
   ],
@@ -60389,7 +60857,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_IgnoreArmor_AV — unmapped",
-   "MGEF ArmorIgnoreArmorEffect archetype Absorb — needs override"
+   "perk mod_armor_IgnoreArmorPerk: Mod Target Damage Resistance on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)"
   ],
   "obtainable": true
  },
@@ -60433,7 +60901,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_Stabilized_AV — unmapped",
-   "MGEF ArmorStabilizedEffect archetype Unknown 36 — needs override"
+   "perk mod_armor_StabilizedPerk: entry point Mod Actor Scope Stability — not modeled"
   ],
   "obtainable": true
  },
@@ -61433,15 +61901,36 @@
   "targetKeywords": [
    "ma_armor_RaiderMod_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00245B8C:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245B8C",
+     "edid": "mod_armor_RaiderMod_Lining_LimbArm_Brawler",
+     "name": "Brawling"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_Brawler"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Mod_Brawler_AV — unmapped",
-   "MGEF ArmorBrawlerEffect archetype Unknown 36 — needs override"
+   "ActorValues on Mod_Brawler_AV — unmapped"
   ],
   "obtainable": true
  },
@@ -61455,7 +61944,64 @@
   "targetKeywords": [
    "ma_armor_RaiderMod_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00245BA5:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245BA5",
+     "edid": "mod_armor_RaiderMod_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 1
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x00245BA5:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245BA5",
+     "edid": "mod_armor_RaiderMod_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 2
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_IgnoreArmor"
   ],
@@ -61463,7 +62009,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_IgnoreArmor_AV — unmapped",
-   "MGEF ArmorIgnoreArmorEffect archetype Absorb — needs override"
+   "perk mod_armor_IgnoreArmorPerk: Mod Target Damage Resistance on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)"
   ],
   "obtainable": true
  },
@@ -61507,7 +62053,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_Stabilized_AV — unmapped",
-   "MGEF ArmorStabilizedEffect archetype Unknown 36 — needs override"
+   "perk mod_armor_StabilizedPerk: entry point Mod Actor Scope Stability — not modeled"
   ],
   "obtainable": true
  },
@@ -62748,15 +63294,36 @@
   "targetKeywords": [
    "ma_armor_Lining_Robot_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0051C6EB:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0051C6EB",
+     "edid": "mod_armor_Robot_Lining_LimbArm_Brawler",
+     "name": "Brawling"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_Brawler"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Mod_Brawler_AV — unmapped",
-   "MGEF ArmorBrawlerEffect archetype Unknown 36 — needs override"
+   "ActorValues on Mod_Brawler_AV — unmapped"
   ],
   "obtainable": true
  },
@@ -62770,7 +63337,64 @@
   "targetKeywords": [
    "ma_armor_Lining_Robot_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0051C6EC:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0051C6EC",
+     "edid": "mod_armor_Robot_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 1
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x0051C6EC:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0051C6EC",
+     "edid": "mod_armor_Robot_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 2
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_IgnoreArmor"
   ],
@@ -62778,7 +63402,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_IgnoreArmor_AV — unmapped",
-   "MGEF ArmorIgnoreArmorEffect archetype Absorb — needs override"
+   "perk mod_armor_IgnoreArmorPerk: Mod Target Damage Resistance on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)"
   ],
   "obtainable": true
  },
@@ -62822,7 +63446,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_Stabilized_AV — unmapped",
-   "MGEF ArmorStabilizedEffect archetype Unknown 36 — needs override"
+   "perk mod_armor_StabilizedPerk: entry point Mod Actor Scope Stability — not modeled"
   ],
   "obtainable": true
  },
@@ -63636,15 +64260,36 @@
   "targetKeywords": [
    "ma_armor_SecretService_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x005A1555:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005A1555",
+     "edid": "mod_armor_SecretService_Lining_LimbArm_Brawler",
+     "name": "Brawling"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_Brawler"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Mod_Brawler_AV — unmapped",
-   "MGEF ArmorBrawlerEffect archetype Unknown 36 — needs override"
+   "ActorValues on Mod_Brawler_AV — unmapped"
   ],
   "obtainable": true
  },
@@ -63658,7 +64303,64 @@
   "targetKeywords": [
    "ma_armor_SecretService_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x005A1556:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005A1556",
+     "edid": "mod_armor_SecretService_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 1
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x005A1556:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005A1556",
+     "edid": "mod_armor_SecretService_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 2
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_IgnoreArmor"
   ],
@@ -63666,7 +64368,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_IgnoreArmor_AV — unmapped",
-   "MGEF ArmorIgnoreArmorEffect archetype Absorb — needs override"
+   "perk mod_armor_IgnoreArmorPerk: Mod Target Damage Resistance on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)"
   ],
   "obtainable": true
  },
@@ -63710,7 +64412,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_Stabilized_AV — unmapped",
-   "MGEF ArmorStabilizedEffect archetype Unknown 36 — needs override"
+   "perk mod_armor_StabilizedPerk: entry point Mod Actor Scope Stability — not modeled"
   ],
   "obtainable": true
  },
@@ -64523,15 +65225,36 @@
   "targetKeywords": [
    "ma_armor_Trapper_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0011087B:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0011087B",
+     "edid": "mod_armor_Trapper_Lining_LimbArm_Brawler",
+     "name": "Brawling"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_Brawler"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Mod_Brawler_AV — unmapped",
-   "MGEF ArmorBrawlerEffect archetype Unknown 36 — needs override"
+   "ActorValues on Mod_Brawler_AV — unmapped"
   ],
   "obtainable": true
  },
@@ -64545,7 +65268,64 @@
   "targetKeywords": [
    "ma_armor_Trapper_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0011087C:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0011087C",
+     "edid": "mod_armor_Trapper_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 1
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x0011087C:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0011087C",
+     "edid": "mod_armor_Trapper_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 2
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_IgnoreArmor"
   ],
@@ -64553,7 +65333,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_IgnoreArmor_AV — unmapped",
-   "MGEF ArmorIgnoreArmorEffect archetype Absorb — needs override"
+   "perk mod_armor_IgnoreArmorPerk: Mod Target Damage Resistance on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)"
   ],
   "obtainable": true
  },
@@ -64597,7 +65377,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_Stabilized_AV — unmapped",
-   "MGEF ArmorStabilizedEffect archetype Unknown 36 — needs override"
+   "perk mod_armor_StabilizedPerk: entry point Mod Actor Scope Stability — not modeled"
   ],
   "obtainable": true
  },
@@ -66169,14 +66949,71 @@
   "targetKeywords": [
    "ma_armor_Universal_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00245BA7:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245BA7",
+     "edid": "mod_armor_Universal_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 1
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x00245BA7:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00245BA7",
+     "edid": "mod_armor_Universal_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 2
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_IgnoreArmor"
   ],
   "hasEnchantments": true,
   "notes": [
    "ActorValues on Mod_IgnoreArmor_AV — unmapped",
-   "MGEF ArmorIgnoreArmorEffect archetype Absorb — needs override"
+   "perk mod_armor_IgnoreArmorPerk: Mod Target Damage Resistance on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)"
   ],
   "obtainable": false
  },
@@ -66706,15 +67543,36 @@
   "targetKeywords": [
    "XPD_AC_ma_armor_Muni_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x006F4D63:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006F4D63",
+     "edid": "mod_armor_XPD_AC_Muni_Lining_LimbArm_Brawler",
+     "name": "Brawling"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_Brawler"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Mod_Brawler_AV — unmapped",
-   "MGEF ArmorBrawlerEffect archetype Unknown 36 — needs override"
+   "ActorValues on Mod_Brawler_AV — unmapped"
   ],
   "obtainable": true
  },
@@ -66728,7 +67586,64 @@
   "targetKeywords": [
    "XPD_AC_ma_armor_Muni_Lining_LimbArm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x006F4D64:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006F4D64",
+     "edid": "mod_armor_XPD_AC_Muni_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 1
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x006F4D64:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006F4D64",
+     "edid": "mod_armor_XPD_AC_Muni_Lining_LimbArm_IgnoreArmor",
+     "name": "Weighted"
+    },
+    "bucket": "armorPenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "dn_HasLining_IgnoreArmor",
+      "count": 2
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeHandToHand",
+       "WeaponTypeMelee2H",
+       "WeaponTypeMelee1H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasLining_IgnoreArmor"
   ],
@@ -66736,7 +67651,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_IgnoreArmor_AV — unmapped",
-   "MGEF ArmorIgnoreArmorEffect archetype Absorb — needs override"
+   "perk mod_armor_IgnoreArmorPerk: Mod Target Damage Resistance on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)"
   ],
   "obtainable": true
  },
@@ -66780,7 +67695,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Mod_Stabilized_AV — unmapped",
-   "MGEF ArmorStabilizedEffect archetype Unknown 36 — needs override"
+   "perk mod_armor_StabilizedPerk: entry point Mod Actor Scope Stability — not modeled"
   ],
   "obtainable": true
  },
@@ -68100,7 +69015,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "condition: GetDead()=1"
+   "condition: GetDead() Equal To 1"
   ],
   "obtainable": true
  },
@@ -69066,7 +69981,6 @@
   "notes": [
    "ActorValues on LGND_Chameleon — unmapped",
    "MGEF ChameleonArmorAudioEffect archetype Script — needs override",
-   "condition: GetDead()=0",
    "condition: IsBleedingOut()=0",
    "condition: IsMoving()=0",
    "perk ChameleonArmorStealthIconPerk: MGEF ChameleonArmorStealthIconUIDummy archetype Script — needs override"
@@ -72889,14 +73803,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk Legendary_Armor_BattleLoadersPerk: GetDead()=0",
-   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=15",
-   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=30",
-   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=45",
-   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=60",
-   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=75"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -73441,7 +74348,6 @@
   "notes": [
    "ActorValues on LGND_Chameleon — unmapped",
    "MGEF ChameleonArmorAudioEffect archetype Script — needs override",
-   "condition: GetDead()=0",
    "condition: IsBleedingOut()=0",
    "condition: IsMoving()=0",
    "perk ChameleonArmorStealthIconPerk: MGEF ChameleonArmorStealthIconUIDummy archetype Script — needs override"
@@ -76932,14 +77838,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk Legendary_Armor_BattleLoadersPerk: GetDead()=0",
-   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=15",
-   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=30",
-   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=45",
-   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=60",
-   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=75"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -78119,15 +79018,37 @@
    "ma_PA_Excavator",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00338659:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00338659",
+     "edid": "mod_PowerArmor_Excavator_Arm_Misc_Unarmed",
+     "name": "Hydraulic Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 15,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Unarmed"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on UnarmedDamage — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -79246,7 +80167,37 @@
    "ma_PowerArmorMod",
    "ma_PA_Hellcat"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0060DB43:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0060DB43",
+     "edid": "mod_PowerArmor_Hellcat_Arm_Misc_ShockDmg",
+     "name": "Tesla Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 45,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "mod_weapon_shock_fist",
    "dn_HasMisc_ShockDmg"
@@ -79254,7 +80205,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on UnarmedEnergyDamage — unmapped",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
    "self-targeted damage (hits the wielder, not enemies) — note-only"
@@ -79273,15 +80223,37 @@
    "ma_PowerArmorMod",
    "ma_PA_Hellcat"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0060DB42:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0060DB42",
+     "edid": "mod_PowerArmor_Hellcat_Arm_Misc_Unarmed",
+     "name": "Hydraulic Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 15,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Unarmed"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on UnarmedDamage — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -80306,15 +81278,37 @@
    "ma_PA_Raider",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0020374A:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0020374A",
+     "edid": "mod_PowerArmor_Raider_Arm_Misc_Unarmed",
+     "name": "Hydraulic Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 15,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Unarmed"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on UnarmedDamage — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -81387,7 +82381,37 @@
    "ma_PA_T45",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0023A514:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0023A514",
+     "edid": "mod_PowerArmor_T45_Arm_Misc_ShockDmg",
+     "name": "Tesla Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 45,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "mod_weapon_shock_fist",
    "dn_HasMisc_ShockDmg"
@@ -81395,7 +82419,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on UnarmedEnergyDamage — unmapped",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
    "self-targeted damage (hits the wielder, not enemies) — note-only"
@@ -81414,15 +82437,37 @@
    "ma_PA_Arm",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00182D79:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00182D79",
+     "edid": "mod_PowerArmor_T45_Arm_Misc_Unarmed",
+     "name": "Hydraulic Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 15,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Unarmed"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on UnarmedDamage — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -83159,7 +84204,37 @@
    "ma_PA_T51",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0023A515:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0023A515",
+     "edid": "mod_PowerArmor_T51_Arm_Misc_ShockDmg",
+     "name": "Tesla Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 45,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "mod_weapon_shock_fist",
    "dn_HasMisc_ShockDmg"
@@ -83167,7 +84242,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on UnarmedEnergyDamage — unmapped",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
    "self-targeted damage (hits the wielder, not enemies) — note-only"
@@ -83186,15 +84260,37 @@
    "ma_PA_T51",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00203749:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00203749",
+     "edid": "mod_PowerArmor_T51_Arm_Misc_Unarmed",
+     "name": "Hydraulic Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 15,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Unarmed"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on UnarmedDamage — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -85842,7 +86938,37 @@
    "ma_PA_T60",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0023A516:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0023A516",
+     "edid": "mod_PowerArmor_T60_Arm_Misc_ShockDmg",
+     "name": "Tesla Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 45,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "mod_weapon_shock_fist",
    "dn_HasMisc_ShockDmg"
@@ -85850,7 +86976,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on UnarmedEnergyDamage — unmapped",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
    "self-targeted damage (hits the wielder, not enemies) — note-only"
@@ -85869,15 +86994,37 @@
    "ma_PA_T60",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00203748:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00203748",
+     "edid": "mod_PowerArmor_T60_Arm_Misc_Unarmed",
+     "name": "Hydraulic Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 15,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Unarmed"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on UnarmedDamage — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -89005,7 +90152,37 @@
    "ma_PowerArmorMod",
    "ma_PA_T65"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00585923:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00585923",
+     "edid": "mod_PowerArmor_T65_Arm_Misc_ShockDmg",
+     "name": "Tesla Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 45,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "mod_weapon_shock_fist",
    "dn_HasMisc_ShockDmg"
@@ -89013,7 +90190,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on UnarmedEnergyDamage — unmapped",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
    "self-targeted damage (hits the wielder, not enemies) — note-only"
@@ -89032,15 +90208,37 @@
    "ma_PowerArmorMod",
    "ma_PA_T65"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00585924:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00585924",
+     "edid": "mod_PowerArmor_T65_Arm_Misc_Unarmed",
+     "name": "Hydraulic Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 15,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Unarmed"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on UnarmedDamage — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -90205,15 +91403,37 @@
    "ma_PA_Ultracite",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x003385EE:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x003385EE",
+     "edid": "mod_PowerArmor_Ultracite_Arm_Misc_Unarmed",
+     "name": "Hydraulic Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 15,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Unarmed"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on UnarmedDamage — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -91485,7 +92705,37 @@
    "ma_PA_X01",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0018350D:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0018350D",
+     "edid": "mod_PowerArmor_X01_Arm_Misc_ShockDmg",
+     "name": "Tesla Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 45,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "mod_weapon_shock_fist",
    "dn_HasMisc_ShockDmg"
@@ -91493,7 +92743,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on UnarmedEnergyDamage — unmapped",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
    "self-targeted damage (hits the wielder, not enemies) — note-only"
@@ -91512,15 +92761,37 @@
    "ma_PA_X01",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00203747:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00203747",
+     "edid": "mod_PowerArmor_X01_Arm_Misc_Unarmed",
+     "name": "Hydraulic Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 15,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Unarmed"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on UnarmedDamage — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -95450,7 +96721,37 @@
    "ma_PowerArmorMod",
    "RD01_ma_PA_EnclaveVulcan"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00788D77:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00788D77",
+     "edid": "RD01_Mod_PowerArmor_EnclaveVulcan_Arm_Misc_ShockDmg",
+     "name": "Tesla Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 45,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "mod_weapon_shock_fist",
    "dn_HasMisc_ShockDmg"
@@ -95458,7 +96759,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on UnarmedEnergyDamage — unmapped",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
    "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
    "self-targeted damage (hits the wielder, not enemies) — note-only"
@@ -95485,7 +96785,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on RD01_PowerArmor_StabilizedBracersStabilityHipFire_AV — unmapped",
-   "ActorValues on RD01_PowerArmor_StabilizedBracersStabilityScoped_AV — unmapped"
+   "ActorValues on RD01_PowerArmor_StabilizedBracersStabilityScoped_AV — unmapped",
+   "perk RD01_PowerArmor_StabilizedBracers: entry point Mod Actor Scope Stability — not modeled",
+   "perk RD01_PowerArmor_StabilizedBracers: entry point Mod Cone-of-fire Mult — not modeled"
   ],
   "obtainable": true
  },
@@ -95524,15 +96826,37 @@
    "ma_PowerArmorMod",
    "RD01_ma_PA_EnclaveVulcan"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00788D78:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00788D78",
+     "edid": "RD01_Mod_PowerArmor_EnclaveVulcan_Arm_Misc_Unarmed",
+     "name": "Hydraulic Bracers"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 15,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_Unarmed"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on UnarmedDamage — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

@@ -418,7 +418,6 @@
   "kind": "mutation",
   "modifiers": [],
   "notes": [
-   "Mutation_ElectricallyCharged: condition: GetDead()=0",
    "Mutation_ElectricallyCharged: MGEF Mutation_ElectricallyChargedScriptEffect archetype Script — needs override",
    "Mutation_ElectricallyCharged: MGEF Mutation_ElectricallyChargedSuperScriptEffect archetype Script — needs override",
    "Mutation_ElectricallyCharged: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
@@ -2124,7 +2123,6 @@
   "kind": "mutation",
   "modifiers": [],
   "notes": [
-   "Mutation_UnstableIsotope: condition: GetDead()=0",
    "Mutation_UnstableIsotope: MGEF Mutation_UnstableIsotopeScriptEffect archetype Script — needs override",
    "Mutation_UnstableIsotope: MGEF Mutation_UnstableIsotopeSuperScriptEffect archetype Script — needs override",
    "Mutation_UnstableIsotope: MGEF abMutationCount: no route for AV MutationCount — needs mapping"

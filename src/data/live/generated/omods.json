@@ -8547,7 +8547,7 @@
     "conditions": []
    },
    {
-    "id": "0x00111017:1",
+    "id": "0x00111017:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00111017",
@@ -8594,7 +8594,7 @@
     "conditions": []
    },
    {
-    "id": "0x00111733:1",
+    "id": "0x00111733:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00111733",
@@ -9269,7 +9269,7 @@
     "conditions": []
    },
    {
-    "id": "0x0031B1A4:4",
+    "id": "0x0031B1A4:ench:4",
     "source": {
      "kind": "omod",
      "formId": "0x0031B1A4",
@@ -9388,7 +9388,7 @@
     "conditions": []
    },
    {
-    "id": "0x0031B1A7:1",
+    "id": "0x0031B1A7:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x0031B1A7",
@@ -9500,7 +9500,7 @@
     "conditions": []
    },
    {
-    "id": "0x0031B1AC:2",
+    "id": "0x0031B1AC:ench:2",
     "source": {
      "kind": "omod",
      "formId": "0x0031B1AC",
@@ -12629,7 +12629,7 @@
     "conditions": []
    },
    {
-    "id": "0x00113D5E:1",
+    "id": "0x00113D5E:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00113D5E",
@@ -12703,7 +12703,7 @@
     "conditions": []
    },
    {
-    "id": "0x00113D61:1",
+    "id": "0x00113D61:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00113D61",
@@ -12802,7 +12802,7 @@
     "conditions": []
    },
    {
-    "id": "0x00113D62:3",
+    "id": "0x00113D62:ench:3",
     "source": {
      "kind": "omod",
      "formId": "0x00113D62",
@@ -13380,7 +13380,7 @@
     "conditions": []
    },
    {
-    "id": "0x00113C6A:1",
+    "id": "0x00113C6A:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00113C6A",
@@ -13952,7 +13952,7 @@
     "conditions": []
    },
    {
-    "id": "0x00113D60:1",
+    "id": "0x00113D60:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00113D60",
@@ -14027,7 +14027,7 @@
     "conditions": []
    },
    {
-    "id": "0x00113D5F:1",
+    "id": "0x00113D5F:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00113D5F",
@@ -14188,7 +14188,7 @@
     "conditions": []
    },
    {
-    "id": "0x00113F45:3",
+    "id": "0x00113F45:ench:3",
     "source": {
      "kind": "omod",
      "formId": "0x00113F45",
@@ -15695,7 +15695,7 @@
     "conditions": []
    },
    {
-    "id": "0x0063E389:1",
+    "id": "0x0063E389:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x0063E389",
@@ -18313,7 +18313,7 @@
     "conditions": []
    },
    {
-    "id": "0x0005EA48:4",
+    "id": "0x0005EA48:ench:4",
     "source": {
      "kind": "omod",
      "formId": "0x0005EA48",
@@ -18431,7 +18431,7 @@
     "conditions": []
    },
    {
-    "id": "0x0005EAD4:1",
+    "id": "0x0005EAD4:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x0005EAD4",
@@ -18543,7 +18543,7 @@
     "conditions": []
    },
    {
-    "id": "0x0005ECC2:2",
+    "id": "0x0005ECC2:ench:2",
     "source": {
      "kind": "omod",
      "formId": "0x0005ECC2",
@@ -21898,7 +21898,7 @@
     "conditions": []
    },
    {
-    "id": "0x002FD90F:1",
+    "id": "0x002FD90F:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x002FD90F",
@@ -22011,7 +22011,7 @@
     "conditions": []
    },
    {
-    "id": "0x002FD90E:2",
+    "id": "0x002FD90E:ench:2",
     "source": {
      "kind": "omod",
      "formId": "0x002FD90E",
@@ -26144,7 +26144,7 @@
     "conditions": []
    },
    {
-    "id": "0x003128CD:4",
+    "id": "0x003128CD:ench:4",
     "source": {
      "kind": "omod",
      "formId": "0x003128CD",
@@ -26266,7 +26266,7 @@
     "conditions": []
    },
    {
-    "id": "0x003128D4:1",
+    "id": "0x003128D4:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x003128D4",
@@ -26376,7 +26376,7 @@
     "conditions": []
    },
    {
-    "id": "0x003128D9:2",
+    "id": "0x003128D9:ench:2",
     "source": {
      "kind": "omod",
      "formId": "0x003128D9",
@@ -30526,9 +30526,7 @@
   },
   "notes": [
    "MGEF Generic_Weapon_CritPlasmaEffect archetype Script — needs override",
-   "condition: GetRandomPercent()=70",
-   "condition: IsEssential()=0",
-   "condition: IsProtected()=0"
+   "condition: GetRandomPercent()=70"
   ],
   "obtainable": true
  },
@@ -30899,7 +30897,7 @@
     "conditions": []
    },
    {
-    "id": "0x0004DEFD:1",
+    "id": "0x0004DEFD:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x0004DEFD",
@@ -33004,7 +33002,7 @@
     "conditions": []
    },
    {
-    "id": "0x0024455E:4",
+    "id": "0x0024455E:ench:4",
     "source": {
      "kind": "omod",
      "formId": "0x0024455E",
@@ -33123,7 +33121,7 @@
     "conditions": []
    },
    {
-    "id": "0x00243142:1",
+    "id": "0x00243142:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00243142",
@@ -33235,7 +33233,7 @@
     "conditions": []
    },
    {
-    "id": "0x0024455F:2",
+    "id": "0x0024455F:ench:2",
     "source": {
      "kind": "omod",
      "formId": "0x0024455F",
@@ -37107,7 +37105,7 @@
     "conditions": []
    },
    {
-    "id": "0x00202F23:4",
+    "id": "0x00202F23:ench:4",
     "source": {
      "kind": "omod",
      "formId": "0x00202F23",
@@ -37225,7 +37223,7 @@
     "conditions": []
    },
    {
-    "id": "0x00202F97:1",
+    "id": "0x00202F97:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00202F97",
@@ -37334,7 +37332,7 @@
     "conditions": []
    },
    {
-    "id": "0x00203047:2",
+    "id": "0x00203047:ench:2",
     "source": {
      "kind": "omod",
      "formId": "0x00203047",
@@ -43021,7 +43019,6 @@
    }
   ],
   "notes": [
-   "perk CircuitBreakerPerk: GetDead()=0",
    "perk CircuitBreakerPerk: MGEF CircuitBreakerEffect_Explosion: Explosion 0x006E20EB chased — no direct damage"
   ],
   "obtainable": true
@@ -43151,7 +43148,6 @@
    }
   ],
   "notes": [
-   "perk CircuitBreakerPerk: GetDead()=0",
    "perk CircuitBreakerPerk: MGEF CircuitBreakerEffect_Explosion: Explosion 0x006E20EB chased — no direct damage"
   ],
   "obtainable": false
@@ -45506,86 +45502,7 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [
-   {
-    "id": "0x008EC62B:perk:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x008EC62B",
-     "edid": "mod_Custom_Nailer",
-     "name": "Nailer"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 3
-      },
-      {
-       "x": 5,
-       "y": 3
-      },
-      {
-       "x": 10,
-       "y": 4
-      },
-      {
-       "x": 15,
-       "y": 4
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 25,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 6
-      },
-      {
-       "x": 35,
-       "y": 7
-      },
-      {
-       "x": 40,
-       "y": 7
-      },
-      {
-       "x": 45,
-       "y": 8
-      },
-      {
-       "x": 50,
-       "y": 9
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "HasKeyword(BleedImmune)=0"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "WornHasKeyword(HasLegendary_Weapon_HealAllies)=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "ballistic"
-      ]
-     }
-    ],
-    "durationSec": 10
-   }
-  ],
+  "modifiers": [],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItemName_Nailer",
@@ -45593,8 +45510,7 @@
   ],
   "hasEnchantments": false,
   "notes": [
-   "perk NailerPerk: condition: HasKeyword(BleedImmune)=0",
-   "perk NailerPerk: condition: WornHasKeyword(HasLegendary_Weapon_HealAllies)=0"
+   "perk NailerPerk: Mod Power Attack Damage Select Spell — block-triggered sustain buff, not powerAttackBonus (docs/assumptions.md \"LGN Retribution\")"
   ],
   "obtainable": true
  },
@@ -48116,7 +48032,7 @@
   ],
   "hasEnchantments": false,
   "notes": [
-   "perk mod_weapon_penetrating: entry point Mod VATS Penetration Min Visibility — not modeled"
+   "perk mod_weapon_penetrating: Mod VATS Penetration Min Visibility — VATS pierce-through visibility (up to 3 targets), not armorPen (docs/assumptions.md \"Penetrating (mod_weapon_penetrating)\")"
   ],
   "obtainable": true
  },
@@ -48421,6 +48337,72 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x00522667:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00522667",
+     "edid": "mod_Description_MoM_VoiceofSet",
+     "name": "mod_Description_MoM_VoiceofSet"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "value": 35,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "WornHasKeyword(MoMVoiceofSetKeyword)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "WornHasKeyword(MoMEyeOfRaItemKeyword)=1"
+     },
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeRobot"
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ],
+    "durationSec": 1
+   },
+   {
+    "id": "0x00522667:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00522667",
+     "edid": "mod_Description_MoM_VoiceofSet",
+     "name": "mod_Description_MoM_VoiceofSet"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "value": 70,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "WornHasKeyword(MoMVoiceofSetKeyword)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "WornHasKeyword(MoMEyeOfRaItemKeyword)=1"
+     },
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeRobot"
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ],
+    "durationSec": 1
    }
   ],
   "addedKeywords": [],
@@ -48432,8 +48414,7 @@
    "perk MoM_VoiceofSetPerk: WornHasKeyword(MoMEyeOfRaItemKeyword)=1",
    "perk MoM_VoiceofSetPerk: condition: GetRandomPercent()=25",
    "perk MoM_VoiceofSetPerk: condition: HasKeyword(ImmuneParalysis)=0",
-   "perk MoM_VoiceofSetPerk: condition: WornHasKeyword(MoMEyeOfRaItemKeyword)=1",
-   "self-targeted damage (hits the wielder, not enemies) — note-only"
+   "perk MoM_VoiceofSetPerk: condition: WornHasKeyword(MoMEyeOfRaItemKeyword)=1"
   ],
   "obtainable": true
  },
@@ -57732,7 +57713,7 @@
     "conditions": []
    },
    {
-    "id": "0x007B23D3:1",
+    "id": "0x007B23D3:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x007B23D3",
@@ -60435,7 +60416,7 @@
     "conditions": []
    },
    {
-    "id": "0x00313922:1",
+    "id": "0x00313922:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00313922",
@@ -60700,7 +60681,7 @@
     "conditions": []
    },
    {
-    "id": "0x0031391E:1",
+    "id": "0x0031391E:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x0031391E",
@@ -60813,7 +60794,7 @@
     "conditions": []
    },
    {
-    "id": "0x0031391D:2",
+    "id": "0x0031391D:ench:2",
     "source": {
      "kind": "omod",
      "formId": "0x0031391D",
@@ -61395,7 +61376,7 @@
     "conditions": []
    },
    {
-    "id": "0x0059561A:1",
+    "id": "0x0059561A:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x0059561A",
@@ -62582,7 +62563,7 @@
     "conditions": []
    },
    {
-    "id": "0x002446DC:4",
+    "id": "0x002446DC:ench:4",
     "source": {
      "kind": "omod",
      "formId": "0x002446DC",
@@ -62701,7 +62682,7 @@
     "conditions": []
    },
    {
-    "id": "0x00245E1C:1",
+    "id": "0x00245E1C:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00245E1C",
@@ -62813,7 +62794,7 @@
     "conditions": []
    },
    {
-    "id": "0x0028C902:2",
+    "id": "0x0028C902:ench:2",
     "source": {
      "kind": "omod",
      "formId": "0x0028C902",
@@ -68575,7 +68556,7 @@
   ],
   "modifiers": [
    {
-    "id": "0x005281B4:0",
+    "id": "0x005281B4:ench:0",
     "source": {
      "kind": "omod",
      "formId": "0x005281B4",
@@ -70013,7 +69994,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk LegendaryVampirePerk: GetDead()=0",
    "perk LegendaryVampirePerk: MGEF Legendary_VampireRegenEffect archetype Stimpak — needs override"
   ],
   "obtainable": true
@@ -70344,9 +70324,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk Legendary_LastShot_Roll_Perk: GetRandomPercent()=0x006C20BB"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -70702,7 +70680,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk LegendaryCloakOnHitPerk: GetDead()=0",
    "perk LegendaryCloakOnHitPerk: GetRandomPercent()=0x006C1FA5",
    "perk LegendaryCloakOnHitPerk: MGEF Legendary_CloakEffect archetype Invisibility — needs override"
   ],
@@ -71508,9 +71485,7 @@
     ]
    }
   ],
-  "notes": [
-   "perk Legendary_Weapon_FracturersPerk: GetDead()=0"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -73312,7 +73287,7 @@
     "conditions": []
    },
    {
-    "id": "0x00182CCF:1",
+    "id": "0x00182CCF:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00182CCF",
@@ -73372,7 +73347,7 @@
     "conditions": []
    },
    {
-    "id": "0x00182CD1:1",
+    "id": "0x00182CD1:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00182CD1",
@@ -73640,7 +73615,7 @@
     "conditions": []
    },
    {
-    "id": "0x003F06E4:1",
+    "id": "0x003F06E4:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x003F06E4",
@@ -73801,7 +73776,7 @@
     "conditions": []
    },
    {
-    "id": "0x0005C252:1",
+    "id": "0x0005C252:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x0005C252",
@@ -73847,7 +73822,7 @@
     "conditions": []
    },
    {
-    "id": "0x001A71F7:1",
+    "id": "0x001A71F7:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x001A71F7",
@@ -74107,7 +74082,7 @@
     "conditions": []
    },
    {
-    "id": "0x00187A25:1",
+    "id": "0x00187A25:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00187A25",
@@ -74154,7 +74129,7 @@
     "conditions": []
    },
    {
-    "id": "0x001865C3:1",
+    "id": "0x001865C3:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x001865C3",
@@ -74795,7 +74770,7 @@
     "conditions": []
    },
    {
-    "id": "0x009136B4:1",
+    "id": "0x009136B4:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x009136B4",
@@ -74938,7 +74913,7 @@
     "conditions": []
    },
    {
-    "id": "0x00081DC9:1",
+    "id": "0x00081DC9:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00081DC9",
@@ -75384,7 +75359,7 @@
     "conditions": []
    },
    {
-    "id": "0x00630C7C:3",
+    "id": "0x00630C7C:ench:3",
     "source": {
      "kind": "omod",
      "formId": "0x00630C7C",
@@ -75450,7 +75425,7 @@
     "conditions": []
    },
    {
-    "id": "0x0012B792:1",
+    "id": "0x0012B792:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x0012B792",
@@ -75837,7 +75812,7 @@
     "conditions": []
    },
    {
-    "id": "0x00073675:1",
+    "id": "0x00073675:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00073675",
@@ -76331,7 +76306,7 @@
     "conditions": []
    },
    {
-    "id": "0x008B3A1F:1",
+    "id": "0x008B3A1F:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x008B3A1F",
@@ -76956,7 +76931,7 @@
     "conditions": []
    },
    {
-    "id": "0x0015073A:2",
+    "id": "0x0015073A:ench:2",
     "source": {
      "kind": "omod",
      "formId": "0x0015073A",
@@ -77079,7 +77054,7 @@
     "conditions": []
    },
    {
-    "id": "0x0005524D:1",
+    "id": "0x0005524D:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x0005524D",
@@ -77125,7 +77100,7 @@
     "conditions": []
    },
    {
-    "id": "0x00150739:1",
+    "id": "0x00150739:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00150739",
@@ -77250,7 +77225,7 @@
     "conditions": []
    },
    {
-    "id": "0x00185473:1",
+    "id": "0x00185473:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00185473",
@@ -77644,7 +77619,7 @@
     "conditions": []
    },
    {
-    "id": "0x0083D59D:1",
+    "id": "0x0083D59D:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x0083D59D",
@@ -77911,7 +77886,7 @@
     "conditions": []
    },
    {
-    "id": "0x005528E5:1",
+    "id": "0x005528E5:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x005528E5",
@@ -78233,7 +78208,7 @@
     "conditions": []
    },
    {
-    "id": "0x001843E1:1",
+    "id": "0x001843E1:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x001843E1",
@@ -78296,7 +78271,7 @@
     "conditions": []
    },
    {
-    "id": "0x00187823:1",
+    "id": "0x00187823:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00187823",
@@ -79247,9 +79222,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "MGEF Generic_Weapon_CritPlasmaEffect archetype Script — needs override",
-   "condition: GetRandomPercent()=70",
-   "condition: IsEssential()=0",
-   "condition: IsProtected()=0"
+   "condition: GetRandomPercent()=70"
   ],
   "obtainable": true
  },
@@ -79408,7 +79381,7 @@
     "conditions": []
    },
    {
-    "id": "0x00069089:1",
+    "id": "0x00069089:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00069089",
@@ -79611,7 +79584,7 @@
     "conditions": []
    },
    {
-    "id": "0x001849E1:1",
+    "id": "0x001849E1:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x001849E1",
@@ -79968,7 +79941,7 @@
     "conditions": []
    },
    {
-    "id": "0x000FA2FA:1",
+    "id": "0x000FA2FA:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x000FA2FA",
@@ -80241,7 +80214,7 @@
     "conditions": []
    },
    {
-    "id": "0x00181283:1",
+    "id": "0x00181283:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00181283",
@@ -82048,7 +82021,7 @@
     "conditions": []
    },
    {
-    "id": "0x0045582E:1",
+    "id": "0x0045582E:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x0045582E",
@@ -82450,7 +82423,7 @@
     "conditions": []
    },
    {
-    "id": "0x000360CE:1",
+    "id": "0x000360CE:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x000360CE",
@@ -82692,7 +82665,7 @@
     "conditions": []
    },
    {
-    "id": "0x00185CFA:1",
+    "id": "0x00185CFA:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00185CFA",
@@ -83372,7 +83345,7 @@
     "conditions": []
    },
    {
-    "id": "0x0017DAA2:1",
+    "id": "0x0017DAA2:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x0017DAA2",
@@ -83692,9 +83665,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "MGEF Generic_Weapon_CritPlasmaEffect archetype Script — needs override",
-   "condition: GetRandomPercent()=70",
-   "condition: IsEssential()=0",
-   "condition: IsProtected()=0"
+   "condition: GetRandomPercent()=70"
   ],
   "obtainable": true
  },
@@ -84412,7 +84383,7 @@
     "conditions": []
    },
    {
-    "id": "0x008D5ACB:1",
+    "id": "0x008D5ACB:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x008D5ACB",
@@ -88492,7 +88463,7 @@
    "baseWeaponDamageMult": 0
   },
   "notes": [
-   "perk mod_weapon_NitroPenetrating: entry point Mod VATS Penetration Min Visibility — not modeled"
+   "perk mod_weapon_NitroPenetrating: Mod VATS Penetration Min Visibility — VATS pierce-through visibility (up to 3 targets), not armorPen (docs/assumptions.md \"Penetrating (mod_weapon_penetrating)\")"
   ],
   "obtainable": true
  },
@@ -88532,7 +88503,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk mod_weapon_NitroPenetrating: entry point Mod VATS Penetration Min Visibility — not modeled"
+   "perk mod_weapon_NitroPenetrating: Mod VATS Penetration Min Visibility — VATS pierce-through visibility (up to 3 targets), not armorPen (docs/assumptions.md \"Penetrating (mod_weapon_penetrating)\")"
   ],
   "obtainable": true
  },
@@ -88607,7 +88578,7 @@
     "conditions": []
    },
    {
-    "id": "0x0060E0EA:3",
+    "id": "0x0060E0EA:ench:3",
     "source": {
      "kind": "omod",
      "formId": "0x0060E0EA",
@@ -92503,7 +92474,7 @@
     "conditions": []
    },
    {
-    "id": "0x002D5DF4:4",
+    "id": "0x002D5DF4:ench:4",
     "source": {
      "kind": "omod",
      "formId": "0x002D5DF4",
@@ -92622,7 +92593,7 @@
     "conditions": []
    },
    {
-    "id": "0x002D5DF7:1",
+    "id": "0x002D5DF7:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x002D5DF7",
@@ -92735,7 +92706,7 @@
     "conditions": []
    },
    {
-    "id": "0x002D5DFC:2",
+    "id": "0x002D5DFC:ench:2",
     "source": {
      "kind": "omod",
      "formId": "0x002D5DFC",
@@ -107162,7 +107133,7 @@
     "conditions": []
    },
    {
-    "id": "0x002DAD49:4",
+    "id": "0x002DAD49:ench:4",
     "source": {
      "kind": "omod",
      "formId": "0x002DAD49",
@@ -107278,7 +107249,7 @@
     "conditions": []
    },
    {
-    "id": "0x002DAD4C:1",
+    "id": "0x002DAD4C:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x002DAD4C",
@@ -107387,7 +107358,7 @@
     "conditions": []
    },
    {
-    "id": "0x002DAD8A:2",
+    "id": "0x002DAD8A:ench:2",
     "source": {
      "kind": "omod",
      "formId": "0x002DAD8A",
@@ -112909,7 +112880,7 @@
     "conditions": []
    },
    {
-    "id": "0x001B28F8:1",
+    "id": "0x001B28F8:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x001B28F8",
@@ -119894,10 +119865,6 @@
      {
       "kind": "unresolved",
       "raw": "HasKeyword(IsSingleShotWeapon)=1"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=1"
      }
     ]
    },
@@ -119928,10 +119895,6 @@
      {
       "kind": "unresolved",
       "raw": "HasKeyword(IsSingleShotWeapon)=1"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=1"
      }
     ]
    },
@@ -119962,10 +119925,6 @@
      {
       "kind": "unresolved",
       "raw": "HasKeyword(IsSingleShotWeapon)=1"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=1"
      }
     ]
    },
@@ -119996,10 +119955,6 @@
      {
       "kind": "unresolved",
       "raw": "HasKeyword(IsSingleShotWeapon)=1"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=1"
      }
     ]
    },
@@ -120030,10 +119985,6 @@
      {
       "kind": "unresolved",
       "raw": "HasKeyword(IsSingleShotWeapon)=1"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=1"
      }
     ]
    },
@@ -120064,10 +120015,6 @@
      {
       "kind": "unresolved",
       "raw": "HasKeyword(IsSingleShotWeapon)=1"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=1"
      }
     ]
    },
@@ -120098,10 +120045,6 @@
      {
       "kind": "unresolved",
       "raw": "HasKeyword(IsSingleShotWeapon)=1"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=1"
      }
     ]
    },
@@ -120132,10 +120075,6 @@
      {
       "kind": "unresolved",
       "raw": "HasKeyword(IsSingleShotWeapon)=1"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=1"
      }
     ]
    },
@@ -120166,10 +120105,6 @@
      {
       "kind": "unresolved",
       "raw": "HasKeyword(IsSingleShotWeapon)=1"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=1"
      }
     ]
    },
@@ -120200,10 +120135,6 @@
      {
       "kind": "unresolved",
       "raw": "HasKeyword(IsSingleShotWeapon)=1"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=1"
      }
     ]
    }
@@ -120215,7 +120146,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "perk P62_Legendary_Weapon_RuinersPerk: GetDead()=1",
    "perk P62_Legendary_Weapon_RuinersPerk: GetRandomPercent()=10",
    "perk P62_Legendary_Weapon_RuinersPerk: GetRandomPercent()=15",
    "perk P62_Legendary_Weapon_RuinersPerk: GetRandomPercent()=20",
@@ -120268,6 +120198,42 @@
       "value": true
      }
     ]
+   },
+   {
+    "id": "0x00811F96:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00811F96",
+     "edid": "P62_mod_Legendary_Weapon4_Guns_SightSeers",
+     "name": "Sightseer's"
+    },
+    "bucket": "weaponMinRange",
+    "op": "MUL_ADD",
+    "value": 0.5,
+    "conditions": [
+     {
+      "kind": "aimingDownSights",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x00811F96:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00811F96",
+     "edid": "P62_mod_Legendary_Weapon4_Guns_SightSeers",
+     "name": "Sightseer's"
+    },
+    "bucket": "weaponMaxRange",
+    "op": "MUL_ADD",
+    "value": 0.5,
+    "conditions": [
+     {
+      "kind": "aimingDownSights",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -120276,9 +120242,7 @@
    "FeaturedItem"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "perk P62_Legendary_Weapon_SightSeersPerk: entry point Mod Gun Range Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": false
  },
  {
@@ -120368,7 +120332,7 @@
     "conditions": []
    },
    {
-    "id": "0x00113D63:1",
+    "id": "0x00113D63:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00113D63",

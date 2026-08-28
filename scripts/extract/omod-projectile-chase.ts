@@ -38,8 +38,16 @@ export async function enchantmentModifiers(
     // first such case: without this gate its 3 rad/s self-irradiation
     // lands as a +3 radiation DoT dealt to enemies. Buff-shaped fragments
     // (dbm MUL_ADDs like Voice of Set's +20% ballistic) stay — Self
-    // delivery is the NORMAL shape for granted legendary buffs.
-    if (targetType === 'Self' && fragment.bucket === 'dotDamage' && fragment.op === 'ADD') {
+    // delivery is the NORMAL shape for granted legendary buffs. Enemy-directed
+    // dotDamage from a Self-delivery ENCH → Script perk chase (Voice of Set's
+    // robot shock proc — docs/assumptions.md "Voice of Set robot shock proc")
+    // carries enemyType conditions — do NOT drop those.
+    if (
+      targetType === 'Self' &&
+      fragment.bucket === 'dotDamage' &&
+      fragment.op === 'ADD' &&
+      !fragment.conditions.some((c) => c.kind === 'enemyType' || c.kind === 'enemyTypeAny')
+    ) {
       modNotes.add(`self-targeted damage (hits the wielder, not enemies) — note-only`);
       continue;
     }
