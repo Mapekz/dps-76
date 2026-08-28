@@ -42,10 +42,14 @@ describe('perk registry ↔ generated family join', () => {
     });
   });
 
-  it('reports unjoined PerkIds without crashing (review list, not a failure)', () => {
-    const unjoined = getUnjoinedPerkIds('live');
-    // Sanity ceiling: the bulk of the registry must join.
-    expect(unjoined.length).toBeLessThan(60);
+  /**
+   * An unjoined PerkId contributes zero modifiers (`perk-modifiers.ts` skips
+   * unresolved cards) and shows as inert in the picker. A ceiling assertion lets
+   * individual perks silently go dark after an ESM rename; an exact list fails
+   * loudly and forces adjudication.
+   */
+  it('reports unjoined PerkIds without crashing (pinned review list)', () => {
+    expect([...getUnjoinedPerkIds('live')].sort()).toEqual([]);
   });
 
   it('getEquippedPerkFamilyRanks maps a mixed loadout to family → highest owned rank (perkFamilyRank input)', () => {

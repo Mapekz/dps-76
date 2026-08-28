@@ -34,7 +34,9 @@ import {
   hiddenWeaponIds,
   forceVisibleWeaponIds,
   splashReliantWeaponIds,
+  streamDeliveryWeaponIds,
   buildSplashReliantCorrections,
+  streamConvertingOmodIds,
   hiddenOmodIds,
   forceVisibleOmodIds,
   hiddenArmorOmodIds,
@@ -47,7 +49,12 @@ import {
   consumableDescriptionOverrides,
   omodDescriptionOverrides,
 } from './overrides/corrections';
-import { perkFamilyOverrides, extraPerkModifiers } from './overrides/perk-overrides';
+import {
+  perkFamilyOverrides,
+  extraPerkModifiers,
+  perkForceEffectivePerkIds,
+} from './overrides/perk-overrides';
+import { mutationDescriptionOverrides } from './overrides/mutation-descriptions';
 import { npcOverrides } from './overrides/npc-overrides';
 import { armorPieceOverrides } from './overrides/armor-piece-overrides';
 import { derivePerkRegistry, type PerkNameEntry } from './perk-cards';
@@ -265,6 +272,11 @@ export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset
     applyWeaponRestrictions(
       applyBadgeOverride(
         applyNameOverride(
+          // REPLACE then CONCAT: `legendaryValueOverrides` wholesale-replaces
+          // `.modifiers`, discarding any newly-extracted rows on that record;
+          // `omodModifierAdditions` appends after and survives. Reordering would
+          // not restore discarded extract rows — see dataset.test.ts magnitude
+          // tests and the overlay-order pin below.
           applyModifierAddition(
             applyModifierOverride(source.generatedOmods, source.legendaryValueOverrides),
             source.omodModifierAdditions,
@@ -452,13 +464,17 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   check('weaponCorrections', Object.keys(weaponCorrections), weaponIds);
   check('hiddenWeaponIds', hiddenWeaponIds, weaponIds);
   check('forceVisibleWeaponIds', forceVisibleWeaponIds, weaponIds);
+  check('splashReliantWeaponIds', splashReliantWeaponIds, weaponIds);
+  check('streamDeliveryWeaponIds', streamDeliveryWeaponIds, weaponIds);
 
   // omods/perks/mutations/consumables have no live/pts split yet (single ESM
   // — see the HandAuthored comment above); read straight off the shared
   // generated collections, same as buildDataset does.
   const omodIds = new Set(generatedOmodsLive.map((o) => o.id));
+  const attachPointEdids = new Set(generatedOmodsLive.map((o) => o.attachPointEdid));
   const omodNamesById = new Map(generatedOmodsLive.map((o) => [o.id, o.name]));
   check('legendaryValueOverrides', Object.keys(legendaryValueOverrides), omodIds);
+  check('streamConvertingOmodIds', streamConvertingOmodIds, omodIds);
   check('omodModifierAdditions', Object.keys(omodModifierAdditions), omodIds);
   check('hiddenOmodIds', hiddenOmodIds, omodIds);
   check('forceVisibleOmodIds', forceVisibleOmodIds, omodIds);
@@ -469,6 +485,18 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   for (const [omodId, weaponRefs] of Object.entries(omodWeaponRestrictions)) {
     check(`omodWeaponRestrictions[${omodId}] (weapon ref)`, weaponRefs, weaponIds);
   }
+  check(
+    'perWeaponSlotLabelOverrides (weapon)',
+    Object.keys(perWeaponSlotLabelOverrides),
+    weaponIds,
+  );
+  for (const [weaponId, slotLabels] of Object.entries(perWeaponSlotLabelOverrides)) {
+    check(
+      `perWeaponSlotLabelOverrides[${weaponId}] (attach point)`,
+      Object.keys(slotLabels),
+      attachPointEdids,
+    );
+  }
 
   const armorOmods = generatedArmorOmodsLive as GeneratedOmod[];
   const armorOmodIds = new Set(armorOmods.map((o) => o.id));
@@ -478,10 +506,12 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   const armorEffectNames = new Set(armorOmods.map((o) => o.name));
   check('armorPieceOverrides', Object.keys(armorPieceOverrides), armorEffectNames);
 
+  const mutationIds = new Set(generatedMutationsLive.map((b) => b.id));
   const buffIds = new Set(
     [...generatedMutationsLive, ...generatedConsumablesLive].map((b) => b.id),
   );
   check('buffValueOverrides', Object.keys(buffValueOverrides), buffIds);
+  check('mutationDescriptionOverrides', Object.keys(mutationDescriptionOverrides), mutationIds);
   check('hiddenConsumableIds', hiddenConsumableIds, buffIds);
   check('forceVisibleConsumableIds', forceVisibleConsumableIds, buffIds);
   const consumableIds = new Set(generatedConsumablesLive.map((b) => b.id));
@@ -503,7 +533,10 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   const generatedOmodDescById = new Map(generatedOmodsLive.map((o) => [o.id, o.description]));
   checkNoOpValue('omodDescriptionOverrides', omodDescriptionOverrides, generatedOmodDescById);
 
+  const perkIds = new Set(Object.keys(perkNamesLive) as PerkId[]);
+  check('perkForceEffectivePerkIds', perkForceEffectivePerkIds, perkIds);
   const familyIds = new Set(generatedPerksLive.map((p) => p.family));
+  check('perkFamilyOverrides (PerkId key)', Object.keys(perkFamilyOverrides), perkIds);
   check('perkFamilyOverrides (target family)', Object.values(perkFamilyOverrides), familyIds);
   check('extraPerkModifiers', Object.keys(extraPerkModifiers), familyIds);
 

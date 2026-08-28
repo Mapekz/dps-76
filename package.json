@@ -19,6 +19,7 @@
     "extract:diff": "bun scripts/extract/diff-report.ts",
     "vet:weapons": "bun scripts/vet-weapons.ts",
     "audit:inert": "bun scripts/audit-inert.ts",
+    "audit:records": "bun scripts/audit-records.ts",
     "wire-dict:build": "bun scripts/build-wire-dictionary.ts",
     "esm:walk": "esm walk",
     "preview": "vite preview",

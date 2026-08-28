@@ -13,6 +13,7 @@ import {
   type ExtractorName,
 } from './pass';
 import { PASSES } from './passes';
+import { classifyUnresolved, summarizeUnresolvedClassification } from './unresolved-classification';
 
 async function main() {
   const { values } = parseArgs({
@@ -20,13 +21,14 @@ async function main() {
       esm: { type: 'string' },
       mode: { type: 'string', default: 'live' },
       only: { type: 'string' },
+      'strict-unresolved': { type: 'boolean', default: false },
     },
   });
 
   const esmPath = values.esm ?? process.env.FO76_ESM_PATH;
   if (!esmPath) {
     console.error(
-      'Usage: bun run extract --esm <path-to-SeventySix.esm> [--mode live|pts] [--only weapons,...]',
+      'Usage: bun run extract --esm <path-to-SeventySix.esm> [--mode live|pts] [--only weapons,...] [--strict-unresolved]',
     );
     console.error('(or set the FO76_ESM_PATH env var to omit --esm)');
     process.exit(1);
@@ -93,11 +95,38 @@ async function main() {
     foldIntoMeta(meta, result);
   }
 
+  const classification = classifyUnresolved(meta.unresolved);
+  const summary = summarizeUnresolvedClassification(meta.unresolved, classification);
+  meta.unresolvedClassified = summary;
+
   await writeFile(path.join(outDir, '_meta.json'), JSON.stringify(meta, null, 2));
-  if (meta.unresolved.length > 0) {
-    console.warn(`Unresolved items (${meta.unresolved.length}) — review _meta.json:`);
-    for (const item of meta.unresolved.slice(0, 20)) console.warn(`  - ${item}`);
+
+  if (summary.total > 0) {
+    const ruleCount = classification.classified.size;
+    console.warn(
+      `Unresolved items (${summary.total}): ${summary.classified} classified (${ruleCount} rule${ruleCount === 1 ? '' : 's'}) · ${summary.unclassified} unclassified — review _meta.json`,
+    );
+    const dispositionParts = Object.entries(summary.byDisposition)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([disposition, count]) => `${disposition} ${count}`);
+    if (dispositionParts.length > 0) {
+      console.warn(`  by disposition: ${dispositionParts.join(', ')}`);
+    }
+    for (const item of classification.unclassified.slice(0, 20)) {
+      console.warn(`  - ${item}`);
+    }
   }
+
+  if (values['strict-unresolved'] && summary.unclassified > 0) {
+    console.error(
+      `Strict unresolved: ${summary.unclassified} unclassified entr${summary.unclassified === 1 ? 'y' : 'ies'} (first 20):`,
+    );
+    for (const item of classification.unclassified.slice(0, 20)) {
+      console.error(`  - ${item}`);
+    }
+    process.exit(1);
+  }
+
   console.log(`Done → ${outDir}`);
 }
 

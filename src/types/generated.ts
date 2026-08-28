@@ -752,4 +752,11 @@ export interface GeneratedMeta {
   reviewFlagged?: Record<string, ExcludedRecordDetail[]>;
   /** Things the normalizer could not resolve — review after each run. */
   unresolved: string[];
+  /** Classification rollup for `unresolved` — populated by `run-all.ts` after each run. */
+  unresolvedClassified?: {
+    total: number;
+    classified: number;
+    unclassified: number;
+    byDisposition: Record<string, number>;
+  };
 }

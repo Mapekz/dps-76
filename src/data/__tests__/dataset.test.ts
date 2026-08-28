@@ -1,12 +1,18 @@
 import { describe, it, expect } from 'bun:test';
-import { getDataset, getUnresolvedOverrideKeys } from '@/data/dataset';
+import { buildDataset, getDataset, getUnresolvedOverrideKeys } from '@/data/dataset';
+import type { DatasetSource, HandAuthored } from '@/data/dataset';
 import generatedArmorOmodsLive from '@/data/live/generated/armor-omods.json';
+import generatedOmodsLive from '@/data/live/generated/omods.json';
+import generatedMutationsLive from '@/data/live/generated/mutations.json';
+import generatedConsumablesLive from '@/data/live/generated/consumables.json';
 import generatedUniquesLive from '@/data/live/generated/uniques.json';
 import { generatedWeaponsRaw as generatedWeaponsRawLive } from '@/data/live/weapons';
 import { getOmodById } from '@/data/omods';
 import { armorLegendaryValueOverrides } from '@/data/overrides/armor-values';
+import { buffValueOverrides } from '@/data/overrides/buff-overrides';
 import { legendaryValueOverrides } from '@/data/overrides/legendary-values';
-import type { GeneratedUnique } from '@/types/generated';
+import type { GeneratedConstants, GeneratedOmod, GeneratedUnique } from '@/types/generated';
+import type { Modifier } from '@/types/modifiers';
 
 /**
  * Overlay reviewer: every hand-maintained override table (src/data/overrides/*)
@@ -105,6 +111,198 @@ describe('armor value overrides preserve extracted magnitudes', () => {
       }
     });
   }
+});
+
+type MagnitudePolicy =
+  | { mode: 'must-match-source' }
+  | { mode: 'pinned-divergence'; pinnedScalars: readonly number[]; note: string };
+
+/** Shared scalar extractor — curve-driven modifiers carry no scalar `value`. */
+const magnitude = (m: unknown): number | null => {
+  const value = (m as { value?: unknown }).value;
+  return typeof value === 'number' ? value : null;
+};
+
+function runMagnitudePolicyTests(
+  label: string,
+  overrides: Readonly<Record<string, Modifier[]>>,
+  extractedById: ReadonlyMap<string, { modifiers: unknown[] }>,
+  policy: Readonly<Record<string, MagnitudePolicy>>,
+) {
+  describe(`${label} preserve magnitudes`, () => {
+    for (const [id, entryPolicy] of Object.entries(policy)) {
+      it(`${id} (${entryPolicy.mode})`, () => {
+        const overridesForId = overrides[id];
+        expect(overridesForId, `${id} missing from overrides table`).toBeDefined();
+        if (entryPolicy.mode === 'pinned-divergence') {
+          const actualScalars = overridesForId!
+            .map(magnitude)
+            .filter((v): v is number => v !== null);
+          expect(actualScalars).toEqual([...entryPolicy.pinnedScalars]);
+          return;
+        }
+        const extracted = extractedById.get(id);
+        expect(extracted, `${id} has no generated record`).toBeDefined();
+        const extractedValues = new Set(
+          extracted!.modifiers.map(magnitude).filter((v): v is number => v !== null),
+        );
+        for (const override of overridesForId!) {
+          const value = magnitude(override);
+          if (value === null) continue;
+          expect(
+            [...extractedValues].some((v) => Math.abs(v - value) < 1e-9),
+            `${id}: override value ${value} is not among the extracted values ${[
+              ...extractedValues,
+            ].join(', ')}`,
+          ).toBe(true);
+        }
+      });
+    }
+  });
+}
+
+/**
+ * `legendary-values.ts` REPLACES whole modifier arrays — often to drop
+ * extraction artifacts or supply script-computed magnitudes. Pin every entry's
+ * policy so an ESM sync forces a conscious adjudication.
+ */
+const LEGENDARY_MAGNITUDE_POLICY = {
+  mod_Legendary_Weapon2_DmgLimbs: {
+    mode: 'pinned-divergence',
+    pinnedScalars: [],
+    note: 'Filters Medic ally-heal ×0 rows; keeps limb curve only',
+  },
+  mod_Legendary_Weapon4_Conductors: {
+    mode: 'pinned-divergence',
+    pinnedScalars: [10, 20],
+    note: 'Script-computed instant AP + HoT split',
+  },
+  mod_Cremator_Reciever_SlowBurner: {
+    mode: 'pinned-divergence',
+    pinnedScalars: [],
+    note: 'SET op flip for weapon-intrinsic DoT replacement (curve matches extract)',
+  },
+  mod_melee_Shishkebab_ExtraFlameJets: {
+    mode: 'pinned-divergence',
+    pinnedScalars: [-0.2, 0],
+    note: 'SET 0 silences orphaned ballistic bleed; fire curve is SET not ADD',
+  },
+} as const satisfies Record<string, MagnitudePolicy>;
+
+runMagnitudePolicyTests(
+  'legendary value overrides',
+  legendaryValueOverrides,
+  new Map(generatedOmodsLive.map((omod) => [omod.id, omod])),
+  LEGENDARY_MAGNITUDE_POLICY,
+);
+describe('legendary value overrides magnitude policy coverage', () => {
+  it('covers every entry', () => {
+    expect(Object.keys(legendaryValueOverrides).sort()).toEqual(
+      Object.keys(LEGENDARY_MAGNITUDE_POLICY).sort(),
+    );
+  });
+});
+
+/**
+ * `buff-overrides.ts` REPLACES mutation/consumable modifiers — some entries
+ * only reshape conditions (magnitude unchanged), others restore values the
+ * extractor cannot see.
+ */
+const BUFF_MAGNITUDE_POLICY = {
+  BobbleHead_BigGuns_Potion: { mode: 'must-match-source' },
+  GHL_GlowingBobbleHead_BigGuns_Potion: { mode: 'must-match-source' },
+  Magazine_USCovertOps08_Potion: { mode: 'must-match-source' },
+  Magazine_AwesomeTales10_Potion: { mode: 'must-match-source' },
+  E08A_Brew_GulpershineFresh: { mode: 'must-match-source' },
+  E08A_Brew_GulpershineVintage: { mode: 'must-match-source' },
+  Magazine_LiveAndLove05_Potion: { mode: 'must-match-source' },
+  Magazine_GunsAndBullets06_Potion: { mode: 'must-match-source' },
+  Magazine_Unstoppables01_Potion: { mode: 'must-match-source' },
+  Magazine_Unstoppables02_Potion: { mode: 'must-match-source' },
+  Magazine_Unstoppables03_Potion: {
+    mode: 'pinned-divergence',
+    pinnedScalars: [0],
+    note: 'Extractor emits no modifier for explosion-damage proc family',
+  },
+  Magazine_Unstoppables04_Potion: { mode: 'must-match-source' },
+  Magazine_Unstoppables05_Potion: { mode: 'must-match-source' },
+} as const satisfies Record<string, MagnitudePolicy>;
+
+runMagnitudePolicyTests(
+  'buff value overrides',
+  buffValueOverrides,
+  new Map([...generatedMutationsLive, ...generatedConsumablesLive].map((buff) => [buff.id, buff])),
+  BUFF_MAGNITUDE_POLICY,
+);
+describe('buff value overrides magnitude policy coverage', () => {
+  it('covers every entry', () => {
+    expect(Object.keys(buffValueOverrides).sort()).toEqual(
+      Object.keys(BUFF_MAGNITUDE_POLICY).sort(),
+    );
+  });
+});
+
+describe('buildDataset OMOD overlay order', () => {
+  function modifier(id: string, value: number): Modifier {
+    return {
+      id,
+      source: { kind: 'omod', formId: '', edid: 'synthetic', name: 'Synthetic' },
+      bucket: 'dbm',
+      op: 'ADD',
+      value,
+      conditions: [],
+    };
+  }
+
+  function buildSyntheticOmods(generatedOmods: GeneratedOmod[], overrides: Partial<DatasetSource>) {
+    const source: DatasetSource = {
+      generatedWeapons: [],
+      generatedOmods,
+      generatedArmorOmods: [],
+      generatedPerks: [],
+      generatedMutations: [],
+      generatedConsumables: [],
+      generatedAddictions: [],
+      generatedBodyParts: [],
+      generatedUniques: [],
+      generatedNpcs: [],
+      constants: {} as GeneratedConstants,
+      legendaryValueOverrides: {},
+      armorLegendaryValueOverrides: {},
+      buffValueOverrides: {},
+      npcOverrides: {},
+      weaponCorrections: {},
+      hiddenWeaponIds: new Set(),
+      forceVisibleWeaponIds: new Set(),
+      hiddenOmodIds: new Set(),
+      forceVisibleOmodIds: new Set(),
+      hiddenArmorOmodIds: new Set(),
+      forceVisibleArmorOmodIds: new Set(),
+      hiddenConsumableIds: new Set(),
+      forceVisibleConsumableIds: new Set(),
+      omodBadgeOverrides: {},
+      omodWeaponRestrictions: {},
+      omodNameOverrides: {},
+      perWeaponSlotLabelOverrides: {},
+      omodModifierAdditions: {},
+      ...overrides,
+    };
+    return buildDataset({ perkNames: {} } as HandAuthored, source).omods[0].modifiers;
+  }
+
+  it('applies legendary replace before omodModifierAdditions concat on the same record', () => {
+    const extracted = modifier('extracted', 0.1);
+    const replacement = modifier('replacement', 0.2);
+    const addition = modifier('addition', 0.3);
+    const omod = { id: 'synthetic', name: 'Synthetic', modifiers: [extracted] } as GeneratedOmod;
+
+    expect(
+      buildSyntheticOmods([omod], {
+        legendaryValueOverrides: { synthetic: [replacement] },
+        omodModifierAdditions: { synthetic: [addition] },
+      }),
+    ).toEqual([replacement, addition]);
+  });
 });
 
 describe('generated uniques resolve', () => {
