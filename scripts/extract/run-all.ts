@@ -21,14 +21,17 @@ async function main() {
       esm: { type: 'string' },
       mode: { type: 'string', default: 'live' },
       only: { type: 'string' },
-      'strict-unresolved': { type: 'boolean', default: false },
+      // Default ON since 2026-08-28 (the backlog reached zero): a new dump's
+      // unclassified gap fails the run where someone can act on it.
+      'strict-unresolved': { type: 'boolean', default: true },
+      'no-strict-unresolved': { type: 'boolean', default: false },
     },
   });
 
   const esmPath = values.esm ?? process.env.FO76_ESM_PATH;
   if (!esmPath) {
     console.error(
-      'Usage: bun run extract --esm <path-to-SeventySix.esm> [--mode live|pts] [--only weapons,...] [--strict-unresolved]',
+      'Usage: bun run extract --esm <path-to-SeventySix.esm> [--mode live|pts] [--only weapons,...] [--no-strict-unresolved]',
     );
     console.error('(or set the FO76_ESM_PATH env var to omit --esm)');
     process.exit(1);
@@ -117,7 +120,7 @@ async function main() {
     }
   }
 
-  if (values['strict-unresolved'] && summary.unclassified > 0) {
+  if (values['strict-unresolved'] && !values['no-strict-unresolved'] && summary.unclassified > 0) {
     console.error(
       `Strict unresolved: ${summary.unclassified} unclassified entr${summary.unclassified === 1 ? 'y' : 'ies'} (first 20):`,
     );

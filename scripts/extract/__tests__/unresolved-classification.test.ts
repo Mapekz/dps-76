@@ -106,7 +106,7 @@ describe('unresolvedClassifications schema', () => {
 });
 
 /** Pending user decision — update only through esm-sync adjudication. */
-const EXPECTED_UNCLASSIFIED = ['BlackWidow: GetIsSex(0)=1', 'LadyKiller: GetIsSex(1)=1'] as const;
+const EXPECTED_UNCLASSIFIED = [] as const;
 
 describe('live _meta.json unresolved gate', () => {
   const metaPath = path.join(import.meta.dirname, '../../../src/data/live/generated/_meta.json');

@@ -1086,6 +1086,15 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     reason:
       'tier gate resolved per-carrier on the OMOD side; perk-family row is the unresolvable shared source',
   },
+  // Lady Killer / Black Widow: FO4 holdover perk records, hasCard:false,
+  // never obtainable in FO76 — USER-CONFIRMED out of scope permanently
+  // (2026-08-28 release sign-off).
+  {
+    match: /^(?:LadyKiller|BlackWidow): GetIsSex\(\d\)=1$/,
+    disposition: 'out-of-scope',
+    reason:
+      'cut FO4 holdover perks (hasCard:false, unobtainable); target-sex gating permanently out of scope',
+  },
 ];
 
 function entryMatchesRule(entry: string, rule: UnresolvedClassification): boolean {
