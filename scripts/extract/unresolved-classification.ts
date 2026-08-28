@@ -143,6 +143,88 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
       'survival/QoL/defense actor value write; no player-offense component (Stabilized=scope sway, ReducedPowerAttack=AP cost, LimbDamageResistance=wearer defense, ReflectMeleeDamage=deliberately excluded per armor-corrections.ts)',
   },
 
+  // ——— archetype-sweep classes (every distinct MGEF walked 2026-08-27; see
+  // NOTES.md "archetype sweep") ————————————————————————————————————————————
+  // Brew/consumable drunk-status duration timers — inert plumbing.
+  {
+    match: /_Duration archetype Script — needs override/,
+    disposition: 'out-of-scope',
+    reason: 'drunk/buzzed status duration timer; inert plumbing',
+  },
+  // Mutation/magazine/chameleon Pip-Boy icon dummies — UI only.
+  {
+    match: /UIDummy\w* archetype Script — needs override/,
+    disposition: 'out-of-scope',
+    reason: 'Pip-Boy status-icon UI dummy effect',
+  },
+  // PA paint/cosmetic ability effects: voice modules, horns, lights, skins,
+  // jetpack geometry cloaks — no Assoc. Item, nothing cast (spot-walked).
+  {
+    match:
+      /MGEF \w*(?:VoiceModule|Klakson|SkellScream|SamurEye|Lights?FX|Jetpack\w*_Geo)\w* archetype/,
+    disposition: 'out-of-scope',
+    reason: 'PA paint/cosmetic FX cloak; casts nothing',
+  },
+  // Targeting-HUD cloaks (PA helmet DetectLife, camera) — utility highlight.
+  {
+    match: /TargetingHUD_Cloak archetype Cloak/,
+    disposition: 'out-of-scope',
+    reason: 'targeting-HUD enemy-highlight cloak; utility only',
+  },
+  // Stimpak-archetype heals (Vampire regen, Medic Pump auto-stim, Minty
+  // Breather): healing only, no outgoing-damage tie (walked 2026-08-27).
+  {
+    match: / archetype Stimpak — needs override/,
+    disposition: 'out-of-scope',
+    reason: 'healing-only Stimpak-archetype effect; engine models offense',
+  },
+  // Post-attack invisibility legendary (Ghost's / cloak-on-melee) — stealth
+  // utility, not a damage number.
+  {
+    match: /Legendary_CloakEffect archetype Invisibility/,
+    disposition: 'out-of-scope',
+    reason: 'post-attack invisibility utility',
+  },
+  // Team-support / defensive star-4 cloak procs (walked: Conductor's restores
+  // 20 AP+HP to team; Aegis = 5× team resists; Stalwart's = PA condition).
+  {
+    match:
+      /MGEF (?:Legendary_Weapon_ConductorsAddCloakEffect|Legendary_PowerArmor_AegisApplyCloakEffect|Legendary_PowerArmor_StalwartsApplyCloakPerkEffect) archetype Cloak/,
+    disposition: 'out-of-scope',
+    reason: 'team-support/defensive cloak proc; no enemy damage',
+  },
+
+  // ——— weapon-enchantment condition gates (all 49 walked 2026-08-27) ————————
+  // Daily Ops execute/weakness gates (Resilient mutation counter-mechanic):
+  // a game mode the calculator does not represent.
+  {
+    match: /condition: (?:HasSpell\(DailyOps_Mutation_Resilient\)=1|GetIsInDailyOps\(\)=1)/,
+    disposition: 'out-of-scope',
+    reason: 'Daily Ops-mode execute gate; mode not modeled',
+  },
+  // Location-scripted NPC encounter gate on NPC-wielded weapons.
+  {
+    match: /condition: HasRefType\(/,
+    disposition: 'out-of-scope',
+    reason: 'location-scripted NPC encounter gate on an NPC-wielded weapon',
+  },
+  // Trivial NPC-state gates on enchantment rows: GetDead()=0 (target alive)
+  // is always true for calculator targets; IsEssential/IsProtected exemption
+  // branches are always false. The extractor should learn to treat these as
+  // constant and extract the underlying rows unconditionally.
+  {
+    match: /weapon enchantment: condition: GetDead\(\)=0/,
+    disposition: 'resolve-pending',
+    reason: 'trivially-true target-alive gate; extract row unconditionally',
+  },
+  {
+    match:
+      /weapon enchantment: condition: (?:IsEssential\(\)=1|OR-group\[IsProtected\(undefined\)=1 \| IsEssential\(undefined\)=1\])/,
+    disposition: 'resolve-pending',
+    reason:
+      'essential-NPC exemption branch, trivially false for calculator targets; extract main row',
+  },
+
   // ——— unknown entry points: QoL classes (names enumerated 2026-08-27; the
   // damage-relevant shortlist — Gun Fu, Blitz, Gun Range Mult, Splash, Grim
   // Reaper's, Quick Hands, etc. — is deliberately absent, pending fixes) ————
