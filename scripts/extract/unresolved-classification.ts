@@ -112,13 +112,6 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     disposition: 'out-of-scope',
     reason: 'Excavator set-bonus carry-weight plumbing',
   },
-  // Rad Scrubbers PA mod: rad-immunity script effect, plus the HasPerk
-  // gate rad-food consumables carry against it — all rads-side.
-  {
-    match: /PowerArmor_RadScrubbersEffect archetype Script/,
-    disposition: 'out-of-scope',
-    reason: 'PA rad-scrubber rad-immunity script',
-  },
   {
     match: /HasPerk\(PA_RadScrubbers\)=0/,
     disposition: 'out-of-scope',
@@ -430,7 +423,7 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
   // buffValueOverrides (verified 2026-08-28); the perk-side rows are the
   // same effect's plumbing.
   {
-    match: /^Magazine_Unstoppables0\dPerk:/,
+    match: /^Magazine_Unstoppables0\d(?:Perk|_Potion):/,
     disposition: 'out-of-scope',
     reason: 'avoid-damage proc modeled via buffValueOverrides; perk rows are the same effect',
   },
@@ -441,6 +434,63 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     match: /^mod_Custom_EatTheRich:/,
     disposition: 'out-of-scope',
     reason: 'dormant/unreleased unique mod (obtainable:false, zero reverse refs); hidden app-side',
+  },
+  // ——— batch 5: final tail (2026-08-28) ————————————————————————————————————
+  // J's deliberate marker notes double-report into unresolved; the notes are
+  // the record, these lines are bookkeeping echoes.
+  {
+    match: /per-arm bleed counter; DoT modeled via ENCH chase wornPieces curve/,
+    disposition: 'out-of-scope',
+    reason: 'marker echo of the modeled Rusty Knuckles bleed (see the record notes)',
+  },
+  {
+    match: /native-engine AP-regen flag, magnitude not ESM-derivable/,
+    disposition: 'out-of-scope',
+    reason: 'marker echo of the Kinetic Servos measured-pending note',
+  },
+  // Diet mutations food/veg buff plumbing — modeled via diet-mutations.ts.
+  {
+    match: /^Mutation_(?:Carnivore|Herbivore): perk Mutation_EatAllThe\w+_Perk:/,
+    disposition: 'out-of-scope',
+    reason: 'diet-mutation food-buff plumbing; modeled via diet-mutations.ts',
+  },
+  // Weightless/Glutton armor legendary carry-weight item-type gates.
+  {
+    match: /perk Legendary_(?:Armor_Weight\w+Perk\w*|Glutton_Perk):/,
+    disposition: 'out-of-scope',
+    reason: 'carry-weight/food-buff armor legendary; economy/survival side',
+  },
+  // Choo-Choo PainTrain routing echo (third phrasing of the same
+  // pseudo-weapon adjudication).
+  {
+    match: /route\(PainTrain\)/,
+    disposition: 'out-of-scope',
+    reason: "Choo-Choo's PainTrain pseudo-weapon routing echo; not a roster weapon",
+  },
+  // Creature-record perks (crStormBoss, crRadHogFury, …): cr prefix = NPC-side.
+  {
+    match: /^cr[A-Z]/,
+    disposition: 'out-of-scope',
+    reason: 'creature-record (cr-prefixed) NPC-side perk/effect',
+  },
+  // Cremator receiver variant plumbing: longevity duration perk + the
+  // mutually-exclusive projectile-swap REM notes.
+  {
+    match: /perk Cremator_Longevity_Perk:|removes projectile override ProjectileCremator/,
+    disposition: 'out-of-scope',
+    reason: 'Cremator variant plumbing (duration QoL / REM bookkeeping note)',
+  },
+  // Auto-stim armor legendary rad-health gate — defense-side trigger.
+  {
+    match: /^mod_Legendary_(?:Armor|PowerArmor)1_LowHealthTriggersStimpak:/,
+    disposition: 'out-of-scope',
+    reason: 'auto-stimpak defense trigger; healing side',
+  },
+  // Bird Bones fall-speed gate on champagne brews — survival/movement.
+  {
+    match: /condition: HasSpell\(Mutation_BirdBones\)=0/,
+    disposition: 'out-of-scope',
+    reason: 'fall-speed interaction gate; movement side',
   },
 ];
 
