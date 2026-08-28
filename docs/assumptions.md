@@ -1335,8 +1335,16 @@ Extractor: `scripts/extract/normalize/mgef.ts` (`PERK_GRANT_ARCHETYPES` chase).
   2026-08-28 — prior "self-targeted" note was a misread of ENCH Self delivery
   vs spell Contact delivery.
 - **Eye of Ra 70 + paralyze upgrade** (Mom_VoiceofSet_ShockStunRobots,
-  WornHasKeyword MoMEyeOfRaItemKeyword) — base branch extracted; upgrade
-  gated on unmodeled armor keyword. Paralyze CC note-only. **ASSUMPTION**.
+  WornHasKeyword MoMEyeOfRaItemKeyword) — extractor emits a descriptive note;
+  no armor-loadout toggle for `MoMEyeOfRaItemKeyword`. Paralyze CC note-only.
+  **ASSUMPTION**.
+
+## Player baseline sneak mult
+
+- **`DEFAULT_SNEAK_MULT=2.0`** (`paper-damage.ts`) — **ESM-PROVEN** via
+  `PlayerPerk` EP `Mod Sneak Attack Mult` Add Actor Value Mult ×0.01 on
+  `STAT_SneakAttackBonus` (`resolveDirectEntryPointModifiers`,
+  `scripts/extract/normalize/mgef.ts`).
 
 ## Rage (mod_Custom_Rage)
 

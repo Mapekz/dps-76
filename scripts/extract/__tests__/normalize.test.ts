@@ -4895,6 +4895,145 @@ describe('ModKineticLiningPerk (2026-08-28)', () => {
   });
 });
 
+describe('translateConditions (condition-whitelist round K, 2026-08-28)', () => {
+  it('maps HasKeyword(DamageTypeEnergy)=1 on the wielder to damageTypeScope energy', () => {
+    const row: RawCondition = {
+      Function: 'HasKeyword',
+      'Parameter 1': '0xENERGY',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+      'Run On': 'Subject',
+    };
+    const { conditions, unresolved } = translateConditions([row], {
+      edidByFormId: new Map([['0xENERGY', 'DamageTypeEnergy']]),
+    });
+    expect(conditions).toEqual([{ kind: 'damageTypeScope', types: ['energy'] }]);
+    expect(unresolved).toEqual([]);
+  });
+
+  it('maps HasScopeWeaponEquipped()=1 to weaponKeywordAny over scope keywords', () => {
+    const row: RawCondition = {
+      Function: 'HasScopeWeaponEquipped',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+      'Run On': 'Subject',
+    };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([
+      { kind: 'weaponKeywordAny', keywords: ['HasScope', 'HasScopeRecon'] },
+    ]);
+  });
+
+  it('maps scoped-weapon OR-groups to weaponKeywordAny', () => {
+    const rows: RawCondition[] = [
+      {
+        Function: 'HasKeyword',
+        'Parameter 1': '0xSCOPE',
+        'Comparison Value': 1,
+        Operator: 'Equal To',
+        'AND/OR': 'OR',
+        'Run On': 'Subject',
+      },
+      {
+        Function: 'HasKeyword',
+        'Parameter 1': '0xRECON',
+        'Comparison Value': 1,
+        Operator: 'Equal To',
+        'Run On': 'Subject',
+      },
+    ];
+    const { conditions, unresolved } = translateConditions(rows, {
+      edidByFormId: new Map([
+        ['0xSCOPE', 'HasScope'],
+        ['0xRECON', 'HasScopeRecon'],
+      ]),
+    });
+    expect(conditions).toEqual([
+      { kind: 'weaponKeywordAny', keywords: ['HasScope', 'HasScopeRecon'] },
+    ]);
+    expect(unresolved).toEqual([]);
+  });
+
+  it('maps IsMeleeAttacking()=0 to consumed and =1 to weaponAnimTypeMax ≤6', () => {
+    const ranged = translateConditions(
+      [{ Function: 'IsMeleeAttacking', 'Comparison Value': 0, Operator: 'Equal To' }],
+      { edidByFormId: new Map() },
+    );
+    expect(ranged.conditions).toEqual([]);
+    const melee = translateConditions(
+      [{ Function: 'IsMeleeAttacking', 'Comparison Value': 1, Operator: 'Equal To' }],
+      { edidByFormId: new Map() },
+    );
+    expect(melee.conditions).toEqual([{ kind: 'weaponAnimTypeMax', max: 6 }]);
+  });
+
+  it('consumes WornHasKeyword(MoMEyeOfRaItemKeyword) NOT-worn rows and leaves =1 unresolved', () => {
+    const base = translateConditions(
+      [
+        {
+          Function: 'WornHasKeyword',
+          'Parameter 1': '0xEYE',
+          'Comparison Value': 1,
+          Operator: 'Not Equal To',
+        },
+      ],
+      { edidByFormId: new Map([['0xEYE', 'MoMEyeOfRaItemKeyword']]) },
+    );
+    expect(base.conditions).toEqual([]);
+    const upgrade = translateConditions(
+      [
+        {
+          Function: 'WornHasKeyword',
+          'Parameter 1': '0xEYE',
+          'Comparison Value': 1,
+          Operator: 'Equal To',
+        },
+      ],
+      { edidByFormId: new Map([['0xEYE', 'MoMEyeOfRaItemKeyword']]) },
+    );
+    expect(upgrade.conditions).toEqual([
+      { kind: 'unresolved', raw: 'WornHasKeyword(MoMEyeOfRaItemKeyword)=1' },
+    ]);
+  });
+
+  it('PlayerPerk Mod Sneak Attack Mult → ESM-provenance note via resolveDirectEntryPointModifiers', async () => {
+    const { resolveDirectEntryPointModifiers } = await import('../normalize/mgef');
+    const result = resolveDirectEntryPointModifiers({
+      epName: 'Mod Sneak Attack Mult',
+      functionName: 'Add Actor Value Mult',
+      float: 0.01,
+      conditionRows: [],
+      conditions: [],
+      edidByFormId: new Map([['0x006E1052', 'STAT_SneakAttackBonus']]),
+      perkEdid: 'PlayerPerk',
+      avFormId: '0x006E1052',
+    });
+    expect(result.handled).toBe(true);
+    if (!result.handled) return;
+    expect(result.modifiers).toEqual([]);
+    expect(result.notes?.[0]).toContain('Player baseline sneak mult');
+  });
+
+  it('MoM_VoiceofSetPerk upgrade spell branch → note only, no 70-dotDamage modifier', async () => {
+    const result = await translateGrantedPerk(
+      {
+        client: createInMemoryEsmSource({
+          records: { '0x00522668': momVoiceofSetPerk as unknown as EsmRecord },
+          resolveEdidFallback: (formId) => formId,
+        }),
+        routes: new Map(),
+        edidByFormId: new Map([['0x004E60E2', 'MoMEyeOfRaItemKeyword']]),
+      },
+      'MoM_VoiceofSetPerk',
+      '0x00522668',
+    );
+    expect(
+      result.modifiers.some((m) => m.bucket === 'dotDamage' && 'value' in m && m.value === 70),
+    ).toBe(false);
+    expect(result.notes.some((n) => n.includes('Eye of Ra upgrade'))).toBe(true);
+  });
+});
+
 describe('mod_Custom_Rage zero-magnitude script MGEFs (2026-08-28)', () => {
   it('abFortifyDamageAll → unmeasured script-set note, not needs override', () => {
     const result = translate(

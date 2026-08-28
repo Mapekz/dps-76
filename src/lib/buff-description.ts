@@ -131,6 +131,8 @@ export const WEAPON_KEYWORD_LABELS: Record<string, string> = {
   // Bomb Scientist's thrown-grenade gates (2026-08-28 ghoul-perk routing).
   WeaponTypeThrown: 'thrown weapons',
   WeaponTypeGrenade: 'grenades',
+  // Voice of Set's own identity keyword (its robot shock proc gates on it).
+  MoMVoiceofSetKeyword: 'Voice of Set',
   WeaponTypeRanged: 'ranged weapons',
   WeaponTypeRifle: 'rifles',
   WeaponTypePistol: 'pistols',

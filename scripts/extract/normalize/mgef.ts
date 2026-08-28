@@ -1595,7 +1595,50 @@ export function translate(
     result.notes.push(`MGEF ${mgef.edid}: no route for AV ${avifEdid} — needs mapping`);
   }
 
+  applyVoiceOfSetEyeOfRaPostProcess(result);
   return result;
+}
+
+const EYE_OF_RA_UPGRADE_NOTE =
+  'Eye of Ra upgrade proc (70 energy dotDamage + 25% paralyze) — gated on MoMEyeOfRaItemKeyword (armor loadout unmodeled; docs/assumptions.md)';
+
+/** Strip or de-gate Voice of Set upgrade rows that need worn Eye of Ra armor. */
+function applyVoiceOfSetEyeOfRaPostProcess(result: MgefTranslationResult): void {
+  const kept: ModifierFragment[] = [];
+  for (const m of result.modifiers) {
+    if (m.bucket !== 'dotDamage') {
+      kept.push(m);
+      continue;
+    }
+    const eyeIdx = m.conditions.findIndex(
+      (c) => c.kind === 'unresolved' && c.raw === 'WornHasKeyword(MoMEyeOfRaItemKeyword)=1',
+    );
+    if (eyeIdx < 0) {
+      kept.push(m);
+      continue;
+    }
+    if ('value' in m && typeof m.value === 'number' && m.value >= 70) {
+      if (!result.notes.includes(EYE_OF_RA_UPGRADE_NOTE)) result.notes.push(EYE_OF_RA_UPGRADE_NOTE);
+      continue;
+    }
+    kept.push({
+      ...m,
+      conditions: m.conditions.filter((_, i) => i !== eyeIdx),
+    });
+  }
+  result.modifiers = kept;
+}
+
+export function hasEyeOfRaUpgradeGate(
+  conditionRows: RawCondition[],
+  edidByFormId: Map<string, string>,
+): boolean {
+  return conditionRows.some((row) => {
+    if (row.Function !== 'WornHasKeyword') return false;
+    if (!/^equal to$/i.test(row.Operator ?? 'Equal To')) return false;
+    const edid = edidByFormId.get(row['Parameter 1'] ?? '') ?? row['Parameter 1'] ?? '';
+    return edid === 'MoMEyeOfRaItemKeyword' && row['Comparison Value'] === 1;
+  });
 }
 
 /** True when a perk-effect condition tab includes a GetRandomPercent gate. */
@@ -1894,6 +1937,33 @@ export function resolveDirectEntryPointModifiers(
     };
   }
 
+  const sneakAvEdid = avFormId != null ? (edidByFormId.get(avFormId) ?? avFormId) : undefined;
+  if (
+    perkEdid === 'PlayerPerk' &&
+    name === 'Mod Sneak Attack Mult' &&
+    functionName === 'Add Actor Value Mult' &&
+    sneakAvEdid === 'STAT_SneakAttackBonus' &&
+    float === 0.01
+  ) {
+    return {
+      handled: true,
+      modifiers: [],
+      notes: [
+        `${perkLabel}: Mod Sneak Attack Mult Add Actor Value Mult ×0.01 on STAT_SneakAttackBonus — ESM provenance for DEFAULT_SNEAK_MULT=2.0 (paper-damage.ts; docs/assumptions.md "Player baseline sneak mult")`,
+      ],
+    };
+  }
+
+  if (perkEdid === 'PlayerPerk' && name === 'Mod VATS Hit Chance' && functionName === 'Add Value') {
+    return {
+      handled: true,
+      modifiers: [],
+      notes: [
+        `${perkLabel}: Mod VATS Hit Chance ${float} when head crippled (PerceptionCondition ≤0) — limb QoL, not modeled`,
+      ],
+    };
+  }
+
   if (name === 'Mod Restore Action Cost Value' && functionName === 'Add Value') {
     return {
       handled: true,
@@ -1944,7 +2014,7 @@ export function resolveDirectEntryPointModifiers(
   return { handled: false };
 }
 
-function resolvePerkEffectAvFormId(effect: Record<string, unknown>): string | null {
+export function resolvePerkEffectAvFormId(effect: Record<string, unknown>): string | null {
   const avId = effect['Function Parameter 3 (Actor Value)'];
   if (typeof avId === 'string' && avId.startsWith('0x')) return avId;
   if (avId && typeof avId === 'object' && 'formid' in avId) {
@@ -2220,6 +2290,13 @@ export async function translateGrantedPerk(
         'name'
       ];
       if (functionTypeName === 'Spell Item' && typeof e['Spell'] === 'string') {
+        if (hasEyeOfRaUpgradeGate(conditionRows, edidByFormId)) {
+          unresolved.forEach((u) => result.notes.push(`perk ${perkEdid}: ${u}`));
+          if (!result.notes.includes(EYE_OF_RA_UPGRADE_NOTE)) {
+            result.notes.push(`perk ${perkEdid}: ${EYE_OF_RA_UPGRADE_NOTE}`);
+          }
+          continue;
+        }
         // Bash-triggered uptime scaling (Love Tap — issue #80/#42 follow-up,
         // user-directed 2026-08-20) is scoped to EP173 "Apply Combat Melee
         // Spell" specifically — see MgefTranslationDeps.bashTriggered.

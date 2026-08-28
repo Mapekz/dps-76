@@ -2112,6 +2112,64 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
     expect(weapon.maxRange).toBe(5225);
     expect(weapon.outOfRangeDamageMult).toBe(0.5);
   });
+
+  it('Long Shot range MUL_ADD applies only when the weapon carries a scope keyword', () => {
+    const huntingRifle = getWeapons('live')['HuntingRifle'];
+    const scopedMod = {
+      id: 'test_scope',
+      formId: '0x0',
+      name: 'Scoped test',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_gun_Sights',
+      targetKeywords: [],
+      modifiers: [
+        {
+          id: 'test_scope:0',
+          source: {
+            kind: 'omod' as const,
+            formId: '0x0',
+            edid: 'test_scope',
+            name: 'Scoped test',
+          },
+          bucket: 'weaponMinRange' as const,
+          op: 'MUL_ADD' as const,
+          value: 0.3,
+          conditions: [
+            { kind: 'aimingDownSights' as const, value: true },
+            { kind: 'weaponKeywordAny' as const, keywords: ['HasScope', 'HasScopeRecon'] },
+          ],
+        },
+      ],
+      addedKeywords: ['HasScope'],
+      hasEnchantments: false,
+      obtainable: true,
+      notes: [],
+    };
+    const { weapon } = buildEffectiveWeapon(
+      huntingRifle,
+      [scopedMod],
+      50,
+      makeResolvedPlayer({ isAimingDownSights: true }),
+      makeDefaultEnemy(),
+    );
+    expect(weapon.minRange).toBeCloseTo(2612 * 1.3, 6);
+
+    const { weapon: ironSightsOnly } = buildEffectiveWeapon(
+      huntingRifle,
+      [
+        {
+          ...scopedMod,
+          addedKeywords: [],
+          modifiers: scopedMod.modifiers.map((m) => ({ ...m })),
+        },
+      ],
+      50,
+      makeResolvedPlayer({ isAimingDownSights: true }),
+      makeDefaultEnemy(),
+    );
+    expect(ironSightsOnly.minRange).toBe(2612);
+  });
 });
 
 describe('sustain chance buckets (foldChanceUnion)', () => {

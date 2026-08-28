@@ -14,6 +14,7 @@ import {
   ENTRY_POINT_EXTRA_CONDITIONS,
   resolveStimpakHealEntryPoint,
   resolveDirectEntryPointModifiers,
+  resolvePerkEffectAvFormId,
   buildAvifRoutes,
   collectConditionFormIds,
   collectConditionGlobalIds,
@@ -585,6 +586,7 @@ export async function extractPerks(client: EsmSource): Promise<ExtractPerksResul
               edidByFormId,
               globalValues,
               perkEdid: record.editor_id,
+              avFormId: resolvePerkEffectAvFormId(raw),
             });
             if (directEp.handled) {
               const foldRandom = parsed.conditionRows.some(

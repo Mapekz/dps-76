@@ -1,4 +1,4 @@
-import type { Condition } from '../../../src/types/modifiers';
+import type { Condition, DamageType } from '../../../src/types/modifiers';
 
 /**
  * ESM condition rows → IR conditions.
@@ -168,6 +168,37 @@ const TARGET_EXCLUSION_KEYWORDS = new Set([
   'IsAlly',
 ]);
 
+/**
+ * HasKeyword(DamageType*) on a weapon/damage row gates by component element
+ * (Tesla Science magazine crit tiers, energy-weapon damage rows, …). Target-
+ * side "is burning/poisoned" uses GetNumActiveEffectsWithKeyword →
+ * enemyHasActiveEffect — do NOT route those through here.
+ */
+export const DAMAGE_TYPE_KEYWORD_SCOPE: Record<string, DamageType> = {
+  DamageTypeEnergy: 'energy',
+  DamageTypeFire: 'fire',
+  DamageTypeCryo: 'cryo',
+  DamageTypePoison: 'poison',
+  DamageTypeRadiation: 'radiation',
+  DamageTypeRadiationExposure: 'radiation',
+  DamageTypePhysical: 'ballistic',
+  DamageTypeBleed: 'poison',
+};
+
+/** Scope-mod keywords added to scoped weapons (verify omods.json addedKeywords). */
+export const SCOPE_WEAPON_KEYWORDS = ['HasScope', 'HasScopeRecon'] as const;
+
+/** Per-weapon identity keywords checked via WornHasKeyword on wielder-side rows. */
+const WEAPON_IDENTITY_KEYWORDS = new Set([
+  'ma_GatlingLaser',
+  'ma_Ultracite_GatlingLaser',
+  'MoMVoiceofSetKeyword',
+]);
+
+function isScopeWeaponKeyword(edid: string): boolean {
+  return (SCOPE_WEAPON_KEYWORDS as readonly string[]).includes(edid);
+}
+
 function isWeaponTypeKeyword(edid: string): boolean {
   // HasLegendary_* keywords are ADDed by the legendary OMOD itself, so a
   // HasKeyword self-gate on one auto-passes once the mod is equipped
@@ -295,7 +326,27 @@ function translateSingle(
       // as a present:false weaponKeyword (effective-weapon merges the
       // legendary omod's added keywords), not on the enemy path below.
       if (!onEnemySide && ctx.tautologicalKeywords?.has(edid) && wants) return null;
-      if (!onEnemySide && (isWeaponTypeKeyword(edid) || UNIQUE_SELF_GATE_KEYWORDS.has(edid))) {
+      const damageScope = DAMAGE_TYPE_KEYWORD_SCOPE[edid];
+      if (!onEnemySide && wants && damageScope) {
+        return { kind: 'damageTypeScope', types: [damageScope] };
+      }
+      if (!onEnemySide && wants && isScopeWeaponKeyword(edid)) {
+        return { kind: 'weaponKeyword', keyword: edid, present: true };
+      }
+      // Eye of Ra worn-armor gate — no armor-loadout UI; NOT-worn rows consumed
+      // on the base Voice of Set proc branch, =1 stays unresolved for upgrade notes.
+      if (edid === 'MoMEyeOfRaItemKeyword' && fn === 'WornHasKeyword') {
+        const notWearing =
+          (/^not equal to$/i.test(cond.Operator ?? '') && cmp === 1) ||
+          (/^equal to$/i.test(cond.Operator ?? '') && cmp === 0);
+        if (notWearing) return null;
+      }
+      if (
+        !onEnemySide &&
+        (isWeaponTypeKeyword(edid) ||
+          UNIQUE_SELF_GATE_KEYWORDS.has(edid) ||
+          WEAPON_IDENTITY_KEYWORDS.has(edid))
+      ) {
         return { kind: 'weaponKeyword', keyword: edid, present: wants };
       }
       if (onEnemySide || isEnemyKeyword(edid)) {
@@ -398,6 +449,15 @@ function translateSingle(
       return { kind: 'vatsOnly', value: wants };
     case 'GetInIronSights':
       return { kind: 'aimingDownSights', value: wants };
+    case 'HasScopeWeaponEquipped':
+      return wants
+        ? { kind: 'weaponKeywordAny', keywords: [...SCOPE_WEAPON_KEYWORDS] }
+        : { kind: 'unresolved', raw: 'HasScopeWeaponEquipped()=0' };
+    case 'IsMeleeAttacking':
+      // Martial Artist's melee gate uses GetWeaponAnimType ≤6 → weaponAnimTypeMax.
+      // =1 → melee/unarmed anim types; =0 → sustained non-melee-attack combat.
+      if (wants) return { kind: 'weaponAnimTypeMax', max: 6 };
+      return null;
     case 'HasCompletedChallenge':
       if (/^equal to$/i.test(cond.Operator ?? '')) {
         return wants
@@ -492,6 +552,12 @@ function translateSingle(
         if (/^greater than( or equal to)?$/i.test(cond.Operator ?? '') && typeof cmp === 'number') {
           return { kind: 'glowAtLeast', min: cmp };
         }
+        return { kind: 'unresolved', raw: `GetValue(${edid}) ${cond.Operator} ${rawCmp}` };
+      }
+      if (param === '0x0000036C') {
+        // PerceptionCondition AV ("Head") — PlayerPerk's Mod VATS Hit Chance
+        // −15% when the head is crippled (≤0). Calculator assumes intact limbs.
+        if (/^less than or equal to$/i.test(cond.Operator ?? '') && cmp === 0) return null;
         return { kind: 'unresolved', raw: `GetValue(${edid}) ${cond.Operator} ${rawCmp}` };
       }
       if (param === '0x000002EA') {
@@ -802,7 +868,11 @@ export function translateConditions(
       const edid = ctx.edidByFormId.get(row['Parameter 1'] ?? '') ?? '';
       const isKeywordFn = row.Function === 'HasKeyword' || row.Function === 'WornHasKeyword';
       const positive = row['Comparison Value'] === 1;
-      if (!(isKeywordFn && positive && isWeaponTypeKeyword(edid) && row['Run On'] !== 'Target')) {
+      const weaponKw =
+        isWeaponTypeKeyword(edid) ||
+        WEAPON_IDENTITY_KEYWORDS.has(edid) ||
+        isScopeWeaponKeyword(edid);
+      if (!(isKeywordFn && positive && weaponKw && row['Run On'] !== 'Target')) {
         supported = false;
       }
       const isEnemyCheck =

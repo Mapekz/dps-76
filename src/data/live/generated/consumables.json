@@ -141,15 +141,16 @@
       "value": true
      },
      {
-      "kind": "unresolved",
-      "raw": "OR-group[HasKeyword(HasScopeRecon)=1 | HasKeyword(HasScope)=1]"
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "HasScopeRecon",
+       "HasScope"
+      ]
      }
     ]
    }
   ],
-  "notes": [
-   "Magazine_AwesomeTales10_Potion: route(STAT_DmgScoped): OR-group[HasKeyword(HasScopeRecon)=1 | HasKeyword(HasScope)=1]"
-  ],
+  "notes": [],
   "category": "magazine",
   "dispelKeys": [
    "MagazineDispelEffects"

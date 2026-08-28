@@ -48353,45 +48353,9 @@
     "value": 35,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "WornHasKeyword(MoMVoiceofSetKeyword)=1"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "WornHasKeyword(MoMEyeOfRaItemKeyword)=1"
-     },
-     {
-      "kind": "enemyType",
-      "keywordOrRace": "ActorTypeRobot"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "energy"
-      ]
-     }
-    ],
-    "durationSec": 1
-   },
-   {
-    "id": "0x00522667:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00522667",
-     "edid": "mod_Description_MoM_VoiceofSet",
-     "name": "mod_Description_MoM_VoiceofSet"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "value": 70,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "WornHasKeyword(MoMVoiceofSetKeyword)=1"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "WornHasKeyword(MoMEyeOfRaItemKeyword)=1"
+      "kind": "weaponKeyword",
+      "keyword": "MoMVoiceofSetKeyword",
+      "present": true
      },
      {
       "kind": "enemyType",
@@ -48410,12 +48374,10 @@
   "addedKeywords": [],
   "hasEnchantments": true,
   "notes": [
-   "condition: WornHasKeyword(MoMVoiceofSetKeyword)=1",
+   "perk MoM_VoiceofSetPerk: Eye of Ra upgrade proc (70 energy dotDamage + 25% paralyze) — gated on MoMEyeOfRaItemKeyword (armor loadout unmodeled; docs/assumptions.md)",
    "perk MoM_VoiceofSetPerk: MGEF MoM_VoiceofSet_Base_Desc archetype Script — needs override",
    "perk MoM_VoiceofSetPerk: MGEF MoM_VoiceofSet_EyeRA_Desc archetype Script — needs override",
    "perk MoM_VoiceofSetPerk: WornHasKeyword(MoMEyeOfRaItemKeyword)=1",
-   "perk MoM_VoiceofSetPerk: condition: GetRandomPercent()=25",
-   "perk MoM_VoiceofSetPerk: condition: HasKeyword(ImmuneParalysis)=0",
    "perk MoM_VoiceofSetPerk: condition: WornHasKeyword(MoMEyeOfRaItemKeyword)=1"
   ],
   "obtainable": true
@@ -85931,7 +85893,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk ModCloseDamage: IsMeleeAttacking()=1",
    "perk ModCloseDamage: entry point Mod Bashing Damage — not modeled"
   ],
   "obtainable": true

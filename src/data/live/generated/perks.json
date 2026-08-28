@@ -4341,10 +4341,6 @@
       "value": 0.15,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMeleeAttacking()=0"
-       },
-       {
         "kind": "weaponKeyword",
         "keyword": "WeaponTypeMelee1H",
         "present": false
@@ -4380,10 +4376,6 @@
       "value": 0.3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMeleeAttacking()=0"
-       },
-       {
         "kind": "weaponKeyword",
         "keyword": "WeaponTypeUnarmed",
         "present": false
@@ -4418,10 +4410,6 @@
       "op": "ADD",
       "value": 0.5,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsMeleeAttacking()=0"
-       },
        {
         "kind": "weaponKeyword",
         "keyword": "WeaponTypeMelee1H",
@@ -20659,8 +20647,11 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "HasScopeWeaponEquipped()=1"
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "HasScope",
+         "HasScopeRecon"
+        ]
        }
       ]
      },
@@ -20682,8 +20673,11 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "HasScopeWeaponEquipped()=1"
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "HasScope",
+         "HasScopeRecon"
+        ]
        }
       ]
      }
@@ -21198,8 +21192,11 @@
       "value": 0.15,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "OR-group[HasKeyword(HasScope)=1 | HasKeyword(HasScopeRecon)=1]"
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "HasScope",
+         "HasScopeRecon"
+        ]
        }
       ]
      }
@@ -23145,13 +23142,34 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00245B9B:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00245B9B",
+       "edid": "mod_armor_BrawlerPerk",
+       "name": "More Fists damage!",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeHandToHand",
+         "WeaponTypeUnarmed"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
-  "notes": [
-   "entry point Mod Weapon DMG Bonus Mult uses Add Actor Value Mult — skipped"
-  ]
+  "notes": []
  },
  {
   "family": "mod_armor_Explosion1Perk",
@@ -23268,7 +23286,7 @@
   ],
   "hasCard": false,
   "notes": [
-   "entry point Mod Target Damage Resistance uses Multiply 1 + Actor Value Mult — skipped"
+   "perk mod_armor_IgnoreArmorPerk: Mod Target Damage Resistance on Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted (unverified double-dip vs flat rows)"
   ]
  },
  {
@@ -23702,8 +23720,8 @@
   ],
   "hasCard": false,
   "notes": [
-   "condition: WornHasKeyword(MoMEyeOfRaItemKeyword)=1",
    "MGEF MoM_VoiceofSet_Base_Desc archetype Script — needs override",
+   "condition: WornHasKeyword(MoMEyeOfRaItemKeyword)=1",
    "MGEF MoM_VoiceofSet_EyeRA_Desc archetype Script — needs override"
   ]
  },
@@ -27593,8 +27611,10 @@
       "value": 0.05,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasKeyword(DamageTypeEnergy)=1"
+        "kind": "damageTypeScope",
+        "types": [
+         "energy"
+        ]
        }
       ]
      },
@@ -27612,8 +27632,10 @@
       "value": 0.1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasKeyword(DamageTypeEnergy)=1"
+        "kind": "damageTypeScope",
+        "types": [
+         "energy"
+        ]
        }
       ]
      },
@@ -27631,8 +27653,10 @@
       "value": 0.15,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasKeyword(DamageTypeEnergy)=1"
+        "kind": "damageTypeScope",
+        "types": [
+         "energy"
+        ]
        }
       ]
      },
@@ -27650,8 +27674,10 @@
       "value": 0.2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasKeyword(DamageTypeEnergy)=1"
+        "kind": "damageTypeScope",
+        "types": [
+         "energy"
+        ]
        }
       ]
      },
@@ -27669,8 +27695,10 @@
       "value": 0.25,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasKeyword(DamageTypeEnergy)=1"
+        "kind": "damageTypeScope",
+        "types": [
+         "energy"
+        ]
        }
       ]
      },
@@ -27688,8 +27716,10 @@
       "value": 0.3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasKeyword(DamageTypeEnergy)=1"
+        "kind": "damageTypeScope",
+        "types": [
+         "energy"
+        ]
        }
       ]
      },
@@ -27707,8 +27737,10 @@
       "value": 0.35,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasKeyword(DamageTypeEnergy)=1"
+        "kind": "damageTypeScope",
+        "types": [
+         "energy"
+        ]
        }
       ]
      },
@@ -27726,8 +27758,10 @@
       "value": 0.4,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasKeyword(DamageTypeEnergy)=1"
+        "kind": "damageTypeScope",
+        "types": [
+         "energy"
+        ]
        }
       ]
      },
@@ -27745,8 +27779,10 @@
       "value": 0.45,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasKeyword(DamageTypeEnergy)=1"
+        "kind": "damageTypeScope",
+        "types": [
+         "energy"
+        ]
        }
       ]
      }
@@ -28505,32 +28541,13 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": [
-     {
-      "id": "0x00056DD7:r1:4:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x00056DD7",
-       "edid": "PlayerPerk",
-       "name": "Player Perk",
-       "rank": 1
-      },
-      "bucket": "vatsHitChance",
-      "op": "ADD",
-      "value": -0.15,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetValue(PerceptionCondition)=0"
-       }
-      ]
-     }
-    ]
+    "modifiers": []
    }
   ],
   "hasCard": false,
   "notes": [
-   "entry point Mod Sneak Attack Mult uses Add Actor Value Mult — skipped",
+   "perk PlayerPerk: Mod VATS Hit Chance -0.15 when head crippled (PerceptionCondition ≤0) — limb QoL, not modeled",
+   "perk PlayerPerk: Mod Sneak Attack Mult Add Actor Value Mult ×0.01 on STAT_SneakAttackBonus — ESM provenance for DEFAULT_SNEAK_MULT=2.0 (paper-damage.ts; docs/assumptions.md \"Player baseline sneak mult\")",
    "condition: GetValue(SURV_Hunger)=0x005DC6ED",
    "condition: GetValue(SURV_Hunger)=0x005DC6EE",
    "condition: GetValue(SURV_Hunger)=0x005DC6EF",
@@ -30447,8 +30464,8 @@
         "raw": "HasKeyword(RD01_Enc01_DamageState_Keyword)=0"
        },
        {
-        "kind": "unresolved",
-        "raw": "IsMeleeAttacking()=1"
+        "kind": "weaponAnimTypeMax",
+        "max": 6
        }
       ]
      }
@@ -31034,8 +31051,11 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "HasScopeWeaponEquipped()=1"
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "HasScope",
+         "HasScopeRecon"
+        ]
        }
       ]
      },
@@ -31057,8 +31077,11 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "HasScopeWeaponEquipped()=1"
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "HasScope",
+         "HasScopeRecon"
+        ]
        }
       ]
      }
@@ -31112,8 +31135,11 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "HasScopeWeaponEquipped()=1"
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "HasScope",
+         "HasScopeRecon"
+        ]
        }
       ]
      }

@@ -70016,7 +70016,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk Legendary_CloakOnMeleePerk: IsMeleeAttacking()=1",
    "perk Legendary_CloakOnMeleePerk: MGEF Legendary_CloakEffect archetype Invisibility — needs override"
   ],
   "obtainable": true
@@ -74393,7 +74392,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk Legendary_CloakOnMeleePerk: IsMeleeAttacking()=1",
    "perk Legendary_CloakOnMeleePerk: MGEF Legendary_CloakEffect archetype Invisibility — needs override"
   ],
   "obtainable": true
