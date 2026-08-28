@@ -5,6 +5,7 @@ import {
   chaseExplosion,
   chaseWeaponEnchantment,
   isExcludedWeaponEdid,
+  isThrownProjectileWeapon,
   toGeneratedWeapon,
   walkWeaponCombinations,
 } from '../extract-weapons';
@@ -21,6 +22,9 @@ import ammoFatmanMiniNuke from './fixtures/ammo-fatman-mininuke.json';
 import projFatman from './fixtures/proj-fatman.json';
 import explFatman from './fixtures/expl-fatman.json';
 import weapCompoundBowCombos from './fixtures/weap-compoundbow-combos.json';
+import weapBaseballGrenade from './fixtures/weap-baseballgrenade.json';
+import projBaseballGrenade from './fixtures/proj-baseballgrenade.json';
+import explBaseballGrenade from './fixtures/expl-baseballgrenade.json';
 import weapGammaGun from './fixtures/weap-gammagun.json';
 import ammoGammaCell from './fixtures/ammo-gammacell.json';
 import projGammaGun from './fixtures/proj-gammagun.json';
@@ -55,6 +59,8 @@ const CHAIN_RECORDS: Record<string, unknown> = {
   '0x0018ABDF': ammo2mmEc,
   '0x001CC149': projGaussRifle,
   '0x0022E05D': explGaussImpact,
+  '0x00107BD7': projBaseballGrenade,
+  '0x00245F21': explBaseballGrenade,
 };
 
 const stubClient = createInMemoryEsmSource({
@@ -234,6 +240,33 @@ describe('chaseExplosion', () => {
     const result = await chaseExplosion(stubClient, fields, 'BrokenWeapon', unresolved);
     expect(result.components).toEqual([]);
     expect(unresolved.some((u) => u.includes('BrokenWeapon'))).toBe(true);
+  });
+
+  it('Baseball Grenade: override projectile EXPL becomes an explosive fromExplosion component', async () => {
+    const record = weapBaseballGrenade as unknown as EsmRecord;
+    const result = await chaseExplosion(stubClient, record.fields, 'BaseballGrenade', []);
+    expect(result.components).toHaveLength(1);
+    expect(result.components[0]).toMatchObject({
+      damageType: 'explosive',
+      fromExplosion: true,
+    });
+    expect(result.baseWeaponDamageMult).toBe(0);
+  });
+});
+
+describe('isThrownProjectileWeapon', () => {
+  it('flags a Grenade-type WEAP with no WEAP-level damage curve', async () => {
+    const record = weapBaseballGrenade as unknown as EsmRecord;
+    const weapon = await toGeneratedWeapon(stubClient, record, []);
+    expect(weapon.components).toHaveLength(0);
+    expect(isThrownProjectileWeapon(weapon, record.fields)).toBe(true);
+  });
+
+  it('does not flag a launcher that carries its own damage curve', async () => {
+    const record = weapFatman as unknown as EsmRecord;
+    const weapon = await toGeneratedWeapon(stubClient, record, []);
+    expect(weapon.components.length).toBeGreaterThan(0);
+    expect(isThrownProjectileWeapon(weapon, record.fields)).toBe(false);
   });
 });
 

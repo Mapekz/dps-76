@@ -1,0 +1,205 @@
+{
+  "header": {
+    "signature": "WEAP",
+    "form_id": "0x00107BD6",
+    "flags": 1073741824,
+    "form_version": 209,
+    "data_size": 607,
+    "offset": 67741561
+  },
+  "editor_id": "BaseballGrenade",
+  "fields": {
+    "_record_type": "Weapon",
+    "Editor ID": "BaseballGrenade",
+    "Object Bounds": {
+      "X1": -3,
+      "Y1": -3,
+      "Z1": -3,
+      "X2": 3,
+      "Y2": 4,
+      "Z2": 3
+    },
+    "Preview Transform": "0x0012EF94",
+    "Name": "Baseball Grenade",
+    "Model": {
+      "Model FileName": "Weapons\\Grenade\\BaseballGrenade.nif",
+      "Model Information": {
+        "Counters": {
+          "Textures": 4,
+          "Addon Nodes": 0,
+          "SRGB": 1,
+          "Materials": 1
+        },
+        "Textures": [
+          {
+            "File Hash": "0x79C8095F",
+            "Extension": "dds",
+            "Folder Hash": "0x89ABC790"
+          },
+          {
+            "File Hash": "0x83C7343C",
+            "Extension": "dds",
+            "Folder Hash": "0x89ABC790"
+          },
+          {
+            "File Hash": "0x97C66873",
+            "Extension": "dds",
+            "Folder Hash": "0x89ABC790"
+          },
+          {
+            "File Hash": "0x7713816D",
+            "Extension": "dds",
+            "Folder Hash": "0x89ABC790"
+          }
+        ],
+        "Addon Nodes": [],
+        "Materials": [
+          {
+            "File Hash": "0xB0A72A43",
+            "Extension": "bgsm",
+            "Folder Hash": "0x13E2BDDC"
+          }
+        ]
+      },
+      "Enlighten Transparency Color": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 255
+      },
+      "Enlighten Simplified Shape Scale": 1.0,
+      "Enlighten Auto UV": {
+        "Unknown": 1,
+        "Padding?": {
+          "hex": "000000"
+        },
+        "Max DIstance": 50.0,
+        "Max Initial Normal Deviation": 30.0,
+        "Max General Normal Deviation": 78.0,
+        "Expansion Factor": 0.6,
+        "Significant Area Ratio": 0.1,
+        "Unknown 2": 0,
+        "Padding? 2": {
+          "hex": "000000"
+        }
+      }
+    },
+    "Equipment Type": "0x00046AAC",
+    "Keywords": {
+      "Keyword Count": 9,
+      "Keywords": [
+        "0x000F4AEA",
+        "0x0010C415",
+        "0x0004C922",
+        "0x001CC46A",
+        "0x0004A0A6",
+        "0x003CFD86",
+        "0x0043B758",
+        "0x0043CEFF",
+        "0x0044D498"
+      ]
+    },
+    "Description": null,
+    "Data": {
+      "Ammo": null,
+      "Speed": 1.0,
+      "Reload Speed": 1.0,
+      "NPC Reload Delay": 0.0,
+      "Reach": 1.0,
+      "Reach Engagement Mult": 1.0,
+      "Min Range": 1000.0,
+      "Max Range": 2000.0,
+      "Unknown": 0.0,
+      "Attack Delay Seconds": 0.0,
+      "Unused": 0.0,
+      "Damage - OutOfRangeMult": 1.0,
+      "On Hit": {
+        "value": 0,
+        "name": "Normal formula behaviour"
+      },
+      "Skill": null,
+      "Resist": null,
+      "Flags": {
+        "value": "0x8000100",
+        "flags": ["Crit Effect - on Death", "Unknown 28"]
+      },
+      "Capacity": 0,
+      "Ammo used per shot": 1,
+      "Weapon Type": {
+        "value": 10,
+        "name": "Grenade"
+      },
+      "Secondary Damage": 3.0,
+      "Weight": 0.6,
+      "Value": 20,
+      "Base Damage": 0,
+      "Sound Data": {
+        "Sound Level": {
+          "value": 2,
+          "name": "Silent"
+        },
+        "Sound - Attack": null,
+        "Sound - Throwable Primed": "0x002458A9",
+        "Sound - Attack Loop": null,
+        "Sound - Attack Fail": "0x0001DACD",
+        "Sound - Idle": null,
+        "Sound - Equip Sound": null,
+        "Sound - UnEquip Sound": "0x001526AC",
+        "Sound - Fast Equip Sound": null
+      },
+      "Accuracy Bonus": 0,
+      "Animation Attack Seconds": 1.8333334,
+      "Rank": 0,
+      "Action Point Cost": 20.0,
+      "Full Power Seconds": 0.0,
+      "Full Power Damage Mult": 0.0,
+      "Stagger": {
+        "value": 2,
+        "name": "Medium"
+      },
+      "Color Remapping Index": 3.4028235e38,
+      "Health": 0,
+      "Unknown 2": {
+        "hex": "0000000000000000"
+      },
+      "Overheat Rate": {
+        "Rate Up": 0.1,
+        "Rate Down": 0.1
+      },
+      "Unknown 3": {
+        "hex": "00000000",
+        "_raw": true
+      }
+    },
+    "RGW3": {
+      "Override Projectile": "0x00107BD7",
+      "Animation Fire Seconds": 0.7,
+      "Rumble - Left Motor Strength": 0.1,
+      "Rumble - Right Motor Strength": 0.3,
+      "Rumble - Duration": 0.15,
+      "Animation Reload Seconds": 2.3333,
+      "Bolt Draw Speed": 0.0,
+      "Sighted Transition Seconds": 0.25,
+      "Unsighted Transition Seconds": 0.25,
+      "Min Weapon Draw Time": 0.25,
+      "Damage Bonus Multiplier": 1.0,
+      "Rumble - Period (ms)": 0,
+      "Rumble Pattern": {
+        "value": 0,
+        "name": "Constant"
+      },
+      "# Projectiles": 1
+    },
+    "Critical Data": {
+      "Crit Damage Mult": 2.0,
+      "Crit Charge Bonus": 1.0,
+      "Crit Effect": null
+    },
+    "Impact Data Set": "0x000E41E6",
+    "Zoom": "0x0004B246",
+    "Telegraph Data": {
+      "Time": 0.0
+    },
+    "Sneak Attack Multiplier": 2.0
+  }
+}

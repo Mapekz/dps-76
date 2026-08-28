@@ -414,6 +414,22 @@ export const FALLBACK_AVIF_ROUTES: Record<
     scale: 0.01,
     conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
   },
+  // Thrown-grenade damage (GHL_BombScientist's AbPerkFortifyDmgGrenades, magnitudes
+  // 20/35/50 with HasPerk rank + glow-spend gates). Distinct from STAT_DmgExplosive
+  // above: Bomb Scientist's EP tab-1 conditions gate on WeaponTypeThrown AND
+  // WeaponTypeGrenade AND NOT WeaponTypeThrowingKnife (verified esm get
+  // GHL_BombScientist01 2026-08-28) — launcher explosions and throwing knives
+  // are out of scope for this AV. Additive dbm, same June 2026 patch semantics
+  // as Demolition Expert (docs/assumptions.md "Grenade damage (STAT_DmgGrenade)").
+  STAT_DmgGrenade: {
+    bucket: 'dbm',
+    scale: 0.01,
+    conditions: [
+      { kind: 'weaponKeyword', keyword: 'WeaponTypeThrown', present: true },
+      { kind: 'weaponKeyword', keyword: 'WeaponTypeGrenade', present: true },
+      { kind: 'weaponKeyword', keyword: 'WeaponTypeThrowingKnife', present: false },
+    ],
+  },
   // Bully's: +X% per crippled enemy limb (6 limbs max — docs/assumptions.md).
   STAT_DmgPerCrippled: {
     bucket: 'dbm',

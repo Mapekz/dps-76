@@ -47,6 +47,19 @@ import {
 
 const EXCLUDED_PERK_EDIDS = [/^zzz/, /^CUT_/, /^DEL/, /^DEPRECATED/, /^Test/, /^TEST/, /^POST_/];
 
+/** Ghoul-race perks audited 2026-08-28: non-offense families get a terse note instead of modeling. */
+const GHOUL_PERK_CLASSIFICATION_NOTES: Record<string, string> = {
+  GHL_BattleGenes: 'out-of-scope: combat HP regen (HealRate), not player offense',
+  GHL_HyperReflexes: 'out-of-scope: evasion chance (defense), not player offense',
+  GHL_JaguarSpeed: 'out-of-scope: sprint speed, not player offense',
+  GHL_GlowingOne: 'out-of-scope: team glow sharing (Cloak/Script), not player offense',
+  GHL_RadSpecialist: 'out-of-scope: armor environment glow intake (Script), not player offense',
+  GHL_BreatheItIn:
+    'out-of-scope: rad resistance reduction (glow intake enabler), not player offense',
+  GHL_LGN_FeralRage:
+    'out-of-scope: glow perk cost reduction when feral (Script), not player offense',
+};
+
 /**
  * Gender-twin perk family pairs (Stage C4): Action Boy and Action Girl are
  * separate PERK families that share ONE ability SPEL (AbPerkActionBoyGirl
@@ -738,6 +751,9 @@ export async function extractPerks(client: EsmSource): Promise<ExtractPerksResul
 
       ranks.push({ rank, modifiers });
     }
+
+    const classificationNote = GHOUL_PERK_CLASSIFICATION_NOTES[family];
+    if (classificationNote) notes.add(classificationNote);
 
     perks.push({
       family,

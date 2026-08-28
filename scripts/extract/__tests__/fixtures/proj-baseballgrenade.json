@@ -1,0 +1,175 @@
+{
+  "header": {
+    "signature": "PROJ",
+    "form_id": "0x00107BD7",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 515,
+    "offset": 74598363
+  },
+  "editor_id": "ProjectileBaseballGrenade",
+  "fields": {
+    "_record_type": "Projectile",
+    "Editor ID": "ProjectileBaseballGrenade",
+    "Object Bounds": {
+      "X1": -3,
+      "Y1": -3,
+      "Z1": -3,
+      "X2": 3,
+      "Y2": 4,
+      "Z2": 3
+    },
+    "Name": "Baseball",
+    "Model": {
+      "Model FileName": "Weapons\\Grenade\\BaseballGrenadeProjectile.nif",
+      "Model Information": {
+        "Counters": {
+          "Textures": 4,
+          "Addon Nodes": 0,
+          "SRGB": 1,
+          "Materials": 1
+        },
+        "Textures": [
+          {
+            "File Hash": "0x79C8095F",
+            "Extension": "dds",
+            "Folder Hash": "0x89ABC790"
+          },
+          {
+            "File Hash": "0x83C7343C",
+            "Extension": "dds",
+            "Folder Hash": "0x89ABC790"
+          },
+          {
+            "File Hash": "0x97C66873",
+            "Extension": "dds",
+            "Folder Hash": "0x89ABC790"
+          },
+          {
+            "File Hash": "0x7713816D",
+            "Extension": "dds",
+            "Folder Hash": "0x89ABC790"
+          }
+        ],
+        "Addon Nodes": [],
+        "Materials": [
+          {
+            "File Hash": "0xB0A72A43",
+            "Extension": "bgsm",
+            "Folder Hash": "0x13E2BDDC"
+          }
+        ]
+      }
+    },
+    "Destructible": {
+      "Header": {
+        "Health": 5,
+        "Stage Count": 1,
+        "Flags": {
+          "value": "0x0",
+          "flags": []
+        },
+        "DPS Limit": 0.0
+      },
+      "Stages": [
+        {
+          "Stage": {
+            "Destruction Stage Data": {
+              "Health %": 0,
+              "Index": 0,
+              "Model Damage Stage": 0,
+              "Flags": {
+                "value": "0x6",
+                "flags": ["Disable", "Destroy"]
+              },
+              "Self Damage per Second": 0,
+              "Explosion": "0x000E574F",
+              "Debris": null,
+              "Debris Count": 0,
+              "Material Swap": null,
+              "Model Swap Delay": 0.0
+            },
+            "End Marker": null
+          }
+        }
+      ]
+    },
+    "Unused": {
+      "hex": ""
+    },
+    "Data": {
+      "Flags": {
+        "value": "0x6",
+        "flags": ["Explosion", "Alt. Trigger"]
+      },
+      "Type": {
+        "value": 2,
+        "name": "Lobber"
+      },
+      "Gravity": 0.5,
+      "Speed": 2000.0,
+      "Range": 15000.0,
+      "Light": null,
+      "Muzzle Flash - Light": null,
+      "Explosion - Alt. Trigger - Proximity": 0.0,
+      "Explosion - Alt. Trigger - Timer": 2.5,
+      "Explosion": "0x00245F21",
+      "Sound": null,
+      "Muzzle Flash - Duration": 0.05,
+      "Fade Duration": 0.5,
+      "Impact Force": 0.0,
+      "Sound - Countdown": null,
+      "Sound - Disable": null,
+      "Default Weapon Source": null,
+      "Cone Spread": 0.0,
+      "Collision Radius": 5.0,
+      "Lifetime": 100.0,
+      "Relaunch Interval": 0.25,
+      "Decal Data": null,
+      "Collision Layer": "0x00088766",
+      "Tracer Frequency": 0,
+      "VATS Projectile": null
+    },
+    "Muzzle Flash Model": {
+      "Model FileName": "Effects\\MuzMachineGun01.nif",
+      "Model Information": {
+        "Counters": {
+          "Textures": 4,
+          "Addon Nodes": 3,
+          "SRGB": 2,
+          "Materials": 0
+        },
+        "Textures": [
+          {
+            "File Hash": "0xEF0A5B85",
+            "Extension": "dds",
+            "Folder Hash": "0xEA3C9738"
+          },
+          {
+            "File Hash": "0xEA328CD1",
+            "Extension": "dds",
+            "Folder Hash": "0xEA3C9738"
+          },
+          {
+            "File Hash": "0x73C5ED51",
+            "Extension": "dds",
+            "Folder Hash": "0xEA3C9738"
+          },
+          {
+            "File Hash": "0x150566E6",
+            "Extension": "dds",
+            "Folder Hash": "0xEA3C9738"
+          }
+        ],
+        "Addon Nodes": [0, 1, 17],
+        "Materials": []
+      }
+    },
+    "Sound Level": {
+      "value": 1,
+      "name": "Normal"
+    },
+    "X-Axis Drag": 0.0,
+    "Z-Axis Drag": 0.0
+  }
+}

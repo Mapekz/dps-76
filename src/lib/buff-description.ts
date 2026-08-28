@@ -128,6 +128,9 @@ export const WEAPON_KEYWORD_LABELS: Record<string, string> = {
   WeaponTypeAutomaticMelee: 'automatic melee weapons',
   WeaponTypeUnarmed: 'unarmed',
   WeaponTypeThrowingKnife: 'throwing weapons',
+  // Bomb Scientist's thrown-grenade gates (2026-08-28 ghoul-perk routing).
+  WeaponTypeThrown: 'thrown weapons',
+  WeaponTypeGrenade: 'grenades',
   WeaponTypeRanged: 'ranged weapons',
   WeaponTypeRifle: 'rifles',
   WeaponTypePistol: 'pistols',

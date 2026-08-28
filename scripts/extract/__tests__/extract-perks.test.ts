@@ -19,6 +19,9 @@ import gunFu01 from './fixtures/perk-gunfu01.json';
 import gunFu02 from './fixtures/perk-gunfu02.json';
 import gunFu03 from './fixtures/perk-gunfu03.json';
 import ghlMadScientist01 from './fixtures/perk-ghlmadscientist01.json';
+import ghlBombScientist01 from './fixtures/perk-ghl-bombscientist01.json';
+import abPerkBombScientist from './fixtures/spel-ghl-abperkbombscientist.json';
+import abPerkFortifyDmgGrenades from './fixtures/mgef-abperkfortifydmggrenades.json';
 import grenadier01 from './fixtures/perk-grenadier01.json';
 import grenadier02 from './fixtures/perk-grenadier02.json';
 import abPerkGrenadier from './fixtures/spel-abperkgrenadier.json';
@@ -476,6 +479,106 @@ describe('extractPerks (Grenadier / explosion radius bonus, 2026-07-29)', () => 
     expect(family).toBeDefined();
     expect(family!.ranks[1].modifiers).toContainEqual(
       expect.objectContaining({ bucket: 'explosionRadiusBonus', op: 'ADD', value: 1.0 }),
+    );
+  });
+});
+
+/**
+ * Stub client mirroring GHL_BombScientist's real 20260821 ESM shape (verified
+ * via `esm get`, 2026-08-28): rank 1 grants GHL_AbPerkBombScientist
+ * (0x0084BF8A) whose AbPerkFortifyDmgGrenades effects (20/35/50) gate on
+ * HasPerk sibling ranks + GetIsPlayerGhoul + glow-spend rows.
+ */
+function makeBombScientistStubClient(): EsmSource {
+  const rank1FormId = '0x007A18EB';
+  const rank2FormId = '0x007A159A';
+  const rank3FormId = '0x007A159B';
+  const spellFormId = '0x0084BF8A';
+  const mgefFormId = '0x00854902';
+  const grenadeAv = '0x008548FF';
+  const records: Record<string, EsmRecord> = {
+    [rank1FormId]: ghlBombScientist01 as unknown as EsmRecord,
+    [rank2FormId]: {
+      header: { signature: 'PERK', form_id: rank2FormId },
+      editor_id: 'GHL_BombScientist02',
+      fields: { Name: 'Bomb Scientist', Effects: null },
+    } as unknown as EsmRecord,
+    [rank3FormId]: {
+      header: { signature: 'PERK', form_id: rank3FormId },
+      editor_id: 'GHL_BombScientist03',
+      fields: { Name: 'Bomb Scientist', Effects: null },
+    } as unknown as EsmRecord,
+    [spellFormId]: abPerkBombScientist as unknown as EsmRecord,
+    [mgefFormId]: abPerkFortifyDmgGrenades as unknown as EsmRecord,
+    [grenadeAv]: {
+      header: { signature: 'AVIF', form_id: grenadeAv },
+      editor_id: 'STAT_DmgGrenade',
+      fields: {},
+    } as unknown as EsmRecord,
+    ...plumbingPerkRecords(),
+  };
+  return createInMemoryEsmSource({
+    records,
+    rows: [
+      {
+        form_id: rank1FormId,
+        record_type: 'PERK',
+        editor_id: 'GHL_BombScientist01',
+        name: 'Bomb Scientist',
+      },
+      {
+        form_id: rank2FormId,
+        record_type: 'PERK',
+        editor_id: 'GHL_BombScientist02',
+        name: 'Bomb Scientist',
+      },
+      {
+        form_id: rank3FormId,
+        record_type: 'PERK',
+        editor_id: 'GHL_BombScientist03',
+        name: 'Bomb Scientist',
+      },
+    ],
+    resolveEdidFallback: (id) =>
+      ({
+        [rank2FormId]: 'GHL_BombScientist02',
+        [rank3FormId]: 'GHL_BombScientist03',
+        '0x007F68BB': 'GHL_PowerGlowUseBasic',
+      })[id] ?? id,
+    getFallback: (target) =>
+      ({
+        header: { signature: 'PERK', form_id: target },
+        editor_id: target,
+        fields: {},
+      }) as unknown as EsmRecord,
+  });
+}
+
+describe('extractPerks (GHL_BombScientist / STAT_DmgGrenade, 2026-08-28)', () => {
+  it('rank 1: AbPerkFortifyDmgGrenades magnitude 20 → thrown-grenade-scoped dbm 0.2 with playerIsGhoul gate', async () => {
+    const result = await extractPerks(makeBombScientistStubClient());
+    const family = result.perks.find((p) => p.family === 'GHL_BombScientist');
+    expect(family).toBeDefined();
+    expect(family!.ranks[0].modifiers).toContainEqual(
+      expect.objectContaining({
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.2,
+        conditions: expect.arrayContaining([
+          { kind: 'playerIsGhoul', value: true },
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeThrown', present: true },
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeGrenade', present: true },
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeThrowingKnife', present: false },
+        ]),
+      }),
+    );
+  });
+
+  it('rank 3: AbPerkFortifyDmgGrenades magnitude 50 → dbm 0.5', async () => {
+    const result = await extractPerks(makeBombScientistStubClient());
+    const family = result.perks.find((p) => p.family === 'GHL_BombScientist');
+    expect(family!.ranks[2].modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'dbm', op: 'ADD', value: 0.5 }),
     );
   });
 });

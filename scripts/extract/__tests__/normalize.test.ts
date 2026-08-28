@@ -29,6 +29,8 @@ import crackshot01 from './fixtures/perk-crackshot01.json';
 import fourLeafClover01 from './fixtures/perk-fourleafclover01.json';
 import abPerkFourLeafClover from './fixtures/spel-abperkfourleafclover.json';
 import abPerkFortifyCritFillOnMiss from './fixtures/mgef-abperkfortifyvatscritfillonmiss.json';
+import abPerkBombScientist from './fixtures/spel-ghl-abperkbombscientist.json';
+import abPerkFortifyDmgGrenades from './fixtures/mgef-abperkfortifydmggrenades.json';
 import enchPowerArmorUnarmedDamage from './fixtures/ench-powerarmor-unarmeddamage.json';
 import modArmorBrawlerPerk from './fixtures/perk-mod-armor-brawler.json';
 import momVoiceofSetPerk from './fixtures/perk-mom-voiceofset.json';
@@ -422,6 +424,28 @@ describe('translate (Medical Malpractice / hacking skill / Stimpak healing, 2026
     );
     expect(r.modifiers).toEqual([
       { bucket: 'stimpakHealMult', op: 'ADD', value: 30, conditions: [] },
+    ]);
+  });
+
+  it('routes STAT_DmgGrenade to thrown-grenade-scoped dbm (GHL_BombScientist shape, scale 0.01)', () => {
+    const grenadeEdids = new Map<string, string>([['0xAV', 'STAT_DmgGrenade']]);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 50 }),
+      noRoutes,
+      grenadeEdids,
+    );
+    expect(r.modifiers).toEqual([
+      {
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.5,
+        conditions: [
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeThrown', present: true },
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeGrenade', present: true },
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeThrowingKnife', present: false },
+        ],
+      },
     ]);
   });
 });
@@ -2379,6 +2403,69 @@ describe('translate (Grenadier / AbPerkFortifyExplosionRadius, 2026-07-29)', () 
       value: 1.0,
       conditions: [],
     });
+  });
+});
+
+describe('translateGrantedPerk (GHL_BombScientist / AbPerkFortifyDmgGrenades, 2026-08-28)', () => {
+  it('routes the granted ability SPEL through FALLBACK_AVIF_ROUTES STAT_DmgGrenade → thrown-grenade dbm', async () => {
+    const perkFormId = '0x007A18EB';
+    const spellFormId = '0x0084BF8A';
+    const mgefFormId = '0x00854902';
+    const grenadeAv = '0x008548FF';
+    const client = createInMemoryEsmSource({
+      records: {
+        [perkFormId]: {
+          header: { signature: 'PERK', form_id: perkFormId },
+          editor_id: 'GHL_BombScientist01',
+          fields: {
+            Effects: [
+              {
+                Effect: {
+                  'Effect Header': { 'Effect Type': { name: 'Ability' } },
+                  Ability: spellFormId,
+                },
+              },
+            ],
+          },
+        } as unknown as EsmRecord,
+        [spellFormId]: abPerkBombScientist as unknown as EsmRecord,
+        [mgefFormId]: abPerkFortifyDmgGrenades as unknown as EsmRecord,
+        [grenadeAv]: {
+          header: { signature: 'AVIF', form_id: grenadeAv },
+          editor_id: 'STAT_DmgGrenade',
+          fields: {},
+        } as unknown as EsmRecord,
+      },
+      resolveEdidFallback: (id) =>
+        ({
+          [grenadeAv]: 'STAT_DmgGrenade',
+          '0x007A159A': 'GHL_BombScientist02',
+          '0x007A159B': 'GHL_BombScientist03',
+          '0x007F68BB': 'GHL_PowerGlowUseBasic',
+        })[id] ?? id,
+    });
+    const result = await translateGrantedPerk(
+      {
+        client,
+        routes: new Map(),
+        edidByFormId: new Map([[grenadeAv, 'STAT_DmgGrenade']]),
+      },
+      'GHL_BombScientist01',
+      perkFormId,
+    );
+    expect(result.modifiers).toContainEqual(
+      expect.objectContaining({
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.2,
+        conditions: expect.arrayContaining([
+          { kind: 'playerIsGhoul', value: true },
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeThrown', present: true },
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeGrenade', present: true },
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeThrowingKnife', present: false },
+        ]),
+      }),
+    );
   });
 });
 

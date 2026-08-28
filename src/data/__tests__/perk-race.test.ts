@@ -17,6 +17,10 @@ describe('perkRaceRestriction', () => {
     expect(perkRaceRestriction('live', 'WildWestHands')).toBe('ghoul');
   });
 
+  it('detects ghoul-only Bomb Scientist (STAT_DmgGrenade carrier)', () => {
+    expect(perkRaceRestriction('live', 'BombScientist')).toBe('ghoul');
+  });
+
   it('detects card-only human-locked perks with no modifiers (Quick Hands)', () => {
     expect(perkRaceRestriction('live', 'QuickHands')).toBe('human');
   });

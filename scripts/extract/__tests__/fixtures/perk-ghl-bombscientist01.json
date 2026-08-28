@@ -1,0 +1,287 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x007A18EB",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 703,
+    "offset": 892457021
+  },
+  "editor_id": "GHL_BombScientist01",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "GHL_BombScientist01",
+    "Name": "Bomb Scientist",
+    "Description": "Expending Glow makes your thrown grenades deal +20% damage.",
+    "Data": {
+      "Playable": {
+        "value": 1,
+        "name": "True"
+      },
+      "Hidden": {
+        "value": 0,
+        "name": "False"
+      },
+      "Unknown": {
+        "hex": "01"
+      }
+    },
+    "SWF Sprite Name": "Gunsmith",
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": {
+            "Effect Type": {
+              "value": 2,
+              "name": "Entry Point"
+            },
+            "Rank": 1
+          },
+          "Entry Point": {
+            "Entry Point": {
+              "value": 170,
+              "name": "Apply Weapon Attack Spell"
+            },
+            "Function": {
+              "value": 10,
+              "name": "Select Spell"
+            },
+            "Perk Condition Tab Count": 2
+          },
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 0,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "OR",
+                        "Comparison Value": 1.0,
+                        "Function": "IsTrueForConditionForm",
+                        "Parameter 1": "0x007F79A4",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Greater Than Or Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": "0x007F68BB",
+                        "Function": "GetValue",
+                        "Parameter 1": "0x000002E1",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 1,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0004A0A6",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0010C415",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x003879A4",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": {
+            "value": 5,
+            "name": "Spell Item"
+          },
+          "Perk Entry ID": 2,
+          "Spell": "0x007A18EC",
+          "Unknown Spell Value": 3,
+          "Effect End": null
+        }
+      },
+      {
+        "Effect": {
+          "Effect Header": {
+            "Effect Type": {
+              "value": 1,
+              "name": "Ability"
+            },
+            "Rank": 0
+          },
+          "Ability": "0x0084BF8A",
+          "Effect End": null
+        }
+      },
+      {
+        "Effect": {
+          "Effect Header": {
+            "Effect Type": {
+              "value": 2,
+              "name": "Entry Point"
+            },
+            "Rank": 0
+          },
+          "Entry Point": {
+            "Entry Point": {
+              "value": 51,
+              "name": "Apply Combat Hit Spell"
+            },
+            "Function": {
+              "value": 10,
+              "name": "Select Spell"
+            },
+            "Perk Condition Tab Count": 3
+          },
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 0,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "GetIsPlayerGhoul",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "OR",
+                        "Comparison Value": 1.0,
+                        "Function": "IsTrueForConditionForm",
+                        "Parameter 1": "0x007F79A4",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Greater Than Or Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": "0x007F68BB",
+                        "Function": "GetValue",
+                        "Parameter 1": "0x000002E1",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 1,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0004A0A6",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0010C415",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x003879A4",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 2,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "GetDead",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": {
+            "value": 5,
+            "name": "Spell Item"
+          },
+          "Perk Entry ID": 1,
+          "Spell": "0x007AD438",
+          "Unknown Spell Value": 0,
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

@@ -53,6 +53,21 @@ export function isExcludedWeaponEdid(edid: string): boolean {
   return EXCLUDED_EDID_PATTERNS.some((p) => p.test(edid));
 }
 
+/**
+ * Thrown explosives (grenades/mines): no WEAP-level damage curve — the real
+ * payload rides the override projectile's EXPL (see chaseExplosion). Kept out
+ * of the vetted roster per the 2026-07-12 vetting-scope decision, but the
+ * extractor still chases explosion damage for review (`excludedDetailed.projectileOnly`).
+ */
+export function isThrownProjectileWeapon(
+  weapon: GeneratedWeapon,
+  fields: Record<string, unknown>,
+): boolean {
+  if (weapon.components.length > 0) return false;
+  const rgw3 = (fields['RGW3'] ?? {}) as Record<string, unknown>;
+  return rgw3['Override Projectile'] != null || weapon.weaponTypeName === 'Grenade';
+}
+
 export interface ExtractWeaponsResult {
   weapons: GeneratedWeapon[];
   excluded: Record<string, string[]>;
@@ -518,20 +533,41 @@ export async function extractWeapons(
     (e) => !e.unnamed && e.attachPointFormId !== null && e.grantedApFormIds.length > 0,
   );
 
+  const excludedDetailed: Record<string, ExcludedRecordDetail[]> = {
+    weaponUnobtainable: [],
+    projectileOnly: [],
+  };
+
   const records = await mapPool(candidates, 8, (row) => client.get(row.form_id));
   for (const record of records) {
     const weapon = await toGeneratedWeapon(client, record, unresolved);
     applyAttachPointClosure(weapon, apGrantIndex, grantingEntries);
     // Grenades/mines (thrown, or projectile-override with no WEAP damage)
-    // stay out per the 2026-07-12 vetting-scope decision (launchers, not
-    // throwables) — this exclusion is evaluated on WEAP-level components
-    // BEFORE the explosion chase so it can't be rescued by one.
-    if (weapon.components.length === 0) {
-      const rgw3 = (record.fields['RGW3'] ?? {}) as Record<string, unknown>;
-      if (rgw3['Override Projectile'] != null || weapon.weaponTypeName === 'Grenade') {
-        (excluded.projectileOnly ??= []).push(weapon.id);
-        continue;
+    // stay out of the vetted roster per the 2026-07-12 decision (launchers,
+    // not throwables) — but chase the projectile EXPL first so
+    // excludedDetailed.projectileOnly carries a damage preview for vetting
+    // (docs/assumptions.md "Thrown grenade extraction (preview-only)").
+    if (isThrownProjectileWeapon(weapon, record.fields)) {
+      const preview = await chaseExplosion(client, record.fields, weapon.id, unresolved);
+      (excluded.projectileOnly ??= []).push(weapon.id);
+      const signals: string[] = [];
+      if (preview.components.length > 0) {
+        signals.push(`explosionComponents:${preview.components.length}`);
+        signals.push(
+          `damageTypes:${[...new Set(preview.components.map((c) => c.damageType))].join('+')}`,
+        );
+        if (preview.baseWeaponDamageMult > 0) {
+          signals.push(`baseWeaponDamageMult:${preview.baseWeaponDamageMult}`);
+        }
+      } else {
+        signals.push('noExplosionDamage');
       }
+      (excludedDetailed.projectileOnly ??= []).push({
+        id: weapon.id,
+        name: weapon.name,
+        signals,
+      });
+      continue;
     }
     // Launcher/explosion payload chase (see chaseExplosion). Rescues weapons
     // whose ONLY damage is the explosion (Gamma Gun — previously noDamage).
@@ -568,7 +604,6 @@ export async function extractWeapons(
   const verdicts = await classifier.classify(
     weapons.map((w) => ({ formId: w.formId, edid: w.id })),
   );
-  const excludedDetailed: Record<string, ExcludedRecordDetail[]> = { weaponUnobtainable: [] };
   const obtainableFormIds = new Set<string>();
   for (const weapon of weapons) {
     const verdict = verdicts.get(weapon.formId);

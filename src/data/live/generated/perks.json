@@ -9278,7 +9278,8 @@
   },
   "notes": [
    "condition: GetCombatState()=1",
-   "condition: GetValue(Rads) Equal To 0"
+   "condition: GetValue(Rads) Equal To 0",
+   "out-of-scope: combat HP regen (HealRate), not player offense"
   ]
  },
  {
@@ -9298,15 +9299,132 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x007A18EB:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x007A18EB",
+       "edid": "GHL_BombScientist",
+       "name": "Bomb Scientist",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.2,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeThrown",
+        "present": true
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeGrenade",
+        "present": true
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeThrowingKnife",
+        "present": false
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x007A18EB:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x007A18EB",
+       "edid": "GHL_BombScientist",
+       "name": "Bomb Scientist",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.35000000000000003,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeThrown",
+        "present": true
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeGrenade",
+        "present": true
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeThrowingKnife",
+        "present": false
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x007A18EB:r3:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x007A18EB",
+       "edid": "GHL_BombScientist",
+       "name": "Bomb Scientist",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeThrown",
+        "present": true
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeGrenade",
+        "present": true
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeThrowingKnife",
+        "present": false
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -9497,7 +9615,9 @@
     3
    ]
   },
-  "notes": []
+  "notes": [
+   "out-of-scope: rad resistance reduction (glow intake enabler), not player offense"
+  ]
  },
  {
   "family": "GHL_BrickWall",
@@ -10051,7 +10171,8 @@
   "notes": [
    "MGEF GHL_GlowingOnePerkCloakEffect01 archetype Cloak — needs override",
    "MGEF GHL_GlowingOneUIDummyEffect archetype Script — needs override",
-   "MGEF GHL_GlowingOnePerkCloakEffect02 archetype Cloak — needs override"
+   "MGEF GHL_GlowingOnePerkCloakEffect02 archetype Cloak — needs override",
+   "out-of-scope: team glow sharing (Cloak/Script), not player offense"
   ]
  },
  {
@@ -10225,7 +10346,9 @@
     3
    ]
   },
-  "notes": []
+  "notes": [
+   "out-of-scope: evasion chance (defense), not player offense"
+  ]
  },
  {
   "family": "GHL_JaguarSpeed",
@@ -10264,7 +10387,9 @@
     2
    ]
   },
-  "notes": []
+  "notes": [
+   "out-of-scope: sprint speed, not player offense"
+  ]
  },
  {
   "family": "GHL_LGN_ActionDiet",
@@ -10376,7 +10501,8 @@
   },
   "notes": [
    "condition: GetValue(GHL_SURV_Feral)=0x007A7689",
-   "MGEF GHL_LGN_AddFeralRagePerk archetype Script — needs override"
+   "MGEF GHL_LGN_AddFeralRagePerk archetype Script — needs override",
+   "out-of-scope: glow perk cost reduction when feral (Script), not player offense"
   ]
  },
  {
@@ -11068,7 +11194,8 @@
    ]
   },
   "notes": [
-   "MGEF GHL_RadSpecialistUIDummyEffect archetype Script — needs override"
+   "MGEF GHL_RadSpecialistUIDummyEffect archetype Script — needs override",
+   "out-of-scope: armor environment glow intake (Script), not player offense"
   ]
  },
  {

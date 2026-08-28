@@ -2615,6 +2615,42 @@ describe('vatsOnly condition (Phase B — Concentrated Fire stacks; symmetric wi
   });
 });
 
+describe('STAT_DmgGrenade thrown-grenade dbm scoping (GHL_BombScientist shape)', () => {
+  const grenadeDbm = mod({
+    bucket: 'dbm',
+    op: 'ADD',
+    value: 0.2,
+    conditions: [
+      { kind: 'playerIsGhoul', value: true },
+      { kind: 'weaponKeyword', keyword: 'WeaponTypeThrown', present: true },
+      { kind: 'weaponKeyword', keyword: 'WeaponTypeGrenade', present: true },
+      { kind: 'weaponKeyword', keyword: 'WeaponTypeThrowingKnife', present: false },
+    ],
+  });
+  const grenadeWeapon = makeWeapon({
+    keywords: ['WeaponTypeThrown', 'WeaponTypeGrenade'],
+  });
+  const launcherWeapon = makeWeapon({
+    keywords: ['WeaponTypeHeavyGun', 'WeaponTypeGrenadeLauncher'],
+    components: [{ damageType: 'explosive', tier: 50, levelCap: 50, fromExplosion: true }],
+  });
+
+  it('applies for a ghoul wielding a thrown grenade', () => {
+    const ctx = makeCtx(grenadeWeapon, { player: { ...makeResolvedPlayer(), isGhoul: true } });
+    expect(foldBucket([grenadeDbm], 'dbm', 1.0, ctx)).toBeCloseTo(1.2, 10);
+  });
+
+  it('does not apply for a human ghoul-perk holder', () => {
+    const ctx = makeCtx(grenadeWeapon, { player: { ...makeResolvedPlayer(), isGhoul: false } });
+    expect(foldBucket([grenadeDbm], 'dbm', 1.0, ctx)).toBeCloseTo(1.0, 10);
+  });
+
+  it('does not apply to a grenade launcher (missing WeaponTypeThrown)', () => {
+    const ctx = makeCtx(launcherWeapon, { player: { ...makeResolvedPlayer(), isGhoul: true } });
+    expect(foldBucket([grenadeDbm], 'dbm', 1.0, ctx)).toBeCloseTo(1.0, 10);
+  });
+});
+
 describe('powerAttack condition (negatable, symmetric with vatsOnly/playerIsGhoul)', () => {
   const weapon = makeWeapon();
   const powerAttackMod = mod({

@@ -39,8 +39,38 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
   **Body parts (BPTD-extracted)**); manual fallback default 1.5.
 - **Range falloff** folds into `outerMult` — see **Target distance (Close /
   Far)**.
-- Thrown explosives (grenades, mines) stay excluded. **CLOSED** — vetting-scope
-  decision (launchers, not throwables); flagged `projectileOnly`.
+- Thrown explosives (grenades, mines) stay excluded from the vetted roster.
+  **CLOSED** — vetting-scope decision (launchers, not throwables); flagged
+  `projectileOnly`. The extractor now chases each candidate's projectile EXPL
+  and records a damage preview in `_meta.excludedDetailed.projectileOnly` for
+  weapon-vetting review — see **Thrown grenade extraction (preview-only)**.
+
+## Grenade damage (STAT_DmgGrenade)
+Engine: `FALLBACK_AVIF_ROUTES['STAT_DmgGrenade']` (`normalize/mgef.ts`).
+
+- **Additive dbm**, scale 0.01 (percent-point AV magnitudes), same June 2026
+  patch semantics as Demolition Expert's `STAT_DmgExplosive`
+  (docs/assumptions.md "Launcher explosion damage"). **USER-CONFIRMED** for
+  the additive shape; grenade-specific scope is **ESM-PROVEN** via
+  GHL_BombScientist01's EP tab-1 `HasKeyword` rows.
+- **Weapon scoping** (NOT `damageTypeScope: ['explosive']` — launchers and
+  mines are a different surface): `WeaponTypeThrown` + `WeaponTypeGrenade`,
+  excluding `WeaponTypeThrowingKnife`. Sole live carrier in the 20260821 dump:
+  GHL_BombScientist (AbPerkFortifyDmgGrenades, +20/35/50).
+- **Glow-spend gate** on the ability MGEF (IsTrueForConditionForm glow-consumption
+  OR `GetValue(Rads) >= GLOB GHL_PowerGlowUseBasic`=50) extracts as
+  `glowAtLeast` on the unresolved half of the OR-group today — the
+  consumption CNDF itself is not modeled.
+
+### Thrown grenade extraction (preview-only)
+Engine: `isThrownProjectileWeapon` + `chaseExplosion` (`extract-weapons.ts`).
+
+Grenade WEAPs (`Weapon Type` = Grenade, anim type 10) carry no WEAP-level
+damage curve — damage is entirely the override projectile's EXPL. The roster
+still excludes them (`projectileOnly`), but each candidate now runs the
+launcher explosion chase and lands in
+`_meta.excludedDetailed.projectileOnly` with `explosionComponents` /
+`damageTypes` signals for the weapon-vetting flow.
 
 ## Launcher explosion damage
 Engine: `chaseExplosion`, `extract-weapons.ts`.
