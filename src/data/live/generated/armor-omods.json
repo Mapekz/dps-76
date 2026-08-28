@@ -69982,7 +69982,6 @@
    "ActorValues on LGND_Chameleon — unmapped",
    "MGEF ChameleonArmorAudioEffect archetype Script — needs override",
    "condition: IsBleedingOut()=0",
-   "condition: IsMoving()=0",
    "perk ChameleonArmorStealthIconPerk: MGEF ChameleonArmorStealthIconUIDummy archetype Script — needs override"
   ],
   "obtainable": true
@@ -73366,8 +73365,8 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsMoving()=0"
+      "kind": "standingStill",
+      "value": true
      }
     ]
    }
@@ -73379,8 +73378,7 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on LGND_EquippedArmorCount_Sentinel — unmapped",
-   "perk Legendary_Armor_LessDamageStandStill: IsMoving()=0"
+   "ActorValues on LGND_EquippedArmorCount_Sentinel — unmapped"
   ],
   "obtainable": true
  },
@@ -74104,9 +74102,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Legendary_Tankys_PowerArmorCount — unmapped",
-   "perk Legendary_Armor_TankyAddPerk: IsMoving()=0",
-   "perk Legendary_Armor_TankyAddPerk: Legendary_Armor_TankyApplyPerkModDamageEffect: curve with unmapped input AV 0x007B956A — needs override",
-   "perk Legendary_Armor_TankyAddPerk: condition: IsMoving()=0"
+   "perk Legendary_Armor_TankyAddPerk: Legendary_Armor_TankyApplyPerkModDamageEffect: curve with unmapped input AV 0x007B956A — needs override"
   ],
   "obtainable": true
  },
@@ -74349,7 +74345,6 @@
    "ActorValues on LGND_Chameleon — unmapped",
    "MGEF ChameleonArmorAudioEffect archetype Script — needs override",
    "condition: IsBleedingOut()=0",
-   "condition: IsMoving()=0",
    "perk ChameleonArmorStealthIconPerk: MGEF ChameleonArmorStealthIconUIDummy archetype Script — needs override"
   ],
   "obtainable": true
@@ -77476,8 +77471,8 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsMoving()=0"
+      "kind": "standingStill",
+      "value": true
      }
     ]
    }
@@ -77489,8 +77484,7 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on LGND_EquippedArmorCount_Sentinel — unmapped",
-   "perk Legendary_Armor_LessDamageStandStill: IsMoving()=0"
+   "ActorValues on LGND_EquippedArmorCount_Sentinel — unmapped"
   ],
   "obtainable": true
  },
@@ -78354,9 +78348,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on Legendary_Tankys_PowerArmorCount — unmapped",
-   "perk Legendary_Armor_TankyAddPerk: IsMoving()=0",
-   "perk Legendary_Armor_TankyAddPerk: Legendary_Armor_TankyApplyPerkModDamageEffect: curve with unmapped input AV 0x007B956A — needs override",
-   "perk Legendary_Armor_TankyAddPerk: condition: IsMoving()=0"
+   "perk Legendary_Armor_TankyAddPerk: Legendary_Armor_TankyApplyPerkModDamageEffect: curve with unmapped input AV 0x007B956A — needs override"
   ],
   "obtainable": true
  },
@@ -79391,8 +79383,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
-   "condition: IsMoving()=1"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },
@@ -80542,8 +80533,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
-   "condition: IsMoving()=1"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },
@@ -81760,8 +81750,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
-   "condition: IsMoving()=1"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },
@@ -83302,8 +83291,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
-   "condition: IsMoving()=1"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },
@@ -85562,8 +85550,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
-   "condition: IsMoving()=1"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },
@@ -88533,8 +88520,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
-   "condition: IsMoving()=1"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },
@@ -90721,8 +90707,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
-   "condition: IsMoving()=1"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },
@@ -91766,8 +91751,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
-   "condition: IsMoving()=1"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },
@@ -93866,8 +93850,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
-   "condition: IsMoving()=1"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },
@@ -97371,8 +97354,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_KineticServos_AV — unmapped",
-   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override",
-   "condition: IsMoving()=1"
+   "MGEF AbFortifyActionPointRateHidden: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },

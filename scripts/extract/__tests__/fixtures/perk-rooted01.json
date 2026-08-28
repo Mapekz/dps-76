@@ -1,0 +1,137 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x001D247F",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 372,
+    "offset": 892811129
+  },
+  "editor_id": "Rooted01",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "Rooted01",
+    "Name": "Rooted",
+    "Description": "You're part tree! While not movingl, you gain +25 Damage Resistance and your Melee and Fists attacks deal 25% more damage.",
+    "Conditions": {
+      "Conditions": [
+        {
+          "Condition": {
+            "Condition Data": {
+              "Operator": "Greater Than Or Equal To",
+              "AND/OR": "AND",
+              "Comparison Value": 9.0,
+              "Function": "GetBaseValue",
+              "Parameter 1": "0x000002C2",
+              "Run On": "Subject"
+            }
+          }
+        }
+      ]
+    },
+    "Data": {
+      "Playable": { "value": 1, "name": "True" },
+      "Hidden": { "value": 0, "name": "False" },
+      "Unknown": { "hex": "01" }
+    },
+    "SWF Sprite Name": "Rooted",
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 1, "name": "Ability" }, "Rank": 0 },
+          "Ability": "0x001D2481",
+          "Effect End": null
+        }
+      },
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 35, "name": "Mod Weapon Attack Damage" },
+            "Function": { "value": 3, "name": "Multiply Value" },
+            "Perk Condition Tab Count": 3
+          },
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 0,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "HasPerk",
+                        "Parameter 1": "0x001D2480",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "IsMoving",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 1,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "OR",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0005240E",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "OR",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0004A0A4",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "OR",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0004A0A5",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": { "value": 1, "name": "Float" },
+          "Perk Entry ID": 0,
+          "Float": 1.25,
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

@@ -72,6 +72,11 @@ export interface BuildAffordances {
    */
   hasWellTunedSource: boolean;
   /**
+   * True when any equipped source carries a `vatsTargetIndex` condition (Gun
+   * Fu) — shows the VATS target-position chip selector in Conditions.
+   */
+  hasVatsTargetIndexSources: boolean;
+  /**
    * The equipped weapon's charge parameters — null when the effective weapon
    * doesn't charge (hides the slider).
    */
@@ -143,6 +148,10 @@ export function describeAffordances(input: ScenarioInput): BuildAffordances {
     m.conditions.some((c) => c.kind === 'wellTuned'),
   );
 
+  const hasVatsTargetIndexSources = input.modifiers.some((m) =>
+    m.conditions.some((c) => c.kind === 'vatsTargetIndex'),
+  );
+
   const charging = weaponCharges(input.weapon)
     ? {
         fullPowerSeconds: input.weapon.fullPowerSeconds ?? 0,
@@ -172,6 +181,7 @@ export function describeAffordances(input: ScenarioInput): BuildAffordances {
     hasOnCrippleProcSource,
     hasBashBuffUptimeSource,
     hasWellTunedSource,
+    hasVatsTargetIndexSources,
     charging,
     range,
     vatsHitChanceBonus,

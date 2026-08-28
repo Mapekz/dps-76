@@ -296,6 +296,11 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       // (sneaking is a global flag layered on top of isVats, not a separate
       // scenario flag); inactive for Manual Aim.
       return ctx.scenario.isVats === cond.value ? 1 : null;
+    case 'vatsTargetIndex':
+      if (!ctx.scenario.isVats) return null;
+      return (ctx.player.vatsTargetIndex ?? 1) >= cond.min ? 1 : null;
+    case 'standingStill':
+      return (ctx.player.standingStill ?? false) === cond.value ? 1 : null;
     case 'unarmored':
       return (ctx.player.armorWorn === 'none') === cond.value ? 1 : null;
     case 'healthBelowPct': {

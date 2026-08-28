@@ -81,6 +81,17 @@ export interface PlayerInput {
    * See docs/assumptions.md "Tone Death Well Tuned melee buff".
    */
   wellTuned?: boolean;
+  /**
+   * Standing still (IsMoving()=0). Default false (moving) — keeps
+   * standing-still-gated modifiers inactive until toggled on (ADR-0022).
+   */
+  standingStill?: boolean;
+  /**
+   * VATS multi-target chain position (Gun Fu). 1 = first target (no Gun Fu
+   * bonus); 2/3/4 = 2nd/3rd/4th+ targets. Default 1 — keeps pre-selector
+   * numbers unchanged (ADR-0022).
+   */
+  vatsTargetIndex?: 1 | 2 | 3 | 4;
 
   // SPECIAL base allocation (1–15, budget-enforced in BuildState).
   // On `ResolvedPlayer` these keys hold **buff-folded effective SPECIAL**.
@@ -226,6 +237,8 @@ export function createDefaultPlayerInput(): PlayerInput {
     procCripplesPerMin: 0,
     onBashBuffUptime: 0,
     wellTuned: false,
+    standingStill: false,
+    vatsTargetIndex: 1,
     strength: 1,
     perception: 1,
     endurance: 1,

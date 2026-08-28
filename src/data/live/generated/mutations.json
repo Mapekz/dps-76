@@ -204,8 +204,8 @@
       "raw": "IsAttacking()=0"
      },
      {
-      "kind": "unresolved",
-      "raw": "IsMoving()=0"
+      "kind": "standingStill",
+      "value": true
      },
      {
       "kind": "strangeInNumbers",
@@ -223,7 +223,6 @@
    "Mutation_Chameleon: condition: HasMagicEffectKeyword(MutationChameleonIsAttacking)=0",
    "Mutation_Chameleon: condition: HasMagicEffectKeyword(StealthBoyKeyword)=0",
    "Mutation_Chameleon: condition: IsAttacking()=0",
-   "Mutation_Chameleon: condition: IsMoving()=0",
    "Mutation_Chameleon: condition: OR-group[IsWeaponOut(undefined)=1 | IsWeaponOut(undefined)=2]",
    "Mutation_Chameleon: MGEF Mutation_ChameleonEffect archetype Chameleon — needs override",
    "Mutation_Chameleon: MGEF Mutation_InvisibilityEffect archetype Script — needs override",
@@ -1459,7 +1458,6 @@
    "Mutation_SpeedDemon: MGEF Mutation_SpeedDemon_UIDummy archetype Script — needs override",
    "Mutation_SpeedDemon: perk Mutation_IncreasedHungerThirst_Perk: OR-group[EPAlchemyEffectHasKeyword(SURV_EffectTypeHunger)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeThirst)=1]",
    "Mutation_SpeedDemon: perk Mutation_IncreasedHungerThirst_Perk: entry point Mod Spell Magnitude — not modeled",
-   "Mutation_SpeedDemon: condition: IsMoving()=1",
    "Mutation_SpeedDemon: perk GHL_Mutation_IncreasedFeral_Perk: EPAlchemyEffectHasKeyword(GHL_SURV_EffectTypeFeral)=1",
    "Mutation_SpeedDemon: perk GHL_Mutation_IncreasedFeral_Perk: entry point Mod Spell Magnitude — not modeled",
    "Mutation_SpeedDemon: MGEF abMutationCount: no route for AV MutationCount — needs mapping"

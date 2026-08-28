@@ -15,6 +15,9 @@ import lgnWhatRadsCard from './fixtures/pcrd-lgnwhatradscard.json';
 import ghlGlowingCriticals01 from './fixtures/perk-ghlglowingcriticals01.json';
 import quickHands01 from './fixtures/perk-quickhands01.json';
 import bandito01 from './fixtures/perk-bandito01.json';
+import gunFu01 from './fixtures/perk-gunfu01.json';
+import gunFu02 from './fixtures/perk-gunfu02.json';
+import gunFu03 from './fixtures/perk-gunfu03.json';
 import ghlMadScientist01 from './fixtures/perk-ghlmadscientist01.json';
 import grenadier01 from './fixtures/perk-grenadier01.json';
 import grenadier02 from './fixtures/perk-grenadier02.json';
@@ -633,5 +636,58 @@ describe('extractPerks (direct entry-point special cases, 2026-08-28)', () => {
     expect(family?.ranks[0].modifiers.filter((m) => m.bucket === 'weaponMaxRange')).toEqual([
       expect.objectContaining({ op: 'MUL_ADD', value: 0.25 }),
     ]);
+  });
+
+  it('GunFu01–03 extract dbm bonuses for 2nd/3rd/4th+ VATS targets', async () => {
+    const ranks = [
+      { formId: '0x0004D881', perk: gunFu01 as EsmRecord, min: 2, value: 0.3 },
+      { formId: '0x001D244F', perk: gunFu02 as EsmRecord, min: 3, value: 0.6 },
+      { formId: '0x001D245C', perk: gunFu03 as EsmRecord, min: 4, value: 0.9 },
+    ] as const;
+    const records: Record<string, EsmRecord> = { ...plumbingPerkRecords() };
+    const rows: Array<{ form_id: string; record_type: string; editor_id: string; name: string }> =
+      [];
+    ranks.forEach(({ formId, perk }, i) => {
+      records[formId] = perk;
+      rows.push({
+        form_id: formId,
+        record_type: 'PERK',
+        editor_id: `GunFu0${i + 1}`,
+        name: 'Gun Fu',
+      });
+    });
+    const client = createInMemoryEsmSource({
+      records,
+      rows,
+      getFallback: (target) =>
+        ({
+          header: { signature: 'PERK', form_id: target },
+          editor_id: target,
+          fields: {},
+        }) as unknown as EsmRecord,
+    });
+    const result = await extractPerks(client);
+    const family = result.perks.find((p) => p.family === 'GunFu');
+    expect(family).toBeDefined();
+    for (const { min, value } of ranks) {
+      const mod = family!.ranks
+        .flatMap((r) => r.modifiers)
+        .find(
+          (m) =>
+            m.bucket === 'dbm' &&
+            m.conditions.some((c) => c.kind === 'vatsTargetIndex' && c.min === min),
+        );
+      expect(mod).toEqual(
+        expect.objectContaining({
+          bucket: 'dbm',
+          op: 'MUL_ADD',
+          value: expect.closeTo(value, 10),
+          conditions: expect.arrayContaining([
+            { kind: 'vatsOnly', value: true },
+            { kind: 'vatsTargetIndex', min },
+          ]),
+        }),
+      );
+    }
   });
 });

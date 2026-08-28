@@ -341,6 +341,13 @@ export const ENTRY_POINT_EXTRA_CONDITIONS: Record<string, Condition[]> = {
   ],
 };
 
+/** Gun Fu target-index EPs — Set Value magnitudes from GunFu01–03 (20260821 dump). */
+const GUN_FU_TARGET_EP: Record<string, number> = {
+  'Mod VATS Gun-Fu 2nd Target Dmg Mult': 2,
+  'Mod VATS Gun-Fu 3rd Target Dmg Mult': 3,
+  'Mod VATS Gun-Fu 4th+ Target Dmg Mult': 4,
+};
+
 /**
  * Fallback AVIF routes for stats consumed outside the plumbing perks (DFOBs
  * etc.). `archetypes`, when present, restricts the route to those MGEF
@@ -1553,6 +1560,29 @@ export function resolveDirectEntryPointModifiers(
     perkEdid,
   } = input;
   const perkLabel = perkEdid ? `perk ${perkEdid}` : 'entry point';
+
+  if (name === 'Set VATS Gun-Fu' && functionName === 'Set Value') {
+    return { handled: true, modifiers: [] };
+  }
+
+  const gunFuMin = GUN_FU_TARGET_EP[name];
+  if (gunFuMin !== undefined && functionName === 'Set Value') {
+    return {
+      handled: true,
+      modifiers: [
+        {
+          bucket: 'dbm',
+          op: 'MUL_ADD',
+          value: float - 1,
+          conditions: [
+            ...conditions,
+            { kind: 'vatsOnly', value: true },
+            { kind: 'vatsTargetIndex', min: gunFuMin },
+          ],
+        },
+      ],
+    };
+  }
 
   if (
     name === 'Mod Ammo Used Count' &&

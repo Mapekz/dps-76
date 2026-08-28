@@ -1414,6 +1414,11 @@ export type Condition =
   | { kind: 'sneaking' }
   /** `value: true` requires a power attack; `value: false` requires NOT power attacking. */
   | { kind: 'powerAttack'; value: boolean }
+  /**
+   * Player is not moving (IsMoving()=0 — Rooted, Steady, Chameleon DR, …).
+   * `value: false` requires moving (IsMoving()=1 — Speed Demon's penalty).
+   */
+  | { kind: 'standingStill'; value: boolean }
   /** The hit is a VATS critical (symmetric with sneaking/powerAttack). */
   | { kind: 'crit' }
   /**
@@ -1424,6 +1429,13 @@ export type Condition =
    * applies in VATS (docs/assumptions.md "Concentrated Fire stacks").
    */
   | { kind: 'vatsOnly'; value: boolean }
+  /**
+   * VATS target position in a multi-target chain (Gun Fu's 2nd/3rd/4th+ EPs).
+   * Active only in VATS scenarios (`ctx.scenario.isVats`); passes when
+   * `PlayerInput.vatsTargetIndex >= min` (default index 1 = first target, no
+   * bonus — keeps pre-selector numbers unchanged).
+   */
+  | { kind: 'vatsTargetIndex'; min: number }
   /** No armor piece worn at all (Barbarian's unarmored ×2 — symmetric with sneaking/powerAttack/crit/vatsOnly). */
   | { kind: 'unarmored'; value: boolean }
   /** PLAYER health below pct. Absent/true ⇒ ≤ (Foundation's Vengeance: GetHealthPercentage ≤ 0.25); false ⇒ strict <. */

@@ -1,0 +1,39 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x001D245C",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 104,
+    "offset": 892815130
+  },
+  "editor_id": "GunFu03",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "GunFu03",
+    "Name": "Gun Fu",
+    "Description": "V.A.T.S. swaps targets on kill with +90% damage up to 3 targets.",
+    "Data": {
+      "Playable": { "value": 1, "name": "True" },
+      "Hidden": { "value": 0, "name": "False" },
+      "Unknown": { "hex": "01" }
+    },
+    "SWF Sprite Name": "GunFu",
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 150, "name": "Mod VATS Gun-Fu 4th+ Target Dmg Mult" },
+            "Function": { "value": 1, "name": "Set Value" },
+            "Perk Condition Tab Count": 2
+          },
+          "Function Type": { "value": 1, "name": "Float" },
+          "Perk Entry ID": 2,
+          "Float": 1.9,
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

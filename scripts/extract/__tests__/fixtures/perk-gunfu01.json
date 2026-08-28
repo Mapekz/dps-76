@@ -1,0 +1,53 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x0004D881",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 153,
+    "offset": 892871173
+  },
+  "editor_id": "GunFu01",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "GunFu01",
+    "Name": "Gun Fu",
+    "Description": "V.A.T.S. swaps targets on kill with +30% damage to your next target.",
+    "Data": {
+      "Playable": { "value": 1, "name": "True" },
+      "Hidden": { "value": 0, "name": "False" },
+      "Unknown": { "hex": "01" }
+    },
+    "SWF Sprite Name": "GunFu",
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 1 },
+          "Entry Point": {
+            "Entry Point": { "value": 114, "name": "Set VATS Gun-Fu" },
+            "Function": { "value": 1, "name": "Set Value" },
+            "Perk Condition Tab Count": 2
+          },
+          "Function Type": { "value": 1, "name": "Float" },
+          "Perk Entry ID": 2,
+          "Float": 1.0,
+          "Effect End": null
+        }
+      },
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 148, "name": "Mod VATS Gun-Fu 2nd Target Dmg Mult" },
+            "Function": { "value": 1, "name": "Set Value" },
+            "Perk Condition Tab Count": 2
+          },
+          "Function Type": { "value": 1, "name": "Float" },
+          "Perk Entry ID": 3,
+          "Float": 1.3,
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

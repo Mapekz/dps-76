@@ -70511,8 +70511,8 @@
     "value": 0.25,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsMoving()=0"
+      "kind": "standingStill",
+      "value": true
      },
      {
       "kind": "weaponKeywordAny",
@@ -70530,9 +70530,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsMoving()=0"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

@@ -1,0 +1,80 @@
+{
+  "header": {
+    "signature": "ENCH",
+    "form_id": "0x00606C8A",
+    "flags": 0,
+    "form_version": 195,
+    "data_size": 194,
+    "offset": 9036269
+  },
+  "editor_id": "ench_LegendaryWeapon_Steady",
+  "fields": {
+    "_record_type": "Enchantment",
+    "Editor ID": "ench_LegendaryWeapon_Steady",
+    "Object Bounds": {
+      "X1": 0,
+      "Y1": 0,
+      "Z1": 0,
+      "X2": 0,
+      "Y2": 0,
+      "Z2": 0
+    },
+    "Effect Data": {
+      "Enchantment Cost": 0,
+      "Flags": {
+        "value": "0x1",
+        "flags": ["No Auto-Calc"]
+      },
+      "Cast Type": {
+        "value": 0,
+        "name": "Constant Effect"
+      },
+      "Enchantment Amount": 0,
+      "Target Type": {
+        "value": 0,
+        "name": "Self"
+      },
+      "Enchant Type": {
+        "value": 6,
+        "name": "Enchantment"
+      },
+      "Charge Time": 0,
+      "Base Enchantment": null,
+      "Worn Restrictions": null
+    },
+    "Effects": [
+      {
+        "Effect": {
+          "Base Effect": "0x00606C8C",
+          "Effect Item Data": {
+            "Effect ID": 6,
+            "Magnitude": 25,
+            "Area": 0,
+            "Duration": 0
+          },
+          "Effect Flags": {
+            "value": "0x0",
+            "flags": []
+          },
+          "Conditions": {
+            "Conditions": [
+              {
+                "Condition": {
+                  "Condition Data": {
+                    "Operator": "Equal To",
+                    "AND/OR": "AND",
+                    "Comparison Value": 0,
+                    "Function": "IsMoving",
+                    "Run On": "Subject"
+                  }
+                }
+              }
+            ]
+          },
+          "Cooldown Duration": 0
+        }
+      }
+    ],
+    "Max Item ID": 10
+  }
+}

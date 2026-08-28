@@ -12958,15 +12958,156 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D881:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D881",
+       "edid": "GunFu",
+       "name": "Gun Fu",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": [
+       {
+        "kind": "vatsOnly",
+        "value": true
+       },
+       {
+        "kind": "vatsTargetIndex",
+        "min": 2
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D881:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D881",
+       "edid": "GunFu",
+       "name": "Gun Fu",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": [
+       {
+        "kind": "vatsOnly",
+        "value": true
+       },
+       {
+        "kind": "vatsTargetIndex",
+        "min": 2
+       }
+      ]
+     },
+     {
+      "id": "0x0004D881:r2:3:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D881",
+       "edid": "GunFu",
+       "name": "Gun Fu",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.6000000000000001,
+      "conditions": [
+       {
+        "kind": "vatsOnly",
+        "value": true
+       },
+       {
+        "kind": "vatsTargetIndex",
+        "min": 3
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D881:r3:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D881",
+       "edid": "GunFu",
+       "name": "Gun Fu",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": [
+       {
+        "kind": "vatsOnly",
+        "value": true
+       },
+       {
+        "kind": "vatsTargetIndex",
+        "min": 2
+       }
+      ]
+     },
+     {
+      "id": "0x0004D881:r3:3:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D881",
+       "edid": "GunFu",
+       "name": "Gun Fu",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.6000000000000001,
+      "conditions": [
+       {
+        "kind": "vatsOnly",
+        "value": true
+       },
+       {
+        "kind": "vatsTargetIndex",
+        "min": 3
+       }
+      ]
+     },
+     {
+      "id": "0x0004D881:r3:4:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D881",
+       "edid": "GunFu",
+       "name": "Gun Fu",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.8999999999999999,
+      "conditions": [
+       {
+        "kind": "vatsOnly",
+        "value": true
+       },
+       {
+        "kind": "vatsTargetIndex",
+        "min": 4
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -30967,8 +31108,8 @@
       "value": 25,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMoving()=0"
+        "kind": "standingStill",
+        "value": true
        }
       ]
      },
@@ -30986,8 +31127,8 @@
       "value": 25,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMoving()=0"
+        "kind": "standingStill",
+        "value": true
        }
       ]
      },
@@ -31005,8 +31146,8 @@
       "value": 0.25,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMoving()=0"
+        "kind": "standingStill",
+        "value": true
        },
        {
         "kind": "weaponKeywordAny",
@@ -31037,8 +31178,8 @@
       "value": 50,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMoving()=0"
+        "kind": "standingStill",
+        "value": true
        }
       ]
      },
@@ -31056,8 +31197,8 @@
       "value": 50,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMoving()=0"
+        "kind": "standingStill",
+        "value": true
        }
       ]
      },
@@ -31075,8 +31216,8 @@
       "value": 0.5,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMoving()=0"
+        "kind": "standingStill",
+        "value": true
        },
        {
         "kind": "weaponKeywordAny",
@@ -31107,8 +31248,8 @@
       "value": 50,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMoving()=0"
+        "kind": "standingStill",
+        "value": true
        }
       ]
      },
@@ -31126,8 +31267,8 @@
       "value": 50,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMoving()=0"
+        "kind": "standingStill",
+        "value": true
        }
       ]
      },
@@ -31145,8 +31286,8 @@
       "value": 0.5,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMoving()=0"
+        "kind": "standingStill",
+        "value": true
        },
        {
         "kind": "weaponKeywordAny",
@@ -31163,7 +31304,6 @@
   ],
   "hasCard": false,
   "notes": [
-   "condition: IsMoving()=0",
    "MGEF PerkRootedScriptEffect archetype Script — needs override"
   ]
  },

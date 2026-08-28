@@ -37,6 +37,11 @@ import lgnLegendaryStrength01 from './fixtures/perk-lgn-legendarystrength01.json
 import abLgnPerkStrength from './fixtures/spel-ablgnperkstrength.json';
 import lgnRetribution01 from './fixtures/perk-lgn-retribution01.json';
 import modWeaponPenetrating from './fixtures/perk-mod-weapon-penetrating.json';
+import gunFu01 from './fixtures/perk-gunfu01.json';
+import gunFu02 from './fixtures/perk-gunfu02.json';
+import gunFu03 from './fixtures/perk-gunfu03.json';
+import enchSteady from './fixtures/ench-steady.json';
+import mgefSteadyMeleeDamage from './fixtures/mgef-steady-melee-damage.json';
 
 // Pins the PURE (sync) MGEF → IR translation with plain fixtures — no esm CLI
 // client, no shell-out. The async gather lives in translateMagicEffect.
@@ -1479,6 +1484,25 @@ describe('translateConditions (GetInIronSights / HasCompletedChallenge)', () => 
     ]);
     expect(translateConditions([on], { edidByFormId: new Map() }).conditions).toEqual([
       { kind: 'vatsOnly', value: true },
+    ]);
+  });
+
+  it('translates IsMoving Equal To 0/1 to standingStill (Steady, Rooted, Chameleon)', () => {
+    const still: RawCondition = {
+      Function: 'IsMoving',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+    };
+    const moving: RawCondition = {
+      Function: 'IsMoving',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
+    expect(translateConditions([still], { edidByFormId: new Map() }).conditions).toEqual([
+      { kind: 'standingStill', value: true },
+    ]);
+    expect(translateConditions([moving], { edidByFormId: new Map() }).conditions).toEqual([
+      { kind: 'standingStill', value: false },
     ]);
   });
 
@@ -4496,5 +4520,62 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
       { edidByFormId: new Map() },
     );
     expect(essential.conditions).toBeNull();
+  });
+
+  it('GunFu01–03 → dbm MUL_ADD +30/60/90% gated on vatsOnly + vatsTargetIndex min 2/3/4', async () => {
+    const cases = [
+      { perk: gunFu01, formId: '0x0004D881', min: 2, value: 0.3 },
+      { perk: gunFu02, formId: '0x001D244F', min: 3, value: 0.6 },
+      { perk: gunFu03, formId: '0x001D245C', min: 4, value: 0.9 },
+    ] as const;
+    for (const { perk, formId, min, value } of cases) {
+      const result = await translateGrantedPerk(
+        {
+          client: fixtureClient({ [formId]: perk }),
+          routes: new Map(),
+          edidByFormId: new Map(),
+        },
+        'GunFu01',
+        formId,
+      );
+      expect(result.modifiers).toContainEqual(
+        expect.objectContaining({
+          bucket: 'dbm',
+          op: 'MUL_ADD',
+          value: expect.closeTo(value, 10),
+          conditions: expect.arrayContaining([
+            { kind: 'vatsOnly', value: true },
+            { kind: 'vatsTargetIndex', min },
+          ]),
+        }),
+      );
+    }
+  });
+
+  it('ench_LegendaryWeapon_Steady IsMoving()=0 → standingStill on melee dbm', async () => {
+    const enchId = '0x00606C8A';
+    const mgefId = '0x00606C8C';
+    const result = await translateEnchantment(
+      {
+        client: fixtureClient({
+          [enchId]: enchSteady,
+          [mgefId]: mgefSteadyMeleeDamage,
+        }),
+        routes: new Map([['0x00312D66', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]]]),
+        edidByFormId: new Map([['0x00312D66', 'MeleeDamage']]),
+      },
+      enchId,
+    );
+    expect(result.modifiers).toContainEqual(
+      expect.objectContaining({
+        bucket: 'dbm',
+        conditions: expect.arrayContaining([{ kind: 'standingStill', value: true }]),
+      }),
+    );
+    expect(
+      result.modifiers.some((m) =>
+        m.conditions.some((c) => c.kind === 'unresolved' && c.raw.includes('IsMoving')),
+      ),
+    ).toBe(false);
   });
 });

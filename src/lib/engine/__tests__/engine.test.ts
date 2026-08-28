@@ -2913,6 +2913,69 @@ describe('target status effect conditions (bleed/cryo)', () => {
   });
 });
 
+describe('standingStill condition (IsMoving()=0 — Steady, Rooted, Chameleon)', () => {
+  const weapon = makeWeapon();
+  const stillMod = mod({
+    bucket: 'dbm',
+    op: 'ADD',
+    value: 0.25,
+    conditions: [{ kind: 'standingStill', value: true }],
+  });
+  const movingMod = mod({
+    bucket: 'dbm',
+    op: 'ADD',
+    value: 0.25,
+    conditions: [{ kind: 'standingStill', value: false }],
+  });
+
+  it('value:true applies only when standing still', () => {
+    const stillCtx = makeCtx(weapon, {
+      player: { ...makeResolvedPlayer(), standingStill: true },
+    });
+    expect(foldBucket([stillMod], 'dbm', 1.0, stillCtx)).toBeCloseTo(1.25, 10);
+    expect(foldBucket([stillMod], 'dbm', 1.0, makeCtx(weapon))).toBeCloseTo(1.0, 10);
+  });
+
+  it('value:false applies only when moving', () => {
+    const movingCtx = makeCtx(weapon, {
+      player: { ...makeResolvedPlayer(), standingStill: false },
+    });
+    expect(foldBucket([movingMod], 'dbm', 1.0, movingCtx)).toBeCloseTo(1.25, 10);
+    const stillCtx = makeCtx(weapon, {
+      player: { ...makeResolvedPlayer(), standingStill: true },
+    });
+    expect(foldBucket([movingMod], 'dbm', 1.0, stillCtx)).toBeCloseTo(1.0, 10);
+  });
+});
+
+describe('vatsTargetIndex condition (Gun Fu — VATS-only, min target index)', () => {
+  const weapon = makeWeapon();
+  const secondTargetMod = mod({
+    bucket: 'dbm',
+    op: 'MUL_ADD',
+    value: 0.3,
+    conditions: [
+      { kind: 'vatsOnly', value: true },
+      { kind: 'vatsTargetIndex', min: 2 },
+    ],
+  });
+
+  it('applies in VATS when target index meets min, not in free aim', () => {
+    const vatsCtx = makeCtx(weapon, {
+      scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: false },
+      player: { ...makeResolvedPlayer(), vatsTargetIndex: 2 },
+    });
+    expect(foldBucket([secondTargetMod], 'dbm', 1.0, vatsCtx)).toBeCloseTo(1.3, 10);
+
+    const firstTargetCtx = makeCtx(weapon, {
+      scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: false },
+      player: { ...makeResolvedPlayer(), vatsTargetIndex: 1 },
+    });
+    expect(foldBucket([secondTargetMod], 'dbm', 1.0, firstTargetCtx)).toBeCloseTo(1.0, 10);
+    expect(foldBucket([secondTargetMod], 'dbm', 1.0, makeCtx(weapon))).toBeCloseTo(1.0, 10);
+  });
+});
+
 describe('hasKillStreakSources detection', () => {
   const weapon = makeWeapon({ animDelaySec: 1.0 });
   const base = {
@@ -2928,6 +2991,23 @@ describe('hasKillStreakSources detection', () => {
 
   it('is false with no kill-streak reader equipped', () => {
     expect(describeAffordances(base).hasKillStreakSources).toBe(false);
+  });
+
+  it('detects vatsTargetIndex conditions (Gun Fu)', () => {
+    const gunFuMod: Modifier = {
+      id: 'gun-fu',
+      source: { kind: 'perk', formId: '0x0', edid: 'GunFu', name: 'Gun Fu' },
+      bucket: 'dbm',
+      op: 'MUL_ADD',
+      value: 0.3,
+      conditions: [
+        { kind: 'vatsOnly', value: true },
+        { kind: 'vatsTargetIndex', min: 2 },
+      ],
+    };
+    expect(describeAffordances({ ...base, modifiers: [gunFuMod] }).hasVatsTargetIndexSources).toBe(
+      true,
+    );
   });
 
   it('detects killStreak curves, killStreakCount conditions, and adrenaline stack counters', () => {

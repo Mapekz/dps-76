@@ -23,6 +23,7 @@ import { knobActiveBadgeObjects } from '@/types/knob-registry';
 import { DRINK_TIER_NAMES, FOOD_TIER_NAMES, feralStateName } from '@/data/meter-names';
 import { GroupHeading } from '@/components/ui/group-heading';
 import { Readout } from '@/components/ui/typography';
+import { ToggleGroup } from '@/components/ui/toggle-group';
 import { SectionTrigger } from './SectionTrigger';
 
 /**
@@ -44,6 +45,13 @@ import { SectionTrigger } from './SectionTrigger';
 const DRINK_TIER_AP_REGEN_PCT = [0, 15, 15, 25, 35] as const;
 /** Satiation max-HP ladder by foodTier (0 Hungry .. 4 Fully Fed) — Hunger-side twin of DRINK_TIER_AP_REGEN_PCT; tier 4 gets +10/+25 more with Rejuvenated ranks 1/2. */
 const FOOD_TIER_MAX_HEALTH = [0, 15, 15, 25, 35] as const;
+
+const VATS_TARGET_INDEX_OPTIONS = [
+  { value: 1 as const, label: '1st' },
+  { value: 2 as const, label: '2nd' },
+  { value: 3 as const, label: '3rd' },
+  { value: 4 as const, label: '4th+' },
+];
 
 /** One decimal for sustained-stack averages; whole numbers omit the fraction. */
 function formatStackAvg(value: number): string {
@@ -91,6 +99,9 @@ export function ConditionsSection() {
   const onBashBuffUptime = conditions.onBashBuffUptime ?? 0;
   const hasWellTunedSource = affordances?.hasWellTunedSource ?? false;
   const wellTuned = conditions.wellTuned ?? false;
+  const standingStill = conditions.standingStill ?? false;
+  const hasVatsTargetIndex = affordances?.hasVatsTargetIndexSources ?? false;
+  const vatsTargetIndex = conditions.vatsTargetIndex ?? 1;
 
   // Concentrated Fire: manual 0–20 stacks slider standing in for the game's
   // hidden native per-target consecutive-shots-fired counter (see the
@@ -156,6 +167,38 @@ export function ConditionsSection() {
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-4">
+          <div>
+            <GroupHeading title="Combat state" />
+            <div className="space-y-3">
+              <SwitchRow
+                id="char-standing-still"
+                label="Standing still"
+                checked={standingStill}
+                onCheckedChange={(checked) => set('standingStill', checked)}
+              />
+              <HelperText>
+                Off by default (moving). Gates Rooted, Steady, Chameleon DR, and other IsMoving()=0
+                bonuses.
+              </HelperText>
+
+              {hasVatsTargetIndex && (
+                <div className="space-y-1.5">
+                  <Label>VATS target position</Label>
+                  <ToggleGroup
+                    aria-label="VATS target position"
+                    options={VATS_TARGET_INDEX_OPTIONS}
+                    value={vatsTargetIndex}
+                    onValueChange={(v) => set('vatsTargetIndex', v)}
+                  />
+                  <HelperText>
+                    Gun Fu bonus applies from the 2nd target onward (+30/60/90% at ranks 1/2/3).
+                    Default 1st target — no bonus.
+                  </HelperText>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div>
             <GroupHeading title="Vitals" />
             <div className="space-y-3">

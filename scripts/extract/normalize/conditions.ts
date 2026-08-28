@@ -378,6 +378,8 @@ function translateSingle(
       // true (consumed) and a sprint-/swim-only gate (=1) can never apply
       // (inactive). Same shape as IsOverEncumbered. (docs/assumptions.md)
       return wants ? 'inactive' : null;
+    case 'IsMoving':
+      return { kind: 'standingStill', value: !wants };
     case 'IsSneaking':
       return wants ? { kind: 'sneaking' } : { kind: 'unresolved', raw: 'IsSneaking=0' };
     case 'IsPowerAttacking':

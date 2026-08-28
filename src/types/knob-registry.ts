@@ -690,6 +690,27 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     label: 'Well Tuned',
     activeBadge: 'conditions',
   },
+  standingStill: {
+    key: 'standingStill',
+    wire: 61,
+    owner: 'player',
+    origin: 'input',
+    section: 'conditions',
+    default: PLAYER_DEFAULTS.standingStill ?? false,
+    label: 'Standing still',
+    activeBadge: 'conditions',
+  },
+  vatsTargetIndex: {
+    key: 'vatsTargetIndex',
+    wire: 62,
+    owner: 'player',
+    origin: 'input',
+    section: 'conditions',
+    default: PLAYER_DEFAULTS.vatsTargetIndex ?? 1,
+    label: 'VATS target position',
+    activeBadge: 'conditions',
+    clamp: { min: 1, max: 4 },
+  },
 };
 
 // retired wire ordinals: (none yet)
