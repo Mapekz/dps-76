@@ -298,6 +298,142 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     reason:
       'social/event/NPC-scaling/misc entry point (Swing=ally-heal carriers, Attack=Bullet Shield/event NPCs, Body Part=NPC boss encounters, VATS Attack AP=test/inert carriers — walked 2026-08-27)',
   },
+
+  // ——— batch 4: tail-walk sweep (every entry below ESM-walked 2026-08-28;
+  // evidence in .claude/skills/esm-sync/NOTES.md) ——————————————————————————
+  // `perk X: entry point Y — not modeled` is a SECOND emitter (the OMOD/grant
+  // chase in translateGrantedPerk) of the same EP names the `unknown entry
+  // point:` rules above already exclude — same reasoning, sibling phrasing.
+  {
+    match:
+      /: entry point (?:Mod Incoming (?:Explosion|Battery|Limb) Damage|Mod Sprint AP Drain Rate|Mod Item Weight|Mod Incoming Stagger|Mod Addiction Chance|Mod Item Condition Loss|Mod Percent Blocked|Mod VATS Attack Action Points|Mod Power Attack Action Points|Mod Spell (?:Magnitude|Duration)|Mod Actor Scope Stability|Mod Incoming Spell (?:Duration|Magnitude)|Mod Evasion Chance|Mod Armor Rating|Mod Recovered Health|Mod Breath Timer|Mod Bleedout Time|Mod Falling Damage) — not modeled/,
+    disposition: 'out-of-scope',
+    reason:
+      'defense/survival/QoL entry point via the OMOD-grant chase; same names excluded in the unknown-entry-point rules above',
+  },
+  // Daily Ops execute-gate sibling row: the ANDed Health<=2 condition of the
+  // same Resilient-counter effect the DailyOps rule already excludes.
+  {
+    match: /weapon enchantment: condition: GetValue\(Health\)=2/,
+    disposition: 'out-of-scope',
+    reason: 'sibling row of the Daily Ops Resilient execute gate; mode not modeled',
+  },
+  // The extractor's own deliberate-skip note for the lining mult arm.
+  {
+    match: /Mod_IgnoreArmor_AV — multiplicative arm intentionally not extracted/,
+    disposition: 'out-of-scope',
+    reason: 'deliberate extractor skip (double-count vs flat rows); the note is the record',
+  },
+  // Piece-count gate family, av-write phrasing (rule above covers the
+  // perk-GetValue phrasing).
+  {
+    match: /ActorValues on LGND_EquippedArmorCount_\w+ — unmapped/,
+    disposition: 'out-of-scope',
+    reason:
+      'armor-legendary piece-count counter write; per-piece scaling models via wornPieces curves',
+  },
+  // Defense/QoL/economy/native-engine dead-end AVs — each walked: Overkill
+  // kill-streak counter, VATS crit-mult RNG bounds, V63 refracting, Night
+  // Light ToD, Rejuvenator survival, Doctor's Orders revive, blocking/reflect/
+  // evade/auto-block defense family, aim/sneak QoL, LifeSaver, Slayer's
+  // incoming-by-race family, Weightless carry-weight, Tanky's DR, Chameleon/
+  // Nocturnal/Medic's armor, RD01 stability/jump, PA_Strength placeholder
+  // paints, Bloody Mess gore-VFX enables, Choo-Choo's PainTrain pseudo-weapon
+  // (PA sprint-ram, never a roster weapon — supersedes the earlier
+  // "needs GetIsID modeling" note).
+  {
+    match:
+      /(?:ActorValues on|no route for AV) (?:KillStreakPerKillCount|VATSCriticalMultAdjust(?:Min|Max)|RefractingProjectileChance|NightLight_IgnoreToD|LGND_RejuvenatorTier|CheatDeathResetOnWeakPointChance|LGND_DmgFromBlocking|ReflectBlockedDamage|ReflectDamage|LGND_AutoBlockChance|AutoBlockChanceProjectile|STAT_SpeedMultWhileAiming|STAT_Sneak(?:Sound)?|STAT_EvadeChance|LifeSaver|PA_Strength_AV|LGND_DmgFrom(?:Ghouls|Robots|Scorched|Humans|MirelurksAndInsects|Animals|Supermutants)|Legendary_Armor_Weight(?:Weapons|Ammo|FoodDrinkChems|Junk)Value|Legendary_Tankys_PowerArmorCount|LGND_Chameleon|LGND_ResistancesNight|LGND_Medic|RD01_PowerArmor_(?:StabilizedBracersStabilityScoped|StabilizedBracersStabilityHipFire|ElasticServosJumpHeight)_AV|BloodyMess(?:BurnEnable)?|PainTrain(?:Bleed)?)\b/,
+    disposition: 'out-of-scope',
+    reason:
+      'defense/QoL/economy/native-engine dead-end actor value; no modelable player-offense component',
+  },
+  // Melee-retaliation elemental armor family → tracked decision issue.
+  {
+    match: /^mod_Legendary_(?:Armor|PowerArmor)3_(?:Toxic|Burning|Frozen|Electrified):/,
+    disposition: 'deferred-with-issue',
+    issue: '#88',
+    reason:
+      'retaliation-on-being-hit elemental DoT; deliberately unmodeled pending a hits-taken model',
+  },
+  // AP-refund-on-kill family → tracked decision issue.
+  {
+    match:
+      /(?:ActorValues on|no route for AV) LGND_APOnKill\b|^mod_Custom_SlugBuster:|^mod_Legendary_Weapon2_APViaKill:/,
+    disposition: 'deferred-with-issue',
+    issue: '#89',
+    reason: 'AP-refund-on-kill; deferred pending enemy TTK modeling',
+  },
+  // Fallout Worlds custom-ruleset hunger/thirst suppressor on chems.
+  {
+    match: /HasMagicEffect\(VaultFed_NoHungerNoThirst_Effect\)/,
+    disposition: 'out-of-scope',
+    reason: 'Fallout Worlds custom-ruleset hunger/thirst gate on chems; survival-side',
+  },
+  // Stagger CC — the engine has no CC/stagger surface at all.
+  {
+    match: / archetype Stagger — needs override/,
+    disposition: 'out-of-scope',
+    reason: 'stagger CC rider; no stagger/CC modeling surface exists in the engine',
+  },
+  {
+    match: /^DLC04_PaddleBall(?:_NWOT)?: weapon enchantment: condition: GetRandomPercent\(\)=/,
+    disposition: 'out-of-scope',
+    reason: 'tiered roll for the Paddle Ball stagger rider; stagger CC not modeled',
+  },
+  // Cut content: CUT_-prefixed records and cut-perk gates; hyphenated POST-
+  // melee "Stun Pack" family (underscore POST_ is filtered at the extractor,
+  // the hyphen spelling slips through — extractor widening tracked in NOTES).
+  {
+    match: /^CUT_|HasPerk\(CUT_/,
+    disposition: 'out-of-scope',
+    reason: 'cut/test content (CUT_ prefix convention)',
+  },
+  {
+    match: /^POST-/,
+    disposition: 'out-of-scope',
+    reason: 'deprecated hyphenated-POST melee mod tree (includes CUT_ template); zero reverse refs',
+  },
+  // Creature-side cryo slow on an NPC boss weapon.
+  {
+    match: /crGeneric_CryoSlow_Effect/,
+    disposition: 'out-of-scope',
+    reason: 'NPC boss weapon slow effect; creature-side',
+  },
+  // Gulpershine ToxicGin: enemy damage-OUTPUT debuff (defense-side).
+  {
+    match: /ToxicGin_PoisonEnemies/,
+    disposition: 'out-of-scope',
+    reason: 'enemy damage-output debuff (player damage-taken side)',
+  },
+  // ATX Brotherhood jetpack cosmetic weapon-out gate.
+  {
+    match: /condition: IsWeaponMagicOut\(\)=1/,
+    disposition: 'out-of-scope',
+    reason: 'ATX jetpack cosmetic weapon-out gating',
+  },
+  // Informational chain-note the explosion extractor leaves on purpose.
+  {
+    match: /Chain-flagged explosion/,
+    disposition: 'out-of-scope',
+    reason: 'informational note from the explosion chain handling; not a gap',
+  },
+  // Unstoppable Monster magazines: avoid-damage procs modeled in
+  // buffValueOverrides (verified 2026-08-28); the perk-side rows are the
+  // same effect's plumbing.
+  {
+    match: /^Magazine_Unstoppables0\dPerk:/,
+    disposition: 'out-of-scope',
+    reason: 'avoid-damage proc modeled via buffValueOverrides; perk rows are the same effect',
+  },
+  // Anti-Aristocrat's (Eat The Rich): damage scaled on TARGET caps — real
+  // offense but obtainable:false with ZERO reverse refs anywhere in the dump;
+  // dormant/unreleased. Re-adjudicate if it ever ships.
+  {
+    match: /^mod_Custom_EatTheRich:/,
+    disposition: 'out-of-scope',
+    reason: 'dormant/unreleased unique mod (obtainable:false, zero reverse refs); hidden app-side',
+  },
 ];
 
 function entryMatchesRule(entry: string, rule: UnresolvedClassification): boolean {
