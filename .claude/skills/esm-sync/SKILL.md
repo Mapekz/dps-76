@@ -137,6 +137,10 @@ watch CI. Plain `git push` may fail credentials —
 - P62 season content: obtainable:false, classified by prefix. TRAP: Ruiner's
   extracted `wholeDamage ADD 500` with every gate unresolved — a forceVisible
   rescue without a condition fix ships an unconditional +500.
-- Eye of Ra upgrade (Voice of Set 70-dmg tier), Blitz, Hack and Slash
-  splash, Pin-Pointers, Lady Killer/Black Widow target-sex gate, grenade
-  roster addition (17-candidate list in NOTES) — awaiting user scope calls.
+- Eye of Ra toggle: DONE (ADR-0024, ab8f507). Lady Killer/Black Widow:
+  USER-CONFIRMED cut FO4 holdovers, permanently out of scope (ae9a6ef).
+  Grenade roster: deferred post-release with the per-throw-framing design
+  recorded in #91 (Bomb Scientist inert by decision meanwhile). Still open:
+  Blitz (explicitly unselected), Hack and Slash splash (needs AOE targeting),
+  Pin-Pointers' +50% striking-appendage arm (rides the deferred
+  limb-targeting pile — assumptions.md Part B).
