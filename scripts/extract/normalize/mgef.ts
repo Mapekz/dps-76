@@ -9,7 +9,11 @@ import type {
   ValueCurve,
 } from '../../../src/types/modifiers';
 import type { EsmRecord, EsmSource } from '../esm-client';
-import type { GeneratedProc, GeneratedProcComponent } from '../../../src/types/generated';
+import type {
+  GeneratedAura,
+  GeneratedProc,
+  GeneratedProcComponent,
+} from '../../../src/types/generated';
 import {
   flattenConditionRows,
   flattenPerkConditionRows,
@@ -18,6 +22,7 @@ import {
   type RawCondition,
 } from './conditions';
 import { decodeInstantDamageComponent, decodeProcComponentsFromExpl } from './proc';
+import { decodeAuraFromCloakMgef } from './aura';
 
 /**
  * Shared MGEF → Modifier translation, driven by the hidden engine "plumbing"
@@ -1129,6 +1134,12 @@ export interface MgefTranslationResult {
    * directly instead of leaving it to `procComponents`.
    */
   procs?: GeneratedProc[];
+  /**
+   * Tick-based continuous aura damage (ADR-0023) chased off Cloak-archetype
+   * MGEFs — Tesla Coils, Miasma, Plague Walker. Empty when the cloak is
+   * utility-only so the caller can fall through to the legacy note.
+   */
+  auras?: GeneratedAura[];
 }
 
 export interface TranslateOptions {
@@ -1919,6 +1930,9 @@ export async function chaseGrantedSpell(
       result.procComponents = [...(result.procComponents ?? []), ...sub.procComponents];
       result.procCooldownSec ??= se.cooldownDurationSec ?? undefined;
     }
+    if (sub.auras && sub.auras.length > 0) {
+      result.auras = [...(result.auras ?? []), ...sub.auras];
+    }
   }
   return result;
 }
@@ -2095,6 +2109,9 @@ export async function translateGrantedPerk(
               `perk ${perkEdid}: ${name} — Function-Type-5 chase produced damage but no proc-trigger classification, dropped`,
             );
           }
+        }
+        if (sub.auras && sub.auras.length > 0) {
+          result.auras = [...(result.auras ?? []), ...sub.auras];
         }
         continue;
       }
@@ -2336,6 +2353,9 @@ export async function translateGrantedPerk(
         result.procComponents = [...(result.procComponents ?? []), ...sub.procComponents];
         result.procCooldownSec ??= sub.procCooldownSec;
       }
+      if (sub.auras && sub.auras.length > 0) {
+        result.auras = [...(result.auras ?? []), ...sub.auras];
+      }
       continue;
     }
 
@@ -2396,7 +2416,8 @@ export async function translateMagicEffect(
       granted.modifiers.length > 0 ||
       granted.notes.length > 0 ||
       (granted.procComponents?.length ?? 0) > 0 ||
-      (granted.procs?.length ?? 0) > 0
+      (granted.procs?.length ?? 0) > 0 ||
+      (granted.auras?.length ?? 0) > 0
     ) {
       // The effect's own condition rows still gate the grant.
       for (const row of effect.conditionRows) {
@@ -2444,6 +2465,18 @@ export async function translateMagicEffect(
       return { modifiers: [], notes: chaseNotes, unmappedAvifs: [] };
     }
     return { modifiers: [], notes: chaseNotes, unmappedAvifs: [], procComponents };
+  }
+
+  // Cloak-archetype continuous damage auras (ADR-0023 — Tesla Coils, Miasma,
+  // Plague Walker): chase Assoc. Item ENCH/SPEL chains BEFORE the generic
+  // translate() "needs override" dead-end. Utility-only cloaks (Targeting
+  // HUD, Conductor's, …) return no auras and fall through to that note.
+  if (mgef.archetype === 'Cloak') {
+    const chaseNotes: string[] = [];
+    const auras = await decodeAuraFromCloakMgef(deps, mgef, effect, [], chaseNotes);
+    if (auras.length > 0) {
+      return { modifiers: [], notes: chaseNotes, unmappedAvifs: [], auras };
+    }
   }
 
   for (const row of effect.conditionRows) {
@@ -2509,6 +2542,8 @@ export interface EnchantmentTranslation {
   targetType: string | null;
   /** Classified procs (issue #42) chased off this ENCH/SPEL's own Effects list — empty when none. */
   procs: GeneratedProc[];
+  /** Tick-based aura damage (ADR-0023) chased off Cloak effects in this ENCH/SPEL. */
+  auras: GeneratedAura[];
 }
 
 /** `GetActorGunState` Equal-To rows, or a `WornHasKeyword` row of any polarity — the two condition-row shapes an Electrician's-style reload-animation-state fan-out entry carries (esm-walk-verified 2026-08-19 on ENCH 0x00799381: each of its 5 duplicate effects gates on exactly one `GetActorGunState` state PLUS one `WornHasKeyword(WeaponNoReload)` row, Not-Equal-To-1 for the reload-capable branch and Equal-To-1 for each no-reload animation state). */
@@ -2612,6 +2647,7 @@ export async function translateEnchantment(
       notes: [`enchantment ${enchOrSpelFormId} not found`],
       targetType: null,
       procs: [],
+      auras: [],
     };
   }
   const targetType = recordTargetType(record);
@@ -2620,6 +2656,7 @@ export async function translateEnchantment(
   const modifiers: ModifierFragment[] = [];
   const notes: string[] = [];
   const procs: GeneratedProc[] = [];
+  const auras: GeneratedAura[] = [];
   const { effects, reloadCycleMgefFormIds } = dedupeReloadStateFanout(parseMagicEffects(record));
   for (const effect of effects) {
     const result = await translateMagicEffect(deps, effect, conditionCtx);
@@ -2629,6 +2666,7 @@ export async function translateEnchantment(
     // chase (Fracturer's/Circuit Breaker's Function-Type-5 branch,
     // translateGrantedPerk — issue #42): pass through as-is.
     if (result.procs) procs.push(...result.procs);
+    if (result.auras) auras.push(...result.auras);
     if (result.procComponents && result.procComponents.length > 0) {
       if (reloadCycleMgefFormIds.has(effect.mgefFormId)) {
         procs.push({ trigger: 'reloadCycle', components: result.procComponents });
@@ -2645,5 +2683,5 @@ export async function translateEnchantment(
       }
     }
   }
-  return { modifiers, notes, targetType, procs };
+  return { modifiers, notes, targetType, procs, auras };
 }

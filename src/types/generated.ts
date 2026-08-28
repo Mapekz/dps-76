@@ -164,7 +164,7 @@ export interface GeneratedWeapon {
   modifiers: Modifier[];
 }
 
-import type { Modifier } from './modifiers';
+import type { Condition, Modifier } from './modifiers';
 
 export interface GeneratedPerkRank {
   rank: number;
@@ -354,6 +354,22 @@ export interface GeneratedProc {
   components: GeneratedProcComponent[];
 }
 
+/** Tick-based continuous aura damage (ADR-0023) — Tesla Coils, Miasma, Plague Walker. */
+export interface GeneratedAura {
+  damageType: GeneratedDamageType;
+  damageTypeEdid: string | null;
+  /** Flat per-tick amount when no curve is present. */
+  amount?: number;
+  curve?: CurvePoint[] | null;
+  curveScale?: number;
+  /** Script-set magnitude — no ESM number (Miasma). */
+  magnitudePending?: true;
+  tickSec: number;
+  area?: number;
+  conditions: Condition[];
+  unresisted?: true;
+}
+
 export interface GeneratedOmod {
   /** ESM editor_id (e.g. mod_CombatRifle_Receiver_Damage-Auto). */
   id: string;
@@ -410,6 +426,11 @@ export interface GeneratedOmod {
    * damage components.
    */
   procChase?: GeneratedProc[];
+  /**
+   * Tick-based continuous aura damage (ADR-0023) chased off Cloak effects in
+   * this OMOD's Enchantments/AttachedPerk chain — Tesla Coils, Miasma.
+   */
+  auraChase?: GeneratedAura[];
 }
 
 /**
@@ -486,6 +507,11 @@ export interface GeneratedBuff {
    * Modifier IR.
    */
   description?: string;
+  /**
+   * Tick-based continuous aura damage (ADR-0023) from Cloak effects on this
+   * mutation SPEL — Plague Walker.
+   */
+  auraChase?: GeneratedAura[];
 }
 
 /** One entry of the mode-wide addiction catalog (addictions.json). */

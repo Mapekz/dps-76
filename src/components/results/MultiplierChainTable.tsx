@@ -239,6 +239,21 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
             value={`+${formatDamage(result.procDps)}/s`}
           />
         )}
+        {(result.auraDps > 0 || result.auraMagnitudePending) && (
+          <Row
+            muted
+            label={
+              <DefinitionLabel definition="Steady-state aura damage (PA Tesla Coils, Miasma, Plague Walker) — continuous tick-based, bypasses crit/sneak/dbm. In-combat gate assumed always on — see docs/assumptions.md.">
+                Aura damage
+              </DefinitionLabel>
+            }
+            value={
+              result.auraMagnitudePending && result.auraDps <= 0
+                ? 'unmeasured'
+                : `+${formatDamage(result.auraDps)}/s`
+            }
+          />
+        )}
       </div>
     </div>
   );

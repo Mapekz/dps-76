@@ -1,4 +1,8 @@
-import type { GeneratedExplosionSwap, GeneratedProc } from '../../src/types/generated';
+import type {
+  GeneratedAura,
+  GeneratedExplosionSwap,
+  GeneratedProc,
+} from '../../src/types/generated';
 import type { Modifier } from '../../src/types/modifiers';
 import type { EsmRecord, EsmSource } from './esm-client';
 import { translateEnchantment, type MgefTranslationDeps } from './normalize/mgef';
@@ -25,8 +29,8 @@ export async function enchantmentModifiers(
   into: Modifier[],
   modNotes: Set<string>,
   deps: ProjectileChaseDeps,
-): Promise<GeneratedProc[]> {
-  const { modifiers, notes, targetType, procs } = await translateEnchantment(
+): Promise<{ procs: GeneratedProc[]; auras: GeneratedAura[] }> {
+  const { modifiers, notes, targetType, procs, auras } = await translateEnchantment(
     deps.mgefDeps,
     enchFormId,
   );
@@ -53,7 +57,7 @@ export async function enchantmentModifiers(
     }
     into.push({ id: `${source.formId}:ench:${into.length}`, source, ...fragment });
   }
-  return procs;
+  return { procs, auras };
 }
 
 /**

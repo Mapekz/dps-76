@@ -69014,9 +69014,21 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: GetDead() Equal To 1"
+  "auraChase": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "EnergyResist",
+    "amount": 3,
+    "tickSec": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetDead() Equal To 1"
+     }
+    ]
+   }
   ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -73986,9 +73998,22 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
+  "auraChase": [
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "PoisonResist",
+    "magnitudePending": true,
+    "tickSec": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(ActorTypeDocile)=0"
+     }
+    ]
+   }
+  ],
   "notes": [
-   "ActorValues on AcidCloak — unmapped",
-   "perk Legendary_Armor_MiasmaPerk: MGEF Legendary_Armor_MiasmaCloakEffect archetype Cloak — needs override"
+   "ActorValues on AcidCloak — unmapped"
   ],
   "obtainable": true
  },
@@ -78065,9 +78090,22 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
+  "auraChase": [
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "PoisonResist",
+    "magnitudePending": true,
+    "tickSec": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(ActorTypeDocile)=0"
+     }
+    ]
+   }
+  ],
   "notes": [
-   "ActorValues on AcidCloak — unmapped",
-   "perk Legendary_Armor_MiasmaPerk: MGEF Legendary_Armor_MiasmaCloakEffect archetype Cloak — needs override"
+   "ActorValues on AcidCloak — unmapped"
   ],
   "obtainable": true
  },
@@ -79945,9 +79983,26 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF PowerArmor_mod_Lining_FieldGen_Radiation_CloakEffect archetype Cloak — needs override"
+  "auraChase": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "EnergyResist",
+    "curve": [
+     {
+      "x": 1,
+      "y": 5
+     },
+     {
+      "x": 50,
+      "y": 5
+     }
+    ],
+    "curveScale": 1,
+    "tickSec": 1,
+    "conditions": []
+   }
   ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -81045,9 +81100,26 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF PowerArmor_mod_Lining_FieldGen_Radiation_CloakEffect archetype Cloak — needs override"
+  "auraChase": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "EnergyResist",
+    "curve": [
+     {
+      "x": 1,
+      "y": 5
+     },
+     {
+      "x": 50,
+      "y": 5
+     }
+    ],
+    "curveScale": 1,
+    "tickSec": 1,
+    "conditions": []
+   }
   ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -82283,9 +82355,26 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF PowerArmor_mod_Lining_FieldGen_Radiation_CloakEffect archetype Cloak — needs override"
+  "auraChase": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "EnergyResist",
+    "curve": [
+     {
+      "x": 1,
+      "y": 5
+     },
+     {
+      "x": 50,
+      "y": 5
+     }
+    ],
+    "curveScale": 1,
+    "tickSec": 1,
+    "conditions": []
+   }
   ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -84105,9 +84194,26 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF PowerArmor_mod_Lining_FieldGen_Radiation_CloakEffect archetype Cloak — needs override"
+  "auraChase": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "EnergyResist",
+    "curve": [
+     {
+      "x": 1,
+      "y": 5
+     },
+     {
+      "x": 50,
+      "y": 5
+     }
+    ],
+    "curveScale": 1,
+    "tickSec": 1,
+    "conditions": []
+   }
   ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -86818,9 +86924,26 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF PowerArmor_mod_Lining_FieldGen_Radiation_CloakEffect archetype Cloak — needs override"
+  "auraChase": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "EnergyResist",
+    "curve": [
+     {
+      "x": 1,
+      "y": 5
+     },
+     {
+      "x": 50,
+      "y": 5
+     }
+    ],
+    "curveScale": 1,
+    "tickSec": 1,
+    "conditions": []
+   }
   ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -90051,9 +90174,26 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF PowerArmor_mod_Lining_FieldGen_Radiation_CloakEffect archetype Cloak — needs override"
+  "auraChase": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "EnergyResist",
+    "curve": [
+     {
+      "x": 1,
+      "y": 5
+     },
+     {
+      "x": 50,
+      "y": 5
+     }
+    ],
+    "curveScale": 1,
+    "tickSec": 1,
+    "conditions": []
+   }
   ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -91302,9 +91442,26 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF PowerArmor_mod_Lining_FieldGen_Radiation_CloakEffect archetype Cloak — needs override"
+  "auraChase": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "EnergyResist",
+    "curve": [
+     {
+      "x": 1,
+      "y": 5
+     },
+     {
+      "x": 50,
+      "y": 5
+     }
+    ],
+    "curveScale": 1,
+    "tickSec": 1,
+    "conditions": []
+   }
   ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92483,9 +92640,26 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF PowerArmor_mod_Lining_FieldGen_Radiation_CloakEffect archetype Cloak — needs override"
+  "auraChase": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "EnergyResist",
+    "curve": [
+     {
+      "x": 1,
+      "y": 5
+     },
+     {
+      "x": 50,
+      "y": 5
+     }
+    ],
+    "curveScale": 1,
+    "tickSec": 1,
+    "conditions": []
+   }
   ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -94926,9 +95100,26 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF PowerArmor_mod_Lining_FieldGen_Radiation_CloakEffect archetype Cloak — needs override"
+  "auraChase": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "EnergyResist",
+    "curve": [
+     {
+      "x": 1,
+      "y": 5
+     },
+     {
+      "x": 50,
+      "y": 5
+     }
+    ],
+    "curveScale": 1,
+    "tickSec": 1,
+    "conditions": []
+   }
   ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -97937,9 +98128,26 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF PowerArmor_mod_Lining_FieldGen_Radiation_CloakEffect archetype Cloak — needs override"
+  "auraChase": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "EnergyResist",
+    "curve": [
+     {
+      "x": 1,
+      "y": 5
+     },
+     {
+      "x": 50,
+      "y": 5
+     }
+    ],
+    "curveScale": 1,
+    "tickSec": 1,
+    "conditions": []
+   }
   ],
+  "notes": [],
   "obtainable": true
  },
  {

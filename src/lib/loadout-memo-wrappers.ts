@@ -29,6 +29,7 @@ import type { GeneratedOmod } from '@/types/generated';
 import { getSpecialClamp } from '@/data';
 import { getEquippedPerkFamilyRanks, getLoadoutModifiers } from '@/data/perk-modifiers';
 import { getArmorEffectModifiers, getArmorEffectWornPieceCounts } from '@/data/armor-modifiers';
+import { getLoadoutAuras } from '@/lib/auras';
 import { getDefaultOmods, getOmodById } from '@/data/omods';
 import { getAddictionModifiers, getBuffModifiers, getSuppressedAddictions } from '@/data/buffs';
 import { consumablesById } from '@/lib/consumable-rules';
@@ -218,6 +219,11 @@ export const targetDebuffModifiersFor = scoped(
 export const armorEffectModifiersFor = scoped(
   (mode: GameMode, armorEffects: Record<string, number>): Modifier[] =>
     getArmorEffectModifiers(mode, armorEffects),
+);
+
+export const loadoutAurasFor = scoped(
+  (mode: GameMode, armorEffects: Record<string, number>, mutations: string[]) =>
+    getLoadoutAuras(mode, armorEffects, mutations),
 );
 
 /**

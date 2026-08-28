@@ -3,6 +3,7 @@ import type {
   ExcludedRecordDetail,
   GeneratedAddiction,
   GeneratedAddictionRef,
+  GeneratedAura,
   GeneratedBuff,
 } from '../../src/types/generated';
 import { mapPool, resolveKeywordEdids, type EsmRecord, type EsmSource } from './esm-client';
@@ -416,6 +417,7 @@ export async function extractMutation(
 
   const notes = new Set<string>();
   const fragments = [];
+  const auras: GeneratedAura[] = [];
   // Fragment indexes from a penalty MGEF (NegativeEffect keyword +
   // Detrimental — the Class Freak scaling gate), mapped to modifier ids
   // below, after withSource assigns them (mirrors buildConsumable's
@@ -434,6 +436,7 @@ export async function extractMutation(
       }
     }
     fragments.push(...result.modifiers);
+    if (result.auras) auras.push(...result.auras);
     result.notes.forEach((n) => notes.add(`${edid}: ${n}`));
     result.unmappedAvifs.forEach((a) => allUnmapped.add(a));
   }
@@ -456,6 +459,7 @@ export async function extractMutation(
     kind: 'mutation',
     modifiers,
     notes: [...notes],
+    ...(auras.length > 0 ? { auraChase: auras } : {}),
     ...(penaltyModifierIds.length > 0 ? { penaltyModifierIds } : {}),
   };
 }

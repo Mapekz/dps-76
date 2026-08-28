@@ -2137,8 +2137,8 @@ describe('computeScenarios: procDps (issue #42, PROC_DAMAGE_PLAN.md commit 8)', 
   });
 });
 
-describe('computeScenarios: totalDps (canonical = sustained + DoT + proc)', () => {
-  it('equals sustainedDps + dotDps + procDps in both scenarios', () => {
+describe('computeScenarios: totalDps (canonical = sustained + DoT + proc + aura)', () => {
+  it('equals sustainedDps + dotDps + procDps + auraDps in both scenarios', () => {
     const weapon = makeWeapon({
       components: [{ damageType: 'fire', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
       procs: [
@@ -2176,11 +2176,11 @@ describe('computeScenarios: totalDps (canonical = sustained + DoT + proc)', () =
     expect(s.freeAim.dotDps).toBeCloseTo(3, 10);
     expect(s.freeAim.procDps).toBeCloseTo(15, 10);
     expect(s.freeAim.totalDps).toBeCloseTo(
-      s.freeAim.sustain.sustainedDps + s.freeAim.dotDps + s.freeAim.procDps,
+      s.freeAim.sustain.sustainedDps + s.freeAim.dotDps + s.freeAim.procDps + s.freeAim.auraDps,
       10,
     );
     expect(s.vats.totalDps).toBeCloseTo(
-      s.vats.sustain.sustainedDps + s.vats.dotDps + s.vats.procDps,
+      s.vats.sustain.sustainedDps + s.vats.dotDps + s.vats.procDps + s.vats.auraDps,
       10,
     );
   });
@@ -2198,6 +2198,7 @@ describe('computeScenarios: totalDps (canonical = sustained + DoT + proc)', () =
     });
     expect(s.freeAim.dotDps).toBe(0);
     expect(s.freeAim.procDps).toBe(0);
+    expect(s.freeAim.auraDps).toBe(0);
     expect(s.freeAim.totalDps).toBe(s.freeAim.sustain.sustainedDps);
     expect(s.vats.totalDps).toBe(s.vats.sustain.sustainedDps);
   });

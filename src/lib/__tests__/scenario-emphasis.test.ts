@@ -12,6 +12,7 @@ function stubScenario(totalDps: number): ScenarioResult {
     fireRateApproximate: true,
     dotDps: 0,
     procDps: 0,
+    auraDps: 0,
     totalDps,
   };
 }

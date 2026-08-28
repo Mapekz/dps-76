@@ -371,6 +371,16 @@ function translateSingle(
       // unused flat-magnitude fallback on the same ENCH). Player-facing mods
       // always take the alt-curve path — consume =1, kill =0.
       return wants ? null : 'inactive';
+    case 'IsInCombat':
+      // Continuous damage auras (Tesla Coils — ADR-0023) gate on in-combat.
+      // The calculator models sustained combat — always in combat for aura
+      // streams (docs/assumptions.md "Aura damage streams").
+      return wants ? null : 'inactive';
+    case 'IsHostileToActor':
+      // Contact-delivery aura ticks (Tesla Coils, Plague Walker) gate on
+      // hostile targets. Calculator enemies are always hostile hostiles
+      // (docs/assumptions.md "Aura damage streams").
+      return wants ? null : 'inactive';
     case 'IsSprinting':
     case 'IsSwimming':
       // The calculator models grounded, non-sprint combat (aiming/firing) — never
@@ -767,6 +777,19 @@ export function translateConditions(
         row['Comparison Value'] === 1,
     );
     if (essentialOnly) return { conditions: null, unresolved };
+
+    // Contact-delivery PvE target OR-groups (Plague Walker/Tesla): every member
+    // individually consumes under subjectIsTarget (GetIsPlayer=0 on Target |
+    // IsHostileToActor=1 on Subject).
+    if (ctx.subjectIsTarget) {
+      let allConsumed = true;
+      for (const row of group) {
+        const translated = translateSingle(row, ctx);
+        if (translated === 'inactive') return { conditions: null, unresolved };
+        if (translated !== null) allConsumed = false;
+      }
+      if (allConsumed) continue;
+    }
 
     // OR-group: supported when every row is a positive weapon-keyword check,
     // or every row is a positive enemy-type check (Ghoul Slayer's:

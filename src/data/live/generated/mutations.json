@@ -1271,9 +1271,137 @@
   "kind": "mutation",
   "modifiers": [],
   "notes": [
-   "Mutation_PlagueWalker: MGEF Mutation_PlagueWalkerCloak archetype Cloak — needs override",
-   "Mutation_PlagueWalker: MGEF Mutation_PlagueWalkerCloakSuper archetype Cloak — needs override",
    "Mutation_PlagueWalker: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
+  ],
+  "auraChase": [
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "PoisonResist",
+    "amount": 5,
+    "tickSec": 1,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetNumActiveSpellsWithKeyword(SURV_Icon_Disease)=1"
+     }
+    ]
+   },
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "PoisonResist",
+    "amount": 11.67,
+    "tickSec": 1,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetNumActiveSpellsWithKeyword(SURV_Icon_Disease)=2"
+     }
+    ]
+   },
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "PoisonResist",
+    "amount": 18.33,
+    "tickSec": 1,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetNumActiveSpellsWithKeyword(SURV_Icon_Disease)=3"
+     }
+    ]
+   },
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "PoisonResist",
+    "amount": 25,
+    "tickSec": 1,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetNumActiveSpellsWithKeyword(SURV_Icon_Disease)=4"
+     }
+    ]
+   },
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "PoisonResist",
+    "amount": 6.25,
+    "tickSec": 1,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetNumActiveSpellsWithKeyword(SURV_Icon_Disease)=1"
+     }
+    ]
+   },
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "PoisonResist",
+    "amount": 14.6,
+    "tickSec": 1,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetNumActiveSpellsWithKeyword(SURV_Icon_Disease)=2"
+     }
+    ]
+   },
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "PoisonResist",
+    "amount": 22.91,
+    "tickSec": 1,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetNumActiveSpellsWithKeyword(SURV_Icon_Disease)=3"
+     }
+    ]
+   },
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "PoisonResist",
+    "amount": 31.25,
+    "tickSec": 1,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetNumActiveSpellsWithKeyword(SURV_Icon_Disease)=4"
+     }
+    ]
+   }
   ]
  },
  {

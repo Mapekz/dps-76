@@ -1,5 +1,6 @@
 import type {
   ExcludedRecordDetail,
+  GeneratedAura,
   GeneratedExplosionSwap,
   GeneratedOmod,
   GeneratedProc,
@@ -722,6 +723,7 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
     let explosionChase: GeneratedExplosionSwap | undefined;
     let chainSuppressesExplosion = false;
     const procs: GeneratedProc[] = [];
+    const auras: GeneratedAura[] = [];
     const source: Modifier['source'] = {
       kind: 'omod',
       formId: record.header.form_id,
@@ -749,7 +751,7 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
             modNotes.add(`removes enchantment ${await client.resolveEdid(prop.value1)}`);
           } else {
             // ADD/SET: this OMOD grants the enchantment.
-            const enchProcs = await enchantmentModifiers(
+            const { procs: enchProcs, auras: enchAuras } = await enchantmentModifiers(
               prop.value1,
               source,
               modifiers,
@@ -757,6 +759,7 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
               projectileChaseDeps,
             );
             procs.push(...enchProcs);
+            auras.push(...enchAuras);
           }
         }
         continue;
@@ -808,6 +811,7 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
             });
           }
           if (result.procs) procs.push(...result.procs);
+          if (result.auras) auras.push(...result.auras);
         }
         continue;
       }
@@ -1073,6 +1077,7 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
       ...(explosionChase ? { explosionChase } : {}),
       ...(chainSuppressesExplosion ? { chainSuppressesExplosion } : {}),
       ...(procs.length > 0 ? { procChase: procs } : {}),
+      ...(auras.length > 0 ? { auraChase: auras } : {}),
       ...(job.variantOf ? { variantOf: job.variantOf } : {}),
       notes: [...modNotes].sort(),
     };

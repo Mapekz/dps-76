@@ -20,6 +20,7 @@ import {
   enemyTypeIdsFor,
   equippedOmodsFor,
   loadoutModifiersFor,
+  loadoutAurasFor,
   nonWeaponStatModifiersFor,
   playerAgg,
   resolvedTargetFor,
@@ -176,6 +177,8 @@ export function resolveLoadout(
   );
   if (!weapon) return null;
 
+  const auras = loadoutAurasFor(scope, mode, playerConfig.armorEffects, playerConfig.mutations);
+
   const {
     special,
     maxHealth,
@@ -241,6 +244,7 @@ export function resolveLoadout(
     weapon,
     itemLevel: playerConfig.itemLevel,
     modifiers,
+    auras,
     player,
     enemy: enemyConfig.conditions,
     enemyTypeIds,

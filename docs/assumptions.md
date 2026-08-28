@@ -193,6 +193,35 @@ repeated here. See ADR-0020 for why this is a parallel stream (`Weapon.procs`
   sub-effect (no damage, out of scope) — deliberately unmapped, no damage
   payload to chase in either case.
 
+## Aura damage streams
+Engine: `computeAuraDps` (`aura-damage.ts`), ADR-0023. Parallel stream
+(`ScenarioResult.auraDps`), NOT folded into `sustainedDps`/`perHit`.
+
+- **In-combat / hostile-target gates assumed always on** — Tesla Coils carry
+  `IsInCombat()=1` on the Contact SPEL row and `IsHostileToActor()=1` on the
+  Damage MGEF; the calculator models sustained combat against hostile targets,
+  so both are consumed (`conditions.ts`). **ASSUMPTION**
+- **Tesla curve-table magnitude** — Effect Item Data Magnitude 20 with a flat
+  ×5 curve (`Armor_PA_Mod_TeslaCoil.json`) follows the shared curve contract
+  (multi-point curve overrides magnitude — same as `dotDamage` /
+  `ModifierValue`): per-tick = curve Y × `curveScale` = **5**, not 20 or
+  20×5=100. Alternative magnitude×curve reading **unverified** |
+  `scripts/extract/normalize/aura.ts` `decodeDamageAura`
+- **Miasma magnitude/radius** — script-set at runtime via `AcidCloak` AV
+  (default 0); NOT ESM-derivable. Shipped `magnitudePending` (unmeasured
+  badge, 0 DPS) — wiki values banned per `legendary-values.ts` policy.
+  **unmeasured** | perk-mediated chain `ench_LegendaryArmor_Miasma` →
+  `Legendary_Armor_MiasmaPerk` → `Legendary_Armor_MiasmaCloakSpell` →
+  `V94_AcidCloakSpell`
+- **Plague Walker disease scaling** — `Mutation_PlagueWalkerDamage` /
+  `Mutation_PlagueWalkerDamageSuper` Contact SPELs carry four effect rows
+  each (normal: 5 / 11.67 / 18.33 / 25; super-serum: 6.25 / 14.6 / 22.91 /
+  31.25 per tick) gated by `GetNumActiveSpellsWithKeyword(SURV_Icon_Disease)`
+  on the struck target; the mutation SPEL's cloak-effect magnitudes 10/12 are
+  NOT the damage tick. Disease-count multiplier NOT modeled — rows extract with
+  `kind:'unresolved'` and surface as inert aura streams
+  (`auraHasEngineEffect`). **unverified** | `Mutation_PlagueWalker` `auraChase`
+
 ## DoT/proc resist provenance
 Engine: `normalize/mgef.ts` `translate()`'s Damage-archetype branch,
 `normalize/proc.ts`'s `decodeInstantDamageComponent` — both document the full

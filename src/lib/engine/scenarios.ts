@@ -1,4 +1,5 @@
 import type { EnemyConditions, GameMode, Weapon } from '@/types';
+import type { AuraSource } from '@/types/auras';
 import type { ResolvedPlayer } from '@/types/player';
 import type { Modifier } from '@/types/modifiers';
 import { interpolateCurve } from '@/lib/curve-tables';
@@ -25,6 +26,7 @@ import {
   type HitBreakdown,
 } from './paper-damage';
 import { collectProcStreams, computeProcDps } from './proc-damage';
+import { collectAuraStreams, computeAuraDps } from './aura-damage';
 import {
   applyMitigation,
   mitigateDamageAmount,
@@ -148,7 +150,16 @@ export interface ScenarioResult {
    */
   procDps: number;
   /**
-   * Canonical raw DPS: `sustain.sustainedDps + dotDps + procDps`. Not
+   * Steady-state aura damage add (ADR-0023) — PA Tesla Coils, Miasma, Plague
+   * Walker tick-based continuous damage, NOT folded into `perHit`/`burstDps`/
+   * `sustain` (parallel to `dotDps`/`procDps`). `magnitudePending` sources
+   * (Miasma) contribute 0 here but surface in the UI with an unmeasured badge.
+   */
+  auraDps: number;
+  /** True when any active aura has `magnitudePending` — drives unmeasured UI. */
+  auraMagnitudePending?: boolean;
+  /**
+   * Canonical raw DPS: `sustain.sustainedDps + dotDps + procDps + auraDps`. Not
    * AP-blended (VATS AP blending lives on `ap.apLimitedTotalDps` /
    * `effective.totalDps`, mirroring `apLimitedDps` / `effective.sustainedDps`).
    * `sustainedDps` stays the pinned per-shot intermediate — this field is
@@ -245,6 +256,8 @@ export interface ScenarioInput {
   weapon: Weapon;
   itemLevel: number;
   modifiers: Modifier[];
+  /** Equipped armor/mutation aura sources (ADR-0023) — assembled in resolveLoadout. */
+  auras?: AuraSource[];
   player: ResolvedPlayer;
   enemy: EnemyConditions;
   /**
@@ -646,13 +659,14 @@ function bodyPartBlendedHit(
  * `mitigateDamageAmount` (not scaled by `retainedFraction` — they have
  * their own types/magnitudes). The cross-scenario AP-duty-cycle blend
  * (VATS + Free Aim fallback over `ap.uptime`) lives in `blendEffectiveDps`,
- * not here. `ttk` uses `totalDps` (DoTs and procs kill too).
+ * not here. `ttk` uses `totalDps` (DoTs, procs, and auras kill too).
  */
 function effectiveAgainstEnemy(
   cycleHit: HitBreakdown,
   sustainedDps: number,
   mitigatedDotDps: number,
   mitigatedProcDps: number,
+  mitigatedAuraDps: number,
   defenses: EnemyDefenses | undefined,
   armorPenTotal: number,
   armorPenFlatTotal: number,
@@ -668,7 +682,7 @@ function effectiveAgainstEnemy(
   );
   const retainedFraction = cycleHit.total > 0 ? mitigated.total / cycleHit.total : 1;
   const mitigatedSustainedDps = sustainedDps * retainedFraction;
-  const totalDps = mitigatedSustainedDps + mitigatedDotDps + mitigatedProcDps;
+  const totalDps = mitigatedSustainedDps + mitigatedDotDps + mitigatedProcDps + mitigatedAuraDps;
   return {
     perHit: mitigated,
     sustainedDps: mitigatedSustainedDps,
@@ -737,6 +751,31 @@ function mitigatedDotDps(
       ),
     0,
   );
+}
+
+function mitigatedAuraDps(
+  auras: AuraSource[],
+  itemLevel: number,
+  ctx: ResolveContext,
+  defenses: EnemyDefenses,
+  armorPenTotal: number,
+  armorPenFlatTotal: number,
+  constants: MitigationConstants | undefined,
+): number {
+  return collectAuraStreams(auras, itemLevel, ctx).reduce((sum, s) => {
+    if (s.magnitudePending || s.dps <= 0) return sum;
+    const perTick = mitigateDamageAmount(
+      s.dps * (auras.find((a) => a.id === s.sourceId)?.tickSec ?? 1),
+      s.damageType,
+      s.unresisted,
+      defenses,
+      armorPenTotal,
+      armorPenFlatTotal,
+      constants,
+    );
+    const tickSec = auras.find((a) => a.id === s.sourceId)?.tickSec ?? 1;
+    return sum + perTick / tickSec;
+  }, 0);
 }
 
 function mitigatedProcDps(
@@ -1050,6 +1089,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // (ADR-0009 — an honest zero, not a hidden average) via
   // createDefaultPlayerInput().
   const cripplesPerMin = input.player.procCripplesPerMin ?? 0;
+  const loadoutAuras = input.auras ?? [];
   const freeProcDps = computeProcDps(
     input.weapon.procs ?? [],
     input.itemLevel,
@@ -1065,8 +1105,12 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     cripplesPerMin,
   );
 
-  const freeTotalDps = freeSustain.sustainedDps + freeDotDps + freeProcDps;
-  const vatsTotalDps = vatsSustain.sustainedDps + vatsDotDps + vatsProcDps;
+  const freeAuraDps = computeAuraDps(loadoutAuras, input.itemLevel, freeCtx);
+  const vatsAuraDps = computeAuraDps(loadoutAuras, input.itemLevel, vatsCtx);
+  const auraMagnitudePending = loadoutAuras.some((a) => a.magnitudePending);
+
+  const freeTotalDps = freeSustain.sustainedDps + freeDotDps + freeProcDps + freeAuraDps;
+  const vatsTotalDps = vatsSustain.sustainedDps + vatsDotDps + vatsProcDps + vatsAuraDps;
 
   // Steady-state VATS AP economy (Stage B): ranged weapons only (melee/VATS-
   // melee AP is out of scope — uptime is undefined without real melee AP
@@ -1210,11 +1254,34 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
         input.mitigationConstants,
       )
     : 0;
+  const freeMitigatedAura = defenses
+    ? mitigatedAuraDps(
+        loadoutAuras,
+        input.itemLevel,
+        freeCtx,
+        defenses,
+        armorPenTotal,
+        armorPenFlatTotal,
+        input.mitigationConstants,
+      )
+    : 0;
+  const vatsMitigatedAura = defenses
+    ? mitigatedAuraDps(
+        loadoutAuras,
+        input.itemLevel,
+        vatsCtx,
+        defenses,
+        armorPenTotal,
+        armorPenFlatTotal,
+        input.mitigationConstants,
+      )
+    : 0;
   const freeEffective = effectiveAgainstEnemy(
     freeCycleHit,
     freeSustain.sustainedDps,
     freeMitigatedDot,
     freeMitigatedProc,
+    freeMitigatedAura,
     defenses,
     armorPenTotal,
     armorPenFlatTotal,
@@ -1225,6 +1292,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     vatsSustain.sustainedDps,
     vatsMitigatedDot,
     vatsMitigatedProc,
+    vatsMitigatedAura,
     defenses,
     armorPenTotal,
     armorPenFlatTotal,
@@ -1251,6 +1319,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       fireRateApproximate: true,
       dotDps: freeDotDps,
       procDps: freeProcDps,
+      auraDps: freeAuraDps,
+      ...(auraMagnitudePending ? { auraMagnitudePending: true } : {}),
       totalDps: freeTotalDps,
       ...(freeEffective && { effective: freeEffective }),
       ...(tracing && { explain: { nonCrit: freeTrace!, crit: null } }),
@@ -1266,6 +1336,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       critMeter,
       dotDps: vatsDotDps,
       procDps: vatsProcDps,
+      auraDps: vatsAuraDps,
+      ...(auraMagnitudePending ? { auraMagnitudePending: true } : {}),
       totalDps: vatsTotalDps,
       ...(ap && { ap }),
       ...(vatsEffective && { effective: vatsEffective }),
