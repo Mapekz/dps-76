@@ -36,9 +36,17 @@ import {
   type EsmSource,
 } from './extract/esm-client';
 import { asNumber } from './extract/normalize/explosion';
+import type { Bucket } from '../src/types/modifiers';
 import { parseMagicEffects, ENTRY_POINT_BUCKETS } from './extract/normalize/mgef';
-import { ACTOR_VALUE_BUCKETS } from './extract/extract-omods';
-import { collectProperties } from './extract/omod-properties';
+import { ACTOR_VALUE_BUCKETS, resolveVariantDisplayName } from './extract/extract-omods';
+import { collectProperties, includeFormIds, omodData } from './extract/omod-properties';
+import {
+  applyNormalizedLevelAdjustment,
+  mergeProperties,
+  resolveNormalizedLevelAdjustment,
+  resolveStat,
+  type RawProperty as NpcRawProperty,
+} from './extract/extract-npcs';
 import { effectiveFamilyMaxRank, toGeneratedPerkCard } from './extract/extract-perks';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -119,6 +127,32 @@ const ROUTED_OMOD_PROPERTIES = new Set([
 
 /** AVs skipped because the value is carried elsewhere (extract-omods.ts ACTOR_VALUE_SKIP). */
 const ACTOR_VALUE_SKIP_NAMES = new Set(['LGND_ExecuteDmg']);
+
+/** Health actor value — extract-npcs.ts HEALTH_AV (not exported). */
+const HEALTH_AV = 0x2d4;
+
+/** Property → bucket routing mirrored from extract-omods.ts PROPERTY_BUCKETS (bucket only). */
+const OMOD_PROPERTY_BUCKETS: Record<string, Bucket | Bucket[]> = {
+  DamageBonusMult: 'dbm',
+  CriticalDamageMult: ['critDmgBase', 'critDmgBonus'],
+  SneakAttackMult: ['sneakBase', 'sneakBonus'],
+  Speed: 'fireRateSpeed',
+  IsAutomatic: 'isAutomatic',
+  NumProjectiles: 'projectileCount',
+  CriticalChargeBonus: 'critFill',
+  AmmoCapacity: 'ammoCapacity',
+  ReloadSpeed: 'reloadSpeed',
+  AttackActionPointCost: 'vatsApCost',
+  FullPowerSeconds: 'chargeFullPowerSec',
+  FullPowerDamageMult: 'chargeFullPowerDamageMult',
+  AttackDelaySec: 'animDelaySec',
+  MinRange: 'weaponMinRange',
+  MaxRange: 'weaponMaxRange',
+  OutOfRangeDamageMult: 'weaponOutOfRangeMult',
+  AttackDamage: 'baseDamage',
+};
+
+const IDENTITY_OMOD_NAME_SUFFIX_RE = /\s+Custom (Mod|Name)$/i;
 const FINDING_SEVERITY: Record<FindingKind, number> = {
   identity: 0,
   'silent-drop': 1,
@@ -225,6 +259,112 @@ export function auditIdentity(input: IdentityInput): AuditFinding[] {
   return findings;
 }
 
+/** Display name derivation — mirrors extract-omods.ts `omodDisplayName`. */
+export function omodDisplayName(record: EsmRecord): string {
+  const raw = (record.fields['Name'] as string | undefined) ?? record.editor_id;
+  return raw.replace(IDENTITY_OMOD_NAME_SUFFIX_RE, '');
+}
+
+/** Re-derive the checked-in OMOD name via the extractor naming pipeline. */
+export function deriveOmodExpectedName(
+  omod: Pick<GeneratedOmod, 'id' | 'variantOf'>,
+  record: EsmRecord,
+  containerRecord: EsmRecord | null,
+): string {
+  if (omod.variantOf && containerRecord) {
+    return resolveVariantDisplayName(omod.variantOf, omodDisplayName(containerRecord), omod.id);
+  }
+  return omodDisplayName(record);
+}
+
+/** Unique preset name — mirrors extract-uniques.ts container/identity naming. */
+export function deriveUniqueExpectedName(
+  unique: Pick<GeneratedUnique, 'variantIds'>,
+  identityOmod: GeneratedOmod,
+  containerRecord: EsmRecord | null,
+  comboName: string,
+): string {
+  if (unique.variantIds && identityOmod.variantOf && containerRecord) {
+    return omodDisplayName(containerRecord);
+  }
+  const fromOmod = identityOmod.name.replace(IDENTITY_OMOD_NAME_SUFFIX_RE, '').trim();
+  if (fromOmod) return fromOmod;
+  return comboName;
+}
+
+export function auditDerivedName(
+  recordId: string,
+  expected: string,
+  actual: string,
+): AuditFinding[] {
+  const findings: AuditFinding[] = [];
+  pushIdentity(findings, recordId, 'name', expected, actual);
+  return findings;
+}
+
+/** Unresolved lines are keyed by record edid prefix before the first colon. */
+export function unresolvedForRecord(unresolved: readonly string[], recordId: string): string[] {
+  const prefix = `${recordId}:`;
+  return unresolved.filter((u) => u.startsWith(prefix));
+}
+
+async function resolveGlobalValue(
+  client: EsmSource,
+  formId: string | undefined,
+): Promise<number | null> {
+  if (!formId) return null;
+  try {
+    const rec = await client.get(formId);
+    const value = rec.fields['Value'];
+    return typeof value === 'number' ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Bulk-fetch every OMOD in an Includes closure so collectProperties matches the extractor. */
+export async function expandOmodIncludeGraph(
+  client: EsmSource,
+  seedRecords: Map<string, EsmRecord>,
+): Promise<Map<string, EsmRecord>> {
+  const byFormId = new Map(seedRecords);
+  let frontier = [...byFormId.keys()];
+  while (frontier.length > 0) {
+    const needed = new Set<string>();
+    for (const formId of frontier) {
+      const rec = byFormId.get(formId);
+      if (!rec) continue;
+      for (const id of includeFormIds(omodData(rec))) {
+        if (!byFormId.has(id)) needed.add(id);
+      }
+    }
+    if (needed.size === 0) break;
+    const fetched = await bulkFetchRecords(client, [...needed]);
+    for (const [id, rec] of fetched) byFormId.set(id, rec);
+    frontier = [...needed];
+  }
+  return byFormId;
+}
+
+/** Variant-container records are not emitted but drive variant display names. */
+export async function fetchVariantContainerRecords(
+  client: EsmSource,
+  omods: readonly Pick<GeneratedOmod, 'variantOf'>[],
+  byFormId: Map<string, EsmRecord>,
+): Promise<Map<string, EsmRecord>> {
+  const containers = new Map<string, EsmRecord>();
+  for (const edid of new Set(omods.map((o) => o.variantOf).filter((v): v is string => v != null))) {
+    try {
+      const rec = await client.get(edid);
+      containers.set(edid, rec);
+      byFormId.set(rec.header.form_id, rec);
+    } catch {
+      /* container missing — name derivation falls back to omodDisplayName */
+    }
+  }
+  return containers;
+}
+
 // ── Tier 2 helpers ───────────────────────────────────────────────────────
 
 export interface WeaponTier2Source {
@@ -299,6 +439,7 @@ export async function extractOmodTier2Source(
   client: EsmSource,
   record: EsmRecord,
   byFormId: Map<string, EsmRecord>,
+  propertyRootFormId: string = record.header.form_id,
 ): Promise<{
   attachPointEdid: string;
   targetKeywords: string[];
@@ -313,16 +454,15 @@ export async function extractOmodTier2Source(
       : []
     ).map((k) => client.resolveEdid(k)),
   );
-  const properties = collectProperties(record.header.form_id, byFormId);
+  const properties = collectProperties(propertyRootFormId, byFormId);
   const addedKeywords: string[] = [];
   let hasEnchantments = false;
   for (const prop of properties) {
-    if (
-      prop.property === 'Keywords' &&
-      prop.functionType === 'ADD' &&
-      typeof prop.value1 === 'string'
-    ) {
-      addedKeywords.push(await client.resolveEdid(prop.value1));
+    if (prop.property === 'Keywords') {
+      if (prop.functionType === 'ADD' && typeof prop.value1 === 'string') {
+        addedKeywords.push(await client.resolveEdid(prop.value1));
+      }
+      continue;
     }
     if (prop.property === 'Enchantments') hasEnchantments = true;
   }
@@ -400,6 +540,56 @@ export function auditNpcTier2(
 export const NPC_TIER2_SKIPPED =
   'healthCurveTier/resists/epic* — curve-tier and merged RACE properties are extractor transforms';
 
+export async function extractNpcTier2Source(
+  client: EsmSource,
+  npcRecord: EsmRecord,
+  targetEdid: string,
+): Promise<{ healthFlat: number; levelMin: number | null; levelMax: number | null }> {
+  const unresolved: string[] = [];
+  const npcProps = (npcRecord.fields['Properties'] as NpcRawProperty[] | undefined) ?? [];
+
+  let raceProps: NpcRawProperty[] = [];
+  const raceFormId = npcRecord.fields['Race'] as string | null | undefined;
+  if (raceFormId) {
+    try {
+      const raceRecord = await client.get(raceFormId);
+      raceProps = (raceRecord.fields['Properties'] as NpcRawProperty[] | undefined) ?? [];
+    } catch {
+      /* resist fallback skipped — matches extract-npcs.ts */
+    }
+  }
+
+  const merged = mergeProperties(raceProps, npcProps);
+  const health = resolveStat(merged.get(HEALTH_AV), `${targetEdid} health`, unresolved);
+
+  const scaling =
+    (npcRecord.fields['Actor Scaling Info'] as Record<string, string | undefined> | undefined) ??
+    {};
+  const baseLevelMinGlobal = await resolveGlobalValue(client, scaling['Level Min Global']);
+  const baseLevelMaxGlobal = await resolveGlobalValue(client, scaling['Level Max Global']);
+
+  const normalizedLevelAdjustment = await resolveNormalizedLevelAdjustment(
+    client,
+    npcRecord,
+    targetEdid,
+    unresolved,
+  );
+  const levelMinGlobal = applyNormalizedLevelAdjustment(
+    baseLevelMinGlobal,
+    normalizedLevelAdjustment.min,
+  );
+  const levelMaxGlobal = applyNormalizedLevelAdjustment(
+    baseLevelMaxGlobal,
+    normalizedLevelAdjustment.max,
+  );
+
+  return {
+    healthFlat: health.flatValue,
+    levelMin: levelMinGlobal,
+    levelMax: levelMaxGlobal,
+  };
+}
+
 // ── Tier 3 ─────────────────────────────────────────────────────────────────
 
 const PROPERTY_IGNORED_FOR_TIER3 = new Set([
@@ -430,6 +620,17 @@ export function isOmodPropertyDamageRelevant(property: string): boolean {
 export interface SourceCarrier {
   key: string;
   label: string;
+  /** Human-readable target for tier-3 adjudication (formid + edid). */
+  detail?: string;
+}
+
+export interface CarrierAccountContext {
+  notes: readonly string[];
+  modifiers: readonly Modifier[];
+  unresolved: readonly string[];
+  hasEnchantments?: boolean;
+  hasExplosionChase?: boolean;
+  hasChainSuppressesExplosion?: boolean;
 }
 
 export function enumerateOmodCarriers(
@@ -444,7 +645,16 @@ export function enumerateOmodCarriers(
     const key = `property:${prop.property}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    carriers.push({ key, label: prop.property });
+    let detail: string | undefined;
+    if (
+      (prop.property === 'OverrideProjectile' ||
+        prop.property === 'AttachedPerk' ||
+        prop.property === 'Enchantments') &&
+      typeof prop.value1 === 'string'
+    ) {
+      detail = prop.value1;
+    }
+    carriers.push({ key, label: prop.property, detail });
   }
   return carriers;
 }
@@ -486,53 +696,98 @@ export function enumeratePerkCarriers(record: EsmRecord): SourceCarrier[] {
   return carriers;
 }
 
+function modifierBucketsForProperty(property: string): Bucket[] {
+  const avRoute = ACTOR_VALUE_BUCKETS[property];
+  if (avRoute && !ACTOR_VALUE_SKIP_NAMES.has(property)) return [avRoute.bucket];
+  const mapped = OMOD_PROPERTY_BUCKETS[property];
+  if (!mapped) return [];
+  return Array.isArray(mapped) ? [...mapped] : [mapped];
+}
+
+function propertyModifiersAccounted(property: string, modifiers: readonly Modifier[]): boolean {
+  const buckets = modifierBucketsForProperty(property);
+  if (buckets.length === 0) return false;
+  return modifiers.some((m) => buckets.includes(m.bucket));
+}
+
 export function isCarrierAccounted(
   recordKey: string,
   carrier: SourceCarrier,
-  generatedNotes: readonly string[],
-  generatedModifiers: readonly Modifier[],
-  unresolved: readonly string[],
+  ctx: CarrierAccountContext,
 ): boolean {
-  const needles = [carrier.key, carrier.label, carrier.label.split(' ')[0] ?? carrier.label];
-  const haystacks = [...generatedNotes, ...unresolved];
-  if (haystacks.some((h) => h.includes(recordKey) && needles.some((n) => h.includes(n)))) {
-    return true;
-  }
+  const { notes, modifiers, unresolved } = ctx;
+  const recordUnresolved = unresolvedForRecord(unresolved, recordKey);
+
   if (carrier.key.startsWith('property:')) {
     const prop = carrier.label;
-    if (unresolved.some((u) => u.includes(`unknown OMOD property: ${prop}`))) return true;
+    if (recordUnresolved.some((u) => u.includes(`unknown OMOD property: ${prop}`))) return true;
+    if (notes.some((n) => n.includes(prop))) return true;
+
+    if (prop === 'Enchantments') {
+      if (ctx.hasEnchantments && (modifiers.length > 0 || notes.some((n) => /enchant/i.test(n))))
+        return true;
+      if (recordUnresolved.some((u) => u.toLowerCase().includes('enchant'))) return true;
+      return false;
+    }
+    if (prop === 'OverrideProjectile') {
+      if (ctx.hasExplosionChase || ctx.hasChainSuppressesExplosion) return true;
+      if (notes.some((n) => /projectile/i.test(n))) return true;
+      if (recordUnresolved.some((u) => u.toLowerCase().includes('projectile'))) return true;
+      return propertyModifiersAccounted('AttackDamage', modifiers);
+    }
+    if (prop === 'AttachedPerk') {
+      if (notes.some((n) => /granted perk|attached perk|perk to apply/i.test(n))) return true;
+      if (carrier.detail && notes.some((n) => n.includes(carrier.detail!))) return true;
+      return modifiers.length > 0;
+    }
+    return propertyModifiersAccounted(prop, modifiers);
   }
+
   if (carrier.key.startsWith('entryPoint:')) {
-    if (unresolved.some((u) => u.includes(`unknown entry point: ${carrier.label}`))) return true;
+    if (recordUnresolved.some((u) => u.includes(`unknown entry point: ${carrier.label}`))) {
+      return true;
+    }
+    const bucket = ENTRY_POINT_BUCKETS[carrier.label];
+    if (bucket && modifiers.some((m) => m.bucket === bucket)) return true;
+    return false;
   }
-  if (generatedModifiers.length > 0 && carrier.key.startsWith('property:')) {
-    return true;
+
+  if (carrier.key.startsWith('enchantment:')) {
+    if (modifiers.length > 0) return true;
+    if (recordUnresolved.some((u) => u.toLowerCase().includes('enchant'))) return true;
+    return false;
   }
-  if (
-    generatedModifiers.length > 0 &&
-    (carrier.key.startsWith('enchantment:') || carrier.key.startsWith('ability:'))
-  ) {
-    return true;
+
+  if (carrier.key.startsWith('ability:')) {
+    if (modifiers.length > 0) return true;
+    if (recordUnresolved.some((u) => u.toLowerCase().includes('ability'))) return true;
+    return false;
   }
-  return false;
+
+  const needles = [carrier.key, carrier.label, carrier.label.split(' ')[0] ?? carrier.label];
+  const haystacks = [...notes, ...recordUnresolved];
+  return haystacks.some((h) => needles.some((n) => h.includes(n)));
 }
 
-export function auditTier3Carriers(
+export async function auditTier3Carriers(
   recordId: string,
   carriers: SourceCarrier[],
-  generatedNotes: readonly string[],
-  generatedModifiers: readonly Modifier[],
-  unresolved: readonly string[],
-): AuditFinding[] {
+  ctx: CarrierAccountContext,
+  resolveDetail?: (carrier: SourceCarrier) => Promise<string | undefined> | string | undefined,
+): Promise<AuditFinding[]> {
   const findings: AuditFinding[] = [];
   for (const carrier of carriers) {
-    if (isCarrierAccounted(recordId, carrier, generatedNotes, generatedModifiers, unresolved))
-      continue;
+    if (isCarrierAccounted(recordId, carrier, ctx)) continue;
+    const adjudication = resolveDetail ? await resolveDetail(carrier) : carrier.detail;
+    const field =
+      adjudication != null && adjudication.length > 0
+        ? `${carrier.label} → ${adjudication}`
+        : carrier.label;
     findings.push({
       kind: 'silent-drop',
       tier: 3,
       recordId,
-      field: carrier.label,
+      field,
       expected: 'modifier, note, or unresolved entry',
       actual: 'none',
     });
@@ -610,13 +865,11 @@ async function auditWeapons(ctx: RunContext): Promise<DomainAuditResult> {
 
     if (ctx.tiers.has(3) && rec) {
       const carriers = enumerateWeaponCarriers(rec);
-      const t3 = auditTier3Carriers(
-        weapon.id,
-        carriers,
-        [],
-        weapon.modifiers,
-        ctx.metaUnresolved.filter((u) => u.includes(weapon.id)),
-      );
+      const t3 = await auditTier3Carriers(weapon.id, carriers, {
+        notes: [],
+        modifiers: weapon.modifiers,
+        unresolved: unresolvedForRecord(ctx.metaUnresolved, weapon.id),
+      });
       result.findings.push(...t3);
       countResult(result.tier3, t3.length > 0);
     }
@@ -643,21 +896,48 @@ async function auditOmodDomain(
 
   const formIds = omods.map((o) => o.formId);
   const records = await bulkFetchRecords(ctx.client, formIds);
-  const byFormId = new Map(records);
+  let byFormId = new Map(records);
+  byFormId = await expandOmodIncludeGraph(ctx.client, byFormId);
+  const variantContainers = await fetchVariantContainerRecords(ctx.client, omods, byFormId);
+
+  const nameOverrideNote =
+    'name — extract-time only (omodDisplayName / variant suffix); omodNameOverrides applied at dataset merge (src/data/dataset.ts), not in generated JSON';
+  if (ctx.tiers.has(1) && !result.skippedFields.includes(nameOverrideNote)) {
+    result.skippedFields.unshift(nameOverrideNote);
+  }
 
   for (const omod of omods) {
     const rec = records.get(omod.formId) ?? null;
 
     if (ctx.tiers.has(1)) {
-      const idFindings = auditIdentity({
-        recordId: omod.id,
-        expectedEdid: omod.id,
-        expectedName: omod.name,
-        expectedSignature: 'OMOD',
-        esmRecord: rec,
-      });
-      result.findings.push(...idFindings);
-      countResult(result.tier1, idFindings.length > 0);
+      let failed = false;
+      if (!rec) {
+        const idFindings = auditIdentity({
+          recordId: omod.id,
+          expectedEdid: omod.id,
+          expectedSignature: 'OMOD',
+          esmRecord: null,
+        });
+        failed = idFindings.length > 0;
+        result.findings.push(...idFindings);
+      } else {
+        const idFindings = auditIdentity({
+          recordId: omod.id,
+          expectedEdid: omod.id,
+          expectedSignature: 'OMOD',
+          esmRecord: rec,
+        });
+        failed = idFindings.length > 0;
+        result.findings.push(...idFindings);
+        if (!failed) {
+          const container = omod.variantOf ? (variantContainers.get(omod.variantOf) ?? null) : null;
+          const expectedName = deriveOmodExpectedName(omod, rec, container);
+          const nameFindings = auditDerivedName(omod.id, expectedName, omod.name);
+          if (nameFindings.length > 0) failed = true;
+          result.findings.push(...nameFindings);
+        }
+      }
+      countResult(result.tier1, failed);
     }
 
     if (ctx.tiers.has(2) && rec) {
@@ -669,8 +949,27 @@ async function auditOmodDomain(
 
     if (ctx.tiers.has(3) && rec) {
       const carriers = enumerateOmodCarriers(omod.formId, byFormId);
-      const notes = (omod as GeneratedOmod & { notes?: string[] }).notes ?? [];
-      const t3 = auditTier3Carriers(omod.id, carriers, notes, omod.modifiers, ctx.metaUnresolved);
+      const t3 = await auditTier3Carriers(
+        omod.id,
+        carriers,
+        {
+          notes: omod.notes ?? [],
+          modifiers: omod.modifiers,
+          unresolved: ctx.metaUnresolved,
+          hasEnchantments: omod.hasEnchantments,
+          hasExplosionChase: omod.explosionChase != null,
+          hasChainSuppressesExplosion: omod.chainSuppressesExplosion === true,
+        },
+        async (carrier) => {
+          if (carrier.detail == null) return undefined;
+          try {
+            const edid = await ctx.client.resolveEdid(carrier.detail);
+            return `${carrier.detail} (${edid})`;
+          } catch {
+            return carrier.detail;
+          }
+        },
+      );
       result.findings.push(...t3);
       countResult(result.tier3, t3.length > 0);
     }
@@ -690,6 +989,7 @@ async function auditPerks(ctx: RunContext): Promise<DomainAuditResult> {
     findings: [],
     skippedFields: [
       'card.minLevel/raceRestriction — PCRD fields beyond costs (extractor transform)',
+      'tier-3 skipped: non-card families with zero extracted modifiers (vendor/ATX/NPC epic perks — extract-perks.ts hasCard gate)',
     ],
   };
 
@@ -771,6 +1071,11 @@ async function auditPerks(ctx: RunContext): Promise<DomainAuditResult> {
     }
 
     if (ctx.tiers.has(3)) {
+      const allMods = perk.ranks.flatMap((r) => r.modifiers);
+      if (!perk.hasCard && allMods.length === 0) {
+        result.tier3.skipped = (result.tier3.skipped ?? 0) + 1;
+        continue;
+      }
       const carriers: SourceCarrier[] = [];
       const seen = new Set<string>();
       for (const fid of perk.formIds) {
@@ -782,8 +1087,11 @@ async function auditPerks(ctx: RunContext): Promise<DomainAuditResult> {
           carriers.push(c);
         }
       }
-      const allMods = perk.ranks.flatMap((r) => r.modifiers);
-      const t3 = auditTier3Carriers(perk.family, carriers, perk.notes, allMods, ctx.metaUnresolved);
+      const t3 = await auditTier3Carriers(perk.family, carriers, {
+        notes: perk.notes,
+        modifiers: allMods,
+        unresolved: ctx.metaUnresolved,
+      });
       result.findings.push(...t3);
       countResult(result.tier3, t3.length > 0);
     }
@@ -908,7 +1216,10 @@ async function auditUniques(ctx: RunContext, omods: GeneratedOmod[]): Promise<Do
     tier2: emptyStats(),
     tier3: emptyStats(),
     findings: [],
-    skippedFields: ['preset mod loadout — derived from WEAP Object Template (tier 3)'],
+    skippedFields: [
+      'preset mod loadout — derived from WEAP Object Template (tier 3)',
+      'name — preset display label from Object Template Combination.Name / resolveContainerPresetName (extract-uniques.ts), not identity OMOD Name',
+    ],
     tier3Note: ctx.tiers.has(3) ? 'tier 3 not implemented for uniques' : undefined,
   };
 
@@ -944,7 +1255,6 @@ async function auditUniques(ctx: RunContext, omods: GeneratedOmod[]): Promise<Do
         const idFindings = auditIdentity({
           recordId: unique.id,
           expectedEdid: omod.id,
-          expectedName: omod.name,
           expectedSignature: 'OMOD',
           esmRecord: rec,
         });
@@ -1001,18 +1311,8 @@ async function auditNpcs(ctx: RunContext): Promise<DomainAuditResult> {
     }
 
     if (ctx.tiers.has(2) && rec) {
-      // Minimal HP/level spot check — flat health Properties row only.
-      const props = (rec.fields['Properties'] as Array<Record<string, unknown>> | undefined) ?? [];
-      let healthFlat = 0;
-      for (const row of props) {
-        const av = row['Actor Value'] as Record<string, unknown> | undefined;
-        if (av?.['value'] === 0x2d4 || av?.['name'] === 'Health') {
-          healthFlat = asNumber(row['Value']);
-        }
-      }
-      const scaling = (rec.fields['Actor Scaling Info'] ?? {}) as Record<string, unknown>;
-      const t2 = auditNpcTier2(npc, healthFlat, null, null);
-      void scaling;
+      const source = await extractNpcTier2Source(ctx.client, rec, npc.id);
+      const t2 = auditNpcTier2(npc, source.healthFlat, source.levelMin, source.levelMax);
       result.findings.push(...t2);
       countResult(result.tier2, t2.length > 0);
     }
