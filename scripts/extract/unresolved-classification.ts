@@ -207,11 +207,56 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     disposition: 'out-of-scope',
     reason: 'Daily Ops-mode execute gate; mode not modeled',
   },
-  // Location-scripted NPC encounter gate on NPC-wielded weapons.
+  // (HasRefType location-gate rule removed 2026-08-28: its entries resolved
+  // when the essential/dead constant-folding extracted those enchantment rows.)
+
+  // Meat Week "Brew Haha" spotlight event gate on brews — event-scoped global.
   {
-    match: /condition: HasRefType\(/,
+    match: /condition: GetGlobalValue\(Spotlight_BrewHaha\)=0/,
     disposition: 'out-of-scope',
-    reason: 'location-scripted NPC encounter gate on an NPC-wielded weapon',
+    reason: 'Meat Week Brew Haha event-spotlight gate on brews; event state not modeled',
+  },
+  // World pets prowess perks — pet content, not player build state.
+  {
+    match: /^WorldPets_/,
+    disposition: 'out-of-scope',
+    reason: 'world-pet prowess perk; pet content, not player build state',
+  },
+  // Recon scopes (weapon + PA helmet): enemy-marking utility, script-driven.
+  {
+    match: /MGEF ReconScopeEquippedEffect: zero magnitude, no curve/,
+    disposition: 'out-of-scope',
+    reason: 'recon scope enemy-marking utility; script-driven, no damage',
+  },
+  // PA Overdrive Servos: sprint AP drain (movement QoL). Kinetic Servos /
+  // APRegen legs deliberately NOT swept — apRegen feeds sustained DPS and
+  // needs a walk.
+  {
+    match: /perk PA_OverdriveServos: entry point Mod Sprint AP Drain Rate/,
+    disposition: 'out-of-scope',
+    reason: 'sprint AP drain; movement QoL',
+  },
+  {
+    match: /ActorValues on PA_OverdriveServos_AV — unmapped/,
+    disposition: 'out-of-scope',
+    reason: 'sprint AP drain counter write; movement QoL',
+  },
+  // Brawler / Ignore Armor lining AV writes: the deliberately-skipped
+  // duplicate arm — the effect routes via the ench/flat rows (ded3ad0; see
+  // docs/assumptions.md "Armor lining Brawler / Ignore Armor").
+  {
+    match: /ActorValues on (?:Mod_Brawler_AV|Mod_IgnoreArmor_AV) — unmapped/,
+    disposition: 'out-of-scope',
+    reason:
+      'duplicate arm of a routed lining effect (ench/flat rows carry it); skipping avoids double-count',
+  },
+  // Armor-legendary piece-count gate rows (Bolstering/Vanguard/Mutant's/…):
+  // the per-piece scaling itself extracts via wornPieces curves where
+  // offensive; these GetValue(count)=N gate rows are the plumbing.
+  {
+    match: /perk Legendary_Armor_\w+: GetValue\(LGND_EquippedArmorCount_/,
+    disposition: 'out-of-scope',
+    reason: 'armor-legendary piece-count gate row; per-piece scaling models via wornPieces curves',
   },
 
   // ——— unknown entry points: QoL classes (names enumerated 2026-08-27; the
