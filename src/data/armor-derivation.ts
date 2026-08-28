@@ -1,6 +1,7 @@
 import type { GeneratedOmod } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 import { hasAnyEngineEffect } from '@/types/modifiers';
+
 import { describeBuffModifiers } from '@/lib/buff-description';
 import { armorPieceOverrides } from './overrides/armor-piece-overrides';
 import { MAX_LEGENDARY_COUNT, maxCountFromReach } from './armor-capacities';
@@ -13,6 +14,20 @@ import type {
 } from './armor-types';
 
 export const LEGENDARY_ATTACH_POINT_RE = /^ap_Legendary([1-4])$/;
+
+/**
+ * An aura chase counts as an engine effect when at least one stream would
+ * compute (no unresolved gates) or is deliberately measured-pending (Miasma —
+ * it renders an unmeasured badge, not "no effect yet"). Mirrors
+ * `auraHasEngineEffect` (@/types/auras) over the generated shape, so Tesla
+ * Coils stops badging inert while its +5/s aura is live (found in the
+ * 2026-08-28 browser verify pass).
+ */
+function auraChaseHasEngineEffect(record: GeneratedOmod): boolean {
+  return (record.auraChase ?? []).some(
+    (a) => a.magnitudePending || !(a.conditions ?? []).some((c) => c.kind === 'unresolved'),
+  );
+}
 
 /**
  * Non-legendary attach points admitted to the armor picker, and which slot
@@ -190,7 +205,10 @@ export function buildEntry(name: string, records: GeneratedOmod[]): ArmorEffectE
     description: description || null,
     group: isLegendary ? 'legendary' : nonLegendaryGroup(representative)!,
     attachPointEdid: representative.attachPointEdid,
-    badge: hasAnyEngineEffect(representative.modifiers) ? undefined : 'inert',
+    badge:
+      hasAnyEngineEffect(representative.modifiers) || auraChaseHasEngineEffect(representative)
+        ? undefined
+        : 'inert',
     maxCount,
     selfScaling,
     wornPieceKeyword: selfScaling ? findWornPieceKeyword(representative.modifiers) : undefined,
@@ -198,5 +216,6 @@ export function buildEntry(name: string, records: GeneratedOmod[]): ArmorEffectE
     starTier,
     armorType,
     pieceReach: pieceReach && pieceReach.size > 0 ? pieceReach : undefined,
+    auraChase: representative.auraChase,
   };
 }

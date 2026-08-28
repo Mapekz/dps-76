@@ -64,6 +64,13 @@ describe('getArmorEffects (curated inventory)', () => {
   it('every returned effect that is NOT badged inert is engine-effective, with no leftover unresolved conditions', () => {
     for (const effect of effects) {
       if (effect.badge === 'inert') continue;
+      // ADR-0023: an aura-carrying effect (Tesla Coils) can be engine-
+      // effective with zero conventional modifiers — its stream computes (or
+      // is deliberately measured-pending, Miasma) instead.
+      const auraEffective = (effect.auraChase ?? []).some(
+        (a) => a.magnitudePending || !(a.conditions ?? []).some((c) => c.kind === 'unresolved'),
+      );
+      if (auraEffective && effect.modifiers.length === 0) continue;
       expect(effect.modifiers.length).toBeGreaterThan(0);
       for (const m of effect.modifiers) {
         expect(m.conditions.some((c) => c.kind === 'unresolved')).toBe(false);

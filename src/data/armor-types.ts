@@ -1,4 +1,5 @@
 import type { Modifier } from '@/types/modifiers';
+import type { GeneratedAura } from '@/types/generated';
 
 /** Legendary star tier (1★–4★), parsed off the representative record's `ap_LegendaryN` attach point. */
 export type ArmorStarTier = 1 | 2 | 3 | 4;
@@ -43,6 +44,8 @@ export interface ArmorEffectEntry {
   armorType: ArmorType;
   /** Non-legendary piece reach — undefined for legendary (star-tier budget only). */
   pieceReach?: ReadonlySet<ArmorPieceClass>;
+  /** Representative record's aura chases (ADR-0023 — Tesla Coils, Miasma) for badge/inspection; runtime assembly reads generated data directly. */
+  auraChase?: GeneratedAura[];
 }
 
 /** Cross-effect slot-exclusivity pools (material vs misc never share a family). */
