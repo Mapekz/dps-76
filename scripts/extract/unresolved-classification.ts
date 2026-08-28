@@ -492,6 +492,600 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     disposition: 'out-of-scope',
     reason: 'fall-speed interaction gate; movement side',
   },
+
+  // ——— batch 6: drive-to-zero (2026-08-28; verdicts in esm-sync/NOTES.md) ———
+  // Rusty Knuckles PA arm perk-chase tier gates — marker echoes of the
+  // ENCH-modeled bleed DoT (ded3ad0/b9f52d9).
+  {
+    match: /perk PA_CommonArmPerk: condition: GetValue\(PA_RustyKnuckles_AV\)=(?:9|18)/,
+    disposition: 'out-of-scope',
+    reason: 'marker echo of the ENCH-modeled Rusty Knuckles bleed; per-arm tier gate only',
+  },
+  // Nitro Fortunate magazine tier gates on the shared granted perk — real
+  // ammoFreeChance routes via EP-211 in resolveDirectEntryPointModifiers.
+  {
+    match: /perk mod_weapon_NitroFortunate: WornHasKeyword\(Nitro_(?:4|6)Mod\)=1/,
+    disposition: 'out-of-scope',
+    reason: 'magazine tier gate on shared Nitro Fortunate perk; ammoFreeChance routed via EP-211',
+  },
+  // Description/UI script MGEF carriers — modeled-elsewhere noise per the
+  // archetype sweep (#88 elemental _Description rows are record-scoped above).
+  {
+    match:
+      /MGEF (?:\w*(?:_Description|_Desc)\w*|\w*TextDummy\w*) archetype Script — needs override/,
+    disposition: 'out-of-scope',
+    reason: 'Pip-Boy/description UI script MGEF; real effect modeled elsewhere per archetype sweep',
+  },
+  // Script-archetype healing/QoL (Medic Pump, Stealth Boy script, medic legendary).
+  {
+    match:
+      /MGEF (?:PowerArmor_MedicPumpEffect|PowerArmor_StealthScriptEffect|Legendary_MedicEffect) archetype Script — needs override/,
+    disposition: 'out-of-scope',
+    reason: 'PA auto-stim/stealth/heal script utility; engine models offense',
+  },
+  // Script-archetype chem/brew/survival utilities (Detect Life, Barter, Liquid
+  // Courage, TickBlood regen, Firecracker burn-on-touch, Nuka-Cola caps).
+  {
+    match:
+      /MGEF (?:DetectLifeApplyClientEffect|FortifyBarterChemEffect|LiquidCourageEffect|TickbloodTequila_(?:DiseaseChance|FoodRegen|HealthRegen)Effect|FirecrackerWhiskey_CastBurnOnTouch|NukaColaBottlecapAdder|AssaultronHeadSelfRadsEffect|DLC03_SteakPrawnText|E08A_GulperShine_ME|SCORE_Nukashine_Duration_SugarFree) archetype Script — needs override/,
+    disposition: 'out-of-scope',
+    reason: 'chem/brew/survival script utility; no player-offense component',
+  },
+  // Script-archetype economy/cosmetic (caps bobblehead, bounty pickpocket, mag UI).
+  {
+    match:
+      /MGEF (?:BobbleHead_Caps_Effect|BOUNTY_PickPocketLegendaryEffect|Magazine_(?:Backwoodsman\d+|TumblersToday02)Effect) archetype Script — needs override/,
+    disposition: 'out-of-scope',
+    reason: 'economy/cosmetic/bounty script effect; no player-offense component',
+  },
+  // Script-archetype cosmetic/VFX/event (Chameleon audio, plasma crit VFX, V96
+  // suppression barrel, Choo-Choo add-perk, Reflective VFX, mutation scripts).
+  {
+    match:
+      /MGEF (?:ChameleonArmorAudioEffect|Generic_Weapon_CritPlasmaEffect|V96_1_SuppressionEffect_Weapon|Legendary_PowerArmor_ChooChooAddPerkEffect|Legendary_PowerArmor_ReflectiveApplyReflectVFXEffect|Mutation_(?:ElectricallyCharged|UnstableIsotope)(?:Super)?ScriptEffect|DamageBloatflyLarvaPoisonEffect_Contact|MTNS05_VoxMagicEffect) archetype Script — needs override/,
+    disposition: 'out-of-scope',
+    reason: 'cosmetic/VFX/event script effect; no modelable player-offense output',
+  },
+  // Zero-magnitude script-set defense/movement (AP regen legs, Elastic Servos,
+  // Overeater's, Fierce's limb resist, Aegis team resists, Reflective proc).
+  {
+    match:
+      /MGEF (?:AbFortifyActionPointRateHidden|RD01_PowerArmor_ElasticServosJumpEffect|Legendary_Armor_OvereaterAddValue|AbPerkFortifyLimbDamageResistance|AbFortifyActorSpeedMult|Legendary_PowerArmor_AegisApplyPlayer(?:CR|DR|ER|FR|PR)Effect|Legendary_PowerArmor_ReflectiveApplyRecievePerkEffect): zero magnitude, no curve — script\/scaled, needs override/,
+    disposition: 'out-of-scope',
+    reason: 'zero-magnitude script-set defense/movement effect; no modelable player-offense output',
+  },
+  // Miasma AcidCloak AV write — aura chase plumbing (ADR-0023 auraChase).
+  {
+    match: /ActorValues on AcidCloak — unmapped/,
+    disposition: 'out-of-scope',
+    reason: 'Miasma aura chase plumbing; poison aura modeled via auraChase',
+  },
+  // Executioner's granted-perk echo note (extract-omods ACTOR_VALUE_SKIP).
+  {
+    match: /carried by granted LegendaryExecutePerk/,
+    disposition: 'out-of-scope',
+    reason: 'marker echo of the Executioner granted-perk chase; threshold modeled there',
+  },
+  // Explosion-chain bookkeeping notes from omod-projectile-chase.ts.
+  {
+    match:
+      /Base Weapon Damage Mult [\d.]+ — superseded by the EXPL's own direct damage above, not consumed/,
+    disposition: 'out-of-scope',
+    reason: 'informational EXPL chain note; direct damage already extracted above',
+  },
+  // Conductor's star-4 team AP/HP restore on crit — support buff.
+  {
+    match:
+      /^mod_Legendary_Weapon4_Conductors:.*(?:Legendary_Weapon_ConductorsApplyRestore(?:PlayerAP|PlayerHealth)PerkEffect: timedBuff|GetLastHitCritical\(\)=1|perk Legendary_Weapon_ConductorsPlayerPerk:)/,
+    disposition: 'out-of-scope',
+    reason: "Conductor's team AP/HP restore on crit; support buff, not self-directed offense",
+  },
+  // Holy Fire team timed buff on friendly hit — support-side proc.
+  {
+    match: /perk HolyFire_Perk: FortifyDamage(?:All|Resist): timedBuff/,
+    disposition: 'out-of-scope',
+    reason:
+      'Holy Fire team buff on friendly hit; support-side timed proc, not self-directed offense',
+  },
+  // Minty Breather heal-on-breathe perk gates.
+  {
+    match:
+      /perk MintyBreather_Perk: condition: (?:HasKeyword\(ActorTypeTurret\)=0|IsBleedingOut\(\)=0)/,
+    disposition: 'out-of-scope',
+    reason: 'Minty Breather heal-on-breathe gates; healing side',
+  },
+  // Head Hunter on-kill nested-perk proc.
+  {
+    match: /^mod_Legendary_Weapon_Ranged4_HeadHunters:/,
+    disposition: 'out-of-scope',
+    reason: 'Head Hunter on-kill nested-perk proc; detection/utility, not modeled damage',
+  },
+  // Radioactive Powered PA legendary defensive gates.
+  {
+    match: /^mod_Legendary_PowerArmor4_RadioactivePowered: condition: GetValue(?:Percent)?\(/,
+    disposition: 'out-of-scope',
+    reason: 'Radioactive Powered defensive PA legendary gates; incoming-damage side',
+  },
+  // Commissioner Chaos ATX paint lights — cosmetic cloak FX.
+  {
+    match: /MGEF abPowerArmorCommissionerChaos_Lights(?:_Blue)? archetype Cloak — needs override/,
+    disposition: 'out-of-scope',
+    reason: 'Commissioner Chaos PA paint light cloak; cosmetic only',
+  },
+  // E09A Abomination launcher boss-stage gate — event NPC content.
+  {
+    match:
+      /^E09A_AbominationPreventPrematureDeath: HasKeyword\(E09A_Launcher_BossFinalStageKeyword\)=/,
+    disposition: 'out-of-scope',
+    reason: 'E09A Abomination event boss stage gate; NPC/event content',
+  },
+  // Magazine/bobblehead _Potion rows — perk/MGEF plumbing echoes; offense lives
+  // on consumables.json for ranks that matter (Grognak melee verified there).
+  {
+    match:
+      /^(?:Magazine_(?:Backwoodsman|GrognakTheBarbarian|GunsAndBullets|AwesomeTales|LiveAndLove|ScoutsLife|TumblersToday|USCovertOps)\d+|BobbleHead_\w+|GHL_GlowingBobbleHead_\w+)_Potion:/,
+    disposition: 'out-of-scope',
+    reason:
+      'magazine/bobblehead potion-side perk/MGEF plumbing; offense modeled on consumables.json where applicable',
+  },
+  // Bobblehead heavy-guns route echo (real rank modeled on consumables).
+  {
+    match: /route\(STAT_DmgHeavyGuns\): OR-group/,
+    disposition: 'out-of-scope',
+    reason: 'heavy-guns bobblehead route echo; damage modeled on consumables.json',
+  },
+  // Diet-mutation food/veg perk plumbing — modeled via diet-mutations.ts.
+  {
+    match: /^Mutation_(?:Carnivore|Herbivore|SpeedDemon): perk (?:Mutation_|GHL_Mutation_)/,
+    disposition: 'out-of-scope',
+    reason: 'diet-mutation food-buff plumbing; modeled via diet-mutations.ts',
+  },
+  // Voice of Set description-mod notes (robot shock proc + Eye of Ra upgrade).
+  {
+    match: /^mod_Description_MoM_VoiceofSet:/,
+    disposition: 'out-of-scope',
+    reason:
+      'Voice of Set description-mod chase notes; base +20% modeled, Eye of Ra gated on armor loadout',
+  },
+  // Penetrating / Nitro VATS pierce-through visibility notes (not armorPen).
+  {
+    match: /Mod VATS Penetration Min Visibility — VATS pierce-through visibility/,
+    disposition: 'out-of-scope',
+    reason: 'VATS pierce-through visibility entry point; not armorPen (docs/assumptions.md)',
+  },
+  // Chameleon/Nocturnal invisibility gates, bleedout gates, gun-state gates.
+  {
+    match: /condition: (?:GetValue\(Invisibility\)=0|IsBleedingOut\(\)=0|GetActorGunState\(\)=4)/,
+    disposition: 'out-of-scope',
+    reason: 'stealth/bleedout/aim-state utility gate; no player-offense component',
+  },
+  // PA Strength placeholder paint AV gate.
+  {
+    match: /condition: GetValue\(PA_Strength_AV\)=6/,
+    disposition: 'out-of-scope',
+    reason: 'PA paint placeholder strength-counter gate; cosmetic plumbing',
+  },
+  // Minty Breather / medic legendary turret exclusion (healing side).
+  {
+    match: /perk Legendary_Weapon_MedicPerk: HasKeyword\(ActorTypeTurret\)=0/,
+    disposition: 'out-of-scope',
+    reason: 'medic heal perk turret exclusion; healing side',
+  },
+  // Life Saver auto-revive icon gate.
+  {
+    match: /perk LifeSaverPerk: HasKeyword\(Icon_LifeSaver\)=1/,
+    disposition: 'out-of-scope',
+    reason: 'Life Saver auto-revive trigger; defense/healing side',
+  },
+  // Increase-healing armor legendary chem gates.
+  {
+    match: /perk LegendaryIncreaseHealingPerk: OR-group/,
+    disposition: 'out-of-scope',
+    reason: 'increase-healing armor legendary chem gates; healing side',
+  },
+  // Waterbreathing armor legendary in-water gate.
+  {
+    match: /condition: IsInWater\(\)=1/,
+    disposition: 'out-of-scope',
+    reason: 'waterbreathing armor legendary in-water gate; survival utility',
+  },
+  // RD01 Reflection melee-on-hit retaliation gate — #88 family.
+  {
+    match: /^RD01_Mod_PowerArmor_EnclaveVulcan_Torso_Misc_Reflection:/,
+    disposition: 'deferred-with-issue',
+    issue: '#88',
+    reason:
+      'RD01 Reflection on-hit-taken melee proc; retaliation family deferred pending hits-taken model',
+  },
+  // Unmeasured script-set abFortifyDamageAll (Rage unique, etc.).
+  {
+    match:
+      /abFortifyDamage(?:All|Recieved): unmeasured script-set damage bonus — needs in-game measurement/,
+    disposition: 'out-of-scope',
+    reason: 'unmeasured script-set timed damage bonus; no ESM-derivable magnitude',
+  },
+  // Nailer block-triggered sustain — not powerAttackBonus (docs/assumptions.md).
+  {
+    match: /perk NailerPerk: Mod Power Attack Damage Select Spell — block-triggered sustain buff/,
+    disposition: 'out-of-scope',
+    reason: 'Nailer block-triggered sustain buff; not a powerAttackBonus contributor',
+  },
+  // Self-targeted damage note (Xerxo's etc.).
+  {
+    match: /self-targeted damage \(hits the wielder, not enemies\) — note-only/,
+    disposition: 'out-of-scope',
+    reason: 'self-targeted damage note; hits the wielder, not enemies',
+  },
+  // Unstoppable Monster incoming-damage mult skip (self-targeted EP36).
+  {
+    match: /entry point Mod Incoming Weapon Damage uses Multiply 1 \+ Actor Value Mult — skipped/,
+    disposition: 'out-of-scope',
+    reason: 'self-targeted incoming-damage EP; engine models player offense only',
+  },
+  // Circuit Breaker explosion chase dead-end.
+  {
+    match: /CircuitBreakerEffect_Explosion: Explosion 0x006E20EB chased — no direct damage/,
+    disposition: 'out-of-scope',
+    reason: 'Circuit Breaker explosion chain dead-end; no extractable direct damage',
+  },
+  // On-kill spell with damage but no proc trigger (Ice Breaker SCORE mod).
+  {
+    match:
+      /Apply On Kill Spell — Function-Type-5 chase produced damage but no proc-trigger classification, dropped/,
+    disposition: 'out-of-scope',
+    reason: 'on-kill spell chase without a classified proc trigger; dropped intentionally',
+  },
+  // Nested-perk grant target-redirect risk (Debuff Damage, etc.).
+  {
+    match: /grants a nested perk — target-redirect risk/,
+    disposition: 'out-of-scope',
+    reason: 'nested-perk grant with target-redirect risk; chase intentionally dropped',
+  },
+  // Cremator/Shishkebab enchantment REM bookkeeping.
+  {
+    match: /removes enchantment (?:CrematorFXEnchFireHit|ShishkebabBleedFireDOT)/,
+    disposition: 'out-of-scope',
+    reason: 'variant enchantment REM bookkeeping note',
+  },
+  // DoT curve unmapped input AV null (NPC/creature weapons, FX visuals).
+  {
+    match: /DoT curve with unmapped input AV null — needs override/,
+    disposition: 'out-of-scope',
+    reason: 'DoT curve with null input AV; script-driven or NPC-side carrier',
+  },
+  // PABatteryDrainEffect curve (Pulse plasma receivers).
+  {
+    match: /PABatteryDrainEffect: curve with unmapped input AV null — needs override/,
+    disposition: 'out-of-scope',
+    reason: 'Pulse receiver battery-drain curve; ammo-economy side',
+  },
+  // Tanky's unmapped curve input (piece-count scaling already via wornPieces elsewhere).
+  {
+    match:
+      /Legendary_Armor_TankyApplyPerkModDamageEffect: curve with unmapped input AV 0x007B956A — needs override/,
+    disposition: 'out-of-scope',
+    reason: "Tanky's piece-count curve plumbing; per-piece scaling via wornPieces elsewhere",
+  },
+  // Stand Fast / Last Stand unmapped curves and incoming-damage EP.
+  {
+    match: /^mod_Custom_(?:StandFast|LastStand):/,
+    disposition: 'out-of-scope',
+    reason: 'unique armor defensive curve/incoming-damage plumbing; EHP side',
+  },
+  // AttackDamage SET unhandled shapes (Thirst Zapper water mag, Vox barrel).
+  {
+    match: /AttackDamage SET with value \d+ — unhandled/,
+    disposition: 'out-of-scope',
+    reason: 'AttackDamage SET placeholder on utility/NPC weapon mod; not a damage contributor',
+  },
+  // Thirst Zapper infinite-water EP (scope-pinned; see normalize.test.ts).
+  {
+    match: /perk ThirstZapper_WaterInfiniteAmmoPerk: entry point Mod Ammo Used Count — not modeled/,
+    disposition: 'out-of-scope',
+    reason: 'Thirst Zapper infinite-water EP scope-pinned; not a general free-ammo route',
+  },
+  // Basher / Reflect Damage outgoing limb bash EP — bash NYI.
+  {
+    match: /entry point Mod Outgoing Limb Bash Damage — not modeled/,
+    disposition: 'out-of-scope',
+    reason: 'limb bash damage entry point; bash mechanic not modeled',
+  },
+  // Twisted Muscles / Stabilized Bracers cone-of-fire EP — accuracy QoL.
+  {
+    match: /entry point Mod Cone-of-fire Mult — not modeled/,
+    disposition: 'out-of-scope',
+    reason: 'cone-of-fire accuracy entry point; accuracy QoL',
+  },
+  // Chem/bubblegum spell-magnitude and alchemy-keyword gates.
+  {
+    match:
+      /perk (?:PerkBubblegumSlowHungerThirstPerk|Magazine_Backwoodsman(?:06|07|08)Perk|FirecrackerWhiskeyBurnEnemies|WST_Backpack_(?:Relief|Pillager)_Perk|W05_mod_BackPack_Effect_Relief): (?:OR-group|EPAlchemyEffectHasKeyword|EPMagic_SpellHasKeyword|HasKeyword\(ObjectType)/,
+    disposition: 'out-of-scope',
+    reason: 'chem/brew/backpack alchemy-keyword or spell-magnitude gate; survival/QoL side',
+  },
+  {
+    match: /: entry point Mod Spell Magnitude — not modeled/,
+    disposition: 'out-of-scope',
+    reason: 'spell-magnitude entry point on chem/consumable plumbing; survival/QoL side',
+  },
+  // Remaining unknown entry points: damage-relevant shortlist still pending
+  // implementation (Gun Fu splash/blitz siblings already routed elsewhere).
+  {
+    match:
+      /^unknown entry point: (?:Mod VATS Blitz (?:Dmg Bonus Dist|Max Distance)|Set VATS Blitz Max Dmg Mult|Mod VATS Splash Damage(?: Radius)?|Mod Attack Damage On Striking Appendage|Mod Typed Weapon Attack Damage|Mod Projectile Bounce Count|Apply Combat Melee Spell|Apply Combat Hit Spell(?: Taken)?|Apply Spell On Actor When Limb Crippled|Mod Power Attack Action Points|Mod Bashing Damage|Mod Chain Damage Falloff)$/,
+    disposition: 'resolve-pending',
+    reason: 'damage-relevant entry point identified in esm-sync sweep; pending engine wiring',
+  },
+  {
+    match: /^unknown entry point: Apply On Kill Spell$/,
+    disposition: 'out-of-scope',
+    reason:
+      'on-kill spell entry point without classified proc trigger; utility/NPC carriers dominate',
+  },
+  {
+    match: /^unknown entry point: Mod Ammo Used Count$/,
+    disposition: 'out-of-scope',
+    reason:
+      'Mod Ammo Used Count EP reserved for GetRandomPercent-gated shapes only; other carriers scope-pinned',
+  },
+  // Sibling phrasing for unknown EPs on granted-perk chase rows.
+  {
+    match:
+      /: entry point (?:Mod VATS Blitz (?:Dmg Bonus Dist|Max Distance)|Set VATS Blitz Max Dmg Mult|Mod VATS Splash Damage(?: Radius)?|Mod Attack Damage On Striking Appendage|Mod Typed Weapon Attack Damage|Mod Projectile Bounce Count|Mod Power Attack Action Points|Mod Bashing Damage|Mod Chain Damage Falloff) — not modeled/,
+    disposition: 'resolve-pending',
+    reason: 'damage-relevant entry point via OMOD-grant chase; pending engine wiring',
+  },
+  {
+    match: /: entry point Mod VATS Player AP On Kill Chance — not modeled/,
+    disposition: 'deferred-with-issue',
+    issue: '#89',
+    reason: 'AP-refund-on-kill entry point; deferred pending enemy TTK modeling',
+  },
+  // Combo Breaker GetRandomPercent gates → #89 AP-economy family.
+  {
+    match: /perk Legendary_Weapon_ComboBreakerPerk: GetRandomPercent\(\)=/,
+    disposition: 'deferred-with-issue',
+    issue: '#89',
+    reason: 'Combo Breaker AP-refund proc chance; deferred pending enemy TTK modeling',
+  },
+  // GetRandomPercent singletons walked in sweep (cloak-on-hit, pickpocket bounty, plasma crit VFX tier).
+  {
+    match: /GetRandomPercent\(\)=0x(?:006C1FA5|0079A3C8|007AD489)/,
+    disposition: 'out-of-scope',
+    reason:
+      'GetRandomPercent gate on stealth/cosmetic/bounty script proc; not a modeled damage proc',
+  },
+  {
+    match: /condition: GetRandomPercent\(\)=70/,
+    disposition: 'out-of-scope',
+    reason: 'GetRandomPercent gate on plasma crit VFX script effect; cosmetic rider',
+  },
+  {
+    match: /GetRandomPercent\(\)=50/,
+    disposition: 'out-of-scope',
+    reason: 'GetRandomPercent gate on bounty pickpocket cosmetic proc',
+  },
+  // Unmapped sneak buff AVIFs (detection QoL).
+  {
+    match: /^unmapped buff AVIF: STAT_Sneak(?:Light|Sound)?$/,
+    disposition: 'out-of-scope',
+    reason: 'sneak/detection buff AVIF; accuracy/stealth QoL',
+  },
+  // Unknown OMOD property from template members.
+  {
+    match: /^unknown OMOD property: Damage Type Value$/,
+    disposition: 'out-of-scope',
+    reason: 'unnamed template-member property; informational extractor note',
+  },
+  // LGN Nuclear Proliferator card wiring gap.
+  {
+    match: /^unresolved perk card: LGN_NuclearProliferator_Card:/,
+    disposition: 'resolve-pending',
+    reason: 'LGN Nuclear Proliferator card has no matched extracted perk family yet',
+  },
+  // NPC epic-rank wiring note.
+  {
+    match: /^npcs: WendigoColossusRace epic-rank quest/,
+    disposition: 'out-of-scope',
+    reason: 'NPC epic-rank quest wiring note; creature-side content',
+  },
+  // PainTrain / heavy-gun STAT_DamagePerk route echoes.
+  {
+    match:
+      /^STAT_DamagePerk: (?:GetIsID\(PainTrainWeapon\)=1|OR-group\[HasKeyword\(WeaponTypeExplosiveHybrid\))/,
+    disposition: 'out-of-scope',
+    reason: 'PainTrain pseudo-weapon or heavy-gun route echo; not player build state',
+  },
+  // ShotgunnerExpert unresolved rank AV (companion/content gate).
+  {
+    match: /GetValue\(<unresolved:0x00000398>\)/,
+    disposition: 'out-of-scope',
+    reason: 'unresolved companion/rank AV gate on ShotgunnerExpert; not a damage gap',
+  },
+  // Kinetic Lining on-damage-taken AP restore (RD01 paint uses non-standard id prefix).
+  {
+    match:
+      /perk ModKineticLiningPerk: restores AP by 20% of damage taken — on-damage-taken resource mechanic, not modeled \(issue #89\)/,
+    disposition: 'deferred-with-issue',
+    issue: '#89',
+    reason: 'on-damage-taken AP restore; deferred pending hits-taken modeling',
+  },
+  // Glutton ghoul-description script carrier (Description suffix without underscore).
+  {
+    match: /MGEF Legendary_Armor_GluttonAddPerkGhoulDescription archetype Script — needs override/,
+    disposition: 'out-of-scope',
+    reason: 'Glutton carry-weight food-buff description script; economy/survival side',
+  },
+  // Electricians no-reload weapon gate.
+  {
+    match: /condition: WornHasKeyword\(WeaponNoReload\)=1/,
+    disposition: 'out-of-scope',
+    reason: 'Electricians no-reload weapon gate; utility condition',
+  },
+  // Mutation Healing Factor chem-filter gates.
+  {
+    match: /^Mutation_HealingFactor: perk Mutation_ReduceChemEffect_Perk: OR-group/,
+    disposition: 'out-of-scope',
+    reason: 'Healing Factor chem-filter perk plumbing; healing/survival side',
+  },
+  // Love Tap bash-triggered timed buff — real offense pending bash uptime wiring.
+  {
+    match: /perk LoveTapPerk: FortifyDamageAll: bash-triggered timedBuff/,
+    disposition: 'resolve-pending',
+    reason: 'Love Tap bash-triggered damage buff; pending onBashBuffUptime wiring (issue #80)',
+  },
+  // Lickety-Split identity keyword gate (bounce count EP is resolve-pending above).
+  {
+    match: /perk RD01_Weapon_LicketySplit: HasKeyword\(RD01_CustomItemName_LicketySplit\)=1/,
+    disposition: 'resolve-pending',
+    reason: 'Lickety-Split unique identity gate; sibling of Mod Projectile Bounce Count EP',
+  },
+  // Stale meta lines for EPs now in resolveDirectEntryPointModifiers or classified above.
+  {
+    match: /^unknown entry point: Mod Add Bullet To Clip Chance$/,
+    disposition: 'out-of-scope',
+    reason:
+      'EP-211 routed to ammoFreeChance in resolveDirectEntryPointModifiers; stale until re-extract',
+  },
+  {
+    match: /^unknown entry point: Mod Outgoing Limb Bash Damage$/,
+    disposition: 'out-of-scope',
+    reason: 'limb bash damage entry point; bash mechanic not modeled',
+  },
+  {
+    match: /^unknown entry point: Mod Spell (?:Duration|Magnitude)$/,
+    disposition: 'out-of-scope',
+    reason: 'spell duration/magnitude entry point on chem/consumable plumbing; survival/QoL side',
+  },
+  {
+    match: /^unknown entry point: Mod VATS Player AP On Kill Chance$/,
+    disposition: 'deferred-with-issue',
+    issue: '#89',
+    reason: 'AP-refund-on-kill entry point; deferred pending enemy TTK modeling',
+  },
+  {
+    match:
+      /perk mod_weapon_NitroFortunate: entry point Mod Add Bullet To Clip Chance — not modeled/,
+    disposition: 'out-of-scope',
+    reason:
+      'EP-211 routed to ammoFreeChance in resolveDirectEntryPointModifiers; stale until re-extract',
+  },
+  // ATX backpack junk filter — crafting/economy.
+  {
+    match: /perk ATX_Backpack_ScrapRat_Perk: IsJunkItem\(\)=1/,
+    disposition: 'out-of-scope',
+    reason: 'ATX scrap-rat backpack junk filter; crafting/economy side',
+  },
+  // Currency test perk — cut/test content.
+  {
+    match: /^CurrencyTestPerk:/,
+    disposition: 'out-of-scope',
+    reason: 'currency test perk; cut/test content',
+  },
+  // CZ reduce-damage event instance gates.
+  {
+    match: /^CZ_ReduceDamage:/,
+    disposition: 'out-of-scope',
+    reason: 'CZ event instance damage gate; event content',
+  },
+  // Scavenger magazine weapon-type OR gate on perk chase.
+  {
+    match: /^DLC04_PerkMagPerkScav: OR-group/,
+    disposition: 'out-of-scope',
+    reason: 'Scavenger magazine weapon-type gate; economy/crafting side',
+  },
+  // Gulpershine event buff active-effect gate.
+  {
+    match: /condition: HasActiveMagicEffect\(E08A_GulperSmacker_GulpershineBuff_ME\) Equal To 1/,
+    disposition: 'out-of-scope',
+    reason: 'Gulpershine event buff gate; event content',
+  },
+  // Fog crawler meat weather gate — survival food.
+  {
+    match: /^FogCrawlerMeatCooked: condition: OR-group\[IsInWeather/,
+    disposition: 'out-of-scope',
+    reason: 'Fog crawler meat weather gate; survival food side',
+  },
+  // Ghoul feral survival perk AV gate.
+  {
+    match: /^GHL_SURV_FeralPerk: GetValue\(GHL_SURV_Feral\)=/,
+    disposition: 'out-of-scope',
+    reason: 'ghoul-feral survival perk gate; survival side',
+  },
+  // Bully legendary limb-damage multiplier gate — limb QoL.
+  {
+    match: /^Legendary_Weapon_BullyPerk: GetLastHitLimbDamageMultiplier\(\)=1/,
+    disposition: 'out-of-scope',
+    reason: 'Bully limb-damage multiplier gate; limb QoL',
+  },
+  // Tesla Science 4 ammo-health OR-shape (ArmorTypePower branch unrepresentable).
+  {
+    match: /^Magazine_TeslaScience04(?:Perk|_Potion):/,
+    disposition: 'out-of-scope',
+    reason:
+      'Tesla Science 4 ammo-health OR-gate; ArmorTypePower branch unrepresentable (modifiers.ts)',
+  },
+  // U.S. Covert Ops 8 knife/unarmed OR gate echo (dbm modeled on consumables.json).
+  {
+    match: /^Magazine_USCovertOps08(?:Perk|_Potion):/,
+    disposition: 'out-of-scope',
+    reason: 'Covert Ops 8 knife/unarmed OR-gate echo; dbm modeled on consumables.json',
+  },
+  // Live & Love companion-gated extra-damage perk.
+  {
+    match: /^PerkMagLiveNLoveExtraDmg: GetInFaction\(CurrentCompanionFaction\)=1/,
+    disposition: 'out-of-scope',
+    reason: 'Live & Love companion-gated perk; social/companion content',
+  },
+  // Empath team mutation strength gates.
+  {
+    match: /^PlayerTeamPerk: GetValue\(MutationEmpathStrength\)=/,
+    disposition: 'out-of-scope',
+    reason: 'Empath team mutation strength gate; team/social side',
+  },
+  // RD01 enc prevent-limb-damage event keyword.
+  {
+    match: /^RD01_Enc01_PreventLimbDamage_Perk: HasKeyword\(RD01_Enc01_DamageState_Keyword\)=0/,
+    disposition: 'out-of-scope',
+    reason: 'RD01 enc event limb-damage gate; event content',
+  },
+  // Wrecking Ball workshop turret gate.
+  {
+    match: /^WreckingBall: OR-group/,
+    disposition: 'out-of-scope',
+    reason: 'Wrecking Ball workshop turret gate; social/workshop content',
+  },
+  // Heavyweight incoming-damage curve — EHP side.
+  {
+    match:
+      /^mod_Legendary_Armor1_Heavyweight: perk Legendary_Armor_Heavyweight: entry point Mod Incoming Weapon Damage/,
+    disposition: 'out-of-scope',
+    reason: 'Heavyweight incoming-damage reduction; EHP side',
+  },
+  // Durability weapon-type gate on item-condition legendary.
+  {
+    match:
+      /^mod_Legendary_Weapon3_Durability: perk Legendary_Durability_Weapons: HasKeyword\(ObjectTypeWeapon\)=1/,
+    disposition: 'out-of-scope',
+    reason: 'Durability weapon-type gate; item-condition side',
+  },
+  // V96 Flatwoods boss suppression barrel event keyword gate.
+  {
+    match:
+      /^mod_PipeSyringer_Barrel_V96_1_Suppression_(?:I|II|III): condition: HasKeyword\(V96_1_Atrium_FlatwoodsBossKeyword\)=0/,
+    disposition: 'out-of-scope',
+    reason: 'V96 event boss suppression barrel gate; event content',
+  },
+  // Nitro Fortunate tier gates, perk-side echo: the shared perk's 4Mod/6Mod
+  // WornHasKeyword rows are resolved PER CARRIER on the OMOD side (self-worn
+  // keyword post-process, extract-omods.ts 2026-08-28); the perk-family
+  // extraction cannot know the tier and correctly leaves them gated.
+  {
+    match: /^mod_weapon_NitroFortunate: WornHasKeyword\(Nitro_\dMod\)=1$/,
+    disposition: 'out-of-scope',
+    reason:
+      'tier gate resolved per-carrier on the OMOD side; perk-family row is the unresolvable shared source',
+  },
 ];
 
 function entryMatchesRule(entry: string, rule: UnresolvedClassification): boolean {

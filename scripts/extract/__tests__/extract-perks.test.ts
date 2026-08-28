@@ -700,6 +700,50 @@ describe('extractPerks (direct entry-point special cases, 2026-08-28)', () => {
     expect(result.unresolved.some((u) => u.includes('GetRandomPercent'))).toBe(false);
   });
 
+  it('mod_weapon_NitroFortunate EP211 → ammoFreeChance ADD 0.21/0.14', async () => {
+    const formId = '0x00844607';
+    const perk = {
+      header: { signature: 'PERK', form_id: formId },
+      editor_id: 'mod_weapon_NitroFortunate01',
+      fields: {
+        Name: 'Nitro Fortunate Perk',
+        Effects: [
+          {
+            Effect: {
+              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+              'Entry Point': {
+                'Entry Point': { name: 'Mod Add Bullet To Clip Chance' },
+                Function: { name: 'Set Value' },
+              },
+              Float: 21,
+            },
+          },
+          {
+            Effect: {
+              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+              'Entry Point': {
+                'Entry Point': { name: 'Mod Add Bullet To Clip Chance' },
+                Function: { name: 'Set Value' },
+              },
+              Float: 14,
+            },
+          },
+        ],
+      },
+    } as EsmRecord;
+    const result = await extractPerks(
+      makeDirectEntryPointPerkClient('mod_weapon_NitroFortunate', perk, formId),
+    );
+    const family = result.perks.find((p) => p.family === 'mod_weapon_NitroFortunate');
+    expect(family?.ranks[0].modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'ammoFreeChance', op: 'ADD', value: 0.21 }),
+    );
+    expect(family?.ranks[0].modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'ammoFreeChance', op: 'ADD', value: 0.14 }),
+    );
+    expect(result.unresolved.some((u) => u.includes('Mod Add Bullet To Clip Chance'))).toBe(false);
+  });
+
   it('Bandito01 EP141 → weaponMinRange + weaponMaxRange MUL_ADD 0.25', async () => {
     const formId = '0x002593D5';
     const client = createInMemoryEsmSource({

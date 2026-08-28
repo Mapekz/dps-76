@@ -1984,6 +1984,24 @@ export function resolveDirectEntryPointModifiers(
     };
   }
 
+  if (name === 'Mod Add Bullet To Clip Chance' && functionName === 'Set Value') {
+    // EP-211 (Nitro Fortunate magazine perk): percentage-point Float (21 → 21%).
+    // Same sustain semantics as Tesla Science 5 / EP-172 free-ammo — a fired
+    // round returned to the clip (`ammoFreeChance`), NOT `reloadSkipChance`
+    // (that skips the reload animation itself, Quick Hands EP-182).
+    return {
+      handled: true,
+      modifiers: [
+        {
+          bucket: 'ammoFreeChance',
+          op: 'ADD',
+          value: float / 100,
+          conditions,
+        },
+      ],
+    };
+  }
+
   if (
     name === 'Is Next Clip Last Shot' &&
     functionName === 'Add Value' &&

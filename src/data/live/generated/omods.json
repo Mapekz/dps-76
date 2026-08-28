@@ -87028,6 +87028,19 @@
     "op": "MUL_ADD",
     "value": 0.15,
     "conditions": []
+   },
+   {
+    "id": "0x008445DA:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008445DA",
+     "edid": "mod_Nitro_Magazine_Fortunate4",
+     "name": "Fortunate Four Magazine"
+    },
+    "bucket": "ammoFreeChance",
+    "op": "ADD",
+    "value": 0.21,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -87036,11 +87049,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk mod_weapon_NitroFortunate: WornHasKeyword(Nitro_4Mod)=1",
-   "perk mod_weapon_NitroFortunate: WornHasKeyword(Nitro_6Mod)=1",
-   "perk mod_weapon_NitroFortunate: entry point Mod Add Bullet To Clip Chance — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -87079,6 +87088,19 @@
     "op": "ADD",
     "value": 2,
     "conditions": []
+   },
+   {
+    "id": "0x00844605:ench:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00844605",
+     "edid": "mod_Nitro_Magazine_Fortunate6",
+     "name": "Fortunate Six Magazine"
+    },
+    "bucket": "ammoFreeChance",
+    "op": "ADD",
+    "value": 0.14,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -87087,11 +87109,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk mod_weapon_NitroFortunate: WornHasKeyword(Nitro_4Mod)=1",
-   "perk mod_weapon_NitroFortunate: WornHasKeyword(Nitro_6Mod)=1",
-   "perk mod_weapon_NitroFortunate: entry point Mod Add Bullet To Clip Chance — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

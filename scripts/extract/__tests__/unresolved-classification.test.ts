@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'bun:test';
+import { existsSync, readFileSync } from 'node:fs';
+import path from 'node:path';
 import {
   classifyUnresolved,
   summarizeUnresolvedClassification,
@@ -100,5 +102,19 @@ describe('unresolvedClassifications schema', () => {
         expect(rule.issue).toMatch(/^#\d+$/);
       }
     }
+  });
+});
+
+/** Pending user decision — update only through esm-sync adjudication. */
+const EXPECTED_UNCLASSIFIED = ['BlackWidow: GetIsSex(0)=1', 'LadyKiller: GetIsSex(1)=1'] as const;
+
+describe('live _meta.json unresolved gate', () => {
+  const metaPath = path.join(import.meta.dirname, '../../../src/data/live/generated/_meta.json');
+
+  it('unclassified remainder equals the pending target-sex gate set', () => {
+    if (!existsSync(metaPath)) return;
+    const meta = JSON.parse(readFileSync(metaPath, 'utf8')) as { unresolved: string[] };
+    const { unclassified } = classifyUnresolved(meta.unresolved);
+    expect([...unclassified].sort()).toEqual([...EXPECTED_UNCLASSIFIED].sort());
   });
 });

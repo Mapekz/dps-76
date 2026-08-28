@@ -1069,6 +1069,45 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
       });
     }
 
+    // Self-worn tier gates: an attached perk's rows gated on
+    // WornHasKeyword(K) where the carrier OMOD itself ADDs K are per-tier
+    // variants of one shared perk (Nitro Fortunate's 4Mod/6Mod ×0.21/0.14 —
+    // walked 2026-08-28). Resolve against this record's own addedKeywords:
+    // K added here → gate satisfied, strip it; K names a sibling tier this
+    // record doesn't add (another row of the same bucket IS satisfied) →
+    // drop the row. Gates on keywords this OMOD family never adds (Voice of
+    // Set's Eye of Ra armor check) are genuine worn-armor state — untouched.
+    {
+      const wornGate = (c: Modifier['conditions'][number]): string | null =>
+        c.kind === 'unresolved' ? (/^WornHasKeyword\((\w+)\)=1$/.exec(c.raw)?.[1] ?? null) : null;
+      const satisfied = (m: Modifier): boolean =>
+        m.conditions.some((c) => {
+          const k = wornGate(c);
+          return k !== null && addedKeywords.includes(k);
+        });
+      const resolvedKeywords = new Set<string>();
+      // Classify BEFORE mutating: stripping a satisfied row's gate first
+      // would make the sibling check below miss it (hit live 2026-08-28).
+      const satisfiedRows = new Set(modifiers.filter((m) => satisfied(m)));
+      for (let i = modifiers.length - 1; i >= 0; i--) {
+        const m = modifiers[i];
+        const gates = m.conditions.map(wornGate).filter((k): k is string => k !== null);
+        if (gates.length === 0) continue;
+        if (satisfiedRows.has(m)) {
+          gates.forEach((k) => resolvedKeywords.add(k));
+          m.conditions = m.conditions.filter((c) => wornGate(c) === null);
+        } else if ([...satisfiedRows].some((o) => o !== m && o.bucket === m.bucket)) {
+          gates.forEach((k) => resolvedKeywords.add(k));
+          modifiers.splice(i, 1);
+        }
+      }
+      for (const note of [...modNotes]) {
+        for (const k of resolvedKeywords) {
+          if (note.includes(`WornHasKeyword(${k})=1`)) modNotes.delete(note);
+        }
+      }
+    }
+
     const sharesPaCommonArmEnch = properties.some(
       (p) =>
         p.property === 'Enchantments' &&

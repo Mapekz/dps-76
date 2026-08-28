@@ -4232,6 +4232,96 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
     });
   }
 
+  it('mod_weapon_NitroFortunate EP211 Mod Add Bullet To Clip Chance → ammoFreeChance ADD float/100', async () => {
+    const perkFormId = '0x00844607';
+    const nitroFortunatePerk = {
+      editor_id: 'mod_weapon_NitroFortunate',
+      fields: {
+        Effects: [
+          {
+            Effect: {
+              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+              'Entry Point': {
+                'Entry Point': { name: 'Mod Add Bullet To Clip Chance' },
+                Function: { name: 'Set Value' },
+              },
+              'Perk Conditions': [
+                {
+                  'Perk Condition': {
+                    'Run On (Tab Index)': 0,
+                    Conditions: [
+                      {
+                        Condition: {
+                          'Condition Data': {
+                            Function: 'WornHasKeyword',
+                            'Parameter 1': '0x008445CC',
+                            'Comparison Value': 1,
+                            Operator: 'Equal To',
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+              Float: 21,
+            },
+          },
+          {
+            Effect: {
+              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+              'Entry Point': {
+                'Entry Point': { name: 'Mod Add Bullet To Clip Chance' },
+                Function: { name: 'Set Value' },
+              },
+              'Perk Conditions': [
+                {
+                  'Perk Condition': {
+                    'Run On (Tab Index)': 0,
+                    Conditions: [
+                      {
+                        Condition: {
+                          'Condition Data': {
+                            Function: 'WornHasKeyword',
+                            'Parameter 1': '0x008445CB',
+                            'Comparison Value': 1,
+                            Operator: 'Equal To',
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+              Float: 14,
+            },
+          },
+        ],
+      },
+    };
+    const result = await translateGrantedPerk(
+      {
+        client: fixtureClient({ [perkFormId]: nitroFortunatePerk }),
+        routes: new Map(),
+        edidByFormId: new Map([
+          ['0x008445CC', 'Nitro_4Mod'],
+          ['0x008445CB', 'Nitro_6Mod'],
+        ]),
+      },
+      'mod_weapon_NitroFortunate',
+      perkFormId,
+    );
+    expect(result.modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'ammoFreeChance', op: 'ADD', value: 0.21 }),
+    );
+    expect(result.modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'ammoFreeChance', op: 'ADD', value: 0.14 }),
+    );
+    expect(
+      result.notes.some((n) => n.includes('Mod Add Bullet To Clip Chance — not modeled')),
+    ).toBe(false);
+  });
+
   it('QuickHands01 EP182 Auto Fill Weapon Clip → reloadSkipChance ADD 0.06', async () => {
     const perkFormId = '0x000221FC';
     const result = await translateGrantedPerk(
@@ -5012,6 +5102,30 @@ describe('translateConditions (condition-whitelist round K, 2026-08-28)', () => 
     if (!result.handled) return;
     expect(result.modifiers).toEqual([]);
     expect(result.notes?.[0]).toContain('Player baseline sneak mult');
+  });
+
+  it('mod_weapon_NitroFortunate EP211 → ammoFreeChance via resolveDirectEntryPointModifiers', async () => {
+    const { resolveDirectEntryPointModifiers } = await import('../normalize/mgef');
+    const result = resolveDirectEntryPointModifiers({
+      epName: 'Mod Add Bullet To Clip Chance',
+      functionName: 'Set Value',
+      float: 21,
+      conditionRows: [],
+      conditions: [],
+      edidByFormId: new Map(),
+      perkEdid: 'mod_weapon_NitroFortunate',
+    });
+    expect(result).toEqual({
+      handled: true,
+      modifiers: [
+        {
+          bucket: 'ammoFreeChance',
+          op: 'ADD',
+          value: 0.21,
+          conditions: [],
+        },
+      ],
+    });
   });
 
   it('MoM_VoiceofSetPerk upgrade spell branch → note only, no 70-dotDamage modifier', async () => {

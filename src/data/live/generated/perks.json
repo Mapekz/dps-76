@@ -23440,7 +23440,46 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00844607:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00844607",
+       "edid": "mod_weapon_NitroFortunate",
+       "name": "Nitro Fortunate Perk",
+       "rank": 1
+      },
+      "bucket": "ammoFreeChance",
+      "op": "ADD",
+      "value": 0.21,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(Nitro_4Mod)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00844607:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00844607",
+       "edid": "mod_weapon_NitroFortunate",
+       "name": "Nitro Fortunate Perk",
+       "rank": 1
+      },
+      "bucket": "ammoFreeChance",
+      "op": "ADD",
+      "value": 0.14,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(Nitro_6Mod)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
