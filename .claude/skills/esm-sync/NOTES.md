@@ -233,7 +233,7 @@ mainline perks with 0 modifiers, 0 notes (silent inert):**
 | **Hack and Slash** | Mod VATS Splash Damage (+Radius) | melee AOE in VATS |
 | **Grim Reaper's Sprint** | Mod VATS Player AP On Kill Chance | AP refund on VATS kill → crit-meter/sustain |
 | **Quick Hands** | Auto Fill Weapon Clip | CONFIRMED (esm refs + generated: 0 mods): map EP into `reloadSkipChance` in ENTRY_POINT_BUCKETS — one-line-ish |
-| Pin-Pointers | Mod Attack Damage On Striking Appendage (+50%) | needs called-shot condition |
+| Pin-Pointers | Mod Attack Damage On Striking Appendage (+50%) | DEAD CONTENT (USER-CAUGHT 2026-08-28): the whole grant chain (ench_LegendaryWeapon_PinPointers 0x007ACA02 → AddPerk → SPEL → ApplyPerk 0x007ACA08) is an orphan island — the ENCH has zero references, the shipped OMOD carries only the keyword add + STAT_DmgVsWeakSpot AV write. In-game effect = +20% weakpoint only, which IS modeled. |
 | Nitro Fortunate | Mod Add Bullet To Clip Chance | same shape as ammoFreeChance |
 | Kinetic Lining / Optimized Bracers | Restore Action Cost / Power Attack AP | ap-economy pile |
 | Basher | Mod Outgoing Limb Bash Damage | blocked on known bash-NYI, not a new gap |

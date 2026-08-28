@@ -808,11 +808,25 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     disposition: 'out-of-scope',
     reason: 'spell-magnitude entry point on chem/consumable plumbing; survival/QoL side',
   },
+  // Pin-Pointer's +50% striking-appendage arm is DEAD CONTENT, not pending:
+  // its only carrier is Legendary_Weapon_PinPointersApplyPerk 0x007ACA08,
+  // whose entire grant chain hangs off ench_LegendaryWeapon_PinPointers
+  // 0x007ACA02 — an ENCH with ZERO references (the shipped OMOD wires only
+  // the keyword + STAT_DmgVsWeakSpot weakpoint arm, which IS modeled).
+  // USER-CAUGHT 2026-08-28; re-adjudicate only if a future dump attaches the
+  // ENCH.
+  {
+    match:
+      /(?:^unknown entry point: Mod Attack Damage On Striking Appendage$|: entry point Mod Attack Damage On Striking Appendage — not modeled)/,
+    disposition: 'out-of-scope',
+    reason:
+      'orphan grant chain (ench 0x007ACA02 unreferenced); the +50% limb arm never fires in game',
+  },
   // Remaining unknown entry points: damage-relevant shortlist still pending
   // implementation (Gun Fu splash/blitz siblings already routed elsewhere).
   {
     match:
-      /^unknown entry point: (?:Mod VATS Blitz (?:Dmg Bonus Dist|Max Distance)|Set VATS Blitz Max Dmg Mult|Mod VATS Splash Damage(?: Radius)?|Mod Attack Damage On Striking Appendage|Mod Typed Weapon Attack Damage|Mod Projectile Bounce Count|Apply Combat Melee Spell|Apply Combat Hit Spell(?: Taken)?|Apply Spell On Actor When Limb Crippled|Mod Power Attack Action Points|Mod Bashing Damage|Mod Chain Damage Falloff)$/,
+      /^unknown entry point: (?:Mod VATS Blitz (?:Dmg Bonus Dist|Max Distance)|Set VATS Blitz Max Dmg Mult|Mod VATS Splash Damage(?: Radius)?|Mod Typed Weapon Attack Damage|Mod Projectile Bounce Count|Apply Combat Melee Spell|Apply Combat Hit Spell(?: Taken)?|Apply Spell On Actor When Limb Crippled|Mod Power Attack Action Points|Mod Bashing Damage|Mod Chain Damage Falloff)$/,
     disposition: 'resolve-pending',
     reason: 'damage-relevant entry point identified in esm-sync sweep; pending engine wiring',
   },
@@ -831,7 +845,7 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
   // Sibling phrasing for unknown EPs on granted-perk chase rows.
   {
     match:
-      /: entry point (?:Mod VATS Blitz (?:Dmg Bonus Dist|Max Distance)|Set VATS Blitz Max Dmg Mult|Mod VATS Splash Damage(?: Radius)?|Mod Attack Damage On Striking Appendage|Mod Typed Weapon Attack Damage|Mod Projectile Bounce Count|Mod Power Attack Action Points|Mod Bashing Damage|Mod Chain Damage Falloff) — not modeled/,
+      /: entry point (?:Mod VATS Blitz (?:Dmg Bonus Dist|Max Distance)|Set VATS Blitz Max Dmg Mult|Mod VATS Splash Damage(?: Radius)?|Mod Typed Weapon Attack Damage|Mod Projectile Bounce Count|Mod Power Attack Action Points|Mod Bashing Damage|Mod Chain Damage Falloff) — not modeled/,
     disposition: 'resolve-pending',
     reason: 'damage-relevant entry point via OMOD-grant chase; pending engine wiring',
   },

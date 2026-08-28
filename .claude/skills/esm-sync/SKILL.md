@@ -141,6 +141,10 @@ watch CI. Plain `git push` may fail credentials —
   USER-CONFIRMED cut FO4 holdovers, permanently out of scope (ae9a6ef).
   Grenade roster: deferred post-release with the per-throw-framing design
   recorded in #91 (Bomb Scientist inert by decision meanwhile). Still open:
-  Blitz (explicitly unselected), Hack and Slash splash (needs AOE targeting),
-  Pin-Pointers' +50% striking-appendage arm (rides the deferred
-  limb-targeting pile — assumptions.md Part B).
+  Blitz (explicitly unselected), Hack and Slash splash (needs AOE targeting).
+  Pin-Pointers' +50% striking-appendage arm is DEAD CONTENT, not deferred:
+  its entire grant chain hangs off ench_LegendaryWeapon_PinPointers
+  (0x007ACA02), which nothing references — the shipped OMOD wires only the
+  keyword + weakpoint AV. Orphan-grant-chain lesson: an apply-perk's keyword
+  gate passing means nothing unless something actually GRANTS the perk —
+  walk the chain to its root ENCH/SPEL and refs-check THAT.
