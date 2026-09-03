@@ -248,6 +248,8 @@ import { useGameMode } from '@/hooks/useGameMode';
 
 ## Agent skills
 
+- **Commit messages**: Conventional Commits (`type(scope): summary`) — see
+  `docs/agents/commits.md` for the type/scope vocabulary actually in use.
 - **Issue tracker**: GitHub Issues on `Mapekz/dps-76` via the `gh` CLI; label
   vocabulary and conventions are in `docs/agents/issue-tracker.md`.
 - **Domain docs**: `CONTEXT.md` + `docs/adr/` + `docs/assumptions.md` — see
