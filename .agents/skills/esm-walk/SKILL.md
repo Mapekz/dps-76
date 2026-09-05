@@ -129,8 +129,8 @@ directly (2026-08-03, Propelling: `esm get`/`esm refs`).
 
 ## Where fixes go
 
-See `CLAUDE.md`'s "Adding / Fixing Game Data" for the full decision tree
-(overrides vs. new bucket/condition vs. extractor mapping) — not repeated
+See `AGENTS.md`'s "Game data is extracted, not hand-authored" for the full
+decision tree (overrides vs. new bucket/condition vs. extractor mapping) — not repeated
 here. After any extractor change: `bun run extract … [--only …]`, review
 `_meta.json` deltas and `bun run extract:diff`; a mapping change that shifts
 UNRELATED values is a regression, not noise.

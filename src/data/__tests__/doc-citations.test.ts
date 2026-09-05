@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
  * identifiers in prose docs staying real. Modeled on
  * `move-speed-census.test.ts` — a registry with a test attached.
  *
- * See `.claude/skills/docs-writing/SKILL.md` for the conventions this test
+ * See `.agents/skills/docs-writing/SKILL.md` for the conventions this test
  * enforces and where to fix a failure it reports (usually: fix the doc, not
  * this test — a real rename should update its citations, not grow the
  * allowlist).
@@ -29,10 +29,10 @@ function walk(dir: string, exts: string[]): string[] {
     if (entry === 'node_modules' || entry === '.git') continue;
     const full = join(dir, entry);
     if (full === SELF) continue;
-    // Skip symlinks — `.claude/skills/shadcn` is a symlink into
-    // `.agents/skills/`, a vendored third-party skill doc hash-pinned by
-    // skills-lock.json and off-limits for this guard (and for editing
-    // generally). `lstatSync` (not `statSync`) is required to detect the
+    // Skip symlinks — every skill is reachable twice (`.agents/skills/<name>`
+    // is the real directory, `.claude/skills/<name>` a compatibility symlink
+    // pointing at it), and scanning a file under both paths would double-report
+    // any failure. `lstatSync` (not `statSync`) is required to detect the
     // symlink itself rather than following it.
     if (lstatSync(full).isSymbolicLink()) continue;
     const stat = statSync(full);
@@ -188,7 +188,7 @@ describe('docs/assumptions.md citation guard', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Assertion 2: backticked code identifiers in docs/, CONTEXT.md, CLAUDE.md
+// Assertion 2: backticked code identifiers in docs/, CONTEXT.md, AGENTS.md
 // must be real — either found verbatim somewhere in src/ or scripts/, or
 // explicitly allowlisted below (ESM constant names, external tooling,
 // formula notation, proposed-but-unbuilt identifiers).
@@ -235,19 +235,36 @@ const IDENTIFIER_ALLOWLIST = new Set([
 
 const DOC_EXTS = ['.md'];
 
+/** Vendored third-party skills are hash-pinned in `skills-lock.json` and are
+ * off-limits for this guard (and for editing generally). The lockfile, not the
+ * directory layout, is what marks a skill as not ours — a second vendored skill
+ * lands here automatically. */
+const VENDORED_SKILLS = new Set(
+  Object.keys(
+    (
+      JSON.parse(readFileSync(resolve(projectRoot, 'skills-lock.json'), 'utf-8')) as {
+        skills: Record<string, unknown>;
+      }
+    ).skills,
+  ),
+);
+
+const SKILLS_DIR = resolve(projectRoot, '.agents/skills');
+
 /**
- * Previously scanned only docs/, CONTEXT.md, CLAUDE.md — DESIGN.md,
- * README.md, and the `.claude/skills` procedure docs (SKILL.md files) went
- * unchecked, which is exactly how a stale DESIGN.md claim and a stale
- * README.md claim each survived undetected (see the contradiction fixes in
- * this same change).
+ * Previously scanned only docs/, CONTEXT.md, AGENTS.md — DESIGN.md,
+ * README.md, and the procedure docs (SKILL.md files) went unchecked, which is
+ * exactly how a stale DESIGN.md claim and a stale README.md claim each survived
+ * undetected (see the contradiction fixes in this same change).
  */
 function collectDocFiles(): string[] {
   return [
     ...walk(resolve(projectRoot, 'docs'), DOC_EXTS),
-    ...walk(resolve(projectRoot, '.claude/skills'), DOC_EXTS),
+    ...readdirSync(SKILLS_DIR)
+      .filter((name) => !VENDORED_SKILLS.has(name))
+      .flatMap((name) => walk(resolve(SKILLS_DIR, name), DOC_EXTS)),
     resolve(projectRoot, 'CONTEXT.md'),
-    resolve(projectRoot, 'CLAUDE.md'),
+    resolve(projectRoot, 'AGENTS.md'),
     resolve(projectRoot, 'DESIGN.md'),
     resolve(projectRoot, 'README.md'),
   ];
@@ -295,7 +312,7 @@ describe('doc identifier guard', () => {
 
 // ---------------------------------------------------------------------------
 // Assertion 3: every ADR has an H1 assertion and a named "Do not undo this"
-// guard section (see .claude/skills/docs-writing/SKILL.md).
+// guard section (see .agents/skills/docs-writing/SKILL.md).
 // ---------------------------------------------------------------------------
 
 describe('ADR shape guard', () => {

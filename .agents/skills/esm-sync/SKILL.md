@@ -1,6 +1,6 @@
 ---
 name: esm-sync
-description: Run a full ESM game-data sync + audit cycle after a new SeventySix.esm snapshot lands (~every 1-2 months). Use when Data/<YYYYMMDD> gains a new dump, when the user asks to "update the calc to the latest patch/ESM", or when generated/_meta.json's esmDate lags the newest snapshot. Orchestrates extraction, the round-trip auditor, unresolved classification, override revalidation, and the verification tier — delegating to weapon-vetting, esm-walk, verify, and docs-writing for their pieces.
+description: Run a full ESM game-data sync + audit cycle after a new SeventySix.esm snapshot lands (~every 1-2 months). Use when Data/YYYYMMDD gains a new dump, when the user asks to "update the calc to the latest patch/ESM", or when generated/_meta.json's esmDate lags the newest snapshot. Orchestrates extraction, the round-trip auditor, unresolved classification, override revalidation, and the verification tier — delegating to weapon-vetting, esm-walk, verify, and docs-writing for their pieces.
 ---
 
 # ESM sync + audit cycle
@@ -110,8 +110,8 @@ by a live re-extract + set-diff. Other standing rules:
 ## 6. Verification tier
 
 CI order: `bun run lint && bun run lint:design && bun run fmt:check &&
-bun run typecheck && bun run test` (`--parallel` is mandatory, not a perf
-knob). Then:
+bun run typecheck && bun run test`. Test-file isolation is mandatory;
+`test` obtains it through `--parallel`, while `test:watch` uses `--isolate`. Then:
 
 - **Goldens**: measured cases must not move; a moved golden after a real
   balance patch means re-measure in game (weapon-vetting skill) — never edit

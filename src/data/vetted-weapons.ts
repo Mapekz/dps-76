@@ -5,7 +5,7 @@
  * can't silently change what the picker shows: the pinning test
  * (src/data/__tests__/weapons.test.ts) fails on any drift, and
  * `bun run vet:weapons` reports the delta for review
- * (.claude/skills/weapon-vetting/SKILL.md).
+ * (.agents/skills/weapon-vetting/SKILL.md).
  *
  * Update deliberately: adjudicate each addition/removal, THEN regenerate
  * this list — never paste blindly.

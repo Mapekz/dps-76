@@ -45,8 +45,8 @@ lifecycle and a different size budget.
    landed the change, not in the doc.
 
 If what you're writing doesn't fit one of these four, it's probably meant
-for `CLAUDE.md` (durable, load-bearing project facts an agent needs every
-session) or a GitHub issue (a task, not a fact) — see the placement matrix.
+for `AGENTS.md` (standing project conventions and non-obvious gotchas) or
+a GitHub issue (a task, not a fact) — see the placement matrix.
 
 ## Placement matrix
 
@@ -146,7 +146,7 @@ contradict one (`ADR-0002 (Mode is a comparison axis, not build data)`).
   difference from `FCM-Fallout-Chat-Mod`'s docs, which do use markdown
   links — don't unify the two conventions.) `README.md` is the one
   exception: it's the human-facing front door and already uses markdown
-  links for external URLs, so linking to `CLAUDE.md`/`CONTEXT.md` from
+  links for external URLs, so linking to `AGENTS.md`/`CONTEXT.md` from
   there is consistent with its own style, not with the rest of `docs/`.
 - A deliberate omission gets a named bucket instead of silence —
   `excluded:not-reachable`, `excluded:non-player`, "out of scope",
@@ -181,8 +181,8 @@ contradict one (`ADR-0002 (Mode is a comparison axis, not build data)`).
   section): fix the ADR, don't treat the newest one as having redefined the
   convention — see `docs/adr/0005`'s history for exactly this drift and
   correction.
-- Deciding whether a new fact is CLAUDE.md-worthy vs. docs-worthy: `CLAUDE.md`
+- Deciding whether a new fact is AGENTS.md-worthy vs. docs-worthy: `AGENTS.md`
   is for what every session needs regardless of task (architecture, build
   commands, module map); `docs/` is for what only some tasks need (a specific
   unproven number, a specific past decision). If in doubt, `docs/` — it's
-  read on demand, `CLAUDE.md` is read every session.
+  read on demand, `AGENTS.md` is read every session.

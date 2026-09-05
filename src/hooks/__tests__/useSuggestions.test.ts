@@ -12,7 +12,7 @@ import type { SuggestionReport } from '@/lib/suggest/types';
  *
  * The one-frame-earlier dim that the rewrite also introduced is a rendering
  * timing property, not a property of this function, and stays manually verified
- * — this repo has no DOM/component test infrastructure by design (see CLAUDE.md's
+ * — this repo has no DOM/component test infrastructure by design (see AGENTS.md's
  * Testing section, and dps-76#86 for why that tradeoff was accepted).
  */
 

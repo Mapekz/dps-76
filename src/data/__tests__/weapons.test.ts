@@ -7,7 +7,7 @@ import { VETTED_WEAPON_IDS } from '../vetted-weapons';
  * `bun run extract` can silently change which records pass the junk/obtainability
  * filters — this fails loudly instead of letting the picker drift unreviewed.
  * On failure: run `bun run vet:weapons` and follow
- * .claude/skills/weapon-vetting/SKILL.md — adjudicate the delta, then update
+ * .agents/skills/weapon-vetting/SKILL.md — adjudicate the delta, then update
  * VETTED_WEAPON_IDS deliberately.
  */
 

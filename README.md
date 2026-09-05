@@ -11,12 +11,12 @@ A Fallout 76 outgoing-DPS calculator. Configure your player build — perks, wea
 - React 19 + TypeScript (strict)
 - Vite 8 (Rolldown-based bundler, built in)
 - Tailwind CSS v4 + [shadcn/ui](https://ui.shadcn.com/) (Base UI primitives)
-- `bun test` — see [`CLAUDE.md`](./CLAUDE.md#testing) for the suite breakdown
+- `bun test` — see [`AGENTS.md`](./AGENTS.md#testing) for the suite breakdown
 
 ## Getting started
 
 Uses **Bun** as the package manager and script runner — not npm/yarn/pnpm. See
-[`CLAUDE.md`](./CLAUDE.md) for why Vite/tsc still run under Node under the hood.
+[`AGENTS.md`](./AGENTS.md) for why Vite/tsc still run under Node under the hood.
 
 ```sh
 bun install
@@ -38,5 +38,6 @@ CI deploys automatically via `.github/workflows/deploy.yml` on push to `main`.
 
 Game data is extracted from the ESM (not hand-authored), merged through an overlay
 pipeline, and fed to a synthetic-data-testable damage engine — see
-[`CLAUDE.md`](./CLAUDE.md) for the full data-pipeline and module map, and
+[`docs/architecture.md`](./docs/architecture.md) for the layer map, call chain, and module
+index, [`AGENTS.md`](./AGENTS.md) for the data-pipeline conventions, and
 [`CONTEXT.md`](./CONTEXT.md) for the domain vocabulary (Bucket, Scenario, Loadout, ...).

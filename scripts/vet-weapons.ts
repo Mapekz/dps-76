@@ -6,7 +6,7 @@
  *
  *   bun run vet:weapons
  *
- * Review procedure: .claude/skills/weapon-vetting/SKILL.md. The pinning test
+ * Review procedure: .agents/skills/weapon-vetting/SKILL.md. The pinning test
  * (src/data/__tests__/weapons.test.ts) fails CI until the delta is either
  * corrected away (overrides/corrections.ts) or deliberately accepted by
  * updating VETTED_WEAPON_IDS.

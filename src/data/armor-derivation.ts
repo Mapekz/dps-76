@@ -78,7 +78,7 @@ export function armorTypeOfRecord(omod: GeneratedOmod): ArmorType {
  * (0x004EA39F), so presence is the restriction with no authoring gaps
  * (docs/adr/0010). Don't infer PA-exclusivity from the `ma_PowerArmorMod`
  * keyword instead — it appears on every dual-availability legendary's
- * PA-flavored record too (`.claude/skills/esm-walk/SKILL.md`, "Power-armor
+ * PA-flavored record too (`.agents/skills/esm-walk/SKILL.md`, "Power-armor
  * exclusivity").
  */
 export function legendaryArmorType(records: readonly GeneratedOmod[]): ArmorType {

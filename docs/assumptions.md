@@ -4,7 +4,7 @@ Registry of every engine assertion **not directly proven by ESM data** — each
 confirmed or corrected by an in-game golden measurement
 (`src/lib/engine/__tests__/golden/`) where possible. Conventions (genre
 rules, placement matrix, status vocabulary, why section names below are
-load-bearing API): `.claude/skills/docs-writing/SKILL.md`.
+load-bearing API): `.agents/skills/docs-writing/SKILL.md`.
 
 ## Part A — Unproven claims
 

@@ -118,7 +118,7 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     reason: 'rad-food gate against the Rad Scrubbers PA mod; rads-side',
   },
   // Survival/QoL actor values with no offensive component (each name verified
-  // against its carriers 2026-08-27; see .claude/skills/esm-sync/NOTES.md).
+  // against its carriers 2026-08-27; see .agents/skills/esm-sync/NOTES.md).
   // Deliberately NOT swept: DamageResist (armorPenFlat candidate), UnarmedDamage/
   // UnarmedEnergyDamage, Mod_Brawler_AV, Mod_IgnoreArmor_AV (model candidates),
   // and the low-count LGND_*/VATS*/KillStreak*/PainTrainBleed tail (pending walks).
@@ -293,7 +293,7 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
   },
 
   // ——— batch 4: tail-walk sweep (every entry below ESM-walked 2026-08-28;
-  // evidence in .claude/skills/esm-sync/NOTES.md) ——————————————————————————
+  // evidence in .agents/skills/esm-sync/NOTES.md) ——————————————————————————
   // `perk X: entry point Y — not modeled` is a SECOND emitter (the OMOD/grant
   // chase in translateGrantedPerk) of the same EP names the `unknown entry
   // point:` rules above already exclude — same reasoning, sibling phrasing.

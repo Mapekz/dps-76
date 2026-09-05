@@ -1,7 +1,7 @@
 # Architecture
 
 How a build turns into a DPS number, and how the UI is wired around that computation. This
-is the map `CLAUDE.md` and `DESIGN.md` point to instead of restating; see
+is the map `AGENTS.md` and `DESIGN.md` point to instead of restating; see
 `docs/agents/domain.md` for how the rest of the doc set relates to this one.
 
 No `file:line` anchors here on purpose — line numbers go stale the moment a file is edited.
