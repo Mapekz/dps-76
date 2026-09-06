@@ -451,9 +451,10 @@ export function buildEffectiveWeapon(
           foldBucket(statModifiers, 'animDelaySec', weapon.animDelaySec ?? 0.5, ctx),
         )
       : undefined;
-  // NOTE: projectileCount folds into the effective weapon but NO damage term
-  // consumes it yet — per-projectile/pellet modeling is deferred (with the
-  // DoT engine work). Two Shot's damage today is only its extracted dbm.
+  // NOTE: projectileCount folds in but no damage term multiplies/splits by
+  // it, BY DESIGN — see docs/assumptions.md "Multi-projectile /
+  // multi-explosion weapons" before changing this. Two Shot's damage today
+  // is only its extracted dbm.
   const projectileCount = foldBucket(
     statModifiers,
     'projectileCount',

@@ -850,7 +850,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy:
-      "effective-weapon.ts buildEffectiveWeapon (weapon.projectileCount rewrite); no damage term multiplies per-projectile yet, but Shotgun Champ's curve reads the folded value via the projectileCount CurveInput",
+      "effective-weapon.ts buildEffectiveWeapon (weapon.projectileCount rewrite); no damage term multiplies per-projectile BY DESIGN (docs/assumptions.md 'Multi-projectile / multi-explosion weapons') — but Shotgun Champ's curve reads it as a CurveInput, and Onslaught/Bullet Storm scale stack gain with it",
   },
   ammoCapacity: {
     foldBase: 'dynamic',

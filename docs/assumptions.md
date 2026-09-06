@@ -710,6 +710,21 @@ Engine: `paper-damage.ts`, `scenarios.ts`, `fire-rate.ts`.
   `GENDER_TWIN_PAIRS` map, since the player owns one gender's card at a
   time.
 
+## Multi-projectile / multi-explosion weapons (projectileCount)
+Bucket: `Bucket.projectileCount`; folded in `effective-weapon.ts`, read by no
+damage term.
+
+- **`projectileCount` never scales `baseDamage`/explosive damage, settled not
+  deferred** — **USER-CONFIRMED**. Splitter/Beam Splitter's extra pellets
+  don't multiply the per-trigger-pull total.
+- **Split across connecting projectiles happens AFTER mitigation** —
+  **USER-CONFIRMED**: an even share of the mitigated total, not
+  independently-mitigated raw shares.
+- **Exception: Onslaught/Bullet Storm stack gain scales per projectile hit**
+  (`onslaught.ts`'s `physicalHits`/`explosionHits`) — damage itself still
+  doesn't. Shotgun Champ's curve also reads `projectileCount`, as an input
+  not a multiplier (**Value curves**).
+
 ## Onslaught
 Bucket: `Bucket.onslaughtMaxStacks`; engine: `src/lib/engine/onslaught.ts`
 (stack counter, max-stack table, Route B, reverse mode — full mechanic in
