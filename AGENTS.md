@@ -140,6 +140,5 @@ tooling.
 | Verifying an ESM record or mechanic | `.agents/skills/esm-walk/SKILL.md` |
 | Driving the app in a browser to confirm a change | `.agents/skills/verify/SKILL.md` |
 
-Skills live in `.agents/skills/`, with `.claude/skills/` symlinked onto it for agents that
-look there. Each `SKILL.md` is a plain procedure doc: agents with skill support load them
-automatically, others just read the file.
+Task procedures live in `.agents/skills/`. Read the relevant `SKILL.md` directly when
+the client does not discover it automatically.
