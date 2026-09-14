@@ -125,10 +125,10 @@ bun run typecheck && bun run test`. Test-file isolation is mandatory;
 
 ## 7. Landing
 
-Direct-to-main, one commit per coherent round, `git show --stat` after every
-commit (shared worktree — peers' staged files sweep in). Push per commit and
-watch CI. Plain `git push` may fail credentials —
-`gh auth switch -u Mapekz` then retry (see the gh-account memory).
+One commit per coherent round, in the form `docs/agents/commits.md` gives.
+Other sessions may share the working tree and index, so stage only this
+round's files and check `git show --stat` after each commit. After a push,
+watch the CI run until it is green.
 
 ## Known deferred piles (check before re-adjudicating)
 

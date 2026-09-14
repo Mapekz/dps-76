@@ -13,8 +13,6 @@ Issues and PRDs for this repo live as GitHub issues on `Mapekz/dps-76`. Use the 
 
 Infer the repo from `git remote -v` — `gh` does this automatically when run inside a clone.
 
-The account is normally auto-pinned to `Mapekz` by a local hook; if `gh` still reports the wrong account, `gh auth switch -u Mapekz` is the fallback.
-
 "Publish to the issue tracker" means create a GitHub issue; "fetch the relevant ticket" means `gh issue view <number> --comments`.
 
 ## Repo-specific conventions
