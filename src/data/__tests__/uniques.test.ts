@@ -2,7 +2,6 @@ import { describe, it, expect } from 'bun:test';
 import { getEquippedUnique, getUniques, getUniquesForWeapon } from '@/data/uniques';
 import { getWeapons } from '@/data';
 import { getOmodById } from '@/data/omods';
-import { hiddenOmodIds, forceVisibleOmodIds } from '@/data/overrides/corrections';
 import type { WeaponConfig } from '@/types';
 
 describe('getUniques', () => {
@@ -24,13 +23,6 @@ describe('getUniques', () => {
     expect(getOmodById('live', salt!.id)?.name).toBeTruthy();
   });
 
-  it('hides uniques whose identity mod is hidden', () => {
-    const hiddenId = [...hiddenOmodIds][0];
-    if (!hiddenId) return;
-    const all = getUniques('live');
-    expect(all.some((u) => u.id === hiddenId)).toBe(false);
-  });
-
   it('every unique baseWeaponId resolves to a weapon in the dataset', () => {
     const weapons = getWeapons('live');
     for (const unique of getUniques('live')) {
@@ -42,16 +34,6 @@ describe('getUniques', () => {
     const names = getUniques('live').map((u) => u.name);
     const sorted = [...names].sort((a, b) => a.localeCompare(b));
     expect(names).toEqual(sorted);
-  });
-
-  it('forceVisibleOmodIds can surface a hidden identity mod', () => {
-    const forcedId = [...forceVisibleOmodIds][0];
-    if (!forcedId) return;
-    // Only assert the wiring exists when a forced omod is also a unique preset.
-    const fromDataset = getUniques('live');
-    if (fromDataset.some((u) => u.id === forcedId)) {
-      expect(getOmodById('live', forcedId)).toBeDefined();
-    }
   });
 });
 

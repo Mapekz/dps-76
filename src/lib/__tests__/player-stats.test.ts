@@ -11,50 +11,24 @@ import {
   MAX_HP_PER_ENDURANCE,
   PLAYER_LEVEL,
   SPECIAL_ALLOCATION_POOL,
-  SPECIAL_KEYS,
-  type SpecialKey,
 } from '@/lib/player-stats';
 import { applyClassFreakPenaltyScaling } from '@/lib/class-freak-mutations';
 import type { GeneratedBuff } from '@/types/generated';
-import type { Bucket, Condition, Modifier } from '@/types/modifiers';
-import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
-
-function baseSpecial(
-  overrides: Partial<Record<SpecialKey, number>> = {},
-): Record<SpecialKey, number> {
-  return {
-    ...(Object.fromEntries(SPECIAL_KEYS.map((k) => [k, 1])) as Record<SpecialKey, number>),
-    ...overrides,
-  };
-}
+import type { Bucket, Condition, ModOp, Modifier } from '@/types/modifiers';
+import { baseSpecial, makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 function specialMod(
   bucket: Bucket,
   value: number,
   conditions: Condition[] = [],
   id = 'test-special-mod',
+  op: ModOp = 'ADD',
 ): Modifier {
   return {
     id,
     source: { kind: 'mutation', formId: '0xC1A55', edid: 'TestMutation', name: 'Test Mutation' },
     bucket,
-    op: 'ADD',
-    value,
-    conditions,
-  };
-}
-
-function specialMulMod(
-  bucket: Bucket,
-  value: number,
-  conditions: Condition[] = [],
-  id = 'test-special-mul-mod',
-): Modifier {
-  return {
-    id,
-    source: { kind: 'mutation', formId: '0xC1A55', edid: 'TestMutation', name: 'Test Mutation' },
-    bucket,
-    op: 'MUL_ADD',
+    op,
     value,
     conditions,
   };
@@ -69,16 +43,8 @@ describe('derivePlayerStats', () => {
   });
 
   it('specialEndurance buffs raise END before the HP formula', () => {
-    const endBuff: Modifier = {
-      id: 'test:end',
-      source: { kind: 'consumable', formId: '0x0', edid: 'test', name: 'test' },
-      bucket: 'specialEndurance',
-      op: 'ADD',
-      value: 3,
-      conditions: [],
-    };
     const { special, maxHealth } = derivePlayerStats(
-      [endBuff],
+      [specialMod('specialEndurance', 3, [], 'test:end')],
       baseSpecial({ endurance: 7 }),
       conditions,
     );
@@ -126,9 +92,9 @@ describe('derivePlayerStats', () => {
     // Field Surgeon ×1.67, Doctor's-5-pieces ×1.25, Healing-Factor-no-CF ×0.45
     // → 1.67 × 1.25 × 0.45 = 0.939375 (NOT additive 1 + 0.67 + 0.25 - 0.55 = 1.37).
     const magMods = [
-      specialMulMod('stimpakHealMagMult', 0.67, [], 'field-surgeon'),
-      specialMulMod('stimpakHealMagMult', 0.25, [], 'doctors-3star'),
-      specialMulMod('stimpakHealMagMult', -0.55, [], 'healing-factor'),
+      specialMod('stimpakHealMagMult', 0.67, [], 'field-surgeon', 'MUL_ADD'),
+      specialMod('stimpakHealMagMult', 0.25, [], 'doctors-3star', 'MUL_ADD'),
+      specialMod('stimpakHealMagMult', -0.55, [], 'healing-factor', 'MUL_ADD'),
     ];
     const stats = derivePlayerStats(magMods, baseSpecial(), conditions);
     expect(stats.stimpakHealMagMult).toBeCloseTo(0.939375, 10);
@@ -136,18 +102,14 @@ describe('derivePlayerStats', () => {
   });
 
   it('folds damageResistGain onto the manual playerDamageResist knob (additive, not replacement)', () => {
-    const drMod: Modifier = {
-      id: 'test:dr',
-      source: { kind: 'perk', formId: '0x0', edid: 'test', name: 'test' },
-      bucket: 'damageResistGain',
-      op: 'ADD',
-      value: 40,
-      conditions: [],
-    };
-    const stats = derivePlayerStats([drMod], baseSpecial(), {
-      ...conditions,
-      playerDamageResist: 25,
-    });
+    const stats = derivePlayerStats(
+      [specialMod('damageResistGain', 40, [], 'test:dr')],
+      baseSpecial(),
+      {
+        ...conditions,
+        playerDamageResist: 25,
+      },
+    );
     expect(stats.damageResistGain).toBe(65);
   });
 
@@ -193,29 +155,33 @@ describe('derivePlayerStats: AV pass-through (Barbarian killStreak→specialStre
     conditions: [],
   };
 
-  it('contributes 0 STR at kill streak 0 (curve clamps to its own x=0 point)', () => {
-    const { special } = derivePlayerStats([barbarianStr], baseSpecial({ strength: 5 }), {
-      ...conditions,
+  const rows: { name: string; killStreak: number; strength: number }[] = [
+    {
+      name: 'contributes 0 STR at kill streak 0 (curve clamps to its own x=0 point)',
       killStreak: 0,
-    });
-    expect(special.strength).toBe(5);
-  });
-
-  it('contributes +10 STR at kill streak 10 (the Max 10 cap)', () => {
-    const { special } = derivePlayerStats([barbarianStr], baseSpecial({ strength: 5 }), {
-      ...conditions,
+      strength: 5,
+    },
+    {
+      name: 'contributes +10 STR at kill streak 10 (the Max 10 cap)',
       killStreak: 10,
-    });
-    expect(special.strength).toBe(15);
-  });
-
-  it('interpolates between kill-streak points (streak 4 → +4 STR)', () => {
-    const { special } = derivePlayerStats([barbarianStr], baseSpecial({ strength: 5 }), {
-      ...conditions,
+      strength: 15,
+    },
+    {
+      name: 'interpolates between kill-streak points (streak 4 → +4 STR)',
       killStreak: 4,
+      strength: 9,
+    },
+  ];
+
+  for (const row of rows) {
+    it(row.name, () => {
+      const { special } = derivePlayerStats([barbarianStr], baseSpecial({ strength: 5 }), {
+        ...conditions,
+        killStreak: row.killStreak,
+      });
+      expect(special.strength).toBe(row.strength);
     });
-    expect(special.strength).toBe(9);
-  });
+  }
 });
 
 describe('derivePlayerStats: effective SPECIAL clamp', () => {

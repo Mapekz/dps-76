@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'bun:test';
-import type { EsmListRow, EsmRecord } from '../esm-client';
+import { beforeAll, describe, it, expect } from 'bun:test';
+import type { EsmRecord } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
-import { buildCobjIndex, isNonGrantingCobj, type CobjInfo } from '../cobj-index';
+import { buildCobjIndex, isNonGrantingCobj } from '../cobj-index';
+import { cobjInfo, listRows, stubRecord } from './esm-stubs';
 import cobj10mmBarrelLong from './fixtures/cobj-10mm-barrel-long.json';
 import cobjThirstZapper from './fixtures/cobj-thirstzapper-scrap.json';
 import cobjChainsawNocraft from './fixtures/cobj-chainsaw-nocraft.json';
@@ -35,43 +36,25 @@ const FIXTURES = [
 /** Learn-from targets referenced by the fixtures — minimal records, only the
  *  header/editor_id fields buildCobjIndex reads. */
 const LEARN_FROM_RECORDS: EsmRecord[] = [
-  {
-    header: { signature: 'WEAP', form_id: '0x001128F2' },
-    editor_id: 'NWOT_ThirstZapper',
-    fields: {},
-  },
-  {
-    header: { signature: 'MISC', form_id: '0x00054A1F' },
-    editor_id: 'recipe_Dummy_Uncraftable_Item_NOCRAFT',
-    fields: {},
-  },
-  {
-    header: { signature: 'BOOK', form_id: '0x00000871' },
-    editor_id: 'recipe_mod_AssaultRifle_Receiver_FastTrigger-CritDMG',
-    fields: {},
-  },
-  {
-    header: { signature: 'WEAP', form_id: '0x00091BB4' },
-    editor_id: 'BlackPowder_Rifle',
-    fields: {},
-  },
+  stubRecord('WEAP', '0x001128F2', 'NWOT_ThirstZapper'),
+  stubRecord('MISC', '0x00054A1F', 'recipe_Dummy_Uncraftable_Item_NOCRAFT'),
+  stubRecord('BOOK', '0x00000871', 'recipe_mod_AssaultRifle_Receiver_FastTrigger-CritDMG'),
+  stubRecord('WEAP', '0x00091BB4', 'BlackPowder_Rifle'),
 ];
 
 function makeStubClient() {
   const allRecords = [...FIXTURES, ...LEARN_FROM_RECORDS];
   const records = Object.fromEntries(allRecords.map((r) => [r.header.form_id, r]));
-  const rows: EsmListRow[] = FIXTURES.map((r) => ({
-    form_id: r.header.form_id,
-    record_type: 'COBJ',
-    editor_id: r.editor_id,
-    name: null,
-  }));
-  return createInMemoryEsmSource({ records, rows });
+  return createInMemoryEsmSource({ records, rows: listRows(FIXTURES) });
 }
 
 describe('buildCobjIndex', () => {
-  it('parses Learn Method / Repair Method / Created Object / Learn Recipe From across all fixture shapes', async () => {
-    const index = await buildCobjIndex(makeStubClient());
+  let index: Awaited<ReturnType<typeof buildCobjIndex>>;
+  beforeAll(async () => {
+    index = await buildCobjIndex(makeStubClient());
+  });
+
+  it('parses Learn Method / Repair Method / Created Object / Learn Recipe From across all fixture shapes', () => {
     expect(index.byFormId.size).toBe(6);
 
     const barrel = index.byFormId.get('0x002E6947')!;
@@ -105,8 +88,7 @@ describe('buildCobjIndex', () => {
     });
   });
 
-  it('groups by created object', async () => {
-    const index = await buildCobjIndex(makeStubClient());
+  it('groups by created object', () => {
     expect(index.byCreatedObject.get('0x00080DF5')?.map((c) => c.edid)).toEqual([
       'co_mod_BlackPowder_Rifle_Bayonet',
     ]);
@@ -116,16 +98,6 @@ describe('buildCobjIndex', () => {
 });
 
 describe('isNonGrantingCobj', () => {
-  const info = (overrides: Partial<CobjInfo>): CobjInfo => ({
-    formId: '0xC0BA',
-    edid: 'co_Something',
-    createdObjectFormId: null,
-    learnMethod: null,
-    repairMethod: null,
-    learnRecipeFrom: null,
-    ...overrides,
-  });
-
   it('legacy edid suffixes still match without an index entry', () => {
     expect(isNonGrantingCobj(undefined, 'SURVIVAL_co_Weapon_Ranged_44_REPAIRONLY')).toBe(true);
     expect(isNonGrantingCobj(undefined, 'co_Weapon_Melee_Chainsaw_76_NOCRAFT')).toBe(true);
@@ -133,7 +105,8 @@ describe('isNonGrantingCobj', () => {
   });
 
   it('the dummy uncraftable learn-from marks a recipe non-granting even when the edid lacks the suffix', () => {
-    const dummy = info({
+    const dummy = cobjInfo({
+      formId: '0xC0BA',
       edid: 'co_Weapon_SomethingRealSounding',
       learnRecipeFrom: {
         formId: '0x00054A1F',
@@ -145,7 +118,8 @@ describe('isNonGrantingCobj', () => {
   });
 
   it('Repair Method 5 alone does NOT mark a recipe non-granting (real scrap-learn recipes carry it)', () => {
-    const zapperish = info({
+    const zapperish = cobjInfo({
+      formId: '0xC0BA',
       edid: 'co_Weapon_Ranged_NWOT_ThirstZapper',
       repairMethod: 5,
       learnMethod: 1,

@@ -14,6 +14,16 @@ import type { SustainResult } from '@/lib/engine/sustain';
 // Steady-state VATS AP economy (docs/assumptions.md "VATS AP economy").
 // Hand-computed expectations straight from the spec formula in ap-economy.ts.
 
+// 16 AP/shot at 4 shots/s, 15 AGI (maxAp 210, regenPerSec 12.6), no perks/legendaries.
+const FIXER_SHAPE = {
+  apCost: 16,
+  shotsPerSec: 4,
+  agility: 15,
+  apRegenBonus: 0,
+  apPerCrit: 0,
+  shotsPerCrit: Infinity, // never crits
+};
+
 function sustain(overrides: Partial<SustainResult> = {}): SustainResult {
   return {
     burstDps: 0,
@@ -27,19 +37,14 @@ function sustain(overrides: Partial<SustainResult> = {}): SustainResult {
 }
 
 describe('computeApEconomy', () => {
+  const fixerBaseline = computeApEconomy(FIXER_SHAPE);
+
   it('Fixer-shaped example (16 AP/shot, 4 shots/s, 15 AGI, no perks/legendaries): pool-cycle burst/pause/uptime', () => {
     // maxAp = 60 + 10×15 = 210; regenPerSec = 210 × 6/100 = 12.6 (HumanRace
     // ActionPointsRate 6.0 = % of max AP per second) does NOT tick during
     // sustained VATS fire (user-confirmed 2026-07-15) — with no in-combat
     // restores (apPerCrit 0), apGainPerSec = 0; drainPerSec = 16×4 = 64.
-    const result = computeApEconomy({
-      apCost: 16,
-      shotsPerSec: 4,
-      agility: 15,
-      apRegenBonus: 0,
-      apPerCrit: 0,
-      shotsPerCrit: Infinity, // never crits
-    });
+    const result = fixerBaseline;
     expect(result.maxAp).toBe(210);
     expect(result.regenPerSec).toBeCloseTo(12.6, 10);
     expect(result.apGainPerSec).toBe(0);
@@ -64,14 +69,7 @@ describe('computeApEconomy', () => {
     // 4/2 = 2; apGainPerSec = 110×2 = 220 > drainPerSec 64 → gain ≥ drain, the
     // early-return branch: uptime 1, no secondsToEmpty/pauseSec (the pool
     // never empties, so there is no burst/pause cycle to report).
-    const result = computeApEconomy({
-      apCost: 16,
-      shotsPerSec: 4,
-      agility: 15,
-      apRegenBonus: 0,
-      apPerCrit: 110,
-      shotsPerCrit: 2,
-    });
+    const result = computeApEconomy({ ...FIXER_SHAPE, apPerCrit: 110, shotsPerCrit: 2 });
     expect(result.apGainPerSec).toBeCloseTo(220, 10);
     expect(result.drainPerSec).toBe(64);
     expect(result.uptime).toBe(1);
@@ -89,10 +87,7 @@ describe('computeApEconomy', () => {
     // apGainPerSec = 10×2 + 20 = 40 — passive regen (12.6) is still excluded
     // from the in-burst gain, but now feeds the pool-cycle pause.
     const result = computeApEconomy({
-      apCost: 16,
-      shotsPerSec: 4,
-      agility: 15,
-      apRegenBonus: 0,
+      ...FIXER_SHAPE,
       apPerCrit: 10,
       critHots: [{ ratePerSec: 20, durationSec: 5 }],
       shotsPerCrit: 2,
@@ -115,10 +110,8 @@ describe('computeApEconomy', () => {
     // crit spread over the 10s interval; spike adds 10×0.1 = 1 → gain = 1+10
     // (passive regen 12.6 excluded).
     const result = computeApEconomy({
-      apCost: 16,
+      ...FIXER_SHAPE,
       shotsPerSec: 1,
-      agility: 15,
-      apRegenBonus: 0,
       apPerCrit: 10,
       critHots: [{ ratePerSec: 20, durationSec: 5 }],
       shotsPerCrit: 10,
@@ -131,13 +124,12 @@ describe('computeApEconomy', () => {
     // — race-base composition, semantics user-confirmed 2026-07-15, absolute
     // numbers pending the in-game stopwatch goldens (docs/assumptions.md).
     const result = computeApEconomy({
+      ...FIXER_SHAPE,
       apCost: 0,
       shotsPerSec: 0,
       agility: 0,
       apRegenBonus: 0.45,
       apRegenFlatBonus: 10,
-      apPerCrit: 0,
-      shotsPerCrit: Infinity,
     });
     expect(result.regenPerSec).toBeCloseTo(
       ((AP_POOL_BASE * (AP_REGEN_RATE_PCT + 10)) / 100) * 1.45,
@@ -146,21 +138,11 @@ describe('computeApEconomy', () => {
   });
 
   it('power armor swaps the race base to 3.0 — regen halves', () => {
-    const human = computeApEconomy({
-      apCost: 0,
-      shotsPerSec: 0,
-      agility: 15,
-      apRegenBonus: 0,
-      apPerCrit: 0,
-      shotsPerCrit: Infinity,
-    });
+    const human = computeApEconomy({ ...FIXER_SHAPE, apCost: 0, shotsPerSec: 0 });
     const pa = computeApEconomy({
+      ...FIXER_SHAPE,
       apCost: 0,
       shotsPerSec: 0,
-      agility: 15,
-      apRegenBonus: 0,
-      apPerCrit: 0,
-      shotsPerCrit: Infinity,
       isInPowerArmor: true,
     });
     expect(pa.regenPerSec).toBeCloseTo(
@@ -173,15 +155,8 @@ describe('computeApEconomy', () => {
     // Scaly Skin-shaped −50 max AP: pool 210−50 = 160; regenPerSec = 160 × 6/100 =
     // 9.6 (vs 12.6 at 210 — the %-of-max model makes regen pool-proportional);
     // drainPerSec = 64, apGainPerSec = 0 (no in-combat restores).
-    const result = computeApEconomy({
-      apCost: 16,
-      shotsPerSec: 4,
-      agility: 15,
-      apRegenBonus: 0,
-      apMaxBonus: -50,
-      apPerCrit: 0,
-      shotsPerCrit: Infinity,
-    });
+    const result = computeApEconomy({ ...FIXER_SHAPE, apMaxBonus: -50 });
+    expect(result.uptime).toBeLessThan(fixerBaseline.uptime);
     expect(result.maxAp).toBe(160);
     expect(result.regenPerSec).toBeCloseTo(9.6, 10);
     // burstSec = 160/64 = 2.5; pauseSec = 1 + 160/9.6 = 17.666667; uptime ≈
@@ -199,80 +174,42 @@ describe('computeApEconomy', () => {
   it('apRegen perk bonuses multiply the race-base rate', () => {
     // Action Boy rank 3 shape: +45% → regenPerSec = 60 × 6/100 × 1.45.
     const result = computeApEconomy({
+      ...FIXER_SHAPE,
       apCost: 0,
       shotsPerSec: 0,
       agility: 0,
       apRegenBonus: 0.45,
-      apPerCrit: 0,
-      shotsPerCrit: Infinity,
     });
     expect(result.regenPerSec).toBeCloseTo(((AP_POOL_BASE * AP_REGEN_RATE_PCT) / 100) * 1.45, 10);
     expect(result.maxAp).toBe(AP_POOL_BASE);
   });
 
   it('agility scales the AP pool linearly via the named GMST constants', () => {
-    const result = computeApEconomy({
-      apCost: 10,
-      shotsPerSec: 1,
-      agility: 30,
-      apRegenBonus: 0,
-      apPerCrit: 0,
-      shotsPerCrit: Infinity,
-    });
+    const result = computeApEconomy({ ...FIXER_SHAPE, apCost: 10, shotsPerSec: 1, agility: 30 });
     expect(result.maxAp).toBe(AP_POOL_BASE + AP_POOL_PER_AGILITY * 30);
   });
 
   it('zero drain (no AP cost or no shots fired) never constrains uptime', () => {
-    const noCost = computeApEconomy({
-      apCost: 0,
-      shotsPerSec: 4,
-      agility: 15,
-      apRegenBonus: 0,
-      apPerCrit: 0,
-      shotsPerCrit: Infinity,
-    });
+    const noCost = computeApEconomy({ ...FIXER_SHAPE, apCost: 0 });
     expect(noCost.drainPerSec).toBe(0);
     expect(noCost.uptime).toBe(1);
 
-    const noShots = computeApEconomy({
-      apCost: 16,
-      shotsPerSec: 0,
-      agility: 15,
-      apRegenBonus: 0,
-      apPerCrit: 0,
-      shotsPerCrit: Infinity,
-    });
+    const noShots = computeApEconomy({ ...FIXER_SHAPE, shotsPerSec: 0 });
     expect(noShots.drainPerSec).toBe(0);
     expect(noShots.uptime).toBe(1);
   });
 
   it('uptime is clamped to [0, 1] even for pathological inputs', () => {
-    const negativeCost = computeApEconomy({
-      apCost: -5,
-      shotsPerSec: 4,
-      agility: 15,
-      apRegenBonus: 0,
-      apPerCrit: 0,
-      shotsPerCrit: Infinity,
-    });
+    const negativeCost = computeApEconomy({ ...FIXER_SHAPE, apCost: -5 });
     expect(negativeCost.uptime).toBe(1);
   });
 
   describe('reload-window regen credit (2026-07-15, AP_REGEN_DELAY_SEC)', () => {
-    // Common shape: 210 max AP → regenPerSec 12.6; drain 16 AP × shotsPerSec.
-    const base = {
-      apCost: 16,
-      agility: 15,
-      apRegenBonus: 0,
-      apPerCrit: 0,
-      shotsPerCrit: Infinity,
-    };
-
     it('credits regenPerSec × (reloadSec − delay), averaged over the magazine cycle, then feeds the pool-cycle burst/pause', () => {
       // 20s dump + 4s reload cycle at 20/24 shots/s: credit = 12.6 × (4−1)/24
       // = 1.575; drainPerSec = 16 × 20/24 = 13.333333.
       const result = computeApEconomy({
-        ...base,
+        ...FIXER_SHAPE,
         shotsPerSec: 20 / 24,
         magDumpSec: 20,
         reloadSec: 4,
@@ -292,14 +229,24 @@ describe('computeApEconomy', () => {
     });
 
     it('a reload at or below the 1s delay earns nothing', () => {
-      const atDelay = computeApEconomy({ ...base, shotsPerSec: 1, magDumpSec: 20, reloadSec: 1 });
+      const atDelay = computeApEconomy({
+        ...FIXER_SHAPE,
+        shotsPerSec: 1,
+        magDumpSec: 20,
+        reloadSec: 1,
+      });
       expect(atDelay.reloadRegenPerSec).toBe(0);
-      const below = computeApEconomy({ ...base, shotsPerSec: 1, magDumpSec: 20, reloadSec: 0.5 });
+      const below = computeApEconomy({
+        ...FIXER_SHAPE,
+        shotsPerSec: 1,
+        magDumpSec: 20,
+        reloadSec: 0.5,
+      });
       expect(below.reloadRegenPerSec).toBe(0);
     });
 
     it('no magazine cycle (reloadSec/magDumpSec omitted) earns nothing — melee/degenerate weapons', () => {
-      const result = computeApEconomy({ ...base, shotsPerSec: 1 });
+      const result = computeApEconomy({ ...FIXER_SHAPE, shotsPerSec: 1 });
       expect(result.reloadRegenPerSec).toBe(0);
       expect(result.apGainPerSec).toBe(0);
     });
@@ -307,7 +254,12 @@ describe('computeApEconomy', () => {
     it('a long reload can saturate uptime at 1 purely from passive regen (apPerCrit 0)', () => {
       // 2s dump + 8s reload at 2/10 shots/s: credit = 12.6 × 7/10 = 8.82 >
       // drain 16 × 0.2 = 3.2 → AP never constrains.
-      const result = computeApEconomy({ ...base, shotsPerSec: 0.2, magDumpSec: 2, reloadSec: 8 });
+      const result = computeApEconomy({
+        ...FIXER_SHAPE,
+        shotsPerSec: 0.2,
+        magDumpSec: 2,
+        reloadSec: 8,
+      });
       expect(result.reloadRegenPerSec).toBeCloseTo(8.82, 10);
       expect(result.uptime).toBe(1);
       expect(result.secondsToEmpty).toBeUndefined();
@@ -317,7 +269,7 @@ describe('computeApEconomy', () => {
     it('stacks with crit restores into one apGainPerSec (breakout stays separate)', () => {
       // Crit every 2nd shot at 20/24 shots/s: spike = 10 × (20/24)/2 = 25/6.
       const result = computeApEconomy({
-        ...base,
+        ...FIXER_SHAPE,
         apPerCrit: 10,
         shotsPerCrit: 2,
         shotsPerSec: 20 / 24,
@@ -337,52 +289,23 @@ describe('computeApEconomy', () => {
       // is identical at both AGI values (only burstSec grows), which is what
       // makes a bigger pool strictly better: it amortizes the same fixed
       // pause over a longer burst.
-      const low = computeApEconomy({
-        apCost: 16,
-        shotsPerSec: 4,
-        agility: 15, // maxAp 210, regenPerSec 12.6
-        apRegenBonus: 0,
-        apPerCrit: 0,
-        shotsPerCrit: Infinity,
-      });
-      const high = computeApEconomy({
-        apCost: 16,
-        shotsPerSec: 4,
-        agility: 50, // maxAp 560, regenPerSec 33.6
-        apRegenBonus: 0,
-        apPerCrit: 0,
-        shotsPerCrit: Infinity,
-      });
+      const low = fixerBaseline;
+      const high = computeApEconomy({ ...FIXER_SHAPE, agility: 50 }); // maxAp 560, regenPerSec 33.6
       expect(high.pauseSec).toBeCloseTo(low.pauseSec!, 10);
       expect(high.secondsToEmpty!).toBeGreaterThan(low.secondsToEmpty!);
       expect(high.uptime).toBeGreaterThan(low.uptime);
-      // uptime@15 ≈ 0.156638, uptime@50 ≈ 0.331230 — hand-computed via the
-      // same burst/pause formula as the tests above.
-      expect(low.uptime).toBeCloseTo(3.28125 / (3.28125 + (AP_REGEN_DELAY_SEC + 210 / 12.6)), 10);
+      // uptime@50 ≈ 0.331230 — hand-computed via the same burst/pause
+      // formula as the tests above (uptime@15 ≈ 0.156638 is the Fixer-shaped example).
       expect(high.uptime).toBeCloseTo(8.75 / (8.75 + (AP_REGEN_DELAY_SEC + 560 / 33.6)), 10);
     });
 
-    it('apRegenBonus/apRegenFlatBonus/apMaxBonus now move uptime (previously excluded — module doc)', () => {
-      const baseline = computeApEconomy({
-        apCost: 16,
-        shotsPerSec: 4,
-        agility: 15, // maxAp 210, regenPerSec 12.6, drainPerSec 64, gain 0
-        apRegenBonus: 0,
-        apPerCrit: 0,
-        shotsPerCrit: Infinity,
-      });
+    it('apRegenBonus/apRegenFlatBonus now move uptime (previously excluded — module doc)', () => {
+      const baseline = fixerBaseline;
 
       // +100% apRegen doubles regenPerSec (12.6 → 25.2), shrinking pauseSec
       // (1 + 210/25.2 = 9.333333 vs baseline's 1 + 210/12.6 = 17.666667) while
       // burstSec is unchanged (gain still 0) → uptime rises.
-      const withApRegen = computeApEconomy({
-        apCost: 16,
-        shotsPerSec: 4,
-        agility: 15,
-        apRegenBonus: 1.0,
-        apPerCrit: 0,
-        shotsPerCrit: Infinity,
-      });
+      const withApRegen = computeApEconomy({ ...FIXER_SHAPE, apRegenBonus: 1.0 });
       const burstSec = 210 / 64;
       const pauseSecWithApRegen = AP_REGEN_DELAY_SEC + 210 / 25.2;
       expect(withApRegen.uptime).toBeCloseTo(burstSec / (burstSec + pauseSecWithApRegen), 10);
@@ -390,32 +313,10 @@ describe('computeApEconomy', () => {
 
       // +10 apRegenFlat (added onto the 6.0 race base before the % mult:
       // regenPerSec = 210 × 16/100 = 33.6) shrinks pauseSec the same way.
-      const withApRegenFlat = computeApEconomy({
-        apCost: 16,
-        shotsPerSec: 4,
-        agility: 15,
-        apRegenBonus: 0,
-        apRegenFlatBonus: 10,
-        apPerCrit: 0,
-        shotsPerCrit: Infinity,
-      });
+      const withApRegenFlat = computeApEconomy({ ...FIXER_SHAPE, apRegenFlatBonus: 10 });
       const pauseSecWithFlat = AP_REGEN_DELAY_SEC + 210 / 33.6;
       expect(withApRegenFlat.uptime).toBeCloseTo(burstSec / (burstSec + pauseSecWithFlat), 10);
       expect(withApRegenFlat.uptime).toBeGreaterThan(baseline.uptime);
-
-      // −50 apMax (Scaly Skin-shaped) shrinks BOTH the burst (smaller pool to
-      // drain) and, via the %-of-max regen model, keeps pauseSec unchanged
-      // (still 100/ratePct + delay) — so uptime strictly falls.
-      const withApMaxPenalty = computeApEconomy({
-        apCost: 16,
-        shotsPerSec: 4,
-        agility: 15,
-        apRegenBonus: 0,
-        apMaxBonus: -50,
-        apPerCrit: 0,
-        shotsPerCrit: Infinity,
-      });
-      expect(withApMaxPenalty.uptime).toBeLessThan(baseline.uptime);
     });
   });
 });

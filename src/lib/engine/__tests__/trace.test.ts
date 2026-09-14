@@ -1,56 +1,41 @@
 import { describe, it, expect } from 'bun:test';
 import type { Weapon } from '@/types';
-import { createDefaultEnemyConditions } from '@/types';
 import type { Modifier } from '@/types/modifiers';
-import { foldBucket, type ResolveContext } from '@/lib/engine/resolve';
+import { foldBucket } from '@/lib/engine/resolve';
 import type { BucketTrace } from '@/lib/engine/trace';
 import { computeScenarios, type ScenarioInput } from '@/lib/engine/scenarios';
 import { getWeapons } from '@/data';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { PerkId } from '@/data/perk-ids';
 import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
+import {
+  FLAT_100,
+  makeCtx,
+  makeWeapon as makeFixtureWeapon,
+  mod,
+  scenarioInput,
+} from '@/lib/engine/__tests__/engine-fixture';
 
-const FLAT_100 = [
-  { x: 1, y: 100 },
-  { x: 50, y: 100 },
-];
-
+// The crit/sneak/dbm fields stay unset so the engine's `??` defaults run.
 function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
-  return {
+  return makeFixtureWeapon({
     id: 'test',
     name: 'Test',
-    components: [{ damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
-    damageType: 'ballistic',
-    weaponClass: 'rifle',
-    isAutomatic: false,
-    isPhysical: true,
     animDelaySec: 1.0,
+    critDamageMult: undefined,
+    critChargeBonus: undefined,
+    sneakAttackMult: undefined,
+    damageBonusMult: undefined,
     ...overrides,
-  };
-}
-
-function mod(
-  partial: Partial<Modifier> & Pick<Modifier, 'bucket' | 'op'> & { value: number },
-): Modifier {
-  return {
-    id: partial.id ?? 'm0',
-    source: partial.source ?? { kind: 'perk', formId: '0x1', edid: 'TestPerk', name: 'Test Perk' },
-    conditions: partial.conditions ?? [],
-    ...partial,
-  } as Modifier;
+  });
 }
 
 function input(modifiers: Modifier[], overrides: Partial<ScenarioInput> = {}): ScenarioInput {
-  return {
-    mode: 'live',
-    weapon: makeWeapon(),
-    itemLevel: 50,
+  return scenarioInput(makeWeapon(), {
     modifiers,
     player: { ...makeResolvedPlayer(), strength: 0 },
-    enemy: createDefaultEnemyConditions(),
-    weakpointMult: 2.0,
     ...overrides,
-  };
+  });
 }
 
 describe('attribution trace', () => {
@@ -195,13 +180,7 @@ describe('attribution trace', () => {
       conditions: [{ kind: 'lastRound' }],
       source: { kind: 'omod', formId: '0xls', edid: 'LastShot', name: 'Last Shot' },
     });
-    const ctx: ResolveContext = {
-      weapon: makeWeapon(),
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
-      lastRound: { procChance: 0.25, shotsPerMag: 20 },
-    };
+    const ctx = makeCtx(makeWeapon(), { lastRound: { procChance: 0.25, shotsPerMag: 20 } });
     const collect: BucketTrace[] = [];
     foldBucket([lastShotMod], 'dbm', 1.0, ctx, collect);
     const add = collect[0]!.add[0]!;
@@ -216,13 +195,7 @@ describe('attribution trace', () => {
       value: 0.5,
       source: { kind: 'perk', formId: '0x1', edid: 'Ordinary', name: 'Ordinary' },
     });
-    const ctx: ResolveContext = {
-      weapon: makeWeapon(),
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
-      lastRound: { procChance: 0.25, shotsPerMag: 20 },
-    };
+    const ctx = makeCtx(makeWeapon(), { lastRound: { procChance: 0.25, shotsPerMag: 20 } });
     const collect: BucketTrace[] = [];
     foldBucket([ordinary], 'dbm', 1.0, ctx, collect);
     expect(collect[0]!.add[0]).not.toHaveProperty('cadence');

@@ -7,11 +7,11 @@ import {
   getUnjoinedPerkIds,
   perkHasEngineEffect,
 } from '@/data/perk-modifiers';
-import { getWeapons } from '@/data';
+import { getPerks, getWeapons } from '@/data';
 import { getTargetDebuffModifiers } from '@/data/target-debuffs';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import { createDefaultEnemyConditions } from '@/types';
-import { hasAnyEngineEffect } from '@/types/modifiers';
+import { hasAnyEngineEffect, type Bucket } from '@/types/modifiers';
 import { parseSpecialFromUrl } from '@/lib/nukes-dragons';
 import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
@@ -29,17 +29,9 @@ describe('perk registry ↔ generated family join', () => {
     ).toBe(true);
   });
 
-  it('Tenderizer is target-side: no player modifier from the card, 0.001/stack from target-debuffs', () => {
+  it('Tenderizer is target-side: no player modifier from the card', () => {
     // Equipping the card contributes nothing — the debuff lives on the target.
     expect(getLoadoutModifiers('live', [{ perkId: PerkId.Tenderizer, rank: 1 }])).toHaveLength(0);
-    const mods = getTargetDebuffModifiers({});
-    expect(mods).toHaveLength(1);
-    expect(mods[0]).toMatchObject({ bucket: 'dbm', op: 'ADD', value: 0.001 });
-    expect(mods[0].conditions[0]).toMatchObject({
-      kind: 'stacks',
-      counter: 'tenderizer',
-      max: 1000,
-    });
   });
 
   /**
@@ -213,113 +205,169 @@ describe('perk effects through the engine (real data)', () => {
 });
 
 describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)', () => {
-  it('is true for a perk that moves paper damage (Gunslinger)', () => {
-    expect(perkHasEngineEffect('live', PerkId.Gunslinger)).toBe(true);
-  });
-
-  it('is false for a perk that only affects a non-combat mechanic (Green Thumb)', () => {
-    expect(perkHasEngineEffect('live', PerkId.GreenThumb)).toBe(false);
-  });
-
-  it("is true for Picklock (feeds Pirate Punch's lockpickSkill curve since 2026-08-04)", () => {
-    expect(perkHasEngineEffect('live', PerkId.Picklock)).toBe(true);
-  });
-
-  it('is true for Hacker once extract routes STAT_HackingTier (hackingSkill bucket; perks.json updated on next extract)', () => {
-    expect(
-      hasAnyEngineEffect([
-        {
-          id: 'test:hacker',
-          source: { kind: 'perk', formId: '0x0', edid: 'Hacker', name: 'Hacker', rank: 1 },
-          bucket: 'hackingSkill',
-          op: 'ADD',
-          value: 1,
-          conditions: [],
-        },
-      ]),
-    ).toBe(true);
-    const mods = getGeneratedPerk('live', PerkId.Hacker)?.ranks[0]?.modifiers ?? [];
-    if (mods.length > 0) expect(perkHasEngineEffect('live', PerkId.Hacker)).toBe(true);
-  });
-
-  it('is true for First Aid once extract routes STAT_HealMultStimpak (stimpakHealMult bucket; perks.json updated on next extract)', () => {
-    expect(
-      hasAnyEngineEffect([
-        {
-          id: 'test:first-aid',
-          source: { kind: 'perk', formId: '0x0', edid: 'FirstAid', name: 'First Aid', rank: 1 },
-          bucket: 'stimpakHealMult',
-          op: 'ADD',
-          value: 1,
-          conditions: [],
-        },
-      ]),
-    ).toBe(true);
-    const mods = getGeneratedPerk('live', PerkId.FirstAid)?.ranks[0]?.modifiers ?? [];
-    if (mods.length > 0) expect(perkHasEngineEffect('live', PerkId.FirstAid)).toBe(true);
-  });
-
-  it('is true for Iron Fist (DR-scaled dbm curve, wired to the playerDamageResist manual knob — Phase 2)', () => {
+  const rows: { name: string; perkId: string; expected: boolean }[] = [
+    {
+      name: 'is true for a perk that moves paper damage (Gunslinger)',
+      perkId: PerkId.Gunslinger,
+      expected: true,
+    },
+    {
+      name: 'is false for a perk that only affects a non-combat mechanic (Green Thumb)',
+      perkId: PerkId.GreenThumb,
+      expected: false,
+    },
+    {
+      name: "is true for Picklock (feeds Pirate Punch's lockpickSkill curve since 2026-08-04)",
+      perkId: PerkId.Picklock,
+      expected: true,
+    },
     // "Your Fists deal more damage based on your DR" reads the WIELDER's own
     // DamageResist AV (0x000002E3, same AV Berserker's reads) — was
     // `enemyDamageResist` (hardcoded to always evaluate at 0) pre-rename;
     // now a real, badge-clearing curve input (docs/assumptions.md
     // "Berserker's (Damage Unarmored)").
-    expect(perkHasEngineEffect('live', PerkId.IronFist)).toBe(true);
-  });
+    {
+      name: 'is true for Iron Fist (DR-scaled dbm curve, wired to the playerDamageResist manual knob — Phase 2)',
+      perkId: PerkId.IronFist,
+      expected: true,
+    },
+    {
+      name: 'is true for Barbarian (STR→DR damageResistGain fold + Iron Fist synergy)',
+      perkId: PerkId.Barbarian,
+      expected: true,
+    },
+    // Quick Hands / Wild West Hands were the subject of concurrent work
+    // (perk-overrides.ts's extraPerkModifiers, reloadSkipChance) — guard that
+    // they read as effective so the picker never badges them inert.
+    {
+      name: 'is true for Quick Hands (effect hand-authored via extraPerkModifiers)',
+      perkId: PerkId.QuickHands,
+      expected: true,
+    },
+    {
+      name: 'is true for Wild West Hands (effect hand-authored via extraPerkModifiers)',
+      perkId: PerkId.WildWestHands,
+      expected: true,
+    },
+    {
+      name: 'is true for Gunslinger Master (reverse onslaught — pinned in perkForceEffectivePerkIds)',
+      perkId: PerkId.GunslingerMaster,
+      expected: true,
+    },
+    {
+      name: 'is true for Gunslinger Expert (Gunslinger/Guerrilla onslaught line)',
+      perkId: PerkId.GunslingerExpert,
+      expected: true,
+    },
+    {
+      name: 'is true for Guerrilla (Gunslinger/Guerrilla onslaught line)',
+      perkId: PerkId.Guerrilla,
+      expected: true,
+    },
+    {
+      name: 'is true for Guerrilla Expert (Gunslinger/Guerrilla onslaught line)',
+      perkId: PerkId.GuerrillaExpert,
+      expected: true,
+    },
+    {
+      name: 'is true for Guerrilla Master (Gunslinger/Guerrilla onslaught line)',
+      perkId: PerkId.GuerrillaMaster,
+      expected: true,
+    },
+    {
+      name: 'is true for Legendary Strength (baseSpecial pathway, no modifiers by design)',
+      perkId: PerkId.LegendaryStrength,
+      expected: true,
+    },
+    {
+      name: 'is true for Legendary Luck (baseSpecial pathway, no modifiers by design)',
+      perkId: PerkId.LegendaryLuck,
+      expected: true,
+    },
+    // Cross-family audit (Phase 0): these families extract with zero modifiers
+    // of their own, but are named by another family's perkFamilyRank condition
+    // — the BringingOutTheBigGuns-shaped hole. Both gate real `dbm` modifiers
+    // (Mechanic's Best Friend / The Pipe, perk + legendary OMOD), so they're
+    // pinned in perkForceEffectivePerkIds.
+    {
+      name: "is true for Makeshift Warrior (gates Mechanic's Best Friend's dbm modifiers)",
+      perkId: PerkId.MakeshiftWarrior,
+      expected: true,
+    },
+    {
+      name: "is true for Licensed Plumber (gates The Pipe's dbm modifiers)",
+      perkId: PerkId.LicensedPlumber,
+      expected: true,
+    },
+    {
+      name: 'is true for Tenderizer (Target-section tenderizerStacks knob — pinned in perkForceEffectivePerkIds)',
+      perkId: PerkId.Tenderizer,
+      expected: true,
+    },
+    {
+      name: 'is true for Mad Scientist (IsPowerAttacking=0 gate now resolves)',
+      perkId: PerkId.MadScientist,
+      expected: true,
+    },
+    {
+      name: 'is true for Radiation Power (IsPowerAttacking=0 gate now resolves)',
+      perkId: PerkId.RadiationPower,
+      expected: true,
+    },
+    {
+      name: 'is true for Psychopath (GetIsInVATS=0 gate now resolves)',
+      perkId: PerkId.Psychopath,
+      expected: true,
+    },
+    {
+      name: 'is false for an unjoined/unknown PerkId',
+      perkId: 'NotARealPerkId',
+      expected: false,
+    },
+  ];
 
-  it('is true for Barbarian (STR→DR damageResistGain fold + Iron Fist synergy)', () => {
-    expect(perkHasEngineEffect('live', PerkId.Barbarian)).toBe(true);
-  });
+  for (const row of rows) {
+    it(row.name, () => {
+      expect(perkHasEngineEffect('live', row.perkId)).toBe(row.expected);
+    });
+  }
 
-  // Quick Hands / Wild West Hands were the subject of concurrent work
-  // (perk-overrides.ts's extraPerkModifiers, reloadSkipChance) — guard that
-  // they read as effective so the picker never badges them inert.
-  it('is true for perks whose effect is hand-authored via extraPerkModifiers (Quick Hands, Wild West Hands)', () => {
-    expect(perkHasEngineEffect('live', PerkId.QuickHands)).toBe(true);
-    expect(perkHasEngineEffect('live', PerkId.WildWestHands)).toBe(true);
-  });
+  const extractRoutedRows: { name: string; perkId: string; bucket: Bucket }[] = [
+    {
+      name: 'is true for Hacker now that extract routes STAT_HackingTier (hackingSkill bucket)',
+      perkId: PerkId.Hacker,
+      bucket: 'hackingSkill',
+    },
+    {
+      name: 'is true for First Aid now that extract routes STAT_HealMultStimpak (stimpakHealMult bucket)',
+      perkId: PerkId.FirstAid,
+      bucket: 'stimpakHealMult',
+    },
+  ];
 
-  it('is true for Gunslinger Master (reverse onslaught — pinned in perkForceEffectivePerkIds)', () => {
-    expect(perkHasEngineEffect('live', PerkId.GunslingerMaster)).toBe(true);
-  });
+  for (const row of extractRoutedRows) {
+    it(row.name, () => {
+      const mods = getGeneratedPerk('live', row.perkId)?.ranks[0]?.modifiers ?? [];
+      expect(hasAnyEngineEffect(mods.filter((m) => m.bucket === row.bucket))).toBe(true);
+      expect(perkHasEngineEffect('live', row.perkId)).toBe(true);
+    });
+  }
 
-  it('is true for the Legendary SPECIAL cards (baseSpecial pathway, no modifiers by design)', () => {
-    expect(perkHasEngineEffect('live', PerkId.LegendaryStrength)).toBe(true);
-    expect(perkHasEngineEffect('live', PerkId.LegendaryLuck)).toBe(true);
-  });
-
-  // Cross-family audit (Phase 0): these families extract with zero modifiers
-  // of their own, but are named by another family's perkFamilyRank condition
-  // — the BringingOutTheBigGuns-shaped hole. Both gate real `dbm` modifiers
-  // (Mechanic's Best Friend / The Pipe, perk + legendary OMOD), so they're
-  // pinned in perkForceEffectivePerkIds.
-  it("is true for Makeshift Warrior (gates Mechanic's Best Friend's dbm modifiers)", () => {
-    expect(perkHasEngineEffect('live', PerkId.MakeshiftWarrior)).toBe(true);
-  });
-
-  it("is true for Licensed Plumber (gates The Pipe's dbm modifiers)", () => {
-    expect(perkHasEngineEffect('live', PerkId.LicensedPlumber)).toBe(true);
-  });
-
-  it('is true for Tenderizer (Target-section tenderizerStacks knob — pinned in perkForceEffectivePerkIds)', () => {
-    expect(perkHasEngineEffect('live', PerkId.Tenderizer)).toBe(true);
-  });
-
-  it('is true for Mad Scientist (IsPowerAttacking=0 gate now resolves)', () => {
-    expect(perkHasEngineEffect('live', PerkId.MadScientist)).toBe(true);
-  });
-
-  it('is true for Radiation Power (IsPowerAttacking=0 gate now resolves)', () => {
-    expect(perkHasEngineEffect('live', PerkId.RadiationPower)).toBe(true);
-  });
-
-  it('is true for Psychopath (GetIsInVATS=0 gate now resolves)', () => {
-    expect(perkHasEngineEffect('live', PerkId.Psychopath)).toBe(true);
-  });
-
-  it('is false for an unjoined/unknown PerkId', () => {
-    expect(perkHasEngineEffect('live', 'NotARealPerkId')).toBe(false);
+  it('the Gunslinger/Guerrilla onslaught line is exactly the six cards pinned above', () => {
+    const registry = getPerks('live');
+    const onslaughtLine = Object.keys(registry).filter((id) =>
+      /Gunslinger|Guerrilla/i.test(registry[id as keyof typeof registry].name),
+    );
+    expect(onslaughtLine.sort()).toEqual(
+      [
+        PerkId.Guerrilla,
+        PerkId.GuerrillaExpert,
+        PerkId.GuerrillaMaster,
+        PerkId.Gunslinger,
+        PerkId.GunslingerExpert,
+        PerkId.GunslingerMaster,
+      ].sort(),
+    );
   });
 });
 

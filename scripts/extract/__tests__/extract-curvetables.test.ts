@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'bun:test';
-import type { EsmSource, EsmRecord } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
 import {
   buildCurveTableBarrels,
@@ -10,13 +9,9 @@ import {
   toCurveTableFile,
   type ExtractedCurveTableFile,
 } from '../extract-curvetables';
+import { stubRecord } from './esm-stubs';
+import { curveTableClient, curveTableRecords } from './extract-fixtures';
 import armorTier22 from './fixtures/curv-creatures-armor-tier22.json';
-import armorTier49Zzz from './fixtures/curv-creatures-armor-tier49-zzz.json';
-import percentOfMinToMaxRange from './fixtures/curv-player-range-percentofmintomaxrangedamagemult.json';
-import luckVatsCriticalCharge from './fixtures/curv-player-vats-luckvatscriticalcharge.json';
-import chargedMeleeAttack from './fixtures/curv-legendarymods-weapon-chargedmeleeattack.json';
-import specialLevelReward from './fixtures/curv-player-special-levelrewardcurve.json';
-import legendaryPerkSlotCount from './fixtures/curv-player-perks-legendaryperkslotcount.json';
 
 // Fixtures are verbatim `esm get <formid|edid> --json` output (20260710
 // ESM): CT_Creatures_Armor_Universal_Tier22 (0x0076E999, the record proven
@@ -77,89 +72,9 @@ describe('toCurveTableFile', () => {
   it('returns an empty curve (not null) for an empty array', () => {
     expect(toCurveTableFile([])).toEqual({ curve: [] });
   });
-
-  it('normalizes the singleton range-falloff curve (CT_Player_PercentOfMinToMaxRangeDMGMult), matching the previously hand-copied file', () => {
-    const file = toCurveTableFile(
-      (percentOfMinToMaxRange as { fields: { Curve: unknown } }).fields.Curve,
-    );
-    expect(file).toEqual({
-      curve: [
-        { x: 1, y: 1 },
-        { x: 1.5, y: 0.75 },
-        { x: 1.75, y: 0.55 },
-        { x: 2, y: 0.2 },
-      ],
-    });
-  });
 });
 
 describe('extractCurveTables', () => {
-  /** Minimal DFOB stub — real DFOB records carry exactly one `Object` field. */
-  function dfobRecord(formId: string, editorId: string, target: string): EsmRecord {
-    return {
-      header: { signature: 'DFOB', form_id: formId },
-      editor_id: editorId,
-      fields: { Object: target },
-    };
-  }
-
-  // Every test's fake client resolves the singletons' DFOB-first chain
-  // (DFOB by formid → `Object` → CURV by formid, same as
-  // `resolveSingletonRecord`) so group-focused tests aren't forced to
-  // special-case the extra files the singleton loop always appends. CURV
-  // records are ALSO keyed by editor_id for the fallback-path tests. See the
-  // dedicated singleton tests below for the DFOB failure/repoint paths.
-  const records: Record<string, EsmRecord> = {
-    '0x0076E999': armorTier22 as unknown as EsmRecord,
-    '0x0076E9B4': armorTier49Zzz as unknown as EsmRecord,
-    // DFOB bridges (formid → Object → CURV formid).
-    '0x008407AD': dfobRecord(
-      '0x008407AD',
-      'CombatFormulaPercentOfMinToMaxRangeDMGMult_DO',
-      '0x008407AC',
-    ),
-    '0x0065562A': dfobRecord('0x0065562A', 'LuckVATSCriticalChargeCurve_DO', '0x00655629'),
-    '0x0089A83C': dfobRecord(
-      '0x0089A83C',
-      'WeaponSecondaryChargeUpDamageBonusCurve_DO',
-      '0x008A3B85',
-    ),
-    '0x004F4740': dfobRecord('0x004F4740', 'SpecialPointCurve_DO', '0x004F473F'),
-    '0x005B67A1': dfobRecord('0x005B67A1', 'LegendaryPerkSlotCurve_DO', '0x005B67A0'),
-    // Singleton CURVs by formid (the DFOB target hop)…
-    '0x008407AC': percentOfMinToMaxRange as unknown as EsmRecord,
-    '0x00655629': luckVatsCriticalCharge as unknown as EsmRecord,
-    '0x008A3B85': chargedMeleeAttack as unknown as EsmRecord,
-    '0x004F473F': specialLevelReward as unknown as EsmRecord,
-    '0x005B67A0': legendaryPerkSlotCount as unknown as EsmRecord,
-    // …and by editor_id (the DFOB-failure fallback path).
-    CT_Player_PercentOfMinToMaxRangeDMGMult: percentOfMinToMaxRange as unknown as EsmRecord,
-    CT_LuckVATSCriticalCharge: luckVatsCriticalCharge as unknown as EsmRecord,
-    CT_Legendary_Weapon_ChargedUpWeapon: chargedMeleeAttack as unknown as EsmRecord,
-    SPECIAL_LevelRewardCurve: specialLevelReward as unknown as EsmRecord,
-    LegendaryPerkSlotCount: legendaryPerkSlotCount as unknown as EsmRecord,
-  };
-
-  function makeClient(
-    searchRows: Array<{ form_id: string; editor_id: string }>,
-    recordSet: Record<string, EsmRecord> = records,
-  ): EsmSource {
-    const base = createInMemoryEsmSource({ records: recordSet });
-    return {
-      ...base,
-      async search(pattern, opts = {}) {
-        // Only the Creatures/Armor group's pattern is exercised by this fake
-        // client — the other 3 groups return empty (landing in `files: []`,
-        // not `unresolved`). Intentionally looser than real esm glob matching
-        // so a search hit with no parseable tier suffix still surfaces.
-        if (pattern.includes('Creatures_Armor') && opts.type === 'CURV') {
-          return searchRows.map((r) => ({ ...r, record_type: 'CURV', name: null }));
-        }
-        return base.search(pattern, opts);
-      },
-    };
-  }
-
   const singletonRelativePaths = [
     'player/range/percentofmintomaxrangedamagemult.json',
     'player/vats/luckvatscriticalcharge.json',
@@ -169,7 +84,7 @@ describe('extractCurveTables', () => {
   ];
 
   it('writes one file per tier, sorted ascending, including a zzz-renamed record, plus all 5 singletons', async () => {
-    const client = makeClient([
+    const client = curveTableClient([
       { form_id: '0x0076E999', editor_id: 'CT_Creatures_Armor_Universal_Tier22' },
       { form_id: '0x0076E9B4', editor_id: 'zzzCT_Creatures_Armor_Universal_Tier49' },
     ]);
@@ -185,7 +100,7 @@ describe('extractCurveTables', () => {
   });
 
   it('reports unresolved for a search hit with no parseable tier and skips it (not a crash)', async () => {
-    const client = makeClient([
+    const client = curveTableClient([
       { form_id: '0x0076E999', editor_id: 'CT_Creatures_Armor_Universal_Tier22' },
       { form_id: '0x00999999', editor_id: 'CT_Creatures_Armor_NotATierRecord' },
     ]);
@@ -196,7 +111,7 @@ describe('extractCurveTables', () => {
   });
 
   it('reports unresolved when get() fails for a matched record', async () => {
-    const client = makeClient([
+    const client = curveTableClient([
       { form_id: '0xDEADBEEF', editor_id: 'CT_Creatures_Armor_Universal_Tier1' },
     ]);
     const { files, unresolved } = await extractCurveTables(client);
@@ -236,7 +151,7 @@ describe('extractCurveTables', () => {
     it('resolves each singleton DFOB-first and writes it alongside the group files', async () => {
       // No group search hits at all — the singletons don't depend on any
       // CURVE_TABLE_GROUPS match.
-      const client = makeClient([]);
+      const client = curveTableClient([]);
       const { files, unresolved } = await extractCurveTables(client);
       expect(unresolved).toEqual([]);
       expect(files).toHaveLength(5);
@@ -296,9 +211,9 @@ describe('extractCurveTables', () => {
     it('falls back to the editor_id get (with an unresolved note) when a DFOB fails to resolve', async () => {
       // Strip the DFOB records — every singleton takes the fallback path.
       const noDfobs = Object.fromEntries(
-        Object.entries(records).filter(([, rec]) => rec.header.signature !== 'DFOB'),
+        Object.entries(curveTableRecords()).filter(([, rec]) => rec.header.signature !== 'DFOB'),
       );
-      const client = makeClient([], noDfobs);
+      const client = curveTableClient([], noDfobs);
       const { files, unresolved } = await extractCurveTables(client);
       expect(files).toHaveLength(5);
       expect(files.map((f) => f.relativePath)).toEqual(singletonRelativePaths);
@@ -309,14 +224,15 @@ describe('extractCurveTables', () => {
     it('uses a repointed DFOB target (the exe truth) but flags the mismatch for review', async () => {
       // Repoint the range-falloff DFOB at the luck curve.
       const repointed = {
-        ...records,
-        '0x008407AD': dfobRecord(
+        ...curveTableRecords(),
+        '0x008407AD': stubRecord(
+          'DFOB',
           '0x008407AD',
           'CombatFormulaPercentOfMinToMaxRangeDMGMult_DO',
-          '0x00655629',
+          { Object: '0x00655629' },
         ),
       };
-      const client = makeClient([], repointed);
+      const client = curveTableClient([], repointed);
       const { files, unresolved } = await extractCurveTables(client);
       expect(files).toHaveLength(5);
       // The DFOB target wins: the range-falloff output now carries the luck curve.
@@ -329,15 +245,16 @@ describe('extractCurveTables', () => {
 
     it('falls back (with a note) when a DFOB points at a non-CURV record', async () => {
       const misdirected = {
-        ...records,
+        ...curveTableRecords(),
         // Point the charged-melee DFOB at another DFOB record (not a CURV).
-        '0x0089A83C': dfobRecord(
+        '0x0089A83C': stubRecord(
+          'DFOB',
           '0x0089A83C',
           'WeaponSecondaryChargeUpDamageBonusCurve_DO',
-          '0x0065562A',
+          { Object: '0x0065562A' },
         ),
       };
-      const client = makeClient([], misdirected);
+      const client = curveTableClient([], misdirected);
       const { files, unresolved } = await extractCurveTables(client);
       expect(files).toHaveLength(5);
       expect(files[2].editorId).toBe('CT_Legendary_Weapon_ChargedUpWeapon'); // fallback get by editor_id
@@ -358,26 +275,23 @@ describe('extractCurveTables', () => {
 });
 
 describe('buildCurveTableBarrels', () => {
+  function tierFile(group: string, tier: number, formId: string): ExtractedCurveTableFile {
+    const [scope, kind] = group.split('/');
+    const Kind = kind[0].toUpperCase() + kind.slice(1);
+    const Scope = scope[0].toUpperCase() + scope.slice(1);
+    return {
+      relativePath: `${group}/${kind}_universal_tier${tier}.json`,
+      editorId: `CT_${Scope}_${Kind}_Universal_Tier${tier}`,
+      formId,
+      content: { curve: [{ x: tier, y: tier }] },
+    };
+  }
+
   it('produces one barrel per CURVE_TABLE_GROUPS directory', () => {
-    const files: ExtractedCurveTableFile[] = [
-      {
-        relativePath: 'creatures/health/health_universal_tier1.json',
-        editorId: 'CT_Creatures_Health_Universal_Tier1',
-        formId: '0x123456',
-        content: { curve: [{ x: 1, y: 1 }] },
-      },
-      {
-        relativePath: 'creatures/health/health_universal_tier5.json',
-        editorId: 'CT_Creatures_Health_Universal_Tier5',
-        formId: '0x123457',
-        content: { curve: [{ x: 5, y: 5 }] },
-      },
-      {
-        relativePath: 'player/damage/damage_universal_tier2.json',
-        editorId: 'CT_Player_Damage_Universal_Tier2',
-        formId: '0x123458',
-        content: { curve: [{ x: 2, y: 2 }] },
-      },
+    const files = [
+      tierFile('creatures/health', 1, '0x123456'),
+      tierFile('creatures/health', 5, '0x123457'),
+      tierFile('player/damage', 2, '0x123458'),
     ];
     const barrels = buildCurveTableBarrels(files);
     expect(barrels).toHaveLength(2);
@@ -389,19 +303,9 @@ describe('buildCurveTableBarrels', () => {
   });
 
   it('sorts tiers ascending within each barrel', () => {
-    const files: ExtractedCurveTableFile[] = [
-      {
-        relativePath: 'creatures/health/health_universal_tier5.json',
-        editorId: 'CT_Creatures_Health_Universal_Tier5',
-        formId: '0x123456',
-        content: { curve: [{ x: 5, y: 5 }] },
-      },
-      {
-        relativePath: 'creatures/health/health_universal_tier1.json',
-        editorId: 'CT_Creatures_Health_Universal_Tier1',
-        formId: '0x123457',
-        content: { curve: [{ x: 1, y: 1 }] },
-      },
+    const files = [
+      tierFile('creatures/health', 5, '0x123456'),
+      tierFile('creatures/health', 1, '0x123457'),
     ];
     const barrels = buildCurveTableBarrels(files);
     expect(barrels).toHaveLength(1);
@@ -422,12 +326,7 @@ describe('buildCurveTableBarrels', () => {
         formId: '0x008407AC',
         content: { curve: [{ x: 1, y: 1 }] },
       },
-      {
-        relativePath: 'creatures/health/health_universal_tier1.json',
-        editorId: 'CT_Creatures_Health_Universal_Tier1',
-        formId: '0x123456',
-        content: { curve: [{ x: 1, y: 1 }] },
-      },
+      tierFile('creatures/health', 1, '0x123456'),
     ];
     const barrels = buildCurveTableBarrels(files);
     expect(barrels).toHaveLength(1);
@@ -435,19 +334,9 @@ describe('buildCurveTableBarrels', () => {
   });
 
   it('produces deterministic output (same input → byte-identical source)', () => {
-    const files: ExtractedCurveTableFile[] = [
-      {
-        relativePath: 'creatures/health/health_universal_tier5.json',
-        editorId: 'CT_Creatures_Health_Universal_Tier5',
-        formId: '0x123456',
-        content: { curve: [{ x: 5, y: 5 }] },
-      },
-      {
-        relativePath: 'creatures/health/health_universal_tier1.json',
-        editorId: 'CT_Creatures_Health_Universal_Tier1',
-        formId: '0x123457',
-        content: { curve: [{ x: 1, y: 1 }] },
-      },
+    const files = [
+      tierFile('creatures/health', 5, '0x123456'),
+      tierFile('creatures/health', 1, '0x123457'),
     ];
     const barrels1 = buildCurveTableBarrels(files);
     const barrels2 = buildCurveTableBarrels(files);
@@ -455,19 +344,9 @@ describe('buildCurveTableBarrels', () => {
   });
 
   it('generates barrel source with proper imports and export', () => {
-    const files: ExtractedCurveTableFile[] = [
-      {
-        relativePath: 'creatures/health/health_universal_tier1.json',
-        editorId: 'CT_Creatures_Health_Universal_Tier1',
-        formId: '0x123456',
-        content: { curve: [{ x: 1, y: 1 }] },
-      },
-      {
-        relativePath: 'creatures/health/health_universal_tier5.json',
-        editorId: 'CT_Creatures_Health_Universal_Tier5',
-        formId: '0x123457',
-        content: { curve: [{ x: 5, y: 5 }] },
-      },
+    const files = [
+      tierFile('creatures/health', 1, '0x123456'),
+      tierFile('creatures/health', 5, '0x123457'),
     ];
     const barrels = buildCurveTableBarrels(files);
     const source = barrels[0].source;

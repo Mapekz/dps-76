@@ -11,17 +11,22 @@ import {
   SHARED_ONSLAUGHT_COUNTER_AV,
   ARMOR_PENETRATION_AV,
   type MgefInfo,
+  type MgefTranslationDeps,
   type SpellEffect,
   type AvifRoute,
+  type TranslateOptions,
 } from '../normalize/mgef';
 import {
   flattenPerkConditionRows,
   translateConditions,
+  type ConditionTranslationContext,
   type RawCondition,
 } from '../normalize/conditions';
 import type { EsmRecord, EsmSource } from '../esm-client';
+import type { Bucket, Condition, CurveInput, ModifierFragment } from '@/types/modifiers';
 import { createInMemoryEsmSource } from '../esm-source-fake';
 import { extractPerks } from '../extract-perks';
+import { effect, esmEffectConditions, fixtureClient, mgef } from './normalize-fixture';
 import fortifyStrengthChemEffect from './fixtures/mgef-fortifystrengthchemeffect.json';
 import quickHands01 from './fixtures/perk-quickhands01.json';
 import bandito01 from './fixtures/perk-bandito01.json';
@@ -53,153 +58,449 @@ import modKineticLiningPerk from './fixtures/perk-mod-kinetic-lining.json';
 // Pins the PURE (sync) MGEF → IR translation with plain fixtures — no esm CLI
 // client, no shell-out. The async gather lives in translateMagicEffect.
 
-function mgef(overrides: Partial<MgefInfo> = {}): MgefInfo {
-  return {
-    edid: 'TestMgef',
-    name: 'Test',
-    archetype: 'Value Modifier',
-    actorValue: '0xAV',
-    resistValue: null,
-    perkToApply: null,
-    explosion: null,
-    keywords: [],
-    dispelWithKeywords: false,
-    detrimental: false,
-    conditionRows: [],
-    ...overrides,
-  };
-}
-
-function effect(overrides: Partial<SpellEffect> = {}): SpellEffect {
-  return {
-    mgefFormId: '0xM',
-    magnitude: 0,
-    duration: 0,
-    conditionRows: [],
-    curvePoints: null,
-    curveInputAv: null,
-    magnitudeGlobal: null,
-    cooldownDurationSec: null,
-    area: null,
-    ...overrides,
-  };
-}
-
 const noRoutes = new Map<string, AvifRoute[]>();
 // AV resolves to a fallback route (STAT_SneakAttackBonus → sneakBonus, ×0.01).
 const edids = new Map<string, string>([['0xAV', 'STAT_SneakAttackBonus']]);
 
-describe('translate (pure MGEF → IR)', () => {
-  it('emits a plain value modifier via a fallback route: value = magnitude × scale', () => {
-    const r = translate(mgef(), effect({ magnitude: 50 }), noRoutes, edids);
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({ bucket: 'sneakBonus', op: 'ADD', value: 0.5, conditions: [] });
-    expect('curve' in r.modifiers[0]).toBe(false);
-  });
+const addMod = (bucket: Bucket, value: number, conditions: Condition[] = []): ModifierFragment => ({
+  bucket,
+  op: 'ADD',
+  value,
+  conditions,
+});
 
-  it('emits a curve modifier carrying curveScale (not value) when the effect has a curve', () => {
-    const curved = effect({
-      curvePoints: [
-        { x: 0.05, y: 130 },
-        { x: 1.0, y: 0 },
-      ],
-      curveInputAv: '0x00000392',
+interface ConditionCase {
+  name: string;
+  rows: RawCondition[];
+  ctx?: Partial<ConditionTranslationContext>;
+  conditions: Condition[] | null;
+  unresolved?: string[];
+}
+
+function itTranslatesConditions(cases: ConditionCase[]): void {
+  for (const row of cases) {
+    it(row.name, () => {
+      const { conditions, unresolved } = translateConditions(row.rows, {
+        edidByFormId: new Map(),
+        ...row.ctx,
+      });
+      expect(conditions).toEqual(row.conditions);
+      expect(unresolved).toEqual(row.unresolved ?? []);
     });
-    const r = translate(mgef(), curved, noRoutes, edids);
-    expect(r.modifiers).toHaveLength(1);
-    const m = r.modifiers[0];
-    expect(m.curve?.input).toBe('healthFraction');
-    // The scale becomes curveScale; there is no `value` on the curve variant.
-    expect(m.curve ? m.curveScale : null).toBeCloseTo(0.01, 10);
-    expect('value' in m).toBe(false);
-  });
+  }
+}
 
+const eq = (fn: string, cmp: number, extra: Partial<RawCondition> = {}): RawCondition => ({
+  Function: fn,
+  'Comparison Value': cmp,
+  Operator: 'Equal To',
+  ...extra,
+});
+
+/** Raw `Perk Conditions` node; a bare row array is a tab with no `Run On (Tab Index)`. */
+function perkConditions(...tabs: Array<RawCondition[] | { tab: number; rows: RawCondition[] }>) {
+  return tabs.map((t) =>
+    Array.isArray(t)
+      ? { 'Perk Condition': esmEffectConditions(t) }
+      : { 'Perk Condition': { 'Run On (Tab Index)': t.tab, ...esmEffectConditions(t.rows) } },
+  );
+}
+
+function entryPointEffect(
+  epName: string,
+  functionName: string,
+  fields: Record<string, unknown> = {},
+): Record<string, unknown> {
+  return {
+    'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+    'Entry Point': { 'Entry Point': { name: epName }, Function: { name: functionName } },
+    ...fields,
+  };
+}
+
+function perkRecord(editorId: string, ...effects: Record<string, unknown>[]) {
+  return { editor_id: editorId, fields: { Effects: effects.map((e) => ({ Effect: e })) } };
+}
+
+function runGrantedPerk(
+  client: EsmSource,
+  contextEdid: string,
+  perkFormId: string,
+  deps: Partial<Omit<MgefTranslationDeps, 'client'>> = {},
+) {
+  return translateGrantedPerk(
+    { client, routes: new Map(), edidByFormId: new Map(), ...deps },
+    contextEdid,
+    perkFormId,
+  );
+}
+
+function runEnchantment(
+  client: EsmSource,
+  enchFormId: string,
+  deps: Partial<Omit<MgefTranslationDeps, 'client'>> = {},
+) {
+  return translateEnchantment(
+    { client, routes: new Map(), edidByFormId: new Map(), ...deps },
+    enchFormId,
+  );
+}
+
+describe('translate (pure MGEF → IR)', () => {
   it('skips non-value archetypes and reports an override note', () => {
     const r = translate(mgef({ archetype: 'Script' }), effect({ magnitude: 5 }), noRoutes, edids);
     expect(r.modifiers).toHaveLength(0);
     expect(r.notes.some((n) => n.includes('needs override'))).toBe(true);
   });
+});
 
-  it("carries curve.input 'healthCurrent' for a Peak Value Modifier effect on a routed AV (Juggernaut's-style)", () => {
-    const routedAv = new Map<string, AvifRoute[]>([
-      ['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]],
-    ]);
-    const curved = effect({
+describe('translate (flat AV routes → one modifier)', () => {
+  const flatRouteRows: Array<{
+    name: string;
+    avEdid: string;
+    mgef?: Partial<MgefInfo>;
+    effect: Partial<SpellEffect>;
+    opts?: TranslateOptions;
+    modifiers: ModifierFragment[];
+  }> = [
+    {
+      name: 'emits a plain value modifier via a fallback route: value = magnitude × scale',
+      avEdid: 'STAT_SneakAttackBonus',
+      effect: { magnitude: 50 },
+      modifiers: [addMod('sneakBonus', 0.5)],
+    },
+    {
+      name: 'routes SPECIAL AVs at scale 1 (legendary +STR stars, chem SPECIAL buffs, 2026-07-10)',
+      avEdid: 'Strength',
+      effect: { magnitude: 3 },
+      modifiers: [addMod('specialStrength', 3)],
+    },
+    {
+      name: "routes STAT_DmgPerCrippled to dbm with a perCrippledLimb condition (Bully's, 2026-07-10)",
+      avEdid: 'STAT_DmgPerCrippled',
+      effect: { magnitude: 20 },
+      modifiers: [addMod('dbm', 0.2, [{ kind: 'perCrippledLimb', max: 6 }])],
+    },
+    {
+      name: "routes STAT_DmgVsClose to dbm with a targetDistance 'close' condition (Guerrilla, 2026-07-11)",
+      avEdid: 'STAT_DmgVsClose',
+      effect: { magnitude: 10 },
+      modifiers: [addMod('dbm', 0.1, [{ kind: 'targetDistance', range: 'close' }])],
+    },
+    {
+      name: "routes STAT_DmgVsFar to dbm with a targetDistance 'far' condition (Down Ranger, Sniper's, 2026-07-11)",
+      avEdid: 'STAT_DmgVsFar',
+      effect: { magnitude: 100 },
+      modifiers: [addMod('dbm', 1.0, [{ kind: 'targetDistance', range: 'far' }])],
+    },
+    {
+      name: "routes a flat Peak Value Modifier on STAT_LockpickingTier to the lockpickSkill bucket via the FALLBACK_AVIF_ROUTES fallback (Picklock/Master Infiltrator/Safecracker's-style grant, scale 1 not 0.01 — integer skill points)",
+      avEdid: 'STAT_LockpickingTier',
+      mgef: { archetype: 'Peak Value Modifier' },
+      effect: { magnitude: 1 },
+      modifiers: [addMod('lockpickSkill', 1)],
+    },
+    {
+      name: 'routes a flat Peak Value Modifier on STAT_HackingTier to the hackingSkill bucket via FALLBACK_AVIF_ROUTES (scale 1 — integer skill points)',
+      avEdid: 'STAT_HackingTier',
+      mgef: { archetype: 'Peak Value Modifier' },
+      effect: { magnitude: 1 },
+      modifiers: [addMod('hackingSkill', 1)],
+    },
+    {
+      name: 'routes a flat Peak Value Modifier on STAT_HealMultStimpak to the stimpakHealMult bucket via FALLBACK_AVIF_ROUTES (scale 1 — percent points)',
+      avEdid: 'STAT_HealMultStimpak',
+      mgef: { archetype: 'Peak Value Modifier' },
+      effect: { magnitude: 30 },
+      modifiers: [addMod('stimpakHealMult', 30)],
+    },
+    {
+      name: 'routes STAT_DmgGrenade to thrown-grenade-scoped dbm (GHL_BombScientist shape, scale 0.01)',
+      avEdid: 'STAT_DmgGrenade',
+      mgef: { archetype: 'Peak Value Modifier' },
+      effect: { magnitude: 50 },
+      modifiers: [
+        addMod('dbm', 0.5, [
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeThrown', present: true },
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeGrenade', present: true },
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeThrowingKnife', present: false },
+        ]),
+      ],
+    },
+    {
+      name: "routes a Peak Value Modifier on AmmoSpenderMaxStacks to bulletStormMaxStacks (Heavy Gunner's abAmmoSpenderFortifyStacks-style flat magnitude, Bullet Storm 2026-07-16)",
+      avEdid: 'AmmoSpenderMaxStacks',
+      mgef: { archetype: 'Peak Value Modifier' },
+      effect: { magnitude: 10 },
+      modifiers: [addMod('bulletStormMaxStacks', 10)],
+    },
+    // AV routed via FALLBACK_AVIF_ROUTES['Strength'] (scale 1) so the sign of
+    // the pushed value is a direct read of translate()'s negation logic.
+    {
+      name: 'negates a flat Peak Value Modifier magnitude when detrimental (Mutation_ReduceStrength-style: mag 3 → −3)',
+      avEdid: 'Strength',
+      mgef: { archetype: 'Peak Value Modifier', detrimental: true },
+      effect: { magnitude: 3 },
+      modifiers: [addMod('specialStrength', -3)],
+    },
+    {
+      name: 'does NOT negate when detrimental is false (guard against over-negation)',
+      avEdid: 'Strength',
+      mgef: { archetype: 'Peak Value Modifier', detrimental: false },
+      effect: { magnitude: 3 },
+      modifiers: [addMod('specialStrength', 3)],
+    },
+    {
+      name: 'routes a Contact-delivered Detrimental Peak Value Modifier on AV DamageResist to armorPenFlat with a positive value (Cosmic Knife Super-Heated-style: mag 25 → +25, 2026-08-06)',
+      avEdid: 'DamageResist',
+      mgef: { archetype: 'Peak Value Modifier', detrimental: true },
+      effect: { magnitude: 25 },
+      opts: { conditionCtx: { subjectIsTarget: true } },
+      modifiers: [addMod('armorPenFlat', 25)],
+    },
+    {
+      name: 'still routes the same MGEF shape Self-delivered to damageResistGain with negated magnitude (Barbarian/Rooted-style self-buff regression: mag 25 → −25)',
+      avEdid: 'DamageResist',
+      mgef: { archetype: 'Peak Value Modifier', detrimental: true },
+      effect: { magnitude: 25 },
+      modifiers: [addMod('damageResistGain', -25)],
+    },
+    {
+      name: 'DamageDamageResistEffect Value Modifier Contact → armorPenFlat 0.5 (Sheepsquatch Shard, 2026-08-28)',
+      avEdid: 'DamageResist',
+      mgef: {
+        edid: 'DamageDamageResistEffect',
+        archetype: 'Value Modifier',
+        actorValue: '0x000002E3',
+        detrimental: true,
+      },
+      effect: { magnitude: 0.5, duration: 5 },
+      opts: { conditionCtx: { subjectIsTarget: true } },
+      modifiers: [addMod('armorPenFlat', 0.5)],
+    },
+    {
+      name: "routes a Peak Value Modifier on AV Health to maxHealth (Adrenal Reaction's permanent max-HP cut, 2026-07-14)",
+      avEdid: 'Health',
+      mgef: { archetype: 'Peak Value Modifier' },
+      effect: { magnitude: 25 },
+      modifiers: [addMod('maxHealth', 25)],
+    },
+    {
+      name: "routes a Peak Value Modifier on AV ActionPoints to apMax (FortifyActionPointsFood's +AP, 2026-07-15)",
+      avEdid: 'ActionPoints',
+      mgef: { archetype: 'Peak Value Modifier' },
+      effect: { magnitude: 30 },
+      modifiers: [addMod('apMax', 30)],
+    },
+    {
+      name: "negates Scaly Skin's Detrimental Mutation_ReduceActionPoints (mag 50 → apMax −50)",
+      avEdid: 'ActionPoints',
+      mgef: { archetype: 'Peak Value Modifier', detrimental: true },
+      effect: { magnitude: 50 },
+      modifiers: [addMod('apMax', -50)],
+    },
+    {
+      name: "routes AV ActionPointsRate to apRegenFlat at scale 1 (Company Tea's FortifyActionPointRegenFood +10)",
+      avEdid: 'ActionPointsRate',
+      mgef: { archetype: 'Peak Value Modifier' },
+      effect: { magnitude: 10 },
+      modifiers: [addMod('apRegenFlat', 10)],
+    },
+    {
+      name: "routes STAT_DmgAP to a scaledByWeaponApCost dbm (Number Cruncher's abPerkFortifyDmgAP, mag 2 → 0.02/AP)",
+      avEdid: 'STAT_DmgAP',
+      mgef: { archetype: 'Peak Value Modifier' },
+      effect: { magnitude: 2 },
+      modifiers: [addMod('dbm', 0.02, [{ kind: 'scaledByWeaponApCost' }])],
+    },
+    {
+      name: 'routes a flat Peak Value Modifier on STAT_VATSAccuracy to vatsHitChance (V.A.T.S. Enhanced-style: magnitude 50 → 0.50, Phase 4 2026-07-18)',
+      avEdid: 'STAT_VATSAccuracy',
+      mgef: { archetype: 'Peak Value Modifier' },
+      effect: { magnitude: 50 },
+      modifiers: [addMod('vatsHitChance', 0.5)],
+    },
+  ];
+
+  for (const row of flatRouteRows) {
+    it(row.name, () => {
+      const av = row.mgef?.actorValue ?? '0xAV';
+      const r = translate(
+        mgef(row.mgef),
+        effect(row.effect),
+        noRoutes,
+        new Map([[av, row.avEdid]]),
+        row.opts,
+      );
+      expect(r.modifiers).toEqual(row.modifiers);
+      expect(r.modifiers.some((m) => 'curve' in m)).toBe(false);
+    });
+  }
+});
+
+describe('translate (curve inputs)', () => {
+  const curveInputRows: Array<{
+    name: string;
+    mgef?: Partial<MgefInfo>;
+    route?: AvifRoute['bucket'];
+    avEdid?: string;
+    curvePoints: Array<{ x: number; y: number }>;
+    curveInputAv: string;
+    bucket: Bucket;
+    conditions?: Condition[];
+    input: CurveInput;
+    curveScale?: number;
+  }> = [
+    {
+      name: 'emits a curve modifier carrying curveScale (not value) when the effect has a curve',
+      curvePoints: [
+        { x: 0.05, y: 130 },
+        { x: 1.0, y: 0 },
+      ],
+      curveInputAv: '0x00000392',
+      bucket: 'sneakBonus',
+      input: 'healthFraction',
+    },
+    {
+      name: "carries curve.input 'healthCurrent' for a Peak Value Modifier effect on a routed AV (Juggernaut's-style)",
+      mgef: { archetype: 'Peak Value Modifier' },
+      route: 'dbm',
       curvePoints: [
         { x: 0, y: 0 },
         { x: 1000, y: 100 },
       ],
       curveInputAv: '0x000002D4',
-    });
-    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), curved, routedAv, edids);
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0].curve?.input).toBe('healthCurrent');
-  });
-
-  it("carries curve.input 'intelligence' for a Peak Value Modifier effect on STAT_DmgMultEnergy (Science!-style)", () => {
-    const scienceEdids = new Map<string, string>([['0xAV', 'STAT_DmgMultEnergy']]);
-    const curved = effect({
+      bucket: 'dbm',
+      input: 'healthCurrent',
+    },
+    {
+      name: "carries curve.input 'intelligence' for a Peak Value Modifier effect on STAT_DmgMultEnergy (Science!-style)",
+      mgef: { archetype: 'Peak Value Modifier' },
+      avEdid: 'STAT_DmgMultEnergy',
       curvePoints: [
         { x: 0, y: 0 },
         { x: 15, y: 0.3 },
       ],
       curveInputAv: '0x000002C6',
+      bucket: 'dbm',
+      conditions: [{ kind: 'damageTypeScope', types: ['energy'] }],
+      input: 'intelligence',
+      curveScale: 1,
+    },
+    {
+      name: "carries curve.input 'weaponCondition' for Polished via the 0x0000039F engine-AV mapping (20260717 wired a real input AV; the old edid-keyed null-input override is retired)",
+      mgef: { edid: 'Legendary_Weapon_PolishedPerkApplyEffect', archetype: 'Peak Value Modifier' },
+      route: 'dbm',
+      curvePoints: [
+        { x: 1.0, y: 0 },
+        { x: 2.0, y: 60 },
+      ],
+      curveInputAv: '0x0000039F',
+      bucket: 'dbm',
+      input: 'weaponCondition',
+    },
+    {
+      name: "carries curve.input 'onslaughtStacks' for a Peak Value Modifier on a routed AV (Whacker Smacker-style, Onslaught 2026-07-12)",
+      mgef: { archetype: 'Peak Value Modifier' },
+      route: 'powerAttackBonus',
+      curvePoints: [
+        { x: 0, y: 0 },
+        { x: 1, y: 5 },
+        { x: 100, y: 500 },
+      ],
+      curveInputAv: '0x00000395',
+      bucket: 'powerAttackBonus',
+      input: 'onslaughtStacks',
+    },
+    {
+      name: "carries curve.input 'lockpickSkill' for a curve keyed off STAT_LockpickingTier (0x0032CB37, Pirate Punch's unique-mod curve, 2026-08-04)",
+      mgef: { archetype: 'Peak Value Modifier' },
+      route: 'dbm',
+      curvePoints: [
+        { x: 0, y: 0 },
+        { x: 1, y: 5 },
+        { x: 20, y: 100 },
+      ],
+      curveInputAv: '0x0032CB37',
+      bucket: 'dbm',
+      input: 'lockpickSkill',
+    },
+    {
+      name: "carries curve.input 'perception' for a Peak Value Modifier on STAT_VATSAccuracy (Awareness perk, Phase 4 2026-07-18)",
+      mgef: { archetype: 'Peak Value Modifier' },
+      avEdid: 'STAT_VATSAccuracy',
+      curvePoints: [
+        { x: 1, y: 5 },
+        { x: 15, y: 18 },
+        { x: 30, y: 30 },
+        { x: 60, y: 45 },
+        { x: 100, y: 50 },
+      ],
+      curveInputAv: '0x000002C3',
+      bucket: 'vatsHitChance',
+      input: 'perception',
+    },
+  ];
+
+  for (const row of curveInputRows) {
+    it(row.name, () => {
+      const routes = row.route
+        ? new Map([['0xAV', [{ bucket: row.route, scale: 0.01, rawConditions: [] }]]])
+        : noRoutes;
+      const r = translate(
+        mgef(row.mgef),
+        effect({ curvePoints: row.curvePoints, curveInputAv: row.curveInputAv }),
+        routes,
+        new Map([['0xAV', row.avEdid ?? 'STAT_SneakAttackBonus']]),
+      );
+      expect(r.modifiers).toHaveLength(1);
+      const m = r.modifiers[0];
+      expect(m.bucket).toBe(row.bucket);
+      expect(m.conditions).toEqual(row.conditions ?? []);
+      expect(m.curve?.input).toBe(row.input);
+      // The scale becomes curveScale; there is no `value` on the curve variant.
+      expect(m.curve ? m.curveScale : null).toBeCloseTo(row.curveScale ?? 0.01, 10);
+      expect('value' in m).toBe(false);
     });
-    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), curved, noRoutes, scienceEdids);
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0].bucket).toBe('dbm');
-    expect(r.modifiers[0].conditions).toEqual([{ kind: 'damageTypeScope', types: ['energy'] }]);
-    expect(r.modifiers[0].curve?.input).toBe('intelligence');
-  });
+  }
+
+  const nullInputRows = [
+    {
+      name: 'drops a Polished-shaped effect whose input AV went back to null (no blanket edid fallback anymore)',
+      edid: 'Legendary_Weapon_PolishedPerkApplyEffect',
+      curvePoints: [
+        { x: 1.0, y: 0 },
+        { x: 2.0, y: 60 },
+      ],
+    },
+    {
+      name: 'leaves an UNMATCHED null curve input at a different edid unresolved (not a blanket rule)',
+      edid: 'SomeOtherLegendaryEffect',
+      curvePoints: [
+        { x: 0, y: 0 },
+        { x: 1, y: 1 },
+      ],
+    },
+  ];
+
+  for (const row of nullInputRows) {
+    it(row.name, () => {
+      const routedAv = new Map<string, AvifRoute[]>([
+        ['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]],
+      ]);
+      const r = translate(
+        mgef({ edid: row.edid, archetype: 'Peak Value Modifier' }),
+        effect({ curvePoints: row.curvePoints, curveInputAv: null }),
+        routedAv,
+        edids,
+      );
+      expect(r.modifiers).toHaveLength(0);
+      expect(r.notes.some((n) => n.includes('unmapped input AV null'))).toBe(true);
+    });
+  }
 });
 
-describe('translate (2026-07-10 review routes)', () => {
-  it('routes SPECIAL AVs at scale 1 (legendary +STR stars, chem SPECIAL buffs)', () => {
-    const strEdids = new Map<string, string>([['0xAV', 'Strength']]);
-    const r = translate(mgef(), effect({ magnitude: 3 }), noRoutes, strEdids);
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({
-      bucket: 'specialStrength',
-      op: 'ADD',
-      value: 3,
-      conditions: [],
-    });
-  });
-
-  it("routes STAT_DmgPerCrippled to dbm with a perCrippledLimb condition (Bully's)", () => {
-    const bullyEdids = new Map<string, string>([['0xAV', 'STAT_DmgPerCrippled']]);
-    const r = translate(mgef(), effect({ magnitude: 20 }), noRoutes, bullyEdids);
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0].bucket).toBe('dbm');
-    expect(r.modifiers[0].conditions).toEqual([{ kind: 'perCrippledLimb', max: 6 }]);
-  });
-});
-
-describe('translate (2026-07-11 A3/A4 routes)', () => {
-  it("routes STAT_DmgVsClose to dbm with a targetDistance 'close' condition (Guerrilla)", () => {
-    const closeEdids = new Map<string, string>([['0xAV', 'STAT_DmgVsClose']]);
-    const r = translate(mgef(), effect({ magnitude: 10 }), noRoutes, closeEdids);
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({
-      bucket: 'dbm',
-      op: 'ADD',
-      value: 0.1,
-      conditions: [{ kind: 'targetDistance', range: 'close' }],
-    });
-  });
-
-  it("routes STAT_DmgVsFar to dbm with a targetDistance 'far' condition (Down Ranger, Sniper's)", () => {
-    const farEdids = new Map<string, string>([['0xAV', 'STAT_DmgVsFar']]);
-    const r = translate(mgef(), effect({ magnitude: 100 }), noRoutes, farEdids);
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({
-      bucket: 'dbm',
-      op: 'ADD',
-      value: 1.0,
-      conditions: [{ kind: 'targetDistance', range: 'far' }],
-    });
-  });
-
+describe('parseMagicEffects (2026-07-11 A3/A4 routes)', () => {
   it("parseMagicEffects captures a GLOB-referenced top-level Magnitude as magnitudeGlobal (Sniper's: Effect Item Data reads 0, the real +100 lives on GLOB BOUNTY_SnipersBonus)", () => {
     const record = {
       header: { signature: 'ENCH', form_id: '0xE' },
@@ -244,152 +545,20 @@ describe('translate (2026-07-11 A3/A4 routes)', () => {
     expect(parsed.magnitude).toBe(50);
     expect(parsed.magnitudeGlobal).toBeNull();
   });
-
-  it("carries curve.input 'weaponCondition' for Polished via the 0x0000039F engine-AV mapping (20260717 wired a real input AV; the old edid-keyed null-input override is retired)", () => {
-    const routedAv = new Map<string, AvifRoute[]>([
-      ['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]],
-    ]);
-    const curved = effect({
-      curvePoints: [
-        { x: 1.0, y: 0 },
-        { x: 2.0, y: 60 },
-      ],
-      curveInputAv: '0x0000039F',
-    });
-    const r = translate(
-      mgef({ edid: 'Legendary_Weapon_PolishedPerkApplyEffect', archetype: 'Peak Value Modifier' }),
-      curved,
-      routedAv,
-      edids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0].curve?.input).toBe('weaponCondition');
-    expect(r.modifiers[0].curve ? r.modifiers[0].curveScale : null).toBeCloseTo(0.01, 10);
-  });
-
-  it('drops a Polished-shaped effect whose input AV went back to null (no blanket edid fallback anymore)', () => {
-    const routedAv = new Map<string, AvifRoute[]>([
-      ['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]],
-    ]);
-    const curved = effect({
-      curvePoints: [
-        { x: 1.0, y: 0 },
-        { x: 2.0, y: 60 },
-      ],
-      curveInputAv: null,
-    });
-    const r = translate(
-      mgef({ edid: 'Legendary_Weapon_PolishedPerkApplyEffect', archetype: 'Peak Value Modifier' }),
-      curved,
-      routedAv,
-      edids,
-    );
-    expect(r.modifiers).toHaveLength(0);
-    expect(r.notes.some((n) => n.includes('unmapped input AV null'))).toBe(true);
-  });
-
-  it('leaves an UNMATCHED null curve input at a different edid unresolved (not a blanket rule)', () => {
-    const routedAv = new Map<string, AvifRoute[]>([
-      ['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]],
-    ]);
-    const curved = effect({
-      curvePoints: [
-        { x: 0, y: 0 },
-        { x: 1, y: 1 },
-      ],
-      curveInputAv: null,
-    });
-    const r = translate(
-      mgef({ edid: 'SomeOtherLegendaryEffect', archetype: 'Peak Value Modifier' }),
-      curved,
-      routedAv,
-      edids,
-    );
-    expect(r.modifiers).toHaveLength(0);
-    expect(r.notes.some((n) => n.includes('unmapped input AV null'))).toBe(true);
-  });
 });
 
-describe('translate (Onslaught, 2026-07-12)', () => {
-  it("carries curve.input 'onslaughtStacks' for a Peak Value Modifier on a routed AV (Whacker Smacker-style)", () => {
-    const routedAv = new Map<string, AvifRoute[]>([
-      ['0xAV', [{ bucket: 'powerAttackBonus', scale: 0.01, rawConditions: [] }]],
-    ]);
-    const curved = effect({
-      curvePoints: [
-        { x: 0, y: 0 },
-        { x: 1, y: 5 },
-        { x: 100, y: 500 },
-      ],
-      curveInputAv: '0x00000395',
-    });
-    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), curved, routedAv, edids);
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0].bucket).toBe('powerAttackBonus');
-    expect(r.modifiers[0].curve?.input).toBe('onslaughtStacks');
-    expect(r.modifiers[0].curve ? r.modifiers[0].curveScale : null).toBeCloseTo(0.01, 10);
-  });
-});
-
-describe('translate (Lockpick Skill / Pirate Punch, 2026-08-04)', () => {
-  it("carries curve.input 'lockpickSkill' for a curve keyed off STAT_LockpickingTier (0x0032CB37, Pirate Punch's unique-mod curve)", () => {
-    const routedAv = new Map<string, AvifRoute[]>([
-      ['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]],
-    ]);
-    const curved = effect({
-      curvePoints: [
-        { x: 0, y: 0 },
-        { x: 1, y: 5 },
-        { x: 20, y: 100 },
-      ],
-      curveInputAv: '0x0032CB37',
-    });
-    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), curved, routedAv, edids);
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0].bucket).toBe('dbm');
-    expect(r.modifiers[0].curve?.input).toBe('lockpickSkill');
-    expect(r.modifiers[0].curve ? r.modifiers[0].curveScale : null).toBeCloseTo(0.01, 10);
-  });
-
-  it("routes a flat Peak Value Modifier on STAT_LockpickingTier to the lockpickSkill bucket via the FALLBACK_AVIF_ROUTES fallback (Picklock/Master Infiltrator/Safecracker's-style grant, scale 1 not 0.01 — integer skill points)", () => {
-    const lockpickEdids = new Map<string, string>([['0xAV', 'STAT_LockpickingTier']]);
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 1 }),
-      noRoutes,
-      lockpickEdids,
-    );
-    expect(r.modifiers).toEqual([{ bucket: 'lockpickSkill', op: 'ADD', value: 1, conditions: [] }]);
-  });
-});
-
-describe('translate (Medical Malpractice / hacking skill / Stimpak healing, 2026-08-05)', () => {
+describe('translateGrantedPerk (Medical Malpractice, 2026-08-05)', () => {
   it("routes Medical Malpractice's Add Actor Value Mult on Mod Weapon DMG Bonus Mult to dbm ADD with scaledBy stimpakHealMult", async () => {
     const perkFormId = '0x0050D7FD';
-    const perk = {
-      editor_id: 'MedicalMalpractice_Perk',
-      fields: {
-        Effects: [
-          {
-            Effect: {
-              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
-              'Entry Point': {
-                'Entry Point': { name: 'Mod Weapon DMG Bonus Mult' },
-                Function: { name: 'Add Actor Value Mult' },
-              },
-              Float: 0.01,
-              'Function Parameter 3 (Actor Value)': '0x00206F31',
-            },
-          },
-        ],
-      },
-    };
-    const client = createInMemoryEsmSource({
-      records: { [perkFormId]: perk as unknown as EsmRecord },
-      resolveEdidFallback: (formId) => formId,
-    });
-    const result = await translateGrantedPerk(
-      { client, routes: new Map(), edidByFormId: new Map() },
+    const perk = perkRecord(
+      'MedicalMalpractice_Perk',
+      entryPointEffect('Mod Weapon DMG Bonus Mult', 'Add Actor Value Mult', {
+        Float: 0.01,
+        'Function Parameter 3 (Actor Value)': '0x00206F31',
+      }),
+    );
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: perk }),
       'mod_Custom_MedicalMalpractice',
       perkFormId,
     );
@@ -400,52 +569,6 @@ describe('translate (Medical Malpractice / hacking skill / Stimpak healing, 2026
         value: 0.01,
         scaledBy: 'stimpakHealMult',
         conditions: [],
-      },
-    ]);
-  });
-
-  it('routes a flat Peak Value Modifier on STAT_HackingTier to the hackingSkill bucket via FALLBACK_AVIF_ROUTES (scale 1 — integer skill points)', () => {
-    const hackingEdids = new Map<string, string>([['0xAV', 'STAT_HackingTier']]);
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 1 }),
-      noRoutes,
-      hackingEdids,
-    );
-    expect(r.modifiers).toEqual([{ bucket: 'hackingSkill', op: 'ADD', value: 1, conditions: [] }]);
-  });
-
-  it('routes a flat Peak Value Modifier on STAT_HealMultStimpak to the stimpakHealMult bucket via FALLBACK_AVIF_ROUTES (scale 1 — percent points)', () => {
-    const stimpakEdids = new Map<string, string>([['0xAV', 'STAT_HealMultStimpak']]);
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 30 }),
-      noRoutes,
-      stimpakEdids,
-    );
-    expect(r.modifiers).toEqual([
-      { bucket: 'stimpakHealMult', op: 'ADD', value: 30, conditions: [] },
-    ]);
-  });
-
-  it('routes STAT_DmgGrenade to thrown-grenade-scoped dbm (GHL_BombScientist shape, scale 0.01)', () => {
-    const grenadeEdids = new Map<string, string>([['0xAV', 'STAT_DmgGrenade']]);
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 50 }),
-      noRoutes,
-      grenadeEdids,
-    );
-    expect(r.modifiers).toEqual([
-      {
-        bucket: 'dbm',
-        op: 'ADD',
-        value: 0.5,
-        conditions: [
-          { kind: 'weaponKeyword', keyword: 'WeaponTypeThrown', present: true },
-          { kind: 'weaponKeyword', keyword: 'WeaponTypeGrenade', present: true },
-          { kind: 'weaponKeyword', keyword: 'WeaponTypeThrowingKnife', present: false },
-        ],
       },
     ]);
   });
@@ -513,25 +636,6 @@ describe('CURVE_INPUT_AVS plumbing-perk isolation (2026-08-05)', () => {
   });
 });
 
-describe('translate (Bullet Storm, 2026-07-16)', () => {
-  it("routes a Peak Value Modifier on AmmoSpenderMaxStacks to bulletStormMaxStacks (Heavy Gunner's abAmmoSpenderFortifyStacks-style flat magnitude)", () => {
-    const bulletStormEdids = new Map<string, string>([['0xAV', 'AmmoSpenderMaxStacks']]);
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 10 }),
-      noRoutes,
-      bulletStormEdids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({
-      bucket: 'bulletStormMaxStacks',
-      op: 'ADD',
-      value: 10,
-      conditions: [],
-    });
-  });
-});
-
 describe('getMgefInfo (consumables overhaul, 2026-07-13)', () => {
   // Fixture is verbatim `esm get FortifyStrengthChemEffect --json` output
   // (20260710 ESM), formid 0x002466E6 — the "Chem: Fortify Strength" MGEF
@@ -594,168 +698,106 @@ describe('translateConditions (2026-07-10 review)', () => {
     ]);
   });
 
-  it('consumes GetIsPlayer()=1 (granted-perk self-gate) instead of leaving it unresolved', () => {
-    const row: RawCondition = {
-      Function: 'GetIsPlayer',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-    };
-    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([]);
-    expect(unresolved).toEqual([]);
-  });
+  const healthPct = (
+    fn: string,
+    operator: string,
+    cmp: number | string,
+    extra: Partial<RawCondition> = {},
+  ): RawCondition => ({ Function: fn, 'Comparison Value': cmp, Operator: operator, ...extra });
 
-  it("resolves a GLOB-valued target GetHealthPercentage to enemyHealthBelowPct (Executioner's ≤ LGND_ExecuteHealthThreshold)", () => {
-    const row: RawCondition = {
-      Function: 'GetHealthPercentage',
-      'Comparison Value': '0xGLOB',
-      Operator: 'Less Than Or Equal To',
-      'Run On': 'Target',
-    };
-    const { conditions } = translateConditions([row], {
-      edidByFormId: new Map(),
-      globalValues: new Map([['0xGLOB', 0.4]]),
-    });
-    expect(conditions).toEqual([{ kind: 'enemyHealthBelowPct', pct: 40 }]);
-  });
-
-  it('translates target GetHealthPercentage ≥ to enemyHealthAbovePct (Instigating ≥60%)', () => {
-    const row: RawCondition = {
-      Function: 'GetHealthPercentage',
-      'Comparison Value': 0.6,
-      Operator: 'Greater Than Or Equal To',
-      'Run On': 'Target',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'enemyHealthAbovePct', pct: 60 }]);
-  });
-
-  it("translates player GetHealthPercentage ≤ to healthBelowPct with no inclusive flag (Foundation's Vengeance ≤0.25)", () => {
-    const row: RawCondition = {
-      Function: 'GetHealthPercentage',
-      'Comparison Value': 0.25,
-      Operator: 'Less Than Or Equal To',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'healthBelowPct', pct: 25 }]);
-  });
-
-  it('translates player GetHealthPercentage strict < to healthBelowPct with inclusive: false', () => {
-    const row: RawCondition = {
-      Function: 'GetHealthPercentage',
-      'Comparison Value': 0.25,
-      Operator: 'Less Than',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'healthBelowPct', pct: 25, inclusive: false }]);
-  });
-
-  it('translates target GetHealthPercentage strict < to enemyHealthBelowPct with inclusive: false', () => {
-    const row: RawCondition = {
-      Function: 'GetHealthPercentage',
-      'Comparison Value': 0.4,
-      Operator: 'Less Than',
-      'Run On': 'Target',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'enemyHealthBelowPct', pct: 40, inclusive: false }]);
-  });
-
-  it('translates target GetHealthPercentage strict > to enemyHealthAbovePct with inclusive: false', () => {
-    const row: RawCondition = {
-      Function: 'GetHealthPercentage',
-      'Comparison Value': 0.6,
-      Operator: 'Greater Than',
-      'Run On': 'Target',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'enemyHealthAbovePct', pct: 60, inclusive: false }]);
-  });
-
-  it('translates GetValuePercent(Health) strict < to healthBelowPct with inclusive: false (Emergency Protocols)', () => {
-    const row: RawCondition = {
-      Function: 'GetValuePercent',
-      'Parameter 1': '0x000002D4',
-      'Comparison Value': 0.2,
-      Operator: 'Less Than',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'healthBelowPct', pct: 20, inclusive: false }]);
-  });
-
-  it('translates GetValuePercent(Health) ≤ to healthBelowPct with no inclusive flag', () => {
-    const row: RawCondition = {
-      Function: 'GetValuePercent',
-      'Parameter 1': '0x000002D4',
-      'Comparison Value': 0.25,
-      Operator: 'Less Than Or Equal To',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'healthBelowPct', pct: 25 }]);
-  });
-
-  it('translates GetValuePercent with non-Health param to unresolved (operator preserved)', () => {
-    const row: RawCondition = {
-      Function: 'GetValuePercent',
-      'Parameter 1': '0x000002EA',
-      'Comparison Value': 0,
-      Operator: 'Equal To',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([
-      expect.objectContaining({
-        kind: 'unresolved',
-        raw: expect.stringMatching(/GetValuePercent.*Equal To/),
-      }),
-    ]);
-  });
+  itTranslatesConditions([
+    {
+      name: "resolves a GLOB-valued target GetHealthPercentage to enemyHealthBelowPct (Executioner's ≤ LGND_ExecuteHealthThreshold)",
+      rows: [
+        healthPct('GetHealthPercentage', 'Less Than Or Equal To', '0xGLOB', { 'Run On': 'Target' }),
+      ],
+      ctx: { globalValues: new Map([['0xGLOB', 0.4]]) },
+      conditions: [{ kind: 'enemyHealthBelowPct', pct: 40 }],
+    },
+    {
+      name: 'translates target GetHealthPercentage ≥ to enemyHealthAbovePct (Instigating ≥60%)',
+      rows: [
+        healthPct('GetHealthPercentage', 'Greater Than Or Equal To', 0.6, { 'Run On': 'Target' }),
+      ],
+      conditions: [{ kind: 'enemyHealthAbovePct', pct: 60 }],
+    },
+    {
+      name: "translates player GetHealthPercentage ≤ to healthBelowPct with no inclusive flag (Foundation's Vengeance ≤0.25)",
+      rows: [healthPct('GetHealthPercentage', 'Less Than Or Equal To', 0.25)],
+      conditions: [{ kind: 'healthBelowPct', pct: 25 }],
+    },
+    {
+      name: 'translates player GetHealthPercentage strict < to healthBelowPct with inclusive: false',
+      rows: [healthPct('GetHealthPercentage', 'Less Than', 0.25)],
+      conditions: [{ kind: 'healthBelowPct', pct: 25, inclusive: false }],
+    },
+    {
+      name: 'translates target GetHealthPercentage strict < to enemyHealthBelowPct with inclusive: false',
+      rows: [healthPct('GetHealthPercentage', 'Less Than', 0.4, { 'Run On': 'Target' })],
+      conditions: [{ kind: 'enemyHealthBelowPct', pct: 40, inclusive: false }],
+    },
+    {
+      name: 'translates target GetHealthPercentage strict > to enemyHealthAbovePct with inclusive: false',
+      rows: [healthPct('GetHealthPercentage', 'Greater Than', 0.6, { 'Run On': 'Target' })],
+      conditions: [{ kind: 'enemyHealthAbovePct', pct: 60, inclusive: false }],
+    },
+    {
+      name: 'translates GetValuePercent(Health) strict < to healthBelowPct with inclusive: false (Emergency Protocols)',
+      rows: [healthPct('GetValuePercent', 'Less Than', 0.2, { 'Parameter 1': '0x000002D4' })],
+      conditions: [{ kind: 'healthBelowPct', pct: 20, inclusive: false }],
+    },
+    {
+      name: 'translates GetValuePercent(Health) ≤ to healthBelowPct with no inclusive flag',
+      rows: [
+        healthPct('GetValuePercent', 'Less Than Or Equal To', 0.25, {
+          'Parameter 1': '0x000002D4',
+        }),
+      ],
+      conditions: [{ kind: 'healthBelowPct', pct: 25 }],
+    },
+    {
+      name: 'translates GetValuePercent with non-Health param to unresolved (operator preserved)',
+      rows: [healthPct('GetValuePercent', 'Equal To', 0, { 'Parameter 1': '0x000002EA' })],
+      conditions: [
+        expect.objectContaining({
+          kind: 'unresolved',
+          raw: expect.stringMatching(/GetValuePercent.*Equal To/),
+        }),
+      ],
+      unresolved: ['GetValuePercent(0x000002EA) Equal To 0'],
+    },
+  ]);
 });
 
 describe('translateConditions (WornHasKeyword unique self-gate allowlist — Bullet Storm, 2026-07-16)', () => {
-  it("translates WornHasKeyword(CustomItemName_FoundationsVengeance) to a weaponKeyword condition instead of unresolved (Foundation's Vengeance +5 max-stack tier)", () => {
-    const row: RawCondition = {
-      Function: 'WornHasKeyword',
-      'Parameter 1': '0xFV',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-      'Run On': 'Subject',
-    };
-    const edidMap = new Map([['0xFV', 'CustomItemName_FoundationsVengeance']]);
-    const { conditions, unresolved } = translateConditions([row], { edidByFormId: edidMap });
-    expect(conditions).toEqual([
-      { kind: 'weaponKeyword', keyword: 'CustomItemName_FoundationsVengeance', present: true },
-    ]);
-    expect(unresolved).toEqual([]);
-  });
+  const worn = (formId: string): RawCondition =>
+    eq('WornHasKeyword', 1, { 'Parameter 1': formId, 'Run On': 'Subject' });
 
-  it("translates WornHasKeyword(RD01_CustomItemName_Valkyrie) to a weaponKeyword condition (Valkyrie's spin-up curve gate)", () => {
-    const row: RawCondition = {
-      Function: 'WornHasKeyword',
-      'Parameter 1': '0xVLK',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-      'Run On': 'Subject',
-    };
-    const edidMap = new Map([['0xVLK', 'RD01_CustomItemName_Valkyrie']]);
-    const { conditions } = translateConditions([row], { edidByFormId: edidMap });
-    expect(conditions).toEqual([
-      { kind: 'weaponKeyword', keyword: 'RD01_CustomItemName_Valkyrie', present: true },
-    ]);
-  });
-
-  it('leaves an off-allowlist CustomItemName_* keyword (dn_TheActionHero) unresolved — deliberately not added, its gated effect is data-broken either way', () => {
-    const row: RawCondition = {
-      Function: 'WornHasKeyword',
-      'Parameter 1': '0xTAH',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-      'Run On': 'Subject',
-    };
-    const edidMap = new Map([['0xTAH', 'dn_TheActionHero']]);
-    const { conditions, unresolved } = translateConditions([row], { edidByFormId: edidMap });
-    expect(conditions).toEqual([{ kind: 'unresolved', raw: 'WornHasKeyword(dn_TheActionHero)=1' }]);
-    expect(unresolved).toEqual(['WornHasKeyword(dn_TheActionHero)=1']);
-  });
+  itTranslatesConditions([
+    {
+      name: "translates WornHasKeyword(CustomItemName_FoundationsVengeance) to a weaponKeyword condition instead of unresolved (Foundation's Vengeance +5 max-stack tier)",
+      rows: [worn('0xFV')],
+      ctx: { edidByFormId: new Map([['0xFV', 'CustomItemName_FoundationsVengeance']]) },
+      conditions: [
+        { kind: 'weaponKeyword', keyword: 'CustomItemName_FoundationsVengeance', present: true },
+      ],
+    },
+    {
+      name: "translates WornHasKeyword(RD01_CustomItemName_Valkyrie) to a weaponKeyword condition (Valkyrie's spin-up curve gate)",
+      rows: [worn('0xVLK')],
+      ctx: { edidByFormId: new Map([['0xVLK', 'RD01_CustomItemName_Valkyrie']]) },
+      conditions: [
+        { kind: 'weaponKeyword', keyword: 'RD01_CustomItemName_Valkyrie', present: true },
+      ],
+    },
+    {
+      name: 'leaves an off-allowlist CustomItemName_* keyword (dn_TheActionHero) unresolved — deliberately not added, its gated effect is data-broken either way',
+      rows: [worn('0xTAH')],
+      ctx: { edidByFormId: new Map([['0xTAH', 'dn_TheActionHero']]) },
+      conditions: [{ kind: 'unresolved', raw: 'WornHasKeyword(dn_TheActionHero)=1' }],
+      unresolved: ['WornHasKeyword(dn_TheActionHero)=1'],
+    },
+  ]);
 });
 
 describe('translateConditions (tautologicalKeywords — Tone Death Well Tuned keyword-hook, 2026-08-20)', () => {
@@ -786,143 +828,161 @@ describe('translateConditions (tautologicalKeywords — Tone Death Well Tuned ke
   });
 });
 
-describe('translateConditions (subjectIsTarget — Contact-delivery GetIsPlayer inversion, 2026-07-14)', () => {
-  it('consumes GetIsPlayer()=0 (the NPC branch) instead of marking it inactive, when subjectIsTarget is set', () => {
-    const row: RawCondition = {
-      Function: 'GetIsPlayer',
-      'Comparison Value': 0,
-      Operator: 'Equal To',
-      'Run On': 'Subject',
-    };
-    const { conditions, unresolved } = translateConditions([row], {
-      edidByFormId: new Map(),
-      subjectIsTarget: true,
-    });
-    expect(conditions).toEqual([]);
-    expect(unresolved).toEqual([]);
-  });
-
-  it('marks GetIsPlayer()=1 (the PVP-only branch) inactive when subjectIsTarget is set', () => {
-    const row: RawCondition = {
-      Function: 'GetIsPlayer',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-      'Run On': 'Subject',
-    };
-    const { conditions } = translateConditions([row], {
-      edidByFormId: new Map(),
-      subjectIsTarget: true,
-    });
-    expect(conditions).toBeNull();
-  });
-
-  it('leaves the default (granted-to-player) GetIsPlayer reading unchanged when subjectIsTarget is unset', () => {
-    const grantedRow: RawCondition = {
-      Function: 'GetIsPlayer',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-    };
-    expect(translateConditions([grantedRow], { edidByFormId: new Map() }).conditions).toEqual([]);
-    const inactiveRow: RawCondition = {
-      Function: 'GetIsPlayer',
-      'Comparison Value': 0,
-      Operator: 'Equal To',
-    };
-    expect(translateConditions([inactiveRow], { edidByFormId: new Map() }).conditions).toBeNull();
-  });
+describe('translateConditions (GetIsPlayer — granted self-gate, subjectIsTarget Contact inversion 2026-07-14, Run On: Target 2026-07-18)', () => {
+  itTranslatesConditions([
+    {
+      name: 'consumes GetIsPlayer()=1 (granted-perk self-gate) instead of leaving it unresolved',
+      rows: [eq('GetIsPlayer', 1)],
+      conditions: [],
+    },
+    {
+      name: 'marks GetIsPlayer()=0 inactive in the default (granted-to-player) reading when subjectIsTarget is unset',
+      rows: [eq('GetIsPlayer', 0)],
+      conditions: null,
+    },
+    {
+      name: 'consumes GetIsPlayer()=0 (the NPC branch) instead of marking it inactive, when subjectIsTarget is set',
+      rows: [eq('GetIsPlayer', 0, { 'Run On': 'Subject' })],
+      ctx: { subjectIsTarget: true },
+      conditions: [],
+    },
+    {
+      name: 'marks GetIsPlayer()=1 (the PVP-only branch) inactive when subjectIsTarget is set',
+      rows: [eq('GetIsPlayer', 1, { 'Run On': 'Subject' })],
+      ctx: { subjectIsTarget: true },
+      conditions: null,
+    },
+    // flattenPerkConditionRows (normalize/conditions.ts) forces tab-index-2 rows'
+    // Run On to 'Target' regardless of the raw ESM field — verified on
+    // Legendary_Armor_BattleLoadersPerk 0x0079B522, whose tab 2 carries
+    // "GetIsPlayer Equal To 0.0" meaning "the bashed target isn't a player"
+    // (always true in PvE). Without this fix the row read as the SELF-gate
+    // shape (wants=false → 'inactive'), silently killing the whole effect —
+    // this is the same inversion `subjectIsTarget` already applies for
+    // Contact-delivery ENCH/SPEL walks, driven here by the row's own Run On
+    // field instead of a walk-scoped context flag.
+    {
+      name: "consumes GetIsPlayer(Target)=0 (the NPC-bashed-target branch, Battle-Loader's) instead of marking it inactive",
+      rows: [eq('GetIsPlayer', 0, { 'Run On': 'Target' })],
+      conditions: [],
+    },
+    {
+      name: "marks GetIsPlayer(Target)=1 (the PVP-only branch, Battle-Loader's) inactive",
+      rows: [eq('GetIsPlayer', 1, { 'Run On': 'Target' })],
+      conditions: null,
+    },
+  ]);
 });
 
-describe("translateConditions (GetIsPlayer Run On: Target — granted-PERK tab-index-2 gate, Battle-Loader's 2026-07-18)", () => {
-  // flattenPerkConditionRows (normalize/conditions.ts) forces tab-index-2 rows'
-  // Run On to 'Target' regardless of the raw ESM field — verified on
-  // Legendary_Armor_BattleLoadersPerk 0x0079B522, whose tab 2 carries
-  // "GetIsPlayer Equal To 0.0" meaning "the bashed target isn't a player"
-  // (always true in PvE). Without this fix the row read as the SELF-gate
-  // shape (wants=false → 'inactive'), silently killing the whole effect —
-  // this is the same inversion `subjectIsTarget` already applies for
-  // Contact-delivery ENCH/SPEL walks, driven here by the row's own Run On
-  // field instead of a walk-scoped context flag.
-  it('consumes GetIsPlayer(Target)=0 (the NPC-bashed-target branch) instead of marking it inactive', () => {
-    const row: RawCondition = {
-      Function: 'GetIsPlayer',
-      'Comparison Value': 0,
-      Operator: 'Equal To',
-      'Run On': 'Target',
-    };
-    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([]);
-    expect(unresolved).toEqual([]);
-  });
-
-  it('marks GetIsPlayer(Target)=1 (the PVP-only branch) inactive', () => {
-    const row: RawCondition = {
-      Function: 'GetIsPlayer',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-      'Run On': 'Target',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toBeNull();
-  });
-});
-
-describe('translateConditions (non-sprint combat model — IsSprinting/IsSwimming/ArmorTypePower, 2026-07-15)', () => {
-  it('consumes IsSprinting()=0 (not sprinting) instead of leaving it unresolved', () => {
-    const row: RawCondition = {
-      Function: 'IsSprinting',
-      'Comparison Value': 0,
-      Operator: 'Equal To',
-    };
-    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([]);
-    expect(unresolved).toEqual([]);
-  });
-
-  it('marks IsSprinting()=1 (sprint-only) inactive', () => {
-    const row: RawCondition = {
-      Function: 'IsSprinting',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toBeNull();
-  });
-
-  it('consumes IsSwimming()=0 (not swimming) instead of leaving it unresolved', () => {
-    const row: RawCondition = {
-      Function: 'IsSwimming',
-      'Comparison Value': 0,
-      Operator: 'Equal To',
-    };
-    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([]);
-    expect(unresolved).toEqual([]);
-  });
-
-  it('marks IsSwimming()=1 (swim-only) inactive', () => {
-    const row: RawCondition = {
-      Function: 'IsSwimming',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toBeNull();
-  });
-
-  it('maps WornHasKeyword(ArmorTypePower)=1 to inPowerArmor', () => {
-    const row: RawCondition = {
-      Function: 'WornHasKeyword',
-      'Parameter 1': '0xPA',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-      'Run On': 'Subject',
-    };
-    const { conditions, unresolved } = translateConditions([row], {
-      edidByFormId: new Map([['0xPA', 'ArmorTypePower']]),
-    });
-    expect(conditions).toEqual([{ kind: 'inPowerArmor', value: true }]);
-    expect(unresolved).toEqual([]);
-  });
+describe('translateConditions (single-row gates)', () => {
+  itTranslatesConditions([
+    {
+      name: 'consumes IsSprinting()=0 (not sprinting) instead of leaving it unresolved (non-sprint combat model, 2026-07-15)',
+      rows: [eq('IsSprinting', 0)],
+      conditions: [],
+    },
+    {
+      name: 'marks IsSprinting()=1 (sprint-only) inactive',
+      rows: [eq('IsSprinting', 1)],
+      conditions: null,
+    },
+    {
+      name: 'consumes IsSwimming()=0 (not swimming) instead of leaving it unresolved',
+      rows: [eq('IsSwimming', 0)],
+      conditions: [],
+    },
+    {
+      name: 'marks IsSwimming()=1 (swim-only) inactive',
+      rows: [eq('IsSwimming', 1)],
+      conditions: null,
+    },
+    {
+      name: 'maps WornHasKeyword(ArmorTypePower)=1 to inPowerArmor',
+      rows: [eq('WornHasKeyword', 1, { 'Parameter 1': '0xPA', 'Run On': 'Subject' })],
+      ctx: { edidByFormId: new Map([['0xPA', 'ArmorTypePower']]) },
+      conditions: [{ kind: 'inPowerArmor', value: true }],
+    },
+    {
+      name: "translates GetIsPlayerGhoul()=0 to a playerIsGhoul false gate (Gourmand's, 2026-07-11)",
+      rows: [eq('GetIsPlayerGhoul', 0)],
+      conditions: [{ kind: 'playerIsGhoul', value: false }],
+    },
+    {
+      name: 'translates GetIsPlayerGhoul()=1 to a playerIsGhoul true gate (Glowing Criticals)',
+      rows: [eq('GetIsPlayerGhoul', 1)],
+      conditions: [{ kind: 'playerIsGhoul', value: true }],
+    },
+    {
+      name: 'translates GetInIronSights Equal To 1 to aimingDownSights',
+      rows: [eq('GetInIronSights', 1)],
+      conditions: [{ kind: 'aimingDownSights', value: true }],
+    },
+    {
+      name: 'translates IsPowerAttacking Equal To 0 to powerAttack false',
+      rows: [eq('IsPowerAttacking', 0)],
+      conditions: [{ kind: 'powerAttack', value: false }],
+    },
+    {
+      name: 'translates IsPowerAttacking Equal To 1 to powerAttack true',
+      rows: [eq('IsPowerAttacking', 1)],
+      conditions: [{ kind: 'powerAttack', value: true }],
+    },
+    {
+      name: 'translates GetIsInVATS Equal To 0 to vatsOnly false',
+      rows: [eq('GetIsInVATS', 0)],
+      conditions: [{ kind: 'vatsOnly', value: false }],
+    },
+    {
+      name: 'translates GetIsInVATS Equal To 1 to vatsOnly true',
+      rows: [eq('GetIsInVATS', 1)],
+      conditions: [{ kind: 'vatsOnly', value: true }],
+    },
+    {
+      name: 'translates IsMoving Equal To 0 to standingStill true (Steady, Rooted, Chameleon)',
+      rows: [eq('IsMoving', 0)],
+      conditions: [{ kind: 'standingStill', value: true }],
+    },
+    {
+      name: 'translates IsMoving Equal To 1 to standingStill false',
+      rows: [eq('IsMoving', 1)],
+      conditions: [{ kind: 'standingStill', value: false }],
+    },
+    {
+      name: 'translates HasCompletedChallenge Equal To 1 to lifetimeChallengeCompleted',
+      rows: [eq('HasCompletedChallenge', 1, { 'Parameter 1': '0xCHAL' })],
+      ctx: {
+        edidByFormId: new Map([
+          ['0xCHAL', 'Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe'],
+        ]),
+      },
+      conditions: [
+        {
+          kind: 'lifetimeChallengeCompleted',
+          challengeId: 'Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe',
+        },
+      ],
+    },
+    {
+      name: 'IsMemberOfAPlayerTeam=1 → teammateCount ≥1 (Herd Mentality team bonus, 2026-07-14)',
+      rows: [eq('IsMemberOfAPlayerTeam', 1)],
+      conditions: [{ kind: 'teammateCount', count: 1, orMore: true }],
+    },
+    {
+      name: 'IsMemberOfAPlayerTeam=0 → teammateCount 0 (Herd Mentality solo penalty)',
+      rows: [eq('IsMemberOfAPlayerTeam', 0)],
+      conditions: [{ kind: 'teammateCount', count: 0 }],
+    },
+    {
+      name: 'maps IsMeleeAttacking()=0 to consumed (condition-whitelist round K, 2026-08-28)',
+      rows: [eq('IsMeleeAttacking', 0)],
+      conditions: [],
+    },
+    {
+      name: 'maps IsMeleeAttacking()=1 to weaponAnimTypeMax ≤6',
+      rows: [eq('IsMeleeAttacking', 1)],
+      conditions: [{ kind: 'weaponAnimTypeMax', max: 6 }],
+    },
+  ]);
 });
 
 describe('translateConditions (2026-07-11 condition kinds)', () => {
@@ -1058,25 +1118,6 @@ describe('translateConditions (2026-07-11 condition kinds)', () => {
     expect(unresolved).toEqual([]);
   });
 
-  it("translates GetIsPlayerGhoul to a playerIsGhoul gate (Gourmand's =0, Glowing Criticals =1)", () => {
-    const human: RawCondition = {
-      Function: 'GetIsPlayerGhoul',
-      'Comparison Value': 0,
-      Operator: 'Equal To',
-    };
-    const ghoul: RawCondition = {
-      Function: 'GetIsPlayerGhoul',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-    };
-    expect(translateConditions([human], { edidByFormId: new Map() }).conditions).toEqual([
-      { kind: 'playerIsGhoul', value: false },
-    ]);
-    expect(translateConditions([ghoul], { edidByFormId: new Map() }).conditions).toEqual([
-      { kind: 'playerIsGhoul', value: true },
-    ]);
-  });
-
   it('leaves an off-pattern GetDistance row unresolved instead of silently consuming it', () => {
     const row: RawCondition = {
       Function: 'GetDistance',
@@ -1095,69 +1136,36 @@ describe('translateGrantedPerk (Last Shot EP-198 Is Next Clip Last Shot, 2026-08
   const globFormId = '0x006C20BB';
   const perkFormId = '0x0077176B';
 
-  function lastShotRollPerk(withGetRandomPercent: boolean): Record<string, unknown> {
-    const perkConditions = withGetRandomPercent
-      ? [
+  function lastShotClient(withGetRandomPercent: boolean): EsmSource {
+    const rollConditions = withGetRandomPercent
+      ? perkConditions([
           {
-            'Perk Condition': {
-              Conditions: [
-                {
-                  Condition: {
-                    'Condition Data': {
-                      Function: 'GetRandomPercent',
-                      'Comparison Value': globFormId,
-                      Operator: 'Less Than Or Equal To',
-                      'Run On': 'Subject',
-                    },
-                  },
-                },
-              ],
-            },
+            Function: 'GetRandomPercent',
+            'Comparison Value': globFormId,
+            Operator: 'Less Than Or Equal To',
+            'Run On': 'Subject',
           },
-        ]
+        ])
       : [];
-
-    return {
-      editor_id: 'Legendary_LastShot_Roll_Perk',
-      fields: {
-        Effects: [
-          {
-            Effect: {
-              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
-              'Entry Point': {
-                'Entry Point': { name: 'Is Next Clip Last Shot' },
-                Function: { name: 'Add Value' },
-              },
-              Float: 1,
-              'Perk Conditions': perkConditions,
-            },
-          },
-        ],
+    return fixtureClient({
+      [perkFormId]: perkRecord(
+        'Legendary_LastShot_Roll_Perk',
+        entryPointEffect('Is Next Clip Last Shot', 'Add Value', {
+          Float: 1,
+          'Perk Conditions': rollConditions,
+        }),
+      ),
+      [globFormId]: {
+        header: { signature: 'GLOB', form_id: globFormId },
+        editor_id: 'LGND_LastShotChance',
+        fields: { Value: 25 },
       },
-    };
-  }
-
-  function clientWithGlob(perk: Record<string, unknown>): EsmSource {
-    return createInMemoryEsmSource({
-      records: {
-        [perkFormId]: perk as unknown as EsmRecord,
-        [globFormId]: {
-          header: { signature: 'GLOB', form_id: globFormId },
-          editor_id: 'LGND_LastShotChance',
-          fields: { Value: 25 },
-        } as unknown as EsmRecord,
-      },
-      resolveEdidFallback: (formId) => formId,
     });
   }
 
   it('maps GetRandomPercent-gated Add Value 1.0 to lastShotChance ADD 0.25 via LGND_LastShotChance', async () => {
-    const result = await translateGrantedPerk(
-      {
-        client: clientWithGlob(lastShotRollPerk(true)),
-        routes: new Map(),
-        edidByFormId: new Map(),
-      },
+    const result = await runGrantedPerk(
+      lastShotClient(true),
       'mod_Legendary_Weapon2_Guns_LastShot',
       perkFormId,
     );
@@ -1177,13 +1185,8 @@ describe('translateGrantedPerk (Last Shot EP-198 Is Next Clip Last Shot, 2026-08
   });
 
   it('without GetRandomPercent falls through to the generic not-modeled note (no lastShotChance modifier)', async () => {
-    expect(ENTRY_POINT_BUCKETS['Is Next Clip Last Shot']).toBeUndefined();
-    const result = await translateGrantedPerk(
-      {
-        client: clientWithGlob(lastShotRollPerk(false)),
-        routes: new Map(),
-        edidByFormId: new Map(),
-      },
+    const result = await runGrantedPerk(
+      lastShotClient(false),
       'mod_Legendary_Weapon2_Guns_LastShot',
       perkFormId,
     );
@@ -1204,104 +1207,41 @@ describe('translateGrantedPerk (Tesla Science 5 EP-172 Mod Ammo Used Count, 2026
     // where ThirstZapper_WaterInfiniteAmmoPerk puts its keyword check below —
     // is declared by the real record but empty, which is why the emitted
     // modifier is ungated despite the perk's "Heavy guns" description.
-    const perkConditions = [
-      {
-        'Perk Condition': {
-          'Run On (Tab Index)': 0,
-          Conditions: [
+    return perkRecord(
+      'Magazine_TeslaScience05Perk',
+      entryPointEffect('Mod Ammo Used Count', 'Multiply Value', {
+        Float: 0,
+        'Perk Conditions': perkConditions({
+          tab: 0,
+          rows: [
             {
-              Condition: {
-                'Condition Data': {
-                  Function: 'GetRandomPercent',
-                  Operator: 'Less Than Or Equal To',
-                  'Comparison Value': 20,
-                  'Run On': 'Subject',
-                },
-              },
+              Function: 'GetRandomPercent',
+              Operator: 'Less Than Or Equal To',
+              'Comparison Value': 20,
+              'Run On': 'Subject',
             },
           ],
-        },
-      },
-    ];
-
-    return {
-      editor_id: 'Magazine_TeslaScience05Perk',
-      fields: {
-        Effects: [
-          {
-            Effect: {
-              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
-              'Entry Point': {
-                'Entry Point': { name: 'Mod Ammo Used Count' },
-                Function: { name: 'Multiply Value' },
-              },
-              Float: 0,
-              'Perk Conditions': perkConditions,
-            },
-          },
-        ],
-      },
-    };
+        }),
+      }),
+    );
   }
 
   function thirstZapperAmmoPerk(): Record<string, unknown> {
-    return {
-      editor_id: 'ThirstZapper_WaterInfiniteAmmoPerk',
-      fields: {
-        Effects: [
-          {
-            Effect: {
-              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
-              'Entry Point': {
-                'Entry Point': { name: 'Mod Ammo Used Count' },
-                Function: { name: 'Set Value' },
-              },
-              Float: 0,
-              'Perk Conditions': [
-                {
-                  'Perk Condition': {
-                    'Run On (Tab Index)': 1,
-                    Conditions: [
-                      {
-                        Condition: {
-                          'Condition Data': {
-                            Function: 'HasKeyword',
-                            'Parameter 1': thirstZapperKwFormId,
-                            'Comparison Value': 1,
-                            Operator: 'Equal To',
-                            'Run On': 'Subject',
-                          },
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    };
-  }
-
-  function clientWithPerk(
-    perkFormId: string,
-    perk: Record<string, unknown>,
-    resolveEdid?: (formId: string) => string,
-  ): EsmSource {
-    return createInMemoryEsmSource({
-      records: { [perkFormId]: perk as unknown as EsmRecord },
-      resolveEdidFallback: resolveEdid ?? ((formId) => formId),
-    });
+    return perkRecord(
+      'ThirstZapper_WaterInfiniteAmmoPerk',
+      entryPointEffect('Mod Ammo Used Count', 'Set Value', {
+        Float: 0,
+        'Perk Conditions': perkConditions({
+          tab: 1,
+          rows: [eq('HasKeyword', 1, { 'Parameter 1': thirstZapperKwFormId, 'Run On': 'Subject' })],
+        }),
+      }),
+    );
   }
 
   it('maps GetRandomPercent-gated Multiply Value 0.0 to ammoFreeChance ADD 0.2', async () => {
-    const result = await translateGrantedPerk(
-      {
-        client: clientWithPerk(teslaPerkFormId, teslaScience05Perk()),
-        routes: new Map(),
-        edidByFormId: new Map(),
-      },
+    const result = await runGrantedPerk(
+      fixtureClient({ [teslaPerkFormId]: teslaScience05Perk() }),
       'Magazine_TeslaScience05Perk',
       teslaPerkFormId,
     );
@@ -1319,17 +1259,10 @@ describe('translateGrantedPerk (Tesla Science 5 EP-172 Mod Ammo Used Count, 2026
   });
 
   it('the Thirst Zapper shape falls through to the generic not-modeled note (no ammoFreeChance modifier)', async () => {
-    // Deliberate scope pin: EP-172 is NOT in ENTRY_POINT_BUCKETS so keyword/timed
-    // variants reach the not-modeled note instead of a silent 100% free-ammo SET.
-    expect(ENTRY_POINT_BUCKETS['Mod Ammo Used Count']).toBeUndefined();
-    const result = await translateGrantedPerk(
-      {
-        client: clientWithPerk(thirstZapperPerkFormId, thirstZapperAmmoPerk(), (formId) =>
-          formId === thirstZapperKwFormId ? 'WeaponTypeThirstZapper' : formId,
-        ),
-        routes: new Map(),
-        edidByFormId: new Map(),
-      },
+    const result = await runGrantedPerk(
+      fixtureClient({ [thirstZapperPerkFormId]: thirstZapperAmmoPerk() }, (formId) =>
+        formId === thirstZapperKwFormId ? 'WeaponTypeThirstZapper' : formId,
+      ),
       'ThirstZapper_WaterInfiniteAmmoPerk',
       thirstZapperPerkFormId,
     );
@@ -1401,30 +1334,32 @@ describe('translate (Damage-archetype DoT effects)', () => {
 });
 
 describe('translate (silent-drop guard for unrouted AVs)', () => {
-  const leftAttackEdids = new Map<string, string>([['0xLAC', 'LeftAttackCondition']]);
+  const unroutedRows = [
+    {
+      name: 'with noteUnroutedAvs: emits zero modifiers and a "no route for AV" note for a non-STAT_* unrouted AV',
+      opts: { noteUnroutedAvs: true },
+      noted: true,
+    },
+    {
+      name: 'without noteUnroutedAvs: emits zero modifiers and NO such note (perk path unchanged)',
+      opts: undefined,
+      noted: false,
+    },
+  ];
 
-  it('with noteUnroutedAvs: emits zero modifiers and a "no route for AV" note for a non-STAT_* unrouted AV', () => {
-    const r = translate(
-      mgef({ actorValue: '0xLAC' }),
-      effect({ magnitude: 10 }),
-      noRoutes,
-      leftAttackEdids,
-      { noteUnroutedAvs: true },
-    );
-    expect(r.modifiers).toHaveLength(0);
-    expect(r.notes.some((n) => n.includes('no route for AV'))).toBe(true);
-  });
-
-  it('without noteUnroutedAvs: emits zero modifiers and NO such note (perk path unchanged)', () => {
-    const r = translate(
-      mgef({ actorValue: '0xLAC' }),
-      effect({ magnitude: 10 }),
-      noRoutes,
-      leftAttackEdids,
-    );
-    expect(r.modifiers).toHaveLength(0);
-    expect(r.notes.some((n) => n.includes('no route for AV'))).toBe(false);
-  });
+  for (const row of unroutedRows) {
+    it(row.name, () => {
+      const r = translate(
+        mgef({ actorValue: '0xLAC' }),
+        effect({ magnitude: 10 }),
+        noRoutes,
+        new Map([['0xLAC', 'LeftAttackCondition']]),
+        row.opts,
+      );
+      expect(r.modifiers).toHaveLength(0);
+      expect(r.notes.some((n) => n.includes('no route for AV'))).toBe(row.noted);
+    });
+  }
 });
 
 describe('translateConditions (Stage C3, killstreak GetValue tiers)', () => {
@@ -1466,183 +1401,85 @@ describe('translateConditions (Stage C3, killstreak GetValue tiers)', () => {
   });
 });
 
-describe('translateConditions (GetInIronSights / HasCompletedChallenge)', () => {
-  it('translates GetInIronSights Equal To 1 to aimingDownSights', () => {
-    const row: RawCondition = {
-      Function: 'GetInIronSights',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-    };
-    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'aimingDownSights', value: true }]);
-    expect(unresolved).toEqual([]);
-  });
-
-  it('translates IsPowerAttacking Equal To 0/1 to powerAttack', () => {
-    const off: RawCondition = {
-      Function: 'IsPowerAttacking',
-      'Comparison Value': 0,
-      Operator: 'Equal To',
-    };
-    const on: RawCondition = {
-      Function: 'IsPowerAttacking',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-    };
-    expect(translateConditions([off], { edidByFormId: new Map() }).conditions).toEqual([
-      { kind: 'powerAttack', value: false },
-    ]);
-    expect(translateConditions([on], { edidByFormId: new Map() }).conditions).toEqual([
-      { kind: 'powerAttack', value: true },
-    ]);
-  });
-
-  it('translates GetIsInVATS Equal To 0/1 to vatsOnly', () => {
-    const off: RawCondition = {
-      Function: 'GetIsInVATS',
-      'Comparison Value': 0,
-      Operator: 'Equal To',
-    };
-    const on: RawCondition = {
-      Function: 'GetIsInVATS',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-    };
-    expect(translateConditions([off], { edidByFormId: new Map() }).conditions).toEqual([
-      { kind: 'vatsOnly', value: false },
-    ]);
-    expect(translateConditions([on], { edidByFormId: new Map() }).conditions).toEqual([
-      { kind: 'vatsOnly', value: true },
-    ]);
-  });
-
-  it('translates IsMoving Equal To 0/1 to standingStill (Steady, Rooted, Chameleon)', () => {
-    const still: RawCondition = {
-      Function: 'IsMoving',
-      'Comparison Value': 0,
-      Operator: 'Equal To',
-    };
-    const moving: RawCondition = {
-      Function: 'IsMoving',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-    };
-    expect(translateConditions([still], { edidByFormId: new Map() }).conditions).toEqual([
-      { kind: 'standingStill', value: true },
-    ]);
-    expect(translateConditions([moving], { edidByFormId: new Map() }).conditions).toEqual([
-      { kind: 'standingStill', value: false },
-    ]);
-  });
-
-  it('translates HasCompletedChallenge Equal To 1 to lifetimeChallengeCompleted', () => {
-    const row: RawCondition = {
-      Function: 'HasCompletedChallenge',
-      'Parameter 1': '0xCHAL',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-    };
-    const edidMap = new Map([
-      ['0xCHAL', 'Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe'],
-    ]);
-    const { conditions, unresolved } = translateConditions([row], { edidByFormId: edidMap });
-    expect(conditions).toEqual([
-      {
-        kind: 'lifetimeChallengeCompleted',
-        challengeId: 'Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe',
-      },
-    ]);
-    expect(unresolved).toEqual([]);
-  });
-});
-
 describe('translate (AV pass-through — Barbarian/Mind Over Matter, 2026-08-03)', () => {
   // AbPerkFortifyStrength/AbPerkFortifyIntelligence shape: Peak Value
   // Modifier, magnitude 0, no curve table, effect-level Actor Value =
   // killStreak (0x00000399).
-  const strengthEdids = new Map<string, string>([['0xSTR', 'Strength']]);
-  const intelligenceEdids = new Map<string, string>([['0xINT', 'Intelligence']]);
+  const passThroughRows: Array<{ name: string; av: string; avEdid: string; bucket: Bucket }> = [
+    {
+      name: 'a zero-magnitude SPECIAL-fortify effect on the killStreak AV becomes an identity killStreak curve',
+      av: '0xSTR',
+      avEdid: 'Strength',
+      bucket: 'specialStrength',
+    },
+    {
+      name: 'applies the same pass-through to Intelligence (Mind Over Matter)',
+      av: '0xINT',
+      avEdid: 'Intelligence',
+      bucket: 'specialIntelligence',
+    },
+  ];
 
-  it('a zero-magnitude SPECIAL-fortify effect on the killStreak AV becomes an identity killStreak curve', () => {
-    const r = translate(
-      mgef({ actorValue: '0xSTR', archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 0, curveInputAv: '0x00000399' }),
-      noRoutes,
-      strengthEdids,
-    );
-    expect(r.notes).toEqual([]);
-    expect(r.modifiers).toEqual([
-      {
-        bucket: 'specialStrength',
-        op: 'ADD',
-        curve: {
-          input: 'killStreak',
-          points: [
-            { x: 0, y: 0 },
-            { x: 1, y: 1 },
-            { x: 10, y: 10 },
-          ],
+  for (const row of passThroughRows) {
+    it(row.name, () => {
+      const r = translate(
+        mgef({ actorValue: row.av, archetype: 'Peak Value Modifier' }),
+        effect({ magnitude: 0, curveInputAv: '0x00000399' }),
+        noRoutes,
+        new Map([[row.av, row.avEdid]]),
+      );
+      expect(r.notes).toEqual([]);
+      expect(r.modifiers).toEqual([
+        {
+          bucket: row.bucket,
+          op: 'ADD',
+          curve: {
+            input: 'killStreak',
+            points: [
+              { x: 0, y: 0 },
+              { x: 1, y: 1 },
+              { x: 10, y: 10 },
+            ],
+          },
+          curveScale: 1,
+          conditions: [],
         },
-        curveScale: 1,
-        conditions: [],
-      },
-    ]);
-  });
+      ]);
+    });
+  }
 
-  it('applies the same pass-through to Intelligence (Mind Over Matter)', () => {
-    const r = translate(
-      mgef({ actorValue: '0xINT', archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 0, curveInputAv: '0x00000399' }),
-      noRoutes,
-      intelligenceEdids,
-    );
-    expect(r.modifiers).toEqual([
-      {
-        bucket: 'specialIntelligence',
-        op: 'ADD',
-        curve: {
-          input: 'killStreak',
-          points: [
-            { x: 0, y: 0 },
-            { x: 1, y: 1 },
-            { x: 10, y: 10 },
-          ],
-        },
-        curveScale: 1,
-        conditions: [],
-      },
-    ]);
-  });
-
-  it('a zero-magnitude NON-SPECIAL effect on the killStreak AV keeps the "needs override" note (no blanket rule)', () => {
+  const keepsNoteRows = [
     // Same magnitude/curve/AV shape as Barbarian, but routed to a non-SPECIAL
     // bucket — mirrors Legendary_Armor_OvereaterAddValue (hungerThirstTier
     // AV), where an identity pass-through would be wrong.
-    const hungerEdids = new Map<string, string>([['0xHUNGER', 'HungerThirstTier']]);
-    const r = translate(
-      mgef({ actorValue: '0xHUNGER', archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 0, curveInputAv: '0x00000399' }),
-      noRoutes,
-      hungerEdids,
-    );
-    expect(r.modifiers).toHaveLength(0);
-    expect(
-      r.notes.some((n) => n.includes('zero magnitude, no curve — script/scaled, needs override')),
-    ).toBe(true);
-  });
+    {
+      name: 'a zero-magnitude NON-SPECIAL effect on the killStreak AV keeps the "needs override" note (no blanket rule)',
+      av: '0xHUNGER',
+      avEdid: 'HungerThirstTier',
+      curveInputAv: '0x00000399',
+    },
+    {
+      name: 'a zero-magnitude SPECIAL-fortify effect whose input AV is not in AV_PASSTHROUGH_DOMAINS keeps the note (ench_IntFromHacking)',
+      av: '0xINT',
+      avEdid: 'Intelligence',
+      curveInputAv: '0x00356A14',
+    },
+  ];
 
-  it('a zero-magnitude SPECIAL-fortify effect whose input AV is not in AV_PASSTHROUGH_DOMAINS keeps the note (ench_IntFromHacking)', () => {
-    const r = translate(
-      mgef({ actorValue: '0xINT', archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 0, curveInputAv: '0x00356A14' }),
-      noRoutes,
-      intelligenceEdids,
-    );
-    expect(r.modifiers).toHaveLength(0);
-    expect(
-      r.notes.some((n) => n.includes('zero magnitude, no curve — script/scaled, needs override')),
-    ).toBe(true);
-  });
+  for (const row of keepsNoteRows) {
+    it(row.name, () => {
+      const r = translate(
+        mgef({ actorValue: row.av, archetype: 'Peak Value Modifier' }),
+        effect({ magnitude: 0, curveInputAv: row.curveInputAv }),
+        noRoutes,
+        new Map([[row.av, row.avEdid]]),
+      );
+      expect(r.modifiers).toHaveLength(0);
+      expect(
+        r.notes.some((n) => n.includes('zero magnitude, no curve — script/scaled, needs override')),
+      ).toBe(true);
+    });
+  }
 
   it('EnableKillStreak is a documented no-op skip, not a "no route for AV" note', () => {
     const enableKillStreakEdids = new Map<string, string>([['0xEKS', 'EnableKillStreak']]);
@@ -2018,60 +1855,29 @@ describe('getMgefInfo (Detrimental flag, 2026-07-14)', () => {
     } as unknown as EsmRecord;
   }
 
-  it('is true for a Detrimental-flagged MGEF (Mutation_ReduceStrength-style)', async () => {
-    const client = createInMemoryEsmSource({
-      getFallback: () => flagRecord(['Recover', 'Detrimental', 'No Duration', 'No Area']),
-    });
-    const info = await getMgefInfo(client, '0xFLAGS');
-    expect(info.detrimental).toBe(true);
-  });
+  const detrimentalRows = [
+    {
+      name: 'is true for a Detrimental-flagged MGEF (Mutation_ReduceStrength-style)',
+      flags: ['Recover', 'Detrimental', 'No Duration', 'No Area'],
+      detrimental: true,
+    },
+    {
+      name: 'is false when the flag is absent (FortifyStrengthChemEffect-style)',
+      flags: ['Recover', 'Dispel with Keywords', 'No Area'],
+      detrimental: false,
+    },
+  ];
 
-  it('is false when the flag is absent (FortifyStrengthChemEffect-style)', async () => {
-    const client = createInMemoryEsmSource({
-      getFallback: () => flagRecord(['Recover', 'Dispel with Keywords', 'No Area']),
+  for (const row of detrimentalRows) {
+    it(row.name, async () => {
+      const client = createInMemoryEsmSource({ getFallback: () => flagRecord(row.flags) });
+      const info = await getMgefInfo(client, '0xFLAGS');
+      expect(info.detrimental).toBe(row.detrimental);
     });
-    const info = await getMgefInfo(client, '0xFLAGS');
-    expect(info.detrimental).toBe(false);
-  });
+  }
 });
 
 describe('translate (Detrimental sign handling, 2026-07-14)', () => {
-  // AV routed via FALLBACK_AVIF_ROUTES['Strength'] (scale 1) so the sign of
-  // the pushed value is a direct read of translate()'s negation logic.
-  const strEdids = new Map<string, string>([['0xAV', 'Strength']]);
-
-  it('negates a flat Peak Value Modifier magnitude when detrimental (Mutation_ReduceStrength-style: mag 3 → −3)', () => {
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier', detrimental: true }),
-      effect({ magnitude: 3 }),
-      noRoutes,
-      strEdids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({
-      bucket: 'specialStrength',
-      op: 'ADD',
-      value: -3,
-      conditions: [],
-    });
-  });
-
-  it('does NOT negate when detrimental is false (guard against over-negation)', () => {
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier', detrimental: false }),
-      effect({ magnitude: 3 }),
-      noRoutes,
-      strEdids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({
-      bucket: 'specialStrength',
-      op: 'ADD',
-      value: 3,
-      conditions: [],
-    });
-  });
-
   it('leaves a Damage-archetype DoT magnitude positive despite detrimental (DoT magnitude is damage, not a stat delta)', () => {
     const r = translate(
       mgef({ archetype: 'Damage', detrimental: true }),
@@ -2109,182 +1915,71 @@ describe('translate (Detrimental sign handling, 2026-07-14)', () => {
   });
 });
 
-describe('translate (Contact-delivered DamageResist → armorPenFlat, 2026-08-06)', () => {
-  const drEdids = new Map<string, string>([['0xAV', 'DamageResist']]);
+describe('translate (instant-restore Value Modifier skips — Health 2026-07-14, AP 2026-07-15)', () => {
+  // Documented out-of-scope skip (2026-07-15): instant restores no longer
+  // pollute the unresolved report with "no route" notes — silence IS the
+  // assertion now, alongside the empty modifier list.
+  const instantRestoreRows = [
+    {
+      name: 'does NOT route a Value Modifier on AV Health (instant heals like RestoreHealthFood must stay unrouted)',
+      avEdid: 'Health',
+      magnitude: 25,
+    },
+    {
+      name: 'skips a Value Modifier on AV ActionPoints silently (instant restores — RestoreActionPointsFood, Brain Bombs)',
+      avEdid: 'ActionPoints',
+      magnitude: 45,
+    },
+  ];
 
-  it('routes a Contact-delivered Detrimental Peak Value Modifier on AV DamageResist to armorPenFlat with a positive value (Cosmic Knife Super-Heated-style: mag 25 → +25)', () => {
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier', detrimental: true }),
-      effect({ magnitude: 25 }),
-      noRoutes,
-      drEdids,
-      { conditionCtx: { subjectIsTarget: true } },
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({
-      bucket: 'armorPenFlat',
-      op: 'ADD',
-      value: 25,
-      conditions: [],
+  for (const row of instantRestoreRows) {
+    it(row.name, () => {
+      const r = translate(
+        mgef({ archetype: 'Value Modifier' }),
+        effect({ magnitude: row.magnitude }),
+        noRoutes,
+        new Map([['0xAV', row.avEdid]]),
+        { noteUnroutedAvs: true },
+      );
+      expect(r.modifiers).toHaveLength(0);
+      expect(r.notes).toHaveLength(0);
     });
-  });
-
-  it('still routes the same MGEF shape Self-delivered to damageResistGain with negated magnitude (Barbarian/Rooted-style self-buff regression: mag 25 → −25)', () => {
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier', detrimental: true }),
-      effect({ magnitude: 25 }),
-      noRoutes,
-      drEdids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({
-      bucket: 'damageResistGain',
-      op: 'ADD',
-      value: -25,
-      conditions: [],
-    });
-  });
-});
-
-describe('translate (Health-route archetype scoping, 2026-07-14)', () => {
-  const healthEdids = new Map<string, string>([['0xAV', 'Health']]);
-
-  it("routes a Peak Value Modifier on AV Health to maxHealth (Adrenal Reaction's permanent max-HP cut)", () => {
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 25 }),
-      noRoutes,
-      healthEdids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({ bucket: 'maxHealth', op: 'ADD', value: 25, conditions: [] });
-  });
-
-  it('does NOT route a Value Modifier on the same AV Health (instant heals like RestoreHealthFood must stay unrouted)', () => {
-    const r = translate(
-      mgef({ archetype: 'Value Modifier' }),
-      effect({ magnitude: 25 }),
-      noRoutes,
-      healthEdids,
-      { noteUnroutedAvs: true },
-    );
-    expect(r.modifiers).toHaveLength(0);
-    // Documented out-of-scope skip (2026-07-15): instant restores no longer
-    // pollute the unresolved report with "no route" notes — silence IS the
-    // assertion now, alongside the empty modifier list.
-    expect(r.notes).toHaveLength(0);
-  });
-});
-
-describe('translate (AP actor-value routes, 2026-07-15)', () => {
-  const apEdids = new Map<string, string>([['0xAV', 'ActionPoints']]);
-  const apRateEdids = new Map<string, string>([['0xAV', 'ActionPointsRate']]);
-  const dmgApEdids = new Map<string, string>([['0xAV', 'STAT_DmgAP']]);
-
-  it("routes a Peak Value Modifier on AV ActionPoints to apMax (FortifyActionPointsFood's +AP)", () => {
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 30 }),
-      noRoutes,
-      apEdids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({ bucket: 'apMax', op: 'ADD', value: 30, conditions: [] });
-  });
-
-  it("negates Scaly Skin's Detrimental Mutation_ReduceActionPoints (mag 50 → apMax −50)", () => {
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier', detrimental: true }),
-      effect({ magnitude: 50 }),
-      noRoutes,
-      apEdids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({ bucket: 'apMax', op: 'ADD', value: -50, conditions: [] });
-  });
-
-  it('skips a Value Modifier on AV ActionPoints silently (instant restores — RestoreActionPointsFood, Brain Bombs)', () => {
-    const r = translate(
-      mgef({ archetype: 'Value Modifier' }),
-      effect({ magnitude: 45 }),
-      noRoutes,
-      apEdids,
-      {
-        noteUnroutedAvs: true,
-      },
-    );
-    expect(r.modifiers).toHaveLength(0);
-    expect(r.notes).toHaveLength(0);
-  });
-
-  it("routes AV ActionPointsRate to apRegenFlat at scale 1 (Company Tea's FortifyActionPointRegenFood +10)", () => {
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 10 }),
-      noRoutes,
-      apRateEdids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({ bucket: 'apRegenFlat', op: 'ADD', value: 10, conditions: [] });
-  });
-
-  it("routes STAT_DmgAP to a scaledByWeaponApCost dbm (Number Cruncher's abPerkFortifyDmgAP, mag 2 → 0.02/AP)", () => {
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 2 }),
-      noRoutes,
-      dmgApEdids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({
-      bucket: 'dbm',
-      op: 'ADD',
-      value: 0.02,
-      conditions: [{ kind: 'scaledByWeaponApCost' }],
-    });
-  });
+  }
 });
 
 describe('translateConditions (Class Freak rank tiers, 2026-07-14)', () => {
   // Real Grounded perk formids: ClassFreak01/02/03 = 0x00391F0E/11/12.
-  const rank = (formId: string, cmp: number): RawCondition => ({
-    Function: 'HasPerk',
-    'Parameter 1': formId,
-    'Comparison Value': cmp,
-    Operator: 'Equal To',
-  });
+  const rank = (formId: string, cmp: number): RawCondition =>
+    eq('HasPerk', cmp, { 'Parameter 1': formId });
 
-  it('tier 0 (below ClassFreak01): [HasPerk(01)=0] → [{min:0,max:0}]', () => {
-    const { conditions } = translateConditions([rank('0x00391F0E', 0)], {
-      edidByFormId: new Map(),
-    });
-    expect(conditions).toEqual([{ kind: 'classFreakRank', min: 0, max: 0 }]);
-  });
-
-  it('tier 1 (ClassFreak01 only): [HasPerk(02)=0, HasPerk(01)=1] → [{0,1},{1,3}]', () => {
-    const rows = [rank('0x00391F11', 0), rank('0x00391F0E', 1)];
-    const { conditions } = translateConditions(rows, { edidByFormId: new Map() });
-    expect(conditions).toEqual([
-      { kind: 'classFreakRank', min: 0, max: 1 },
-      { kind: 'classFreakRank', min: 1, max: 3 },
-    ]);
-  });
-
-  it('tier 2 (ClassFreak02): [HasPerk(02)=1, HasPerk(03)=0] → [{2,3},{0,2}]', () => {
-    const rows = [rank('0x00391F11', 1), rank('0x00391F12', 0)];
-    const { conditions } = translateConditions(rows, { edidByFormId: new Map() });
-    expect(conditions).toEqual([
-      { kind: 'classFreakRank', min: 2, max: 3 },
-      { kind: 'classFreakRank', min: 0, max: 2 },
-    ]);
-  });
-
-  it('tier 3 (ClassFreak03): [HasPerk(03)=1] → [{3,3}]', () => {
-    const { conditions } = translateConditions([rank('0x00391F12', 1)], {
-      edidByFormId: new Map(),
-    });
-    expect(conditions).toEqual([{ kind: 'classFreakRank', min: 3, max: 3 }]);
-  });
+  itTranslatesConditions([
+    {
+      name: 'tier 0 (below ClassFreak01): [HasPerk(01)=0] → [{min:0,max:0}]',
+      rows: [rank('0x00391F0E', 0)],
+      conditions: [{ kind: 'classFreakRank', min: 0, max: 0 }],
+    },
+    {
+      name: 'tier 1 (ClassFreak01 only): [HasPerk(02)=0, HasPerk(01)=1] → [{0,1},{1,3}]',
+      rows: [rank('0x00391F11', 0), rank('0x00391F0E', 1)],
+      conditions: [
+        { kind: 'classFreakRank', min: 0, max: 1 },
+        { kind: 'classFreakRank', min: 1, max: 3 },
+      ],
+    },
+    {
+      name: 'tier 2 (ClassFreak02): [HasPerk(02)=1, HasPerk(03)=0] → [{2,3},{0,2}]',
+      rows: [rank('0x00391F11', 1), rank('0x00391F12', 0)],
+      conditions: [
+        { kind: 'classFreakRank', min: 2, max: 3 },
+        { kind: 'classFreakRank', min: 0, max: 2 },
+      ],
+    },
+    {
+      name: 'tier 3 (ClassFreak03): [HasPerk(03)=1] → [{3,3}]',
+      rows: [rank('0x00391F12', 1)],
+      conditions: [{ kind: 'classFreakRank', min: 3, max: 3 }],
+    },
+  ]);
 });
 
 describe('translateConditions (IsSpellTarget RadX/Serum suppression, 2026-07-14)', () => {
@@ -2327,84 +2022,87 @@ describe('translateConditions (IsSpellTarget RadX/Serum suppression, 2026-07-14)
   });
 });
 
-describe('translateConditions (IsMemberOfAPlayerTeam, 2026-07-14)', () => {
-  it('=1 → teammateCount ≥1 (Herd Mentality team bonus)', () => {
-    const row: RawCondition = {
-      Function: 'IsMemberOfAPlayerTeam',
-      'Comparison Value': 1,
-      Operator: 'Equal To',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'teammateCount', count: 1, orMore: true }]);
-  });
+describe('ENTRY_POINT_BUCKETS', () => {
+  const entryPointBucketRows: Array<{ name: string; ep: string; bucket: Bucket | undefined }> = [
+    {
+      name: "maps 'Mod Weapon Attack Damage' to the wholeDamage bucket (Grounded's Charged Penalty, USER-RESOLVED, 2026-07-21)",
+      ep: 'Mod Weapon Attack Damage',
+      bucket: 'wholeDamage',
+    },
+    {
+      name: "maps 'Mod Player Explosion Damage' to the baseDamage bucket (component-scoped standalone multiplier, currently inert)",
+      ep: 'Mod Player Explosion Damage',
+      bucket: 'baseDamage',
+    },
+    {
+      name: "maps 'Mod Player Explosion Scale' to explosionRadiusBonus (STAT_DamagePerk Effects[30] → STAT_ExplosionRadius ×0.01, Grenadier 2026-07-29)",
+      ep: 'Mod Player Explosion Scale',
+      bucket: 'explosionRadiusBonus',
+    },
+    {
+      name: "maps 'Mod Ammo Spender Max Reload Stack Mult' to bulletStormRetention (Lock and Load r1's EP210, Bullet Storm 2026-07-16)",
+      ep: 'Mod Ammo Spender Max Reload Stack Mult',
+      bucket: 'bulletStormRetention',
+    },
+    {
+      name: "routes the 'Mod VATS Hit Chance' entry point to vatsHitChance (armor/chem/mutation Multiply-Value sources, Phase 4 2026-07-18)",
+      ep: 'Mod VATS Hit Chance',
+      bucket: 'vatsHitChance',
+    },
+    {
+      name: 'registers Mod Target Damage Resistance as armorPen (unique weapons, 2026-08-04)',
+      ep: 'Mod Target Damage Resistance',
+      bucket: 'armorPen',
+    },
+    {
+      name: 'leaves Is Next Clip Last Shot (EP-198) unregistered — only the GetRandomPercent roll routes (Last Shot, 2026-08-17)',
+      ep: 'Is Next Clip Last Shot',
+      bucket: undefined,
+    },
+    // Deliberate scope pin: EP-172 is NOT in ENTRY_POINT_BUCKETS so keyword/timed
+    // variants reach the not-modeled note instead of a silent 100% free-ammo SET.
+    {
+      name: 'leaves Mod Ammo Used Count (EP-172) unregistered (Tesla Science 5, 2026-08-17)',
+      ep: 'Mod Ammo Used Count',
+      bucket: undefined,
+    },
+  ];
 
-  it('=0 → teammateCount 0 (Herd Mentality solo penalty)', () => {
-    const row: RawCondition = {
-      Function: 'IsMemberOfAPlayerTeam',
-      'Comparison Value': 0,
-      Operator: 'Equal To',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'teammateCount', count: 0 }]);
-  });
-});
-
-describe('ENTRY_POINT_BUCKETS (Mod Weapon Attack Damage, 2026-07-21)', () => {
-  it("maps 'Mod Weapon Attack Damage' to the wholeDamage bucket (Grounded's Charged Penalty, USER-RESOLVED)", () => {
-    expect(ENTRY_POINT_BUCKETS['Mod Weapon Attack Damage']).toBe('wholeDamage');
-  });
-
-  it("maps 'Mod Player Explosion Damage' to the baseDamage bucket (component-scoped standalone multiplier, currently inert)", () => {
-    expect(ENTRY_POINT_BUCKETS['Mod Player Explosion Damage']).toBe('baseDamage');
-  });
-});
-
-describe('ENTRY_POINT_BUCKETS (Grenadier / explosion radius, 2026-07-29)', () => {
-  it("maps 'Mod Player Explosion Scale' to explosionRadiusBonus (STAT_DamagePerk Effects[30] → STAT_ExplosionRadius ×0.01)", () => {
-    expect(ENTRY_POINT_BUCKETS['Mod Player Explosion Scale']).toBe('explosionRadiusBonus');
-  });
+  for (const row of entryPointBucketRows) {
+    it(row.name, () => {
+      expect(ENTRY_POINT_BUCKETS[row.ep] as Bucket | undefined).toBe(row.bucket);
+    });
+  }
 });
 
 describe('translate (Grenadier / AbPerkFortifyExplosionRadius, 2026-07-29)', () => {
-  it('routes a Peak Value Modifier on STAT_ExplosionRadius to explosionRadiusBonus (magnitude 50 → 0.5 via plumbing ×0.01)', () => {
-    const routedAv = new Map<string, AvifRoute[]>([
-      ['0x00066997', [{ bucket: 'explosionRadiusBonus', scale: 0.01, rawConditions: [] }]],
-    ]);
-    const grenadierEdids = new Map<string, string>([['0x00066997', 'STAT_ExplosionRadius']]);
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier', actorValue: '0x00066997' }),
-      effect({ magnitude: 50 }),
-      routedAv,
-      grenadierEdids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({
-      bucket: 'explosionRadiusBonus',
-      op: 'ADD',
+  const grenadierRows = [
+    {
+      name: 'routes a Peak Value Modifier on STAT_ExplosionRadius to explosionRadiusBonus (magnitude 50 → 0.5 via plumbing ×0.01)',
+      magnitude: 50,
       value: 0.5,
-      conditions: [],
-    });
-  });
-
-  it('routes rank-2 magnitude 100 to explosionRadiusBonus value 1.0', () => {
-    const routedAv = new Map<string, AvifRoute[]>([
-      ['0x00066997', [{ bucket: 'explosionRadiusBonus', scale: 0.01, rawConditions: [] }]],
-    ]);
-    const grenadierEdids = new Map<string, string>([['0x00066997', 'STAT_ExplosionRadius']]);
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier', actorValue: '0x00066997' }),
-      effect({ magnitude: 100 }),
-      routedAv,
-      grenadierEdids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({
-      bucket: 'explosionRadiusBonus',
-      op: 'ADD',
+    },
+    {
+      name: 'routes rank-2 magnitude 100 to explosionRadiusBonus value 1.0',
+      magnitude: 100,
       value: 1.0,
-      conditions: [],
+    },
+  ];
+
+  for (const row of grenadierRows) {
+    it(row.name, () => {
+      const routedAv = new Map<string, AvifRoute[]>([
+        ['0x00066997', [{ bucket: 'explosionRadiusBonus', scale: 0.01, rawConditions: [] }]],
+      ]);
+      const r = translate(
+        mgef({ archetype: 'Peak Value Modifier', actorValue: '0x00066997' }),
+        effect({ magnitude: row.magnitude }),
+        routedAv,
+        new Map([['0x00066997', 'STAT_ExplosionRadius']]),
+      );
+      expect(r.modifiers).toEqual([addMod('explosionRadiusBonus', row.value)]);
     });
-  });
+  }
 });
 
 describe('translateGrantedPerk (GHL_BombScientist / AbPerkFortifyDmgGrenades, 2026-08-28)', () => {
@@ -2413,8 +2111,8 @@ describe('translateGrantedPerk (GHL_BombScientist / AbPerkFortifyDmgGrenades, 20
     const spellFormId = '0x0084BF8A';
     const mgefFormId = '0x00854902';
     const grenadeAv = '0x008548FF';
-    const client = createInMemoryEsmSource({
-      records: {
+    const client = fixtureClient(
+      {
         [perkFormId]: {
           header: { signature: 'PERK', form_id: perkFormId },
           editor_id: 'GHL_BombScientist01',
@@ -2435,25 +2133,19 @@ describe('translateGrantedPerk (GHL_BombScientist / AbPerkFortifyDmgGrenades, 20
           header: { signature: 'AVIF', form_id: grenadeAv },
           editor_id: 'STAT_DmgGrenade',
           fields: {},
-        } as unknown as EsmRecord,
+        },
       },
-      resolveEdidFallback: (id) =>
+      (id) =>
         ({
           [grenadeAv]: 'STAT_DmgGrenade',
           '0x007A159A': 'GHL_BombScientist02',
           '0x007A159B': 'GHL_BombScientist03',
           '0x007F68BB': 'GHL_PowerGlowUseBasic',
         })[id] ?? id,
-    });
-    const result = await translateGrantedPerk(
-      {
-        client,
-        routes: new Map(),
-        edidByFormId: new Map([[grenadeAv, 'STAT_DmgGrenade']]),
-      },
-      'GHL_BombScientist01',
-      perkFormId,
     );
+    const result = await runGrantedPerk(client, 'GHL_BombScientist01', perkFormId, {
+      edidByFormId: new Map([[grenadeAv, 'STAT_DmgGrenade']]),
+    });
     expect(result.modifiers).toContainEqual(
       expect.objectContaining({
         bucket: 'dbm',
@@ -2466,14 +2158,6 @@ describe('translateGrantedPerk (GHL_BombScientist / AbPerkFortifyDmgGrenades, 20
           { kind: 'weaponKeyword', keyword: 'WeaponTypeThrowingKnife', present: false },
         ]),
       }),
-    );
-  });
-});
-
-describe('ENTRY_POINT_BUCKETS (Bullet Storm, 2026-07-16)', () => {
-  it("maps 'Mod Ammo Spender Max Reload Stack Mult' to bulletStormRetention (Lock and Load r1's EP210)", () => {
-    expect(ENTRY_POINT_BUCKETS['Mod Ammo Spender Max Reload Stack Mult']).toBe(
-      'bulletStormRetention',
     );
   });
 });
@@ -2515,40 +2199,14 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
               Effect: {
                 'Base Effect': mgefFormId,
                 'Effect Item Data': { Magnitude: 10, Duration: 6 },
-                Conditions: {
-                  Conditions: [
-                    {
-                      Condition: {
-                        'Condition Data': {
-                          Function: 'GetIsPlayer',
-                          'Comparison Value': 0,
-                          Operator: 'Equal To',
-                          'Run On': 'Subject',
-                        },
-                      },
-                    },
-                  ],
-                },
+                Conditions: esmEffectConditions([eq('GetIsPlayer', 0, { 'Run On': 'Subject' })]),
               },
             },
             {
               Effect: {
                 'Base Effect': mgefFormId,
                 'Effect Item Data': { Magnitude: 3, Duration: 6 },
-                Conditions: {
-                  Conditions: [
-                    {
-                      Condition: {
-                        'Condition Data': {
-                          Function: 'GetIsPlayer',
-                          'Comparison Value': 1,
-                          Operator: 'Equal To',
-                          'Run On': 'Subject',
-                        },
-                      },
-                    },
-                  ],
-                },
+                Conditions: esmEffectConditions([eq('GetIsPlayer', 1, { 'Run On': 'Subject' })]),
               },
             },
           ],
@@ -2632,14 +2290,7 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
     const selfClient = createInMemoryEsmSource({
       getFallback: recordForSelf,
     });
-    const result = await translateEnchantment(
-      {
-        client: selfClient,
-        routes: new Map<string, AvifRoute[]>(),
-        edidByFormId: new Map<string, string>(),
-      },
-      selfEnchFormId,
-    );
+    const result = await runEnchantment(selfClient, selfEnchFormId);
     expect(result.targetType).toBe('Self');
     // Script archetype with no Perk to Apply and zero magnitude: no note, no modifier.
     expect(result.modifiers).toEqual([]);
@@ -2723,31 +2374,21 @@ describe("translateEnchantment (Electrician's reload-cycle proc chase, issue #42
     Effect: {
       'Base Effect': FANOUT_MGEF_ID,
       'Effect Item Data': { Magnitude: 0, Area: 0, Duration: 0 },
-      Conditions: {
-        Conditions: [
-          {
-            Condition: {
-              'Condition Data': {
-                Function: 'WornHasKeyword',
-                'Parameter 1': '0x007C2878',
-                'Comparison Value': 1,
-                Operator: wornHasNoReload ? 'Equal To' : 'Not Equal To',
-                'AND/OR': 'AND',
-              },
-            },
-          },
-          {
-            Condition: {
-              'Condition Data': {
-                Function: 'GetActorGunState',
-                'Comparison Value': value,
-                Operator: 'Equal To',
-                'AND/OR': 'AND',
-              },
-            },
-          },
-        ],
-      },
+      Conditions: esmEffectConditions([
+        {
+          Function: 'WornHasKeyword',
+          'Parameter 1': '0x007C2878',
+          'Comparison Value': 1,
+          Operator: wornHasNoReload ? 'Equal To' : 'Not Equal To',
+          'AND/OR': 'AND',
+        },
+        {
+          Function: 'GetActorGunState',
+          'Comparison Value': value,
+          Operator: 'Equal To',
+          'AND/OR': 'AND',
+        },
+      ]),
     },
   });
 
@@ -2876,6 +2517,10 @@ describe("translateEnchantment (Electrician's reload-cycle proc chase, issue #42
   it('chases the deduped fan-out entry into exactly one reloadCycle proc, no ordinary modifiers', async () => {
     const result = await translateEnchantment(deps, ENCH_ID);
     expect(result.modifiers).toEqual([]);
+    expect(result.notes).toEqual([
+      'condition: WornHasKeyword(WeaponNoReload)=1',
+      'condition: GetActorGunState()=4',
+    ]);
     expect(result.procs).toEqual([
       {
         trigger: 'reloadCycle',
@@ -2926,60 +2571,14 @@ describe("translateGrantedPerk (Fracturer's Function-Type-5 onCripple proc, issu
                   'Entry Point': { name: 'Apply Spell On Actor When Limb Crippled' },
                   Function: { name: 'Select Spell' },
                 },
-                'Perk Conditions': [
+                'Perk Conditions': perkConditions(
+                  { tab: 0, rows: [eq('GetIsPlayer', 1, { 'Run On': 'Subject' })] },
                   {
-                    'Perk Condition': {
-                      'Run On (Tab Index)': 0,
-                      Conditions: [
-                        {
-                          Condition: {
-                            'Condition Data': {
-                              Function: 'GetIsPlayer',
-                              'Comparison Value': 1,
-                              Operator: 'Equal To',
-                              'Run On': 'Subject',
-                            },
-                          },
-                        },
-                      ],
-                    },
+                    tab: 1,
+                    rows: [eq('HasKeyword', 1, { 'Parameter 1': KEYWORD_ID, 'Run On': 'Subject' })],
                   },
-                  {
-                    'Perk Condition': {
-                      'Run On (Tab Index)': 1,
-                      Conditions: [
-                        {
-                          Condition: {
-                            'Condition Data': {
-                              Function: 'HasKeyword',
-                              'Parameter 1': KEYWORD_ID,
-                              'Comparison Value': 1,
-                              Operator: 'Equal To',
-                              'Run On': 'Subject',
-                            },
-                          },
-                        },
-                      ],
-                    },
-                  },
-                  {
-                    'Perk Condition': {
-                      'Run On (Tab Index)': 2,
-                      Conditions: [
-                        {
-                          Condition: {
-                            'Condition Data': {
-                              Function: 'GetDead',
-                              'Comparison Value': 0,
-                              Operator: 'Equal To',
-                              'Run On': 'Subject',
-                            },
-                          },
-                        },
-                      ],
-                    },
-                  },
-                ],
+                  { tab: 2, rows: [eq('GetDead', 0, { 'Run On': 'Subject' })] },
+                ),
                 'Function Type': { value: 5, name: 'Spell Item' },
                 Spell: SPEL_ID,
               },
@@ -3112,42 +2711,20 @@ describe('translateGrantedPerk (Circuit Breaker Function-Type-5 lastRound proc, 
         'Entry Point': { name: 'Apply Combat Hit Spell' },
         Function: { name: 'Select Spell' },
       },
-      'Perk Conditions': [
+      'Perk Conditions': perkConditions(
         {
-          'Perk Condition': {
-            'Run On (Tab Index)': 0,
-            Conditions: [
-              {
-                Condition: {
-                  'Condition Data': {
-                    Function: 'GetLoadedAmmoCount',
-                    'Comparison Value': 1,
-                    Operator: 'Less Than',
-                    'Run On': 'Subject',
-                  },
-                },
-              },
-            ],
-          },
+          tab: 0,
+          rows: [
+            {
+              Function: 'GetLoadedAmmoCount',
+              'Comparison Value': 1,
+              Operator: 'Less Than',
+              'Run On': 'Subject',
+            },
+          ],
         },
-        {
-          'Perk Condition': {
-            'Run On (Tab Index)': 2,
-            Conditions: [
-              {
-                Condition: {
-                  'Condition Data': {
-                    Function: 'GetDead',
-                    'Comparison Value': 0,
-                    Operator: 'Equal To',
-                    'Run On': 'Subject',
-                  },
-                },
-              },
-            ],
-          },
-        },
-      ],
+        { tab: 2, rows: [eq('GetDead', 0, { 'Run On': 'Subject' })] },
+      ),
       'Function Type': { value: 5, name: 'Spell Item' },
       Spell: spellFormId,
     },
@@ -3442,53 +3019,6 @@ describe('translateGrantedPerk (Love Tap Function-Type-5 timed-buff gate, issue 
   });
 });
 
-describe('translate (Phase 4 — VATS hit-chance aggregate, display-only, 2026-07-18)', () => {
-  const vatsAccuracyEdids = new Map<string, string>([['0xAV', 'STAT_VATSAccuracy']]);
-
-  it('routes a flat Peak Value Modifier on STAT_VATSAccuracy to vatsHitChance (V.A.T.S. Enhanced-style: magnitude 50 → 0.50)', () => {
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier' }),
-      effect({ magnitude: 50 }),
-      noRoutes,
-      vatsAccuracyEdids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({
-      bucket: 'vatsHitChance',
-      op: 'ADD',
-      value: 0.5,
-      conditions: [],
-    });
-  });
-
-  it("carries curve.input 'perception' for a Peak Value Modifier on STAT_VATSAccuracy (Awareness perk)", () => {
-    const curved = effect({
-      curvePoints: [
-        { x: 1, y: 5 },
-        { x: 15, y: 18 },
-        { x: 30, y: 30 },
-        { x: 60, y: 45 },
-        { x: 100, y: 50 },
-      ],
-      curveInputAv: '0x000002C3',
-    });
-    const r = translate(
-      mgef({ archetype: 'Peak Value Modifier' }),
-      curved,
-      noRoutes,
-      vatsAccuracyEdids,
-    );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0].bucket).toBe('vatsHitChance');
-    expect(r.modifiers[0].curve?.input).toBe('perception');
-    expect(r.modifiers[0].curve ? r.modifiers[0].curveScale : null).toBeCloseTo(0.01, 10);
-  });
-
-  it("routes the 'Mod VATS Hit Chance' entry point through ENTRY_POINT_BUCKETS (armor/chem/mutation Multiply-Value sources)", () => {
-    expect(ENTRY_POINT_BUCKETS['Mod VATS Hit Chance']).toBe('vatsHitChance');
-  });
-});
-
 describe('translateConditions (Phase 4 — GetDistanceToClosestHostileActor, 2026-07-18)', () => {
   it("translates GetDistanceToClosestHostileActor() >= N to targetDistance 'far' (Eye of the Hunter's 10/20/30-by-rank gates)", () => {
     for (const cmp of [10, 20, 30]) {
@@ -3522,63 +3052,23 @@ describe('translateConditions (Phase 4 — GetDistanceToClosestHostileActor, 202
 describe('translateGrantedPerk (unique weapons, 2026-08-04)', () => {
   const cryptidEdids = new Map<string, string>([['0x00331AC2', 'ActorTypeCryptid']]);
 
-  function entryPointPerk(
-    perkEdid: string,
-    effect: Record<string, unknown>,
-  ): Record<string, unknown> {
-    return {
-      editor_id: perkEdid,
-      fields: {
-        Effects: [{ Effect: effect }],
-      },
-    };
-  }
-
-  function grantedPerkClient(perkFormId: string, perk: Record<string, unknown>): EsmSource {
-    return createInMemoryEsmSource({
-      records: { [perkFormId]: perk as unknown as EsmRecord },
-      resolveEdidFallback: (formId) => cryptidEdids.get(formId) ?? formId,
-    });
-  }
-
   it("routes Cultist Piercer's Mod Target Damage Resistance ×0.5 to armorPen ADD 0.5 vs Cryptids", async () => {
     const perkFormId = '0x0077B581';
-    const perk = entryPointPerk('CultistPiercer_Perk', {
-      'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
-      'Entry Point': {
-        'Entry Point': { name: 'Mod Target Damage Resistance' },
-        Function: { name: 'Multiply Value' },
-      },
-      Float: 0.5,
-      'Perk Conditions': [
-        {
-          'Perk Condition': {
-            'Run On (Tab Index)': 2,
-            Conditions: [
-              {
-                Condition: {
-                  'Condition Data': {
-                    Function: 'HasKeyword',
-                    'Parameter 1': '0x00331AC2',
-                    'Comparison Value': 1,
-                    Operator: 'Equal To',
-                    'Run On': 'Subject',
-                  },
-                },
-              },
-            ],
-          },
-        },
-      ],
-    });
-    const result = await translateGrantedPerk(
-      {
-        client: grantedPerkClient(perkFormId, perk),
-        routes: new Map(),
-        edidByFormId: cryptidEdids,
-      },
+    const perk = perkRecord(
+      'CultistPiercer_Perk',
+      entryPointEffect('Mod Target Damage Resistance', 'Multiply Value', {
+        Float: 0.5,
+        'Perk Conditions': perkConditions({
+          tab: 2,
+          rows: [eq('HasKeyword', 1, { 'Parameter 1': '0x00331AC2', 'Run On': 'Subject' })],
+        }),
+      }),
+    );
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: perk }, cryptidEdids),
       'mod_custom_CultistPiercer_Effect',
       perkFormId,
+      { edidByFormId: cryptidEdids },
     );
     expect(result.modifiers).toEqual([
       {
@@ -3592,21 +3082,15 @@ describe('translateGrantedPerk (unique weapons, 2026-08-04)', () => {
 
   it("routes Elder's Mark Add Actor Value Mult on shared ConsecutiveHitCount to critDmgBonus ADD per Onslaught stack", async () => {
     const perkFormId = '0x00913B5E';
-    const perk = entryPointPerk('EldersMark_Perk', {
-      'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
-      'Entry Point': {
-        'Entry Point': { name: 'Mod My Critical Hit Damage Mult' },
-        Function: { name: 'Add Actor Value Mult' },
-      },
-      Float: 0.02,
-      'Function Parameter 3 (Actor Value)': SHARED_ONSLAUGHT_COUNTER_AV,
-    });
-    const result = await translateGrantedPerk(
-      {
-        client: grantedPerkClient(perkFormId, perk),
-        routes: new Map(),
-        edidByFormId: new Map(),
-      },
+    const perk = perkRecord(
+      'EldersMark_Perk',
+      entryPointEffect('Mod My Critical Hit Damage Mult', 'Add Actor Value Mult', {
+        Float: 0.02,
+        'Function Parameter 3 (Actor Value)': SHARED_ONSLAUGHT_COUNTER_AV,
+      }),
+    );
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: perk }, cryptidEdids),
       'mod_custom_EldersMark_Effect',
       perkFormId,
     );
@@ -3622,24 +3106,18 @@ describe('translateGrantedPerk (unique weapons, 2026-08-04)', () => {
 
   it('routes Ticket to Revenge Multiply 1 + Actor Value Mult on shared ConsecutiveHitCount to armorPen ADD 0.03 per Onslaught stack', async () => {
     const perkFormId = '0x00913B5F';
-    const perk = entryPointPerk('custom_TickettoRevenge_Perk', {
-      'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
-      'Entry Point': {
-        'Entry Point': { name: 'Mod Target Damage Resistance' },
-        Function: { name: 'Multiply 1 + Actor Value Mult' },
-      },
-      Float: -0.03,
-      'Function Parameter 3 (Actor Value)': {
-        formid: SHARED_ONSLAUGHT_COUNTER_AV,
-        editor_id: 'ConsecutiveHitCount',
-      },
-    });
-    const result = await translateGrantedPerk(
-      {
-        client: grantedPerkClient(perkFormId, perk),
-        routes: new Map(),
-        edidByFormId: new Map(),
-      },
+    const perk = perkRecord(
+      'custom_TickettoRevenge_Perk',
+      entryPointEffect('Mod Target Damage Resistance', 'Multiply 1 + Actor Value Mult', {
+        Float: -0.03,
+        'Function Parameter 3 (Actor Value)': {
+          formid: SHARED_ONSLAUGHT_COUNTER_AV,
+          editor_id: 'ConsecutiveHitCount',
+        },
+      }),
+    );
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: perk }, cryptidEdids),
       'mod_custom_TickettoRevenge',
       perkFormId,
     );
@@ -3651,10 +3129,6 @@ describe('translateGrantedPerk (unique weapons, 2026-08-04)', () => {
         conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
       },
     ]);
-  });
-
-  it('registers Mod Target Damage Resistance in ENTRY_POINT_BUCKETS as armorPen', () => {
-    expect(ENTRY_POINT_BUCKETS['Mod Target Damage Resistance']).toBe('armorPen');
   });
 });
 
@@ -3689,14 +3163,6 @@ describe('stimpak-heal entry-point routing (Field Surgeon / Doctor / Healing Fac
     [KW.SERUM_HF, 'Serum_HealingFactor'],
   ]);
 
-  function wrapPerkConditions(...tabs: RawCondition[][]): unknown {
-    return tabs.map((rows) => ({
-      'Perk Condition': {
-        Conditions: rows.map((data) => ({ Condition: { 'Condition Data': data } })),
-      },
-    }));
-  }
-
   function stimpakKeywordOrGroup(formIds: string[]): RawCondition[] {
     return formIds.map((fid, i) => ({
       Function: 'EPAlchemyEffectHasKeyword',
@@ -3707,32 +3173,8 @@ describe('stimpak-heal entry-point routing (Field Surgeon / Doctor / Healing Fac
     }));
   }
 
-  function entryPointEffect(
-    epName: string,
-    float: number,
-    perkConditions: unknown,
-  ): Record<string, unknown> {
-    return {
-      'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
-      'Entry Point': {
-        'Entry Point': { name: epName },
-        Function: { name: 'Multiply Value' },
-      },
-      Float: float,
-      'Perk Conditions': perkConditions,
-    };
-  }
-
-  function grantedPerkClient(
-    perkFormId: string,
-    perk: Record<string, unknown>,
-    edidMap: Map<string, string> = stimpakEdids,
-  ): EsmSource {
-    return createInMemoryEsmSource({
-      records: { [perkFormId]: perk as unknown as EsmRecord },
-      resolveEdidFallback: (formId) => edidMap.get(formId) ?? formId,
-    });
-  }
+  const multiplyEp = (epName: string, float: number, conditions: unknown) =>
+    entryPointEffect(epName, 'Multiply Value', { Float: float, 'Perk Conditions': conditions });
 
   it('Field Surgeon shape: Subject mag/dur route; Potential-Players heal-others do not', async () => {
     const formId = '0x000814FE';
@@ -3744,24 +3186,24 @@ describe('stimpak-heal entry-point routing (Field Surgeon / Doctor / Healing Fac
         Description: 'Stimpaks and RadAway heal 60% faster.',
         Effects: [
           {
-            Effect: entryPointEffect(
+            Effect: multiplyEp(
               'Mod Spell Magnitude',
               1.67,
-              wrapPerkConditions(stimpakKeywordOrGroup([KW.RAD, KW.STIM])),
+              perkConditions(stimpakKeywordOrGroup([KW.RAD, KW.STIM])),
             ),
           },
           {
-            Effect: entryPointEffect(
+            Effect: multiplyEp(
               'Mod Spell Duration',
               0.6,
-              wrapPerkConditions(stimpakKeywordOrGroup([KW.RAD, KW.STIM])),
+              perkConditions(stimpakKeywordOrGroup([KW.RAD, KW.STIM])),
             ),
           },
           {
-            Effect: entryPointEffect(
+            Effect: multiplyEp(
               'Mod Spell Magnitude',
               1.67,
-              wrapPerkConditions([
+              perkConditions([
                 {
                   Function: 'EPAlchemyEffectHasKeyword',
                   'Parameter 1': KW.MEDIC,
@@ -3773,10 +3215,10 @@ describe('stimpak-heal entry-point routing (Field Surgeon / Doctor / Healing Fac
             ),
           },
           {
-            Effect: entryPointEffect(
+            Effect: multiplyEp(
               'Mod Spell Duration',
               0.6,
-              wrapPerkConditions([
+              perkConditions([
                 {
                   Function: 'EPAlchemyEffectHasKeyword',
                   'Parameter 1': KW.MEDIC,
@@ -3848,10 +3290,10 @@ describe('stimpak-heal entry-point routing (Field Surgeon / Doctor / Healing Fac
         Operator: worn.orMore ? 'Greater Than Or Equal To' : 'Equal To',
       };
       return {
-        Effect: entryPointEffect(
+        Effect: multiplyEp(
           'Mod Spell Magnitude',
           float,
-          wrapPerkConditions([wornRow], stimpakKeywordOrGroup([KW.RADX, KW.RAD, KW.STIM])),
+          perkConditions([wornRow], stimpakKeywordOrGroup([KW.RADX, KW.RAD, KW.STIM])),
         ),
       };
     });
@@ -3859,14 +3301,11 @@ describe('stimpak-heal entry-point routing (Field Surgeon / Doctor / Healing Fac
       editor_id: 'LegendaryIncreaseHealingPerk',
       fields: { Effects: effects },
     };
-    const result = await translateGrantedPerk(
-      {
-        client: grantedPerkClient(perkFormId, perk),
-        routes: new Map(),
-        edidByFormId: stimpakEdids,
-      },
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: perk }, stimpakEdids),
       'Legendary_IncreaseHealingEffect',
       perkFormId,
+      { edidByFormId: stimpakEdids },
     );
     expect(result.modifiers).toHaveLength(5);
     for (let i = 0; i < 5; i++) {
@@ -3921,21 +3360,18 @@ describe('stimpak-heal entry-point routing (Field Surgeon / Doctor / Healing Fac
     ];
     const keywordTab = stimpakKeywordOrGroup([KW.STIM, KW.RAD, KW.HEALING, KW.CHEM, KW.MEDIC]);
     const effects = floats.map((float, i) => ({
-      Effect: entryPointEffect(
+      Effect: multiplyEp(
         'Mod Spell Magnitude',
         float,
-        wrapPerkConditions(classFreakTabs[i], suppressionRows, keywordTab),
+        perkConditions(classFreakTabs[i], suppressionRows, keywordTab),
       ),
     }));
     const perk = { editor_id: 'Mutation_ReduceChemEffect_Perk', fields: { Effects: effects } };
-    const result = await translateGrantedPerk(
-      {
-        client: grantedPerkClient(perkFormId, perk),
-        routes: new Map(),
-        edidByFormId: stimpakEdids,
-      },
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: perk }, stimpakEdids),
       'Mutation_HealingFactor',
       perkFormId,
+      { edidByFormId: stimpakEdids },
     );
     expect(result.modifiers).toHaveLength(4);
     const expectedValues = [-0.55, -0.42, -0.28, -0.14];
@@ -3961,108 +3397,6 @@ describe('stimpak-heal entry-point routing (Field Surgeon / Doctor / Healing Fac
     }
     expect(result.modifiers.every((m) => !m.conditions.some((c) => c.kind === 'unresolved'))).toBe(
       true,
-    );
-  });
-
-  it('does not capture Carnivore food-scaling Mod Spell Magnitude (no stimpak keywords)', async () => {
-    const perkFormId = '0xCARNIVORE';
-    const perk = {
-      editor_id: 'Mutation_EatAllTheMeat_Perk',
-      fields: {
-        Effects: [
-          {
-            Effect: entryPointEffect(
-              'Mod Spell Magnitude',
-              2,
-              wrapPerkConditions(
-                [
-                  {
-                    Function: 'EPMagic_SpellHasKeyword',
-                    'Parameter 1': '0xMEAT',
-                    'Comparison Value': 1,
-                    Operator: 'Equal To',
-                  },
-                ],
-                [
-                  {
-                    Function: 'EPAlchemyEffectHasKeyword',
-                    'Parameter 1': '0xFOOD',
-                    'Comparison Value': 1,
-                    Operator: 'Equal To',
-                    'AND/OR': 'OR',
-                  },
-                  {
-                    Function: 'EPAlchemyEffectHasKeyword',
-                    'Parameter 1': '0xHUNGER',
-                    'Comparison Value': 1,
-                    Operator: 'Equal To',
-                    'AND/OR': 'OR',
-                  },
-                  {
-                    Function: 'EPAlchemyEffectHasKeyword',
-                    'Parameter 1': '0xHEALFOOD',
-                    'Comparison Value': 1,
-                    Operator: 'Equal To',
-                  },
-                ],
-              ),
-            ),
-          },
-        ],
-      },
-    };
-    const carnivoreEdids = new Map([
-      ['0xMEAT', 'IngredientTypeMeat'],
-      ['0xFOOD', 'SURV_EffectTypeFoodBuff'],
-      ['0xHUNGER', 'SURV_EffectTypeFoodHunger'],
-      ['0xHEALFOOD', 'SURV_EffectTypeFoodHealing'],
-    ]);
-    const result = await translateGrantedPerk(
-      {
-        client: grantedPerkClient(perkFormId, perk, carnivoreEdids),
-        routes: new Map(),
-        edidByFormId: carnivoreEdids,
-      },
-      'Mutation_Carnivore',
-      perkFormId,
-    );
-    expect(result.modifiers).toEqual([]);
-    expect(result.notes).toContain(
-      'perk Mutation_EatAllTheMeat_Perk: entry point Mod Spell Magnitude — not modeled',
-    );
-    expect(
-      resolveStimpakHealEntryPoint('Mod Spell Magnitude', perkFormId, [], carnivoreEdids),
-    ).toBe(null);
-  });
-
-  it('excludes Code Blue stimpak buff perk by FormID despite matching keywords', async () => {
-    const perkFormId = '0x006446B8';
-    const perk = {
-      editor_id: 'XPD_Fuel_CodeBlue_StimpakBuffPerk',
-      fields: {
-        Effects: [
-          {
-            Effect: entryPointEffect(
-              'Mod Spell Magnitude',
-              1.25,
-              wrapPerkConditions(stimpakKeywordOrGroup([KW.STIM])),
-            ),
-          },
-        ],
-      },
-    };
-    const result = await translateGrantedPerk(
-      {
-        client: grantedPerkClient(perkFormId, perk),
-        routes: new Map(),
-        edidByFormId: stimpakEdids,
-      },
-      'XPD_Fuel_CodeBlue',
-      perkFormId,
-    );
-    expect(result.modifiers).toEqual([]);
-    expect(result.notes).toContain(
-      'perk XPD_Fuel_CodeBlue_StimpakBuffPerk: entry point Mod Spell Magnitude — not modeled',
     );
   });
 
@@ -4110,108 +3444,98 @@ describe('stimpak-heal entry-point routing (Field Surgeon / Doctor / Healing Fac
     ];
   }
 
-  it('does not route Carnivore Safe Meat perk (ChemEffect-only overlap, 0x003C4054)', async () => {
-    const perkFormId = '0x003C4054';
+  function safeFoodTabs(ingredientFormId: string) {
     const edids = new Map<string, string>();
-    const keywordTab = safeFoodKeywordOrGroup('0xMEAT', edids);
-    const perk = {
-      editor_id: 'Mutation_EatSafeMeat_Perk',
-      fields: {
-        Effects: [
-          {
-            Effect: entryPointEffect('Mod Spell Magnitude', 1, wrapPerkConditions(keywordTab)),
-          },
-        ],
-      },
-    };
-    expect(
-      resolveStimpakHealEntryPoint('Mod Spell Magnitude', perkFormId, keywordTab, edids),
-    ).toBeNull();
-    const result = await translateGrantedPerk(
-      {
-        client: grantedPerkClient(perkFormId, perk, edids),
-        routes: new Map(),
-        edidByFormId: edids,
-      },
-      'Mutation_Carnivore',
-      perkFormId,
-    );
-    expect(result.modifiers).toEqual([]);
-    expect(result.notes).toContain(
-      'perk Mutation_EatSafeMeat_Perk: entry point Mod Spell Magnitude — not modeled',
-    );
-  });
+    return { edids, tabs: [safeFoodKeywordOrGroup(ingredientFormId, edids)] };
+  }
 
-  it('does not route Herbivore Safe Veggies perk (ChemEffect-only overlap, 0x003C4059)', async () => {
-    const perkFormId = '0x003C4059';
-    const edids = new Map<string, string>();
-    const keywordTab = safeFoodKeywordOrGroup('0xVEG', edids);
-    const perk = {
-      editor_id: 'Mutation_EatSafeVeggies_Perk',
-      fields: {
-        Effects: [
-          {
-            Effect: entryPointEffect('Mod Spell Magnitude', 1, wrapPerkConditions(keywordTab)),
-          },
+  const unroutedRows: Array<{
+    name: string;
+    perkFormId: string;
+    perkEdid: string;
+    contextEdid: string;
+    float: number;
+    build: () => { edids: Map<string, string>; tabs: RawCondition[][] };
+  }> = [
+    {
+      name: 'does not capture Carnivore food-scaling Mod Spell Magnitude (no stimpak keywords)',
+      perkFormId: '0xCARNIVORE',
+      perkEdid: 'Mutation_EatAllTheMeat_Perk',
+      contextEdid: 'Mutation_Carnivore',
+      float: 2,
+      build: () => ({
+        edids: new Map([
+          ['0xMEAT', 'IngredientTypeMeat'],
+          ['0xFOOD', 'SURV_EffectTypeFoodBuff'],
+          ['0xHUNGER', 'SURV_EffectTypeFoodHunger'],
+          ['0xHEALFOOD', 'SURV_EffectTypeFoodHealing'],
+        ]),
+        tabs: [
+          [eq('EPMagic_SpellHasKeyword', 1, { 'Parameter 1': '0xMEAT' })],
+          [
+            eq('EPAlchemyEffectHasKeyword', 1, { 'Parameter 1': '0xFOOD', 'AND/OR': 'OR' }),
+            eq('EPAlchemyEffectHasKeyword', 1, { 'Parameter 1': '0xHUNGER', 'AND/OR': 'OR' }),
+            eq('EPAlchemyEffectHasKeyword', 1, { 'Parameter 1': '0xHEALFOOD' }),
+          ],
         ],
-      },
-    };
-    expect(
-      resolveStimpakHealEntryPoint('Mod Spell Magnitude', perkFormId, keywordTab, edids),
-    ).toBeNull();
-    const result = await translateGrantedPerk(
-      {
-        client: grantedPerkClient(perkFormId, perk, edids),
-        routes: new Map(),
-        edidByFormId: edids,
-      },
-      'Mutation_Herbivore',
-      perkFormId,
-    );
-    expect(result.modifiers).toEqual([]);
-    expect(result.notes).toContain(
-      'perk Mutation_EatSafeVeggies_Perk: entry point Mod Spell Magnitude — not modeled',
-    );
-  });
+      }),
+    },
+    {
+      name: 'excludes Code Blue stimpak buff perk by FormID despite matching keywords',
+      perkFormId: '0x006446B8',
+      perkEdid: 'XPD_Fuel_CodeBlue_StimpakBuffPerk',
+      contextEdid: 'XPD_Fuel_CodeBlue',
+      float: 1.25,
+      build: () => ({ edids: new Map(stimpakEdids), tabs: [stimpakKeywordOrGroup([KW.STIM])] }),
+    },
+    {
+      name: 'does not route Carnivore Safe Meat perk (ChemEffect-only overlap, 0x003C4054)',
+      perkFormId: '0x003C4054',
+      perkEdid: 'Mutation_EatSafeMeat_Perk',
+      contextEdid: 'Mutation_Carnivore',
+      float: 1,
+      build: () => safeFoodTabs('0xMEAT'),
+    },
+    {
+      name: 'does not route Herbivore Safe Veggies perk (ChemEffect-only overlap, 0x003C4059)',
+      perkFormId: '0x003C4059',
+      perkEdid: 'Mutation_EatSafeVeggies_Perk',
+      contextEdid: 'Mutation_Herbivore',
+      float: 1,
+      build: () => safeFoodTabs('0xVEG'),
+    },
+    {
+      name: 'excludes WorldPets pet healing perk by FormID despite ChemTypeStimpack (0x008DC2CB)',
+      perkFormId: '0x008DC2CB',
+      perkEdid: 'WorldPets_Healing_SpeedHealing',
+      contextEdid: 'WorldPets_Healing',
+      float: 1.5,
+      build: () => ({ edids: new Map(stimpakEdids), tabs: [stimpakKeywordOrGroup([KW.STIM])] }),
+    },
+  ];
 
-  it('excludes WorldPets pet healing perk by FormID despite ChemTypeStimpack (0x008DC2CB)', async () => {
-    const perkFormId = '0x008DC2CB';
-    const perk = {
-      editor_id: 'WorldPets_Healing_SpeedHealing',
-      fields: {
-        Effects: [
-          {
-            Effect: entryPointEffect(
-              'Mod Spell Magnitude',
-              1.5,
-              wrapPerkConditions(stimpakKeywordOrGroup([KW.STIM])),
-            ),
-          },
-        ],
-      },
-    };
-    expect(
-      resolveStimpakHealEntryPoint(
-        'Mod Spell Magnitude',
-        perkFormId,
-        stimpakKeywordOrGroup([KW.STIM]),
-        stimpakEdids,
-      ),
-    ).toBeNull();
-    const result = await translateGrantedPerk(
-      {
-        client: grantedPerkClient(perkFormId, perk),
-        routes: new Map(),
-        edidByFormId: stimpakEdids,
-      },
-      'WorldPets_Healing',
-      perkFormId,
-    );
-    expect(result.modifiers).toEqual([]);
-    expect(result.notes).toContain(
-      'perk WorldPets_Healing_SpeedHealing: entry point Mod Spell Magnitude — not modeled',
-    );
-  });
+  for (const row of unroutedRows) {
+    it(row.name, async () => {
+      const { edids, tabs } = row.build();
+      expect(
+        resolveStimpakHealEntryPoint('Mod Spell Magnitude', row.perkFormId, tabs.flat(), edids),
+      ).toBeNull();
+      const perk = perkRecord(
+        row.perkEdid,
+        multiplyEp('Mod Spell Magnitude', row.float, perkConditions(...tabs)),
+      );
+      const result = await runGrantedPerk(
+        fixtureClient({ [row.perkFormId]: perk }, edids),
+        row.contextEdid,
+        row.perkFormId,
+        { edidByFormId: edids },
+      );
+      expect(result.modifiers).toEqual([]);
+      expect(result.notes).toContain(
+        `perk ${row.perkEdid}: entry point Mod Spell Magnitude — not modeled`,
+      );
+    });
+  }
 });
 
 describe('extraction pile-1 routes (2026-08-28)', () => {
@@ -4225,93 +3549,31 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
   const H2H_KW = '0x00226453';
   const UNARMED_KW = '0x0005240E';
 
-  function fixtureClient(records: Record<string, unknown>): EsmSource {
-    return createInMemoryEsmSource({
-      records: Object.fromEntries(
-        Object.entries(records).map(([k, v]) => [k, v as unknown as EsmRecord]),
-      ),
-      resolveEdidFallback: (formId) => formId,
-    });
-  }
-
   it('mod_weapon_NitroFortunate EP211 Mod Add Bullet To Clip Chance → ammoFreeChance ADD float/100', async () => {
     const perkFormId = '0x00844607';
-    const nitroFortunatePerk = {
-      editor_id: 'mod_weapon_NitroFortunate',
-      fields: {
-        Effects: [
-          {
-            Effect: {
-              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
-              'Entry Point': {
-                'Entry Point': { name: 'Mod Add Bullet To Clip Chance' },
-                Function: { name: 'Set Value' },
-              },
-              'Perk Conditions': [
-                {
-                  'Perk Condition': {
-                    'Run On (Tab Index)': 0,
-                    Conditions: [
-                      {
-                        Condition: {
-                          'Condition Data': {
-                            Function: 'WornHasKeyword',
-                            'Parameter 1': '0x008445CC',
-                            'Comparison Value': 1,
-                            Operator: 'Equal To',
-                          },
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-              Float: 21,
-            },
-          },
-          {
-            Effect: {
-              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
-              'Entry Point': {
-                'Entry Point': { name: 'Mod Add Bullet To Clip Chance' },
-                Function: { name: 'Set Value' },
-              },
-              'Perk Conditions': [
-                {
-                  'Perk Condition': {
-                    'Run On (Tab Index)': 0,
-                    Conditions: [
-                      {
-                        Condition: {
-                          'Condition Data': {
-                            Function: 'WornHasKeyword',
-                            'Parameter 1': '0x008445CB',
-                            'Comparison Value': 1,
-                            Operator: 'Equal To',
-                          },
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-              Float: 14,
-            },
-          },
-        ],
-      },
-    };
-    const result = await translateGrantedPerk(
+    const nitroTab = (keyword: string) =>
+      perkConditions({ tab: 0, rows: [eq('WornHasKeyword', 1, { 'Parameter 1': keyword })] });
+    const nitroFortunatePerk = perkRecord(
+      'mod_weapon_NitroFortunate',
+      entryPointEffect('Mod Add Bullet To Clip Chance', 'Set Value', {
+        'Perk Conditions': nitroTab('0x008445CC'),
+        Float: 21,
+      }),
+      entryPointEffect('Mod Add Bullet To Clip Chance', 'Set Value', {
+        'Perk Conditions': nitroTab('0x008445CB'),
+        Float: 14,
+      }),
+    );
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: nitroFortunatePerk }),
+      'mod_weapon_NitroFortunate',
+      perkFormId,
       {
-        client: fixtureClient({ [perkFormId]: nitroFortunatePerk }),
-        routes: new Map(),
         edidByFormId: new Map([
           ['0x008445CC', 'Nitro_4Mod'],
           ['0x008445CB', 'Nitro_6Mod'],
         ]),
       },
-      'mod_weapon_NitroFortunate',
-      perkFormId,
     );
     expect(result.modifiers).toContainEqual(
       expect.objectContaining({ bucket: 'ammoFreeChance', op: 'ADD', value: 0.21 }),
@@ -4326,14 +3588,11 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
 
   it('QuickHands01 EP182 Auto Fill Weapon Clip → reloadSkipChance ADD 0.06', async () => {
     const perkFormId = '0x000221FC';
-    const result = await translateGrantedPerk(
-      {
-        client: fixtureClient({ [perkFormId]: quickHands01 }),
-        routes: new Map(),
-        edidByFormId: new Map([['0x001D2478', 'QuickHands02']]),
-      },
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: quickHands01 }),
       'QuickHands01',
       perkFormId,
+      { edidByFormId: new Map([['0x001D2478', 'QuickHands02']]) },
     );
     const mod = result.modifiers.find((m) => m.bucket === 'reloadSkipChance');
     expect(mod).toEqual(
@@ -4347,10 +3606,11 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
 
   it('Bandito01 EP141 Mod Gun Range Mult → weaponMinRange + weaponMaxRange MUL_ADD 0.25', async () => {
     const perkFormId = '0x002593D5';
-    const result = await translateGrantedPerk(
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: bandito01 }),
+      'Bandito01',
+      perkFormId,
       {
-        client: fixtureClient({ [perkFormId]: bandito01 }),
-        routes: new Map(),
         edidByFormId: new Map([
           ['0x002593D5', 'Bandito02'],
           ['0x0004A0A0', 'WeaponTypePistol'],
@@ -4358,8 +3618,6 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
           ['0x0004A0A3', 'WeaponTypeRifle'],
         ]),
       },
-      'Bandito01',
-      perkFormId,
     );
     expect(result.modifiers.filter((m) => m.bucket === 'weaponMinRange')).toEqual([
       expect.objectContaining({ op: 'MUL_ADD', value: 0.25 }),
@@ -4371,33 +3629,21 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
 
   it('ModArmorPenetrationPerk × ArmorPenetration AV → armorPen ADD carrier×|float|', async () => {
     const perkFormId = '0x001F4166';
-    const perk = {
-      editor_id: 'ModArmorPenetrationPerk',
-      fields: {
-        Effects: [
-          {
-            Effect: {
-              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
-              'Entry Point': {
-                'Entry Point': { name: 'Mod Target Damage Resistance' },
-                Function: { name: 'Multiply 1 + Actor Value Mult' },
-              },
-              Float: -0.01,
-              'Function Parameter 3 (Actor Value)': ARMOR_PENETRATION_AV,
-            },
-          },
-        ],
-      },
-    };
-    const result = await translateGrantedPerk(
+    const perk = perkRecord(
+      'ModArmorPenetrationPerk',
+      entryPointEffect('Mod Target Damage Resistance', 'Multiply 1 + Actor Value Mult', {
+        Float: -0.01,
+        'Function Parameter 3 (Actor Value)': ARMOR_PENETRATION_AV,
+      }),
+    );
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: perk }),
+      '_PARENT_mod_melee_weapon_Spikes',
+      perkFormId,
       {
-        client: fixtureClient({ [perkFormId]: perk }),
-        routes: new Map(),
         edidByFormId: new Map([[ARMOR_PENETRATION_AV, 'ArmorPenetration']]),
         armorPenetrationAvMagnitude: 16,
       },
-      '_PARENT_mod_melee_weapon_Spikes',
-      perkFormId,
     );
     expect(result.modifiers).toEqual([
       { bucket: 'armorPen', op: 'ADD', value: 0.16, conditions: [] },
@@ -4406,10 +3652,11 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
 
   it('Crackshot01 EP141 Mod Gun Range Mult → weaponMinRange + weaponMaxRange MUL_ADD 0.1', async () => {
     const perkFormId = '0x0031D4AF';
-    const result = await translateGrantedPerk(
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: crackshot01 }),
+      'Crackshot01',
+      perkFormId,
       {
-        client: fixtureClient({ [perkFormId]: crackshot01 }),
-        routes: new Map(),
         edidByFormId: new Map([
           ['0x0031D4B0', 'Crackshot02'],
           ['0x0004A0A1', 'WeaponTypeSmallGun'],
@@ -4418,8 +3665,6 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
           ['0x0004A0A3', 'WeaponTypeRifle'],
         ]),
       },
-      'Crackshot01',
-      perkFormId,
     );
     const rangeMods = result.modifiers.filter((m) => m.bucket === 'weaponMinRange');
     expect(rangeMods).toHaveLength(1);
@@ -4428,50 +3673,29 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
     expect(frag?.op).toBe('MUL_ADD');
   });
 
-  it('DamageDamageResistEffect Value Modifier Contact → armorPenFlat 0.5 (Sheepsquatch Shard)', () => {
-    const r = translate(
-      mgef({
-        edid: 'DamageDamageResistEffect',
-        archetype: 'Value Modifier',
-        actorValue: '0x000002E3',
-        detrimental: true,
-      }),
-      effect({ magnitude: 0.5, duration: 5 }),
-      noRoutes,
-      new Map([['0x000002E3', 'DamageResist']]),
-      { conditionCtx: { subjectIsTarget: true } },
-    );
-    expect(r.modifiers).toEqual([
-      { bucket: 'armorPenFlat', op: 'ADD', value: 0.5, conditions: [] },
-    ]);
-  });
-
   it('EnchPowerArmor_UnarmedDamage → baseDamage ADD 15 scoped to WeaponTypeUnarmed', async () => {
     const enchId = '0x001D6CCA';
     const mgefId = '0x001D6CCB';
-    const result = await translateEnchantment(
-      {
-        client: fixtureClient({
-          [enchId]: enchPowerArmorUnarmedDamage,
-          [mgefId]: {
-            header: { signature: 'MGEF', form_id: mgefId },
-            editor_id: 'PowerArmor_FortifyUnarmedDamage',
-            fields: {
-              'Magic Effect Data': {
-                Data: {
-                  Archetype: { name: 'Peak Value Modifier' },
-                  'Actor Value': UNARMED_DAMAGE_AV,
-                  Delivery: { name: 'Self' },
-                  Flags: { flags: [] },
-                },
+    const result = await runEnchantment(
+      fixtureClient({
+        [enchId]: enchPowerArmorUnarmedDamage,
+        [mgefId]: {
+          header: { signature: 'MGEF', form_id: mgefId },
+          editor_id: 'PowerArmor_FortifyUnarmedDamage',
+          fields: {
+            'Magic Effect Data': {
+              Data: {
+                Archetype: { name: 'Peak Value Modifier' },
+                'Actor Value': UNARMED_DAMAGE_AV,
+                Delivery: { name: 'Self' },
+                Flags: { flags: [] },
               },
             },
           },
-        }),
-        routes: new Map(),
-        edidByFormId: new Map([[UNARMED_DAMAGE_AV, 'UnarmedDamage']]),
-      },
+        },
+      }),
       enchId,
+      { edidByFormId: new Map([[UNARMED_DAMAGE_AV, 'UnarmedDamage']]) },
     );
     expect(result.modifiers).toContainEqual(
       expect.objectContaining({
@@ -4485,18 +3709,17 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
 
   it('mod_armor_BrawlerPerk → dbm ADD 0.1 with unarmed/H2H weapon gates', async () => {
     const perkFormId = '0x00245B9B';
-    const result = await translateGrantedPerk(
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: modArmorBrawlerPerk }),
+      'enchArmorBrawlerMod',
+      perkFormId,
       {
-        client: fixtureClient({ [perkFormId]: modArmorBrawlerPerk }),
-        routes: new Map(),
         edidByFormId: new Map([
           [BRAWLER_AV, 'Mod_Brawler_AV'],
           [H2H_KW, 'WeaponTypeHandToHand'],
           [UNARMED_KW, 'WeaponTypeUnarmed'],
         ]),
       },
-      'enchArmorBrawlerMod',
-      perkFormId,
     );
     expect(result.modifiers).toContainEqual(
       expect.objectContaining({
@@ -4512,31 +3735,30 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
     const perkFormId = '0x0004D895';
     const spellFormId = '0x007ACE71';
     const mgefFormId = '0x007ACE70';
-    const result = await translateGrantedPerk(
+    const result = await runGrantedPerk(
+      fixtureClient({
+        [perkFormId]: fourLeafClover01,
+        [spellFormId]: abPerkFourLeafClover,
+        [mgefFormId]: abPerkFortifyCritFillOnMiss,
+        [CRIT_FILL_AV]: {
+          header: { signature: 'AVIF', form_id: CRIT_FILL_AV },
+          editor_id: 'STAT_VATSCritFillOnMiss',
+          fields: {},
+        },
+        [LUCK_AV]: {
+          header: { signature: 'AVIF', form_id: LUCK_AV },
+          editor_id: 'Luck',
+          fields: {},
+        },
+      }),
+      'FourLeafClover01',
+      perkFormId,
       {
-        client: fixtureClient({
-          [perkFormId]: fourLeafClover01,
-          [spellFormId]: abPerkFourLeafClover,
-          [mgefFormId]: abPerkFortifyCritFillOnMiss,
-          [CRIT_FILL_AV]: {
-            header: { signature: 'AVIF', form_id: CRIT_FILL_AV },
-            editor_id: 'STAT_VATSCritFillOnMiss',
-            fields: {},
-          },
-          [LUCK_AV]: {
-            header: { signature: 'AVIF', form_id: LUCK_AV },
-            editor_id: 'Luck',
-            fields: {},
-          },
-        }),
-        routes: new Map(),
         edidByFormId: new Map([
           [CRIT_FILL_AV, 'STAT_VATSCritFillOnMiss'],
           [LUCK_AV, 'Luck'],
         ]),
       },
-      'FourLeafClover01',
-      perkFormId,
     );
     expect(result.modifiers).toContainEqual(
       expect.objectContaining({
@@ -4551,35 +3773,32 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
     const perkFormId = '0x0011C7DE';
     const spellFormId = '0x005CF181';
     const mgefFormId = '0x005CF17F';
-    const result = await translateGrantedPerk(
-      {
-        client: fixtureClient({
-          [perkFormId]: lgnLegendaryStrength01,
-          [spellFormId]: abLgnPerkStrength,
-          [mgefFormId]: {
-            header: { signature: 'MGEF', form_id: mgefFormId },
-            editor_id: 'AbLgnPerkFortifyStrength',
-            fields: {
-              'Magic Effect Data': {
-                Data: {
-                  Archetype: { name: 'Dual Value Modifier' },
-                  'Actor Value': STRENGTH_AV,
-                  Delivery: { name: 'Self' },
-                },
+    const result = await runGrantedPerk(
+      fixtureClient({
+        [perkFormId]: lgnLegendaryStrength01,
+        [spellFormId]: abLgnPerkStrength,
+        [mgefFormId]: {
+          header: { signature: 'MGEF', form_id: mgefFormId },
+          editor_id: 'AbLgnPerkFortifyStrength',
+          fields: {
+            'Magic Effect Data': {
+              Data: {
+                Archetype: { name: 'Dual Value Modifier' },
+                'Actor Value': STRENGTH_AV,
+                Delivery: { name: 'Self' },
               },
             },
           },
-          [STRENGTH_AV]: {
-            header: { signature: 'AVIF', form_id: STRENGTH_AV },
-            editor_id: 'Strength',
-            fields: {},
-          },
-        }),
-        routes: new Map(),
-        edidByFormId: new Map([[STRENGTH_AV, 'Strength']]),
-      },
+        },
+        [STRENGTH_AV]: {
+          header: { signature: 'AVIF', form_id: STRENGTH_AV },
+          editor_id: 'Strength',
+          fields: {},
+        },
+      }),
       'LGN_LegendaryStrength_Perk01',
       perkFormId,
+      { edidByFormId: new Map([[STRENGTH_AV, 'Strength']]) },
     );
     expect(result.modifiers).toContainEqual(
       expect.objectContaining({ bucket: 'specialStrength', op: 'ADD', value: 1 }),
@@ -4588,14 +3807,11 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
 
   it('LGN_Retribution_Perk01 Mod Power Attack Damage Select Spell is note-only', async () => {
     const perkFormId = '0x005AE152';
-    const result = await translateGrantedPerk(
-      {
-        client: fixtureClient({ [perkFormId]: lgnRetribution01 }),
-        routes: new Map(),
-        edidByFormId: new Map([['0x005AF818', 'LGN_Retribution_Perk02']]),
-      },
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: lgnRetribution01 }),
       'LGN_Retribution_Perk01',
       perkFormId,
+      { edidByFormId: new Map([['0x005AF818', 'LGN_Retribution_Perk02']]) },
     );
     expect(result.modifiers.filter((m) => m.bucket === 'powerAttackBonus')).toEqual([]);
     expect(result.notes.some((n) => n.includes('not powerAttackBonus'))).toBe(true);
@@ -4603,12 +3819,8 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
 
   it('mod_weapon_penetrating EP105 is note-only (not armorPen)', async () => {
     const perkFormId = '0x008B7A60';
-    const result = await translateGrantedPerk(
-      {
-        client: fixtureClient({ [perkFormId]: modWeaponPenetrating }),
-        routes: new Map(),
-        edidByFormId: new Map(),
-      },
+    const result = await runGrantedPerk(
+      fixtureClient({ [perkFormId]: modWeaponPenetrating }),
       'mod_custom_V63GatlingLaser_customName',
       perkFormId,
     );
@@ -4619,54 +3831,55 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
     const perkFormId = '0x00522668';
     const spellFormId = '0x0052266B';
     const upgradeSpellFormId = '0x00521937';
-    const result = await translateGrantedPerk(
+    const result = await runGrantedPerk(
+      fixtureClient({
+        [perkFormId]: momVoiceofSetPerk,
+        [spellFormId]: momVoiceofSetShockRobots,
+        [upgradeSpellFormId]: momVoiceofSetShockStunRobots,
+        [SHOCK_MGEF]: {
+          header: { signature: 'MGEF', form_id: SHOCK_MGEF },
+          editor_id: 'dtElectricalEffectChanceAlways',
+          fields: {
+            'Magic Effect Data': {
+              Data: {
+                Archetype: { name: 'Damage' },
+                'Resist Value': '0x000002EB',
+                Flags: { flags: ['Hostile', 'Detrimental'] },
+              },
+            },
+          },
+        },
+        [PARALYZE_MGEF]: {
+          header: { signature: 'MGEF', form_id: PARALYZE_MGEF },
+          editor_id: 'ParalyzeEffect25',
+          fields: {
+            'Magic Effect Data': {
+              Data: {
+                Archetype: { name: 'Paralysis' },
+                Flags: { flags: ['Hostile', 'Recover', 'No Magnitude', 'No Area'] },
+              },
+            },
+          },
+        },
+        '0x000002EB': {
+          header: { signature: 'AVIF', form_id: '0x000002EB' },
+          editor_id: 'EnergyResist',
+          fields: {},
+        },
+        '0x0002CB73': {
+          header: { signature: 'KYWD', form_id: '0x0002CB73' },
+          editor_id: 'ActorTypeRobot',
+          fields: {},
+        },
+        '0x004E60E2': {
+          header: { signature: 'KYWD', form_id: '0x004E60E2' },
+          editor_id: 'MoMEyeOfRaItemKeyword',
+          fields: {},
+        },
+      }),
+      'MoM_VoiceofSetPerk',
+      perkFormId,
       {
-        client: fixtureClient({
-          [perkFormId]: momVoiceofSetPerk,
-          [spellFormId]: momVoiceofSetShockRobots,
-          [upgradeSpellFormId]: momVoiceofSetShockStunRobots,
-          [SHOCK_MGEF]: {
-            header: { signature: 'MGEF', form_id: SHOCK_MGEF },
-            editor_id: 'dtElectricalEffectChanceAlways',
-            fields: {
-              'Magic Effect Data': {
-                Data: {
-                  Archetype: { name: 'Damage' },
-                  'Resist Value': '0x000002EB',
-                  Flags: { flags: ['Hostile', 'Detrimental'] },
-                },
-              },
-            },
-          },
-          [PARALYZE_MGEF]: {
-            header: { signature: 'MGEF', form_id: PARALYZE_MGEF },
-            editor_id: 'ParalyzeEffect25',
-            fields: {
-              'Magic Effect Data': {
-                Data: {
-                  Archetype: { name: 'Paralysis' },
-                  Flags: { flags: ['Hostile', 'Recover', 'No Magnitude', 'No Area'] },
-                },
-              },
-            },
-          },
-          '0x000002EB': {
-            header: { signature: 'AVIF', form_id: '0x000002EB' },
-            editor_id: 'EnergyResist',
-            fields: {},
-          },
-          '0x0002CB73': {
-            header: { signature: 'KYWD', form_id: '0x0002CB73' },
-            editor_id: 'ActorTypeRobot',
-            fields: {},
-          },
-          '0x004E60E2': {
-            header: { signature: 'KYWD', form_id: '0x004E60E2' },
-            editor_id: 'MoMEyeOfRaItemKeyword',
-            fields: {},
-          },
-        }),
-        routes: new Map(),
         edidByFormId: new Map([
           ['0x000002EB', 'EnergyResist'],
           ['0x0002CB73', 'ActorTypeRobot'],
@@ -4674,8 +3887,6 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
         ]),
         timedIsActive: false,
       },
-      'MoM_VoiceofSetPerk',
-      perkFormId,
     );
     expect(result.modifiers).toContainEqual(
       expect.objectContaining({
@@ -4740,15 +3951,7 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
       { perk: gunFu03, formId: '0x001D245C', min: 4, value: 0.9 },
     ] as const;
     for (const { perk, formId, min, value } of cases) {
-      const result = await translateGrantedPerk(
-        {
-          client: fixtureClient({ [formId]: perk }),
-          routes: new Map(),
-          edidByFormId: new Map(),
-        },
-        'GunFu01',
-        formId,
-      );
+      const result = await runGrantedPerk(fixtureClient({ [formId]: perk }), 'GunFu01', formId);
       expect(result.modifiers).toContainEqual(
         expect.objectContaining({
           bucket: 'dbm',
@@ -4766,16 +3969,16 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
   it('ench_LegendaryWeapon_Steady IsMoving()=0 → standingStill on melee dbm', async () => {
     const enchId = '0x00606C8A';
     const mgefId = '0x00606C8C';
-    const result = await translateEnchantment(
+    const result = await runEnchantment(
+      fixtureClient({
+        [enchId]: enchSteady,
+        [mgefId]: mgefSteadyMeleeDamage,
+      }),
+      enchId,
       {
-        client: fixtureClient({
-          [enchId]: enchSteady,
-          [mgefId]: mgefSteadyMeleeDamage,
-        }),
         routes: new Map([['0x00312D66', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]]]),
         edidByFormId: new Map([['0x00312D66', 'MeleeDamage']]),
       },
-      enchId,
     );
     expect(result.modifiers).toContainEqual(
       expect.objectContaining({
@@ -4792,15 +3995,6 @@ describe('extraction pile-1 routes (2026-08-28)', () => {
 });
 
 describe('PA_CommonArmPerk Rusty Knuckles bleed (2026-08-28)', () => {
-  function fixtureClient(records: Record<string, unknown>): EsmSource {
-    return createInMemoryEsmSource({
-      records: Object.fromEntries(
-        Object.entries(records).map(([k, v]) => [k, v as unknown as EsmRecord]),
-      ),
-      resolveEdidFallback: (formId) => formId,
-    });
-  }
-
   const PERK = '0x0024848E';
   const SPELL = '0x0024848D';
   const BLEED_MGEF = '0x001A03FD';
@@ -4857,18 +4051,12 @@ describe('PA_CommonArmPerk Rusty Knuckles bleed (2026-08-28)', () => {
   };
 
   it('translateGrantedPerk → wornPieces bleed curve (3/6 per 1/2 arms)', async () => {
-    const result = await translateGrantedPerk(
-      {
-        client: fixtureClient(records),
-        routes: new Map(),
-        edidByFormId: new Map([
-          [DAMAGE_RESIST, 'DamageResist'],
-          [UNARMED_KW, 'WeaponTypeUnarmed'],
-        ]),
-      },
-      'PA_CommonArmPerk',
-      PERK,
-    );
+    const result = await runGrantedPerk(fixtureClient(records), 'PA_CommonArmPerk', PERK, {
+      edidByFormId: new Map([
+        [DAMAGE_RESIST, 'DamageResist'],
+        [UNARMED_KW, 'WeaponTypeUnarmed'],
+      ]),
+    });
     expect(result.deliveryTargetType).toBe('Contact');
     expect(result.modifiers).toEqual([
       expect.objectContaining({
@@ -4892,17 +4080,12 @@ describe('PA_CommonArmPerk Rusty Knuckles bleed (2026-08-28)', () => {
   });
 
   it('translateEnchantment keeps bleed through Self outer ENCH via effectiveTargetType', async () => {
-    const result = await translateEnchantment(
-      {
-        client: fixtureClient(records),
-        routes: new Map(),
-        edidByFormId: new Map([
-          [DAMAGE_RESIST, 'DamageResist'],
-          [UNARMED_KW, 'WeaponTypeUnarmed'],
-        ]),
-      },
-      ENCH,
-    );
+    const result = await runEnchantment(fixtureClient(records), ENCH, {
+      edidByFormId: new Map([
+        [DAMAGE_RESIST, 'DamageResist'],
+        [UNARMED_KW, 'WeaponTypeUnarmed'],
+      ]),
+    });
     expect(result.targetType).toBe('Self');
     expect(result.effectiveTargetType).toBe('Contact');
     expect(result.modifiers.some((m) => m.bucket === 'dotDamage')).toBe(true);
@@ -4910,15 +4093,6 @@ describe('PA_CommonArmPerk Rusty Knuckles bleed (2026-08-28)', () => {
 });
 
 describe('Sheepsquatch Shard poison DoT playerLevel curve (2026-08-28)', () => {
-  function fixtureClient(records: Record<string, unknown>): EsmSource {
-    return createInMemoryEsmSource({
-      records: Object.fromEntries(
-        Object.entries(records).map(([k, v]) => [k, v as unknown as EsmRecord]),
-      ),
-      resolveEdidFallback: (formId) => formId,
-    });
-  }
-
   const ENCH = '0x0045FF64';
   const POISON_MGEF = '0x000856FA';
   const POISON_RESIST = '0x000002E4';
@@ -4929,53 +4103,50 @@ describe('Sheepsquatch Shard poison DoT playerLevel curve (2026-08-28)', () => {
   ];
 
   it('extracts dotDamage with playerLevel curve 34→112', async () => {
-    const result = await translateEnchantment(
-      {
-        client: fixtureClient({
-          [ENCH]: {
-            header: { signature: 'ENCH', form_id: ENCH },
-            editor_id: 'ench_Weapon_SheepsquatchShard',
-            fields: {
-              'Effect Data': {
-                'Target Type': { name: 'Contact' },
-                'Cast Type': { name: 'Fire and Forget' },
-              },
-              Effects: [
-                {
-                  Effect: {
-                    'Base Effect': POISON_MGEF,
-                    'Effect Item Data': { Magnitude: 0, Duration: 35 },
-                    'Curve Table': { curve: curvePoints },
-                    'Actor Value': PLAYER_LEVEL_AV,
-                  },
-                },
-              ],
+    const result = await runEnchantment(
+      fixtureClient({
+        [ENCH]: {
+          header: { signature: 'ENCH', form_id: ENCH },
+          editor_id: 'ench_Weapon_SheepsquatchShard',
+          fields: {
+            'Effect Data': {
+              'Target Type': { name: 'Contact' },
+              'Cast Type': { name: 'Fire and Forget' },
             },
-          },
-          [POISON_MGEF]: {
-            header: { signature: 'MGEF', form_id: POISON_MGEF },
-            editor_id: 'dtPoisonEffectChanceAlways',
-            fields: {
-              'Magic Effect Data': {
-                Data: {
-                  Archetype: { name: 'Damage' },
-                  'Resist Value': POISON_RESIST,
-                  Delivery: { name: 'Contact' },
-                  Flags: { flags: ['Hostile', 'Detrimental'] },
+            Effects: [
+              {
+                Effect: {
+                  'Base Effect': POISON_MGEF,
+                  'Effect Item Data': { Magnitude: 0, Duration: 35 },
+                  'Curve Table': { curve: curvePoints },
+                  'Actor Value': PLAYER_LEVEL_AV,
                 },
+              },
+            ],
+          },
+        },
+        [POISON_MGEF]: {
+          header: { signature: 'MGEF', form_id: POISON_MGEF },
+          editor_id: 'dtPoisonEffectChanceAlways',
+          fields: {
+            'Magic Effect Data': {
+              Data: {
+                Archetype: { name: 'Damage' },
+                'Resist Value': POISON_RESIST,
+                Delivery: { name: 'Contact' },
+                Flags: { flags: ['Hostile', 'Detrimental'] },
               },
             },
           },
-          [POISON_RESIST]: {
-            header: { signature: 'AVIF', form_id: POISON_RESIST },
-            editor_id: 'PoisonResist',
-            fields: {},
-          },
-        }),
-        routes: new Map(),
-        edidByFormId: new Map([[POISON_RESIST, 'PoisonResist']]),
-      },
+        },
+        [POISON_RESIST]: {
+          header: { signature: 'AVIF', form_id: POISON_RESIST },
+          editor_id: 'PoisonResist',
+          fields: {},
+        },
+      }),
       ENCH,
+      { edidByFormId: new Map([[POISON_RESIST, 'PoisonResist']]) },
     );
     expect(result.modifiers).toContainEqual(
       expect.objectContaining({
@@ -4989,22 +4160,9 @@ describe('Sheepsquatch Shard poison DoT playerLevel curve (2026-08-28)', () => {
 });
 
 describe('ModKineticLiningPerk (2026-08-28)', () => {
-  function fixtureClient(records: Record<string, unknown>): EsmSource {
-    return createInMemoryEsmSource({
-      records: Object.fromEntries(
-        Object.entries(records).map(([k, v]) => [k, v as unknown as EsmRecord]),
-      ),
-      resolveEdidFallback: (formId) => formId,
-    });
-  }
-
   it('Mod Restore Action Cost Value → descriptive note, no bucket', async () => {
-    const result = await translateGrantedPerk(
-      {
-        client: fixtureClient({ '0x00064002': modKineticLiningPerk }),
-        routes: new Map(),
-        edidByFormId: new Map(),
-      },
+    const result = await runGrantedPerk(
+      fixtureClient({ '0x00064002': modKineticLiningPerk }),
       'ModKineticLiningPerk',
       '0x00064002',
     );
@@ -5072,19 +4230,6 @@ describe('translateConditions (condition-whitelist round K, 2026-08-28)', () => 
       { kind: 'weaponKeywordAny', keywords: ['HasScope', 'HasScopeRecon'] },
     ]);
     expect(unresolved).toEqual([]);
-  });
-
-  it('maps IsMeleeAttacking()=0 to consumed and =1 to weaponAnimTypeMax ≤6', () => {
-    const ranged = translateConditions(
-      [{ Function: 'IsMeleeAttacking', 'Comparison Value': 0, Operator: 'Equal To' }],
-      { edidByFormId: new Map() },
-    );
-    expect(ranged.conditions).toEqual([]);
-    const melee = translateConditions(
-      [{ Function: 'IsMeleeAttacking', 'Comparison Value': 1, Operator: 'Equal To' }],
-      { edidByFormId: new Map() },
-    );
-    expect(melee.conditions).toEqual([{ kind: 'weaponAnimTypeMax', max: 6 }]);
   });
 
   it('maps WornHasKeyword(MoMEyeOfRaItemKeyword) to eyeOfRaWorn true/false tiers', () => {

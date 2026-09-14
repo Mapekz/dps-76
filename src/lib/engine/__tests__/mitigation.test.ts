@@ -1,6 +1,4 @@
 import { describe, it, expect } from 'bun:test';
-import type { Weapon } from '@/types';
-import { createDefaultEnemyConditions } from '@/types';
 import {
   applyMitigation,
   DEFAULT_MITIGATION_CONSTANTS,
@@ -8,7 +6,11 @@ import {
 } from '@/lib/engine/mitigation';
 import type { HitBreakdown } from '@/lib/engine/paper-damage';
 import { computeScenarios, type ScenarioInput } from '@/lib/engine/scenarios';
-import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
+import {
+  makeMagazineWeapon,
+  makeWeapon,
+  scenarioInput,
+} from '@/lib/engine/__tests__/engine-fixture';
 
 function hit(
   components: Array<{
@@ -290,39 +292,9 @@ describe('Option A divergence (blended-hit mitigation vs. true per-hit mitigatio
 
 // ── computeScenarios integration (synthetic enemy, hand-computed) ──────────
 
-const FLAT_100 = [
-  { x: 1, y: 100 },
-  { x: 50, y: 100 },
-];
-
-function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
-  return {
-    id: 'test_weapon',
-    name: 'Test Weapon',
-    components: [{ damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
-    damageType: 'ballistic',
-    weaponClass: 'rifle',
-    isAutomatic: false,
-    isPhysical: true,
-    critDamageMult: 2.0,
-    critChargeBonus: 1.0,
-    sneakAttackMult: 2.0,
-    damageBonusMult: 1.0,
-    ...overrides,
-  };
-}
-
 describe('computeScenarios — ScenarioInput.enemyDefenses (synthetic enemy)', () => {
   const weapon = makeWeapon();
-  const baseInput: ScenarioInput = {
-    mode: 'live',
-    weapon,
-    itemLevel: 50,
-    modifiers: [],
-    player: makeResolvedPlayer(),
-    enemy: createDefaultEnemyConditions(),
-    weakpointMult: 2.0,
-  };
+  const baseInput = scenarioInput(weapon);
 
   it('is absent with no enemyDefenses (no target selected)', () => {
     const s = computeScenarios(baseInput);
@@ -397,15 +369,7 @@ describe('computeScenarios — ScenarioInput.enemyDefenses (synthetic enemy)', (
   });
 
   it('VATS effective sustainedDps/ttk blend in the Free Aim fallback with the same uptime weights as apLimitedDps', () => {
-    const apWeapon = makeWeapon({
-      animDelaySec: 1.0,
-      isPhysical: false,
-      apCost: 16,
-      capacity: 20,
-      ammoPerShot: 1,
-      reloadSpeed: 1.0,
-      animationReloadSec: 4.0,
-    });
+    const apWeapon = makeMagazineWeapon({ apCost: 16 });
     const enemyDefenses = { hp: 1000, resists: { physical: 300 } };
     const s = computeScenarios({ ...baseInput, weapon: apWeapon, enemyDefenses });
 

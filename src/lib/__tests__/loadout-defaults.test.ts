@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'bun:test';
-import { resolveLoadout } from '@/lib/loadout';
+import { beforeAll, describe, it, expect } from 'bun:test';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import { getDefaultOmodId, getOmodById } from '@/data/omods';
 import { getWeapons } from '@/data';
 import { PerkId } from '@/data/perk-ids';
-import { createDefaultEnemyConfig, createDefaultPlayerConfig, type PlayerConfig } from '@/types';
+import { createDefaultEnemyConfig, type PlayerConfig } from '@/types';
+import { loadoutFor, weapon } from '@/lib/__tests__/loadout-fixture';
 
 /**
  * Undecided mod slots must carry the weapon's real standard parts (ESM Object
@@ -13,13 +13,18 @@ import { createDefaultEnemyConfig, createDefaultPlayerConfig, type PlayerConfig 
  * automatic fire mode. Real-data regression coverage over the live dataset.
  */
 
-function loadout(weaponId: string, mods: Record<string, string | null> = {}) {
-  const playerConfig: PlayerConfig = {
-    ...createDefaultPlayerConfig(),
-    weapon: { weaponId, mods, legendaryEffects: [] },
-  };
-  return resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live');
+function loadout(
+  weaponId: string,
+  mods: Record<string, string | null> = {},
+  overrides: Partial<PlayerConfig> = {},
+) {
+  return loadoutFor({ weapon: weapon(weaponId, mods), ...overrides });
 }
+
+let untouchedFixer: ReturnType<typeof loadout>;
+beforeAll(() => {
+  untouchedFixer = loadout('CombatRifle_Fixer');
+});
 
 describe('default mod folding (assemble-time)', () => {
   it('unmodded Cryolator is automatic via its Standard Barrel (SET isAutomatic 1)', () => {
@@ -29,8 +34,7 @@ describe('default mod folding (assemble-time)', () => {
   });
 
   it("unmodded Fixer carries its default parts' modifiers (Calibrated Receiver crit, Suppressor sneak)", () => {
-    const input = loadout('CombatRifle_Fixer');
-    const sources = new Set(input!.modifiers.map((m) => m.source.edid));
+    const sources = new Set(untouchedFixer!.modifiers.map((m) => m.source.edid));
     expect(sources).toContain('mod_CombatRifle_Receiver_CritDMG'); // Calibrated Receiver
     expect(sources).toContain('mod_CombatRifle_muzzle_Suppressor_Base'); // Suppressor
   });
@@ -51,13 +55,25 @@ describe('default mod folding (assemble-time)', () => {
     ).toBe(true);
   });
 
-  it('an explicit null (reset-to-standard) behaves identically to an untouched slot', () => {
-    const untouched = loadout('CombatRifle_Fixer');
-    const cleared = loadout('CombatRifle_Fixer', { ap_gun_Receiver: null });
-    expect(cleared!.modifiers.map((m) => m.id).sort()).toEqual(
-      untouched!.modifiers.map((m) => m.id).sort(),
-    );
-  });
+  const matchesUntouchedRows: { name: string; receiver: string | null }[] = [
+    {
+      name: 'an explicit null (reset-to-standard) behaves identically to an untouched slot',
+      receiver: null,
+    },
+    {
+      name: 'picking the default explicitly equals leaving the slot untouched',
+      receiver: 'mod_CombatRifle_Receiver_CritDMG',
+    },
+  ];
+
+  for (const row of matchesUntouchedRows) {
+    it(row.name, () => {
+      const chosen = loadout('CombatRifle_Fixer', { ap_gun_Receiver: row.receiver });
+      expect(chosen!.modifiers.map((m) => m.id).sort()).toEqual(
+        untouchedFixer!.modifiers.map((m) => m.id).sort(),
+      );
+    });
+  }
 
   it('stat-carrying cosmetic-slot unique folds in when selected', () => {
     // DoubleBarrelShotgun_ColdShoulder (the legacy standalone WEAP) is hidden
@@ -74,68 +90,42 @@ describe('default mod folding (assemble-time)', () => {
     expect(paranormal?.modifiers.length).toBe(3);
     expect(input!.modifiers.some((m) => m.source.edid === paranormal!.id)).toBe(true);
   });
-
-  it('picking the default explicitly equals leaving the slot untouched', () => {
-    const untouched = loadout('CombatRifle_Fixer');
-    const explicit = loadout('CombatRifle_Fixer', {
-      ap_gun_Receiver: 'mod_CombatRifle_Receiver_CritDMG',
-    });
-    expect(explicit!.modifiers.map((m) => m.id).sort()).toEqual(
-      untouched!.modifiers.map((m) => m.id).sort(),
-    );
-  });
 });
 
 describe('enemy-type-gated modifiers activate on a matching target (data → loadout → engine)', () => {
-  function dpsVsTarget(weapon: PlayerConfig['weapon'], targetRace: string | null) {
-    const playerConfig: PlayerConfig = { ...createDefaultPlayerConfig(), weapon };
+  function dpsVsTarget(equipped: PlayerConfig['weapon'], targetRace: string | null) {
     const enemyConfig = createDefaultEnemyConfig();
     enemyConfig.conditions.targetRace = targetRace;
-    const input = resolveLoadout(playerConfig, enemyConfig, 'live');
+    const input = loadoutFor({ weapon: equipped }, enemyConfig);
     expect(input).not.toBeNull();
     return computeScenarios(input!).freeAim.burstDps;
   }
 
   it("Assassin's (GetIsRace HumanRace) applies vs Human, not vs a robot or no target", () => {
-    const weapon = {
-      weaponId: 'CombatRifle_Fixer',
-      mods: {},
-      legendaryEffects: ['mod_Legendary_Weapon1_DmgVsPlayers'],
-    };
-    const noTarget = dpsVsTarget(weapon, null);
-    const vsHuman = dpsVsTarget(weapon, 'HumanRace');
-    const vsRobot = dpsVsTarget(weapon, 'AssaultronRace');
+    const assassins = weapon('CombatRifle_Fixer', {}, ['mod_Legendary_Weapon1_DmgVsPlayers']);
+    const noTarget = dpsVsTarget(assassins, null);
+    const vsHuman = dpsVsTarget(assassins, 'HumanRace');
+    const vsRobot = dpsVsTarget(assassins, 'AssaultronRace');
     expect(vsHuman).toBeGreaterThan(noTarget);
     expect(vsRobot).toBeCloseTo(noTarget, 10);
   });
 
   it("Cold Shoulder's Paranormal Mod (ActorTypeCryptid keyword) applies vs Mothman only", () => {
-    const weapon = {
-      weaponId: 'DoubleBarrelShotgun',
-      mods: { ap_customName: 'mod_custom_Coldshoulder_DmgvsCryptid' },
-      legendaryEffects: [],
-    };
-    const noTarget = dpsVsTarget(weapon, null);
-    const vsMothman = dpsVsTarget(weapon, 'MothmanRace');
-    const vsHuman = dpsVsTarget(weapon, 'HumanRace');
+    const coldShoulder = weapon('DoubleBarrelShotgun', {
+      ap_customName: 'mod_custom_Coldshoulder_DmgvsCryptid',
+    });
+    const noTarget = dpsVsTarget(coldShoulder, null);
+    const vsMothman = dpsVsTarget(coldShoulder, 'MothmanRace');
+    const vsHuman = dpsVsTarget(coldShoulder, 'HumanRace');
     expect(vsMothman).toBeGreaterThan(noTarget);
     expect(vsHuman).toBeCloseTo(noTarget, 10);
   });
 });
 
 describe('loadout weapon-stat folding (perk weapon-stat fold gap)', () => {
-  function loadoutWithPerks(weaponId: string, perks: PlayerConfig['perks']) {
-    const playerConfig: PlayerConfig = {
-      ...createDefaultPlayerConfig(),
-      weapon: { weaponId, mods: {}, legendaryEffects: [] },
-      perks,
-    };
-    return resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live');
-  }
-
   it('Martial Artist rank 3 folds +0.3 swing speed on a melee weapon (weaponAnimTypeMax gate, 2026-07-14)', () => {
     const stock = loadout('Machete');
-    const withPerk = loadoutWithPerks('Machete', [{ perkId: PerkId.MartialArtist, rank: 3 }]);
+    const withPerk = loadout('Machete', {}, { perks: [{ perkId: PerkId.MartialArtist, rank: 3 }] });
     expect(stock!.weapon.animType).toBe(1); // OneHandSword
     expect(withPerk!.weapon.speed).toBeCloseTo((stock!.weapon.speed ?? 1) + 0.3, 6);
   });
@@ -143,67 +133,76 @@ describe('loadout weapon-stat folding (perk weapon-stat fold gap)', () => {
   it('Martial Artist does NOT speed up gun-animated weapons: the Fixer (Gun) and the melee-classed Paddle Ball (Gun)', () => {
     for (const weaponId of ['CombatRifle_Fixer', 'DLC04_PaddleBall_NWOT']) {
       const stock = loadout(weaponId);
-      const withPerk = loadoutWithPerks(weaponId, [{ perkId: PerkId.MartialArtist, rank: 3 }]);
+      const withPerk = loadout(
+        weaponId,
+        {},
+        { perks: [{ perkId: PerkId.MartialArtist, rank: 3 }] },
+      );
       expect(stock!.weapon.animType).toBe(9); // Gun — GetWeaponAnimType()≤6 fails
       expect(withPerk!.weapon.speed).toBeCloseTo(stock!.weapon.speed ?? 1, 6);
     }
   });
 
   it('Ground Pounder rank 3 folds +0.3 reload speed on small guns but not heavy guns (expanded SmallGun_Actor_Condition, 2026-07-14)', () => {
-    const stockFixer = loadout('CombatRifle_Fixer');
-    const fixer = loadoutWithPerks('CombatRifle_Fixer', [
-      { perkId: PerkId.GroundPounder, rank: 3 },
-    ]);
-    expect(fixer!.weapon.reloadSpeed).toBeCloseTo((stockFixer!.weapon.reloadSpeed ?? 1) + 0.3, 6);
+    const fixer = loadout(
+      'CombatRifle_Fixer',
+      {},
+      { perks: [{ perkId: PerkId.GroundPounder, rank: 3 }] },
+    );
+    expect(fixer!.weapon.reloadSpeed).toBeCloseTo(
+      (untouchedFixer!.weapon.reloadSpeed ?? 1) + 0.3,
+      6,
+    );
 
     const stockGauss = loadout('GaussMinigun');
-    const gauss = loadoutWithPerks('GaussMinigun', [{ perkId: PerkId.GroundPounder, rank: 3 }]);
+    const gauss = loadout(
+      'GaussMinigun',
+      {},
+      { perks: [{ perkId: PerkId.GroundPounder, rank: 3 }] },
+    );
     expect(gauss!.weapon.reloadSpeed).toBeCloseTo(stockGauss!.weapon.reloadSpeed ?? 1, 6);
   });
 
   it('Speed Demon folds +0.3 reload speed into the effective weapon and leaves no reloadSpeed modifier downstream', () => {
-    const playerConfig: PlayerConfig = {
-      ...createDefaultPlayerConfig(),
-      weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
-      mutations: ['Mutation_SpeedDemon'],
-    };
-    const withMutation = resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live');
-    const stock = loadout('CombatRifle_Fixer');
+    const withMutation = loadout('CombatRifle_Fixer', {}, { mutations: ['Mutation_SpeedDemon'] });
 
     // Mutation_SpeedDemon: reloadSpeed ADD 0.3 (0.4 under Strange in Numbers).
-    expect(withMutation!.weapon.reloadSpeed).toBeCloseTo((stock!.weapon.reloadSpeed ?? 1) + 0.3, 6);
+    expect(withMutation!.weapon.reloadSpeed).toBeCloseTo(
+      (untouchedFixer!.weapon.reloadSpeed ?? 1) + 0.3,
+      6,
+    );
     // Consumed by the effective-weapon fold — never left in the resolver list.
     expect(withMutation!.modifiers.some((m) => m.bucket === 'reloadSpeed')).toBe(false);
   });
 
   it('Wasteland Fish Sandwich feeds Fast Fighter through the full resolveLoadout assembly path', () => {
-    const stock = loadoutWithPerks('CombatRifle_Fixer', [{ perkId: PerkId.FastFighter, rank: 1 }]);
-    const withFish = resolveLoadout(
+    const stock = loadout(
+      'CombatRifle_Fixer',
+      {},
+      { perks: [{ perkId: PerkId.FastFighter, rank: 1 }] },
+    );
+    const withFish = loadout(
+      'CombatRifle_Fixer',
+      {},
       {
-        ...createDefaultPlayerConfig(),
-        weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
         perks: [{ perkId: PerkId.FastFighter, rank: 1 }],
         consumables: ['SeasonalFish_Meal_SummerWastelandFishSandwich'],
       },
-      createDefaultEnemyConfig(),
-      'live',
     );
     expect(withFish!.weapon.reloadSpeed).toBeGreaterThan(stock!.weapon.reloadSpeed!);
   });
 
   it('a bootstrap-only bucket (moveSpeedBonus) drops from ScenarioInput.modifiers without stripping unrelated bootstrap buckets (onslaught)', () => {
-    const input = resolveLoadout(
+    const input = loadout(
+      '10mm',
+      {},
       {
-        ...createDefaultPlayerConfig(),
-        weapon: { weaponId: '10mm', mods: {}, legendaryEffects: [] },
         perks: [
           { perkId: PerkId.FastFighter, rank: 1 },
           { perkId: PerkId.GunslingerMaster, rank: 1 },
         ],
         consumables: ['SeasonalFish_Meal_SummerWastelandFishSandwich'],
       },
-      createDefaultEnemyConfig(),
-      'live',
     )!;
 
     expect(input.modifiers.some((m) => m.bucket === 'moveSpeedBonus')).toBe(false);

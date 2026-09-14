@@ -19,12 +19,8 @@ import {
 import { normalizeBuildState } from '@/lib/build-rules';
 import { reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
 import { nukesDragonsPerks } from '@/lib/nukes-dragons';
-import {
-  makeBuildReducer,
-  createDefaultBuildState,
-  type BuildAction,
-  type BuildState,
-} from '@/state/build-reducer';
+import { createDefaultBuildState, type BuildState } from '@/state/build-reducer';
+import { buildReducer, stateFrom } from '@/state/__tests__/build-state-fixture';
 import { createDefaultPlayerInput, createDefaultEnemyConditions } from '@/types';
 import { buildDelta } from '@/lib/build-delta';
 import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
@@ -34,11 +30,6 @@ import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
 import * as actualBuffs from '@/data/buffs';
 
 const mode = 'live' as const;
-const buildReducer = makeBuildReducer(mode);
-
-function stateFrom(actions: BuildAction[]) {
-  return actions.reduce(buildReducer, createDefaultBuildState());
-}
 
 // A real N&D key → PerkId pair to exercise the dictionary path.
 const [ndKey, ndPerkId] = Object.entries(nukesDragonsPerks).find(([k]) => !k.startsWith('0'))!;
@@ -82,7 +73,7 @@ const realGetAddictions = actualBuffs.getAddictions;
 vi.mock('@/data/buffs', () => ({
   ...actualBuffs,
   getConsumables: (m: Parameters<typeof realGetConsumables>[0]) => {
-    const heavyIds = new Set(['Buffout', 'Psycho', 'Fury', 'Overdrive', 'Med-X']);
+    const heavyIds = new Set(['Buffout', 'Psycho', 'Fury', 'Overdrive', 'MedX']);
     const fromReal = realGetConsumables(m).filter((c) => heavyIds.has(c.id));
     return [...fromReal, testChemA, testChemB];
   },
@@ -168,7 +159,7 @@ function buildHeavyBuild(): BuildState {
     'Mutation_HerdMentality',
     'Mutation_ScalySkin',
   ];
-  state.player.consumables = ['Buffout', 'Psycho', 'Fury', 'Overdrive', 'Med-X'];
+  state.player.consumables = ['Buffout', 'Psycho', 'Fury', 'Overdrive', 'MedX'];
   state.player.armorEffects = {
     mod_Legendary_Armor4_LimitBreak: 5,
     mod_Legendary_Armor4_BattleLoaders: 3,
@@ -230,14 +221,6 @@ function buildHeavyBuild(): BuildState {
 }
 
 describe('build codec', () => {
-  it('round-trips the default state', async () => {
-    const state = createDefaultBuildState();
-    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
-    expect(decoded).not.toBeNull();
-    expect(decoded!.state).toEqual(state);
-    expect(decoded!.warnings).toEqual([]);
-  });
-
   it('round-trips a maxed realistic build', async () => {
     const state = stateFrom([
       { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
@@ -354,7 +337,7 @@ describe('build codec', () => {
     expect(decoded!.warnings).toContain('unknown weapon "RemovedByPatch" — cleared');
   });
 
-  it('round-trips chargeTimeSec when set, and omits it from the wire when undefined', async () => {
+  it('round-trips chargeTimeSec when set', async () => {
     const state = stateFrom([
       { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
       { type: 'weapon/chargeTime', value: 1.5 },
@@ -362,10 +345,6 @@ describe('build codec', () => {
     const encoded = await encodeBuild(state, mode);
     const decoded = await decodeBuild(encoded, mode);
     expect(decoded!.state.player.chargeTimeSec).toBe(1.5);
-
-    const defaultEncoded = await encodeBuild(createDefaultBuildState(), mode);
-    const defaultDecoded = await decodeBuild(defaultEncoded, mode);
-    expect(defaultDecoded!.state.player.chargeTimeSec).toBeUndefined();
   });
 
   it('round-trips the all-default build with no warnings and a near-empty wire', async () => {
@@ -376,14 +355,6 @@ describe('build codec', () => {
     expect(encoded.length).toBeLessThan(20);
   });
 
-  it('non-default conditions survive while defaults are not serialized', async () => {
-    const state = stateFrom([{ type: 'condition/set', key: 'tenderizerStacks', value: 500 }]);
-    const encoded = await encodeBuild(state, mode);
-    const decoded = await decodeBuild(encoded, mode);
-    expect(decoded!.state.player.conditions.tenderizerStacks).toBe(500);
-    expect(encoded.length).toBeLessThan(80);
-  });
-
   it('round-trips armorWorn none', async () => {
     const state = stateFrom([{ type: 'armorType/set', armorWorn: 'none' }]);
     const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
@@ -391,24 +362,61 @@ describe('build codec', () => {
     expect(decoded!.state.player.conditions.isInPowerArmor).toBe(false);
   });
 
-  it('round-trips a SPECIAL stat set to 15 (regression: the sibling tests above use 8, which happens to differ from both the encode and decode baselines and so could not have caught this)', async () => {
-    const state = stateFrom([{ type: 'special/set', stat: 'luck', value: 15 }]);
-    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
-    expect(decoded!.state.player.conditions.luck).toBe(15);
-    expect(decoded!.warnings).toEqual([]);
-  });
+  const singleValueRows: {
+    name: string;
+    build: () => BuildState;
+    read: (state: BuildState) => unknown;
+    value: unknown;
+    maxEncodedLength?: number;
+  }[] = [
+    {
+      name: 'non-default conditions survive while defaults are not serialized',
+      build: () => stateFrom([{ type: 'condition/set', key: 'tenderizerStacks', value: 500 }]),
+      read: (state) => state.player.conditions.tenderizerStacks,
+      value: 500,
+      maxEncodedLength: 80,
+    },
+    {
+      name: 'round-trips a SPECIAL stat set to 15 (regression: the sibling tests above use 8, which happens to differ from both the encode and decode baselines and so could not have caught this)',
+      build: () => stateFrom([{ type: 'special/set', stat: 'luck', value: 15 }]),
+      read: (state) => state.player.conditions.luck,
+      value: 15,
+    },
+    {
+      name: 'round-trips concentratedFireStacks (Phase B — Concentrated Fire stacks)',
+      build: () => stateFrom([{ type: 'condition/set', key: 'concentratedFireStacks', value: 15 }]),
+      read: (state) => state.player.conditions.concentratedFireStacks,
+      value: 15,
+    },
+    {
+      name: "round-trips battleLoadersBashSec (Phase C — Battle-Loader's bash cost)",
+      build: () => stateFrom([{ type: 'condition/set', key: 'battleLoadersBashSec', value: 2 }]),
+      read: (state) => state.player.conditions.battleLoadersBashSec,
+      value: 2,
+    },
+    {
+      name: 'round-trips a real numeric targetDistance value written by the current app',
+      build: () => {
+        const state = createDefaultBuildState();
+        state.enemy.conditions.targetDistance = 3200;
+        return state;
+      },
+      read: (state) => state.enemy.conditions.targetDistance,
+      value: 3200,
+    },
+  ];
 
-  it('round-trips concentratedFireStacks (Phase B — Concentrated Fire stacks)', async () => {
-    const state = stateFrom([{ type: 'condition/set', key: 'concentratedFireStacks', value: 15 }]);
-    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
-    expect(decoded!.state.player.conditions.concentratedFireStacks).toBe(15);
-  });
-
-  it("round-trips battleLoadersBashSec (Phase C — Battle-Loader's bash cost)", async () => {
-    const state = stateFrom([{ type: 'condition/set', key: 'battleLoadersBashSec', value: 2 }]);
-    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
-    expect(decoded!.state.player.conditions.battleLoadersBashSec).toBe(2);
-  });
+  for (const row of singleValueRows) {
+    it(row.name, async () => {
+      const encoded = await encodeBuild(row.build(), mode);
+      const decoded = await decodeBuild(encoded, mode);
+      expect(row.read(decoded!.state)).toBe(row.value);
+      expect(decoded!.warnings).toEqual([]);
+      if (row.maxEncodedLength !== undefined) {
+        expect(encoded.length).toBeLessThan(row.maxEncodedLength);
+      }
+    });
+  }
 
   it('never emits the larger of the raw and deflated packed bytes', async () => {
     const longName = createDefaultBuildState();
@@ -642,14 +650,6 @@ describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', ()
     const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.enemy.conditions.crippledLimbCount).toBe(0);
     expect(decoded!.warnings.some((w) => w.includes('crippled limb count'))).toBe(true);
-  });
-
-  it('round-trips a real numeric targetDistance value written by the current app', async () => {
-    const state = createDefaultBuildState();
-    state.enemy.conditions.targetDistance = 3200;
-    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
-    expect(decoded!.state.enemy.conditions.targetDistance).toBe(3200);
-    expect(decoded!.warnings).toEqual([]);
   });
 });
 

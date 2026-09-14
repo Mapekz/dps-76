@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'bun:test';
-import {
-  createDefaultBuildState,
-  makeBuildReducer,
-  type BuildAction,
-  type BuildState,
-} from '@/state/build-reducer';
+import type { BuildAction, BuildState } from '@/state/build-reducer';
+import { stateFrom } from '@/state/__tests__/build-state-fixture';
 import { PerkId } from '@/data/perk-ids';
 import { resolveLoadout } from '@/lib/loadout';
 import { createMemoScope } from '@/lib/loadout-memo';
@@ -26,17 +22,9 @@ import type { DpsSnapshot, EvaluatedSuggestion, SuggestionGroup } from '@/lib/su
  * that happens not to touch it.
  */
 
-const buildReducer = makeBuildReducer('live');
-
-function applyActions(state: BuildState, actions: readonly BuildAction[]): BuildState {
-  let next = state;
-  for (const action of actions) next = buildReducer(next, action);
-  return next;
-}
-
 /** Independent, un-memoized ground truth for one candidate's action list. */
 function naiveSnapshot(state: BuildState, actions: readonly BuildAction[]): DpsSnapshot | null {
-  const next = applyActions(state, actions);
+  const next = stateFrom(actions, state);
   const input = resolveLoadout(next.player, next.enemy, 'live'); // no memo
   return input ? snapshotOf(computeScenarios(input)) : null;
 }
@@ -50,8 +38,7 @@ function naiveSnapshot(state: BuildState, actions: readonly BuildAction[]): DpsS
 // two mutations, and an already-active consumable (so 'consumable' offers
 // both "Use" and "Drop" candidates).
 function richBuildState(): BuildState {
-  let state = createDefaultBuildState();
-  state = applyActions(state, [
+  return stateFrom([
     { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
     {
       type: 'weapon/mod',
@@ -72,7 +59,6 @@ function richBuildState(): BuildState {
     { type: 'mutation/toggle', id: 'Mutation_AdrenalReaction' },
     { type: 'consumable/toggle', id: 'Brew_BlackwaterBrew' },
   ]);
-  return state;
 }
 
 const GROUPS: SuggestionGroup[] = ['mod', 'legendary', 'perk', 'mutation', 'armor', 'consumable'];
@@ -121,7 +107,7 @@ describe('evaluateSuggestions memoization correctness', () => {
   });
 
   it('memoized evaluation matches naive ground truth for allocation compounds', () => {
-    const allocState = applyActions(createDefaultBuildState(), [
+    const allocState = stateFrom([
       { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
       { type: 'special/set', stat: 'luck', value: 1 },
     ]);
@@ -151,8 +137,7 @@ describe('evaluateSuggestions memoization correctness', () => {
  */
 describe('addiction/toggle candidate — MemoScope key regression (see loadout.ts playerAgg)', () => {
   function junkieBuildState(): BuildState {
-    let state = createDefaultBuildState();
-    state = applyActions(state, [
+    return stateFrom([
       { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
       // Junkie's: +10% dbm per active (unsuppressed) addiction — a pure
       // function of `addictionCount`, so any DPS movement below is
@@ -164,7 +149,6 @@ describe('addiction/toggle candidate — MemoScope key regression (see loadout.t
         omodId: 'mod_Legendary_Weapon1_DamageAddiction',
       },
     ]);
-    return state;
   }
 
   it('toggling an addiction on, in a MemoScope already warmed by a zero-addiction evaluation, still moves DPS', () => {

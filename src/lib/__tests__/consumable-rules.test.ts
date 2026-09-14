@@ -67,43 +67,56 @@ const buffsById = new Map<string, GeneratedBuff>(
 );
 
 describe('applySelection', () => {
-  it('a new chem replaces an active chem', () => {
-    const result = applySelection(buffsById, ['ChemA'], 'ChemB');
-    expect(result.consumables).toEqual(['ChemB']);
-    expect(result.replaced).toEqual(['ChemA']);
-  });
+  const replaceRows: { name: string; active: string; added: string }[] = [
+    { name: 'a new chem replaces an active chem', active: 'ChemA', added: 'ChemB' },
+    { name: 'a new alcohol replaces an active alcohol', active: 'AlcoholA', added: 'AlcoholB' },
+    { name: 'a new magazine replaces an active magazine', active: 'MagazineA', added: 'MagazineB' },
+    {
+      name: 'a new bobblehead replaces an active bobblehead',
+      active: 'BobbleheadA',
+      added: 'BobbleheadB',
+    },
+    {
+      name: 'a same-key food replaces the active food (exact dispelKeys match)',
+      active: 'FoodStr1',
+      added: 'FoodStr2',
+    },
+  ];
 
-  it('a new alcohol replaces an active alcohol', () => {
-    const result = applySelection(buffsById, ['AlcoholA'], 'AlcoholB');
-    expect(result.consumables).toEqual(['AlcoholB']);
-    expect(result.replaced).toEqual(['AlcoholA']);
-  });
+  for (const row of replaceRows) {
+    it(row.name, () => {
+      const result = applySelection(buffsById, [row.active], row.added);
+      expect(result.consumables).toEqual([row.added]);
+      expect(result.replaced).toEqual([row.active]);
+    });
+  }
 
-  it('chem and alcohol coexist (different categories, no shared dispel key)', () => {
-    const withChem = applySelection(buffsById, [], 'ChemA');
-    const withBoth = applySelection(buffsById, withChem.consumables, 'AlcoholA');
-    expect(withBoth.consumables.sort()).toEqual(['AlcoholA', 'ChemA']);
-    expect(withBoth.replaced).toEqual([]);
-  });
+  const coexistRows: { name: string; first: string; second: string }[] = [
+    {
+      name: 'chem and alcohol coexist (different categories, no shared dispel key)',
+      first: 'ChemA',
+      second: 'AlcoholA',
+    },
+    {
+      name: 'a magazine and a bobblehead coexist (independent categories)',
+      first: 'MagazineA',
+      second: 'BobbleheadA',
+    },
+    {
+      name: 'STR vs END foods (different keys) stack — no displacement',
+      first: 'FoodStr1',
+      second: 'FoodEnd',
+    },
+  ];
 
-  it('a new magazine replaces an active magazine', () => {
-    const result = applySelection(buffsById, ['MagazineA'], 'MagazineB');
-    expect(result.consumables).toEqual(['MagazineB']);
-    expect(result.replaced).toEqual(['MagazineA']);
-  });
-
-  it('a new bobblehead replaces an active bobblehead', () => {
-    const result = applySelection(buffsById, ['BobbleheadA'], 'BobbleheadB');
-    expect(result.consumables).toEqual(['BobbleheadB']);
-    expect(result.replaced).toEqual(['BobbleheadA']);
-  });
-
-  it('a magazine and a bobblehead coexist (independent categories)', () => {
-    const withMagazine = applySelection(buffsById, [], 'MagazineA');
-    const withBoth = applySelection(buffsById, withMagazine.consumables, 'BobbleheadA');
-    expect(withBoth.consumables.sort()).toEqual(['BobbleheadA', 'MagazineA']);
-    expect(withBoth.replaced).toEqual([]);
-  });
+  for (const row of coexistRows) {
+    it(row.name, () => {
+      const withFirst = applySelection(buffsById, [], row.first);
+      const withBoth = applySelection(buffsById, withFirst.consumables, row.second);
+      expect(withBoth.consumables.sort()).toEqual([row.first, row.second].sort());
+      expect(withBoth.replaced).toEqual([]);
+    });
+  }
 
   it('a magazine/bobblehead coexists with chem/alcohol/food (fully independent axes)', () => {
     let active: string[] = [];
@@ -116,19 +129,6 @@ describe('applySelection', () => {
       ['AlcoholA', 'BobbleheadA', 'ChemA', 'FoodStr1', 'MagazineA'].sort(),
     );
     expect(result.replaced).toEqual([]);
-  });
-
-  it('a same-key food replaces the active food (exact dispelKeys match)', () => {
-    const result = applySelection(buffsById, ['FoodStr1'], 'FoodStr2');
-    expect(result.consumables).toEqual(['FoodStr2']);
-    expect(result.replaced).toEqual(['FoodStr1']);
-  });
-
-  it('STR vs END foods (different keys) stack — no displacement', () => {
-    const withStr = applySelection(buffsById, [], 'FoodStr1');
-    const withBoth = applySelection(buffsById, withStr.consumables, 'FoodEnd');
-    expect(withBoth.consumables.sort()).toEqual(['FoodEnd', 'FoodStr1']);
-    expect(withBoth.replaced).toEqual([]);
   });
 
   it('a drink collides with a food sharing the same dispel key (cross-category, Milk_Chally case)', () => {

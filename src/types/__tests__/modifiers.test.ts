@@ -218,48 +218,61 @@ function curveMod(
 }
 
 describe('modifierHasEngineEffect / hasAnyEngineEffect', () => {
-  it('is false for a bucket the engine never folds (INERT_ENGINE_BUCKETS)', () => {
-    expect(modifierHasEngineEffect(plainMod('limbDamage'))).toBe(false);
-  });
+  const rows: { name: string; modifiers: Modifier[]; expected: boolean }[] = [
+    {
+      name: 'is false for a bucket the engine never folds (INERT_ENGINE_BUCKETS)',
+      modifiers: [plainMod('limbDamage')],
+      expected: false,
+    },
+    {
+      name: "is false for incomingDamageMult (Emergency Protocols' −50% damage-taken half, no player-defense model)",
+      modifiers: [plainMod('incomingDamageMult')],
+      expected: false,
+    },
+    {
+      name: 'is true for armorPen/armorPenFlat now that mitigation.ts folds them (Phase 2)',
+      modifiers: [plainMod('armorPen'), plainMod('armorPenFlat')],
+      expected: true,
+    },
+    {
+      name: "is true for a playerDamageResist-scaled curve (Berserker's wielder-DR wiring, renamed from enemyDamageResist)",
+      modifiers: [curveMod('dbm', 'playerDamageResist')],
+      expected: true,
+    },
+    {
+      name: "is true for a radResistAtLeast-gated modifier (Daisy Cutter's Rad-Resistance ladder, 20260724 rebuild)",
+      modifiers: [plainMod('dbm', [{ kind: 'radResistAtLeast', min: 1000 }])],
+      expected: true,
+    },
+    {
+      name: 'is true for vatsHitChance — display regime still counts as "moves a number" (Phase 4, V.A.T.S. Enhanced &c.)',
+      modifiers: [plainMod('vatsHitChance')],
+      expected: true,
+    },
+    {
+      name: "is true for vatsHitChanceMult — display regime, Concentrated Fire's EP109 multiplier (USER-RESOLVED 2026-07-19)",
+      modifiers: [plainMod('vatsHitChanceMult')],
+      expected: true,
+    },
+    {
+      name: 'is false when the modifier carries an unresolved condition',
+      modifiers: [plainMod('dbm', [{ kind: 'unresolved', raw: 'GetRandomPercent()=20' }])],
+      expected: false,
+    },
+    {
+      name: 'is true for an ordinary effective bucket with no gating issues',
+      modifiers: [plainMod('dbm')],
+      expected: true,
+    },
+  ];
 
-  it("is false for incomingDamageMult (Emergency Protocols' −50% damage-taken half, no player-defense model)", () => {
-    expect(modifierHasEngineEffect(plainMod('incomingDamageMult'))).toBe(false);
-  });
-
-  it('is true for armorPen/armorPenFlat now that mitigation.ts folds them (Phase 2)', () => {
-    expect(modifierHasEngineEffect(plainMod('armorPen'))).toBe(true);
-    expect(modifierHasEngineEffect(plainMod('armorPenFlat'))).toBe(true);
-  });
-
-  it("is true for a playerDamageResist-scaled curve (Berserker's wielder-DR wiring, renamed from enemyDamageResist)", () => {
-    expect(modifierHasEngineEffect(curveMod('dbm', 'playerDamageResist'))).toBe(true);
-  });
-
-  it("is true for a radResistAtLeast-gated modifier (Daisy Cutter's Rad-Resistance ladder, 20260724 rebuild)", () => {
-    expect(
-      modifierHasEngineEffect(plainMod('dbm', [{ kind: 'radResistAtLeast', min: 1000 }])),
-    ).toBe(true);
-  });
-
-  it('is true for vatsHitChance — display regime still counts as "moves a number" (Phase 4, V.A.T.S. Enhanced &c.)', () => {
-    expect(modifierHasEngineEffect(plainMod('vatsHitChance'))).toBe(true);
-  });
-
-  it("is true for vatsHitChanceMult — display regime, Concentrated Fire's EP109 multiplier (USER-RESOLVED 2026-07-19)", () => {
-    expect(modifierHasEngineEffect(plainMod('vatsHitChanceMult'))).toBe(true);
-  });
-
-  it('is false when the modifier carries an unresolved condition', () => {
-    expect(
-      modifierHasEngineEffect(
-        plainMod('dbm', [{ kind: 'unresolved', raw: 'GetRandomPercent()=20' }]),
-      ),
-    ).toBe(false);
-  });
-
-  it('is true for an ordinary effective bucket with no gating issues', () => {
-    expect(modifierHasEngineEffect(plainMod('dbm'))).toBe(true);
-  });
+  for (const row of rows) {
+    it(row.name, () => {
+      for (const modifier of row.modifiers) {
+        expect(modifierHasEngineEffect(modifier)).toBe(row.expected);
+      }
+    });
+  }
 
   it('hasAnyEngineEffect is false for an empty list and true if any modifier is effective', () => {
     expect(hasAnyEngineEffect([])).toBe(false);
@@ -281,11 +294,5 @@ describe('CONSTANT_BASE_BUCKETS', () => {
     const claimed: string[] = [...CONSTANT_BASE_BUCKETS, ...OTHER_PRIMITIVE_CONSTANT_BASE_BUCKETS];
     claimed.sort();
     expect(claimed).toEqual(numericBase);
-  });
-
-  it('never claims a bucket whose base is dynamic or unfolded', () => {
-    for (const bucket of CONSTANT_BASE_BUCKETS) {
-      expect(typeof BUCKET_REGISTRY[bucket].foldBase).toBe('number');
-    }
   });
 });

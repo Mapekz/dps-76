@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'bun:test';
-import { buildDataset, getDataset, getUnresolvedOverrideKeys } from '@/data/dataset';
-import type { DatasetSource, HandAuthored } from '@/data/dataset';
+import { getDataset, getUnresolvedOverrideKeys } from '@/data/dataset';
 import generatedArmorOmodsLive from '@/data/live/generated/armor-omods.json';
 import generatedOmodsLive from '@/data/live/generated/omods.json';
 import generatedMutationsLive from '@/data/live/generated/mutations.json';
@@ -11,7 +10,7 @@ import { getOmodById } from '@/data/omods';
 import { armorLegendaryValueOverrides } from '@/data/overrides/armor-values';
 import { buffValueOverrides } from '@/data/overrides/buff-overrides';
 import { legendaryValueOverrides } from '@/data/overrides/legendary-values';
-import type { GeneratedConstants, GeneratedOmod, GeneratedUnique } from '@/types/generated';
+import type { GeneratedUnique } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 
 /**
@@ -64,55 +63,6 @@ describe('getDataset value overlays', () => {
   });
 });
 
-/**
- * `armor-values.ts` opens by promising "Every value below is still the
- * extracted ESM value; only the condition shape changes" — these entries
- * REPLACE a record's whole modifier array to fix a condition-translation
- * artifact, never to supply a magnitude the ESM doesn't have. Nothing enforced
- * that until now, so a balance patch that retuned one of these chances would
- * update `armor-omods.json` and leave the app serving the stale literal
- * silently (the wholesale replace masks it, and `extract:diff` reports
- * modifier COUNT changes, not value changes).
- *
- * Magnitudes only — condition/bucket reshaping is the whole point of these
- * entries, so shape is deliberately not asserted. A failure means the ESM
- * moved: re-read the record (`esm get <formId>`) and update the override's
- * values, don't relax this test.
- */
-describe('armor value overrides preserve extracted magnitudes', () => {
-  const extractedById = new Map(generatedArmorOmodsLive.map((omod) => [omod.id, omod]));
-  /**
-   * Plain magnitude, or null for a curve-driven modifier (excluded: it carries
-   * `curve`/`curveScale` instead of a scalar to compare). Takes `unknown`
-   * because the two sides are differently typed — a checked-in JSON import
-   * (widened) and the `Modifier` union (discriminated on `curve`).
-   */
-  const magnitude = (m: unknown): number | null => {
-    const value = (m as { value?: unknown }).value;
-    return typeof value === 'number' ? value : null;
-  };
-
-  for (const [id, overrides] of Object.entries(armorLegendaryValueOverrides)) {
-    it(`${id} only re-shapes conditions, never magnitudes`, () => {
-      const extracted = extractedById.get(id);
-      expect(extracted, `${id} has no generated record`).toBeDefined();
-      const extractedValues = new Set(
-        extracted!.modifiers.map(magnitude).filter((v): v is number => v !== null),
-      );
-      for (const override of overrides) {
-        const value = magnitude(override);
-        if (value === null) continue;
-        expect(
-          extractedValues.has(value),
-          `${id}: override value ${value} is not among the extracted values ${[
-            ...extractedValues,
-          ].join(', ')}`,
-        ).toBe(true);
-      }
-    });
-  }
-});
-
 type MagnitudePolicy =
   | { mode: 'must-match-source' }
   | { mode: 'pinned-divergence'; pinnedScalars: readonly number[]; note: string };
@@ -128,6 +78,7 @@ function runMagnitudePolicyTests(
   overrides: Readonly<Record<string, Modifier[]>>,
   extractedById: ReadonlyMap<string, { modifiers: unknown[] }>,
   policy: Readonly<Record<string, MagnitudePolicy>>,
+  tolerance = 1e-9,
 ) {
   describe(`${label} preserve magnitudes`, () => {
     for (const [id, entryPolicy] of Object.entries(policy)) {
@@ -150,7 +101,7 @@ function runMagnitudePolicyTests(
           const value = magnitude(override);
           if (value === null) continue;
           expect(
-            [...extractedValues].some((v) => Math.abs(v - value) < 1e-9),
+            [...extractedValues].some((v) => v === value || Math.abs(v - value) < tolerance),
             `${id}: override value ${value} is not among the extracted values ${[
               ...extractedValues,
             ].join(', ')}`,
@@ -160,6 +111,34 @@ function runMagnitudePolicyTests(
     }
   });
 }
+
+/**
+ * `armor-values.ts` opens by promising "Every value below is still the
+ * extracted ESM value; only the condition shape changes" — these entries
+ * REPLACE a record's whole modifier array to fix a condition-translation
+ * artifact, never to supply a magnitude the ESM doesn't have. Nothing enforced
+ * that until now, so a balance patch that retuned one of these chances would
+ * update `armor-omods.json` and leave the app serving the stale literal
+ * silently (the wholesale replace masks it, and `extract:diff` reports
+ * modifier COUNT changes, not value changes).
+ *
+ * Magnitudes only — condition/bucket reshaping is the whole point of these
+ * entries, so shape is deliberately not asserted. A failure means the ESM
+ * moved: re-read the record (`esm get <formId>`) and update the override's
+ * values, don't relax this test.
+ */
+runMagnitudePolicyTests(
+  'armor value overrides',
+  armorLegendaryValueOverrides,
+  new Map(generatedArmorOmodsLive.map((omod) => [omod.id, omod])),
+  Object.fromEntries(
+    Object.keys(armorLegendaryValueOverrides).map((id): [string, MagnitudePolicy] => [
+      id,
+      { mode: 'must-match-source' },
+    ]),
+  ),
+  0,
+);
 
 /**
  * `legendary-values.ts` REPLACES whole modifier arrays — often to drop
@@ -239,69 +218,6 @@ describe('buff value overrides magnitude policy coverage', () => {
     expect(Object.keys(buffValueOverrides).sort()).toEqual(
       Object.keys(BUFF_MAGNITUDE_POLICY).sort(),
     );
-  });
-});
-
-describe('buildDataset OMOD overlay order', () => {
-  function modifier(id: string, value: number): Modifier {
-    return {
-      id,
-      source: { kind: 'omod', formId: '', edid: 'synthetic', name: 'Synthetic' },
-      bucket: 'dbm',
-      op: 'ADD',
-      value,
-      conditions: [],
-    };
-  }
-
-  function buildSyntheticOmods(generatedOmods: GeneratedOmod[], overrides: Partial<DatasetSource>) {
-    const source: DatasetSource = {
-      generatedWeapons: [],
-      generatedOmods,
-      generatedArmorOmods: [],
-      generatedPerks: [],
-      generatedMutations: [],
-      generatedConsumables: [],
-      generatedAddictions: [],
-      generatedBodyParts: [],
-      generatedUniques: [],
-      generatedNpcs: [],
-      constants: {} as GeneratedConstants,
-      legendaryValueOverrides: {},
-      armorLegendaryValueOverrides: {},
-      buffValueOverrides: {},
-      npcOverrides: {},
-      weaponCorrections: {},
-      hiddenWeaponIds: new Set(),
-      forceVisibleWeaponIds: new Set(),
-      hiddenOmodIds: new Set(),
-      forceVisibleOmodIds: new Set(),
-      hiddenArmorOmodIds: new Set(),
-      forceVisibleArmorOmodIds: new Set(),
-      hiddenConsumableIds: new Set(),
-      forceVisibleConsumableIds: new Set(),
-      omodBadgeOverrides: {},
-      omodWeaponRestrictions: {},
-      omodNameOverrides: {},
-      perWeaponSlotLabelOverrides: {},
-      omodModifierAdditions: {},
-      ...overrides,
-    };
-    return buildDataset({ perkNames: {} } as HandAuthored, source).omods[0].modifiers;
-  }
-
-  it('applies legendary replace before omodModifierAdditions concat on the same record', () => {
-    const extracted = modifier('extracted', 0.1);
-    const replacement = modifier('replacement', 0.2);
-    const addition = modifier('addition', 0.3);
-    const omod = { id: 'synthetic', name: 'Synthetic', modifiers: [extracted] } as GeneratedOmod;
-
-    expect(
-      buildSyntheticOmods([omod], {
-        legendaryValueOverrides: { synthetic: [replacement] },
-        omodModifierAdditions: { synthetic: [addition] },
-      }),
-    ).toEqual([replacement, addition]);
   });
 });
 

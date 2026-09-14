@@ -8,6 +8,8 @@ export const STRENGTH_2STAR = 'mod_Legendary_Armor2_StatStrength';
 export const BATTLE_LOADERS = 'mod_Legendary_Armor4_BattleLoaders';
 export const LIMIT_BREAKING = 'mod_Legendary_Armor4_LimitBreak';
 export const EMERGENCY_PROTOCOLS = 'mod_PowerArmor_Excavator_Torso_Misc_Emergency';
+export const DEEP_POCKETED = 'DLC03_mod_armor_Marine_Lining_Limb_ImprovedCarryCapacity2';
+export const BODY_JETPACK = 'mod_armor_BOSInfantry_JetPack';
 
 export const fixer = getWeapons('live')['CombatRifle_Fixer'];
 

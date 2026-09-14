@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'bun:test';
-import type { EsmSource, EsmListRow, EsmRecord } from '../esm-client';
+import { beforeAll, describe, it, expect } from 'bun:test';
+import type { EsmSource, EsmRecord } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
 import {
   effectiveFamilyMaxRank,
@@ -8,6 +8,7 @@ import {
   toGeneratedPerkCard,
 } from '../extract-perks';
 import { flattenPerkConditionRows, translateConditions } from '../normalize/conditions';
+import { listRows, perkPlaceholder, stubRecord } from './esm-stubs';
 import tenderizerCard from './fixtures/pcrd-tenderizercard.json';
 import commandoCard from './fixtures/pcrd-commandocard.json';
 import actionBoyGirlCard from './fixtures/pcrd-actionboygirlcard.json';
@@ -179,17 +180,6 @@ describe('translateConditions (glowAtLeast — Rads AV 0x000002E1, 2026-07-13)',
     expect(conditions).toContainEqual({ kind: 'glowAtLeast', min: 5 });
   });
 
-  it('leaves a Rads GetValue row unresolved for a non-≥ comparison (e.g. "Less Than")', () => {
-    const row = {
-      Function: 'GetValue',
-      'Parameter 1': '0x000002E1',
-      'Comparison Value': 200,
-      Operator: 'Less Than',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'unresolved', raw: 'GetValue(0x000002E1) Less Than 200' }]);
-  });
-
   it('leaves a GLOB-compared Rads row unresolved when the global is not pre-resolved', () => {
     const row = {
       Function: 'GetValue',
@@ -205,40 +195,54 @@ describe('translateConditions (glowAtLeast — Rads AV 0x000002E1, 2026-07-13)',
 });
 
 describe('translateConditions (radResistAtLeast — RadResistExposure AV 0x000002EA, 20260724 Daisy Cutter rebuild)', () => {
-  it("translates a literal GetValue(RadResistExposure) >= 1000 row to radResistAtLeast (Perk_Daisycutter's ladder, verified via esm chase 0x00471882)", () => {
-    const row = {
-      Function: 'GetValue',
-      'Parameter 1': '0x000002EA',
-      'Comparison Value': 1000,
-      Operator: 'Greater Than Or Equal To',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'radResistAtLeast', min: 1000 }]);
-  });
+  const ladderRows: Array<{ name: string; min: number }> = [
+    {
+      name: "translates a literal GetValue(RadResistExposure) >= 1000 row to radResistAtLeast (Perk_Daisycutter's ladder, verified via esm chase 0x00471882)",
+      min: 1000,
+    },
+    { name: 'translates the top step of the ladder (>= 8000, the +160% cap)', min: 8000 },
+  ];
+  for (const row of ladderRows) {
+    it(row.name, () => {
+      const rawRow = {
+        Function: 'GetValue',
+        'Parameter 1': '0x000002EA',
+        'Comparison Value': row.min,
+        Operator: 'Greater Than Or Equal To',
+      };
+      const { conditions } = translateConditions([rawRow], { edidByFormId: new Map() });
+      expect(conditions).toEqual([{ kind: 'radResistAtLeast', min: row.min }]);
+    });
+  }
+});
 
-  it('translates the top step of the ladder (>= 8000, the +160% cap)', () => {
-    const row = {
-      Function: 'GetValue',
-      'Parameter 1': '0x000002EA',
-      'Comparison Value': 8000,
-      Operator: 'Greater Than Or Equal To',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'radResistAtLeast', min: 8000 }]);
-  });
-
-  it('leaves a RadResistExposure GetValue row unresolved for a non-≥ comparison (e.g. "Less Than")', () => {
-    const row = {
-      Function: 'GetValue',
-      'Parameter 1': '0x000002EA',
-      'Comparison Value': 1000,
-      Operator: 'Less Than',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([
-      { kind: 'unresolved', raw: 'GetValue(0x000002EA) Less Than 1000' },
-    ]);
-  });
+describe('translateConditions (non-≥ GetValue comparisons stay unresolved)', () => {
+  const nonGteRows: Array<{ name: string; av: string; value: number }> = [
+    {
+      name: 'leaves a Rads GetValue row unresolved for a non-≥ comparison (e.g. "Less Than")',
+      av: '0x000002E1',
+      value: 200,
+    },
+    {
+      name: 'leaves a RadResistExposure GetValue row unresolved for a non-≥ comparison (e.g. "Less Than")',
+      av: '0x000002EA',
+      value: 1000,
+    },
+  ];
+  for (const row of nonGteRows) {
+    it(row.name, () => {
+      const rawRow = {
+        Function: 'GetValue',
+        'Parameter 1': row.av,
+        'Comparison Value': row.value,
+        Operator: 'Less Than',
+      };
+      const { conditions } = translateConditions([rawRow], { edidByFormId: new Map() });
+      expect(conditions).toEqual([
+        { kind: 'unresolved', raw: `GetValue(${row.av}) Less Than ${row.value}` },
+      ]);
+    });
+  }
 });
 
 /**
@@ -298,36 +302,10 @@ function makeLockAndLoadStubClient(): EsmSource {
       },
     } as unknown as EsmRecord,
   };
-  const rows: EsmListRow[] = [
-    {
-      form_id: rank1FormId,
-      record_type: 'PERK',
-      editor_id: 'LockAndLoad01',
-      name: 'Lock and Load',
-    },
-    {
-      form_id: rank2FormId,
-      record_type: 'PERK',
-      editor_id: 'LockAndLoad02',
-      name: 'Lock and Load',
-    },
-    {
-      form_id: rank3FormId,
-      record_type: 'PERK',
-      editor_id: 'LockAndLoad03',
-      name: 'Lock and Load',
-    },
-    { form_id: cardFormId, record_type: 'PCRD', editor_id: 'LockAndLoadCard', name: null },
-  ];
   return createInMemoryEsmSource({
     records,
-    rows,
-    getFallback: (target) =>
-      ({
-        header: { signature: 'PERK', form_id: target },
-        editor_id: target,
-        fields: {},
-      }) as unknown as EsmRecord,
+    rows: listRows(Object.values(records)),
+    getFallback: perkPlaceholder,
   });
 }
 
@@ -360,20 +338,8 @@ function makeBarbarianStubClient(): EsmSource {
   };
   return createInMemoryEsmSource({
     records,
-    rows: [
-      {
-        form_id: perkFormId,
-        record_type: 'PERK',
-        editor_id: 'Barbarian01',
-        name: 'Barbarian',
-      },
-    ],
-    getFallback: (target) =>
-      ({
-        header: { signature: 'PERK', form_id: target },
-        editor_id: target,
-        fields: {},
-      }) as unknown as EsmRecord,
+    rows: listRows([records[perkFormId]]),
+    getFallback: perkPlaceholder,
   });
 }
 
@@ -439,32 +405,18 @@ function makeGrenadierStubClient(): EsmSource {
   };
   return createInMemoryEsmSource({
     records,
-    rows: [
-      {
-        form_id: rank1FormId,
-        record_type: 'PERK',
-        editor_id: 'Grenadier01',
-        name: 'Grenadier',
-      },
-      {
-        form_id: rank2FormId,
-        record_type: 'PERK',
-        editor_id: 'Grenadier02',
-        name: 'Grenadier',
-      },
-    ],
-    getFallback: (target) =>
-      ({
-        header: { signature: 'PERK', form_id: target },
-        editor_id: target,
-        fields: {},
-      }) as unknown as EsmRecord,
+    rows: listRows([records[rank1FormId], records[rank2FormId]]),
+    getFallback: perkPlaceholder,
   });
 }
 
 describe('extractPerks (Grenadier / explosion radius bonus, 2026-07-29)', () => {
-  it('rank 1: AbPerkFortifyExplosionRadius magnitude 50 → explosionRadiusBonus 0.5', async () => {
-    const result = await extractPerks(makeGrenadierStubClient());
+  let result: Awaited<ReturnType<typeof extractPerks>>;
+  beforeAll(async () => {
+    result = await extractPerks(makeGrenadierStubClient());
+  });
+
+  it('rank 1: AbPerkFortifyExplosionRadius magnitude 50 → explosionRadiusBonus 0.5', () => {
     const family = result.perks.find((p) => p.family === 'Grenadier');
     expect(family).toBeDefined();
     expect(family!.ranks).toHaveLength(2);
@@ -473,8 +425,7 @@ describe('extractPerks (Grenadier / explosion radius bonus, 2026-07-29)', () => 
     );
   });
 
-  it('rank 2: AbPerkFortifyExplosionRadius magnitude 100 → explosionRadiusBonus 1.0', async () => {
-    const result = await extractPerks(makeGrenadierStubClient());
+  it('rank 2: AbPerkFortifyExplosionRadius magnitude 100 → explosionRadiusBonus 1.0', () => {
     const family = result.perks.find((p) => p.family === 'Grenadier');
     expect(family).toBeDefined();
     expect(family!.ranks[1].modifiers).toContainEqual(
@@ -519,44 +470,24 @@ function makeBombScientistStubClient(): EsmSource {
   };
   return createInMemoryEsmSource({
     records,
-    rows: [
-      {
-        form_id: rank1FormId,
-        record_type: 'PERK',
-        editor_id: 'GHL_BombScientist01',
-        name: 'Bomb Scientist',
-      },
-      {
-        form_id: rank2FormId,
-        record_type: 'PERK',
-        editor_id: 'GHL_BombScientist02',
-        name: 'Bomb Scientist',
-      },
-      {
-        form_id: rank3FormId,
-        record_type: 'PERK',
-        editor_id: 'GHL_BombScientist03',
-        name: 'Bomb Scientist',
-      },
-    ],
+    rows: listRows([records[rank1FormId], records[rank2FormId], records[rank3FormId]]),
     resolveEdidFallback: (id) =>
       ({
         [rank2FormId]: 'GHL_BombScientist02',
         [rank3FormId]: 'GHL_BombScientist03',
         '0x007F68BB': 'GHL_PowerGlowUseBasic',
       })[id] ?? id,
-    getFallback: (target) =>
-      ({
-        header: { signature: 'PERK', form_id: target },
-        editor_id: target,
-        fields: {},
-      }) as unknown as EsmRecord,
+    getFallback: perkPlaceholder,
   });
 }
 
 describe('extractPerks (GHL_BombScientist / STAT_DmgGrenade, 2026-08-28)', () => {
-  it('rank 1: AbPerkFortifyDmgGrenades magnitude 20 → thrown-grenade-scoped dbm 0.2 with playerIsGhoul gate', async () => {
-    const result = await extractPerks(makeBombScientistStubClient());
+  let result: Awaited<ReturnType<typeof extractPerks>>;
+  beforeAll(async () => {
+    result = await extractPerks(makeBombScientistStubClient());
+  });
+
+  it('rank 1: AbPerkFortifyDmgGrenades magnitude 20 → thrown-grenade-scoped dbm 0.2 with playerIsGhoul gate', () => {
     const family = result.perks.find((p) => p.family === 'GHL_BombScientist');
     expect(family).toBeDefined();
     expect(family!.ranks[0].modifiers).toContainEqual(
@@ -574,8 +505,7 @@ describe('extractPerks (GHL_BombScientist / STAT_DmgGrenade, 2026-08-28)', () =>
     );
   });
 
-  it('rank 3: AbPerkFortifyDmgGrenades magnitude 50 → dbm 0.5', async () => {
-    const result = await extractPerks(makeBombScientistStubClient());
+  it('rank 3: AbPerkFortifyDmgGrenades magnitude 50 → dbm 0.5', () => {
     const family = result.perks.find((p) => p.family === 'GHL_BombScientist');
     expect(family!.ranks[2].modifiers).toContainEqual(
       expect.objectContaining({ bucket: 'dbm', op: 'ADD', value: 0.5 }),
@@ -584,8 +514,12 @@ describe('extractPerks (GHL_BombScientist / STAT_DmgGrenade, 2026-08-28)', () =>
 });
 
 describe('extractPerks (Barbarian unarmored ×2 post-process, 2026-08-06)', () => {
-  it('splits rank-1 damageResistGain into armored (curveScale 1) and unarmored (×2) modifiers', async () => {
-    const result = await extractPerks(makeBarbarianStubClient());
+  let result: Awaited<ReturnType<typeof extractPerks>>;
+  beforeAll(async () => {
+    result = await extractPerks(makeBarbarianStubClient());
+  });
+
+  it('splits rank-1 damageResistGain into armored (curveScale 1) and unarmored (×2) modifiers', () => {
     const family = result.perks.find((p) => p.family === 'Barbarian');
     expect(family).toBeDefined();
     expect(family!.ranks).toHaveLength(1);
@@ -619,8 +553,7 @@ describe('extractPerks (Barbarian unarmored ×2 post-process, 2026-08-06)', () =
     });
   });
 
-  it('at STR 15, armored contributes DR 61 and unarmored DR 122', async () => {
-    const result = await extractPerks(makeBarbarianStubClient());
+  it('at STR 15, armored contributes DR 61 and unarmored DR 122', () => {
     const mods = result.perks.find((p) => p.family === 'Barbarian')!.ranks[0].modifiers;
     const weapon = {
       id: '__test__',
@@ -658,11 +591,7 @@ function plumbingPerkRecords(): Record<string, EsmRecord> {
   return Object.fromEntries(
     ['STAT_DamagePerk', 'STAT_CritDamagePerk', 'STAT_DamageVsPerk'].map((edid) => [
       edid,
-      {
-        header: { signature: 'PERK', form_id: edid },
-        editor_id: edid,
-        fields: { Effects: [] },
-      } as unknown as EsmRecord,
+      stubRecord('PERK', edid, edid, { Effects: [] }),
     ]),
   );
 }
@@ -678,12 +607,7 @@ function makeDirectEntryPointPerkClient(
       ...plumbingPerkRecords(),
     },
     rows: [{ form_id: formId, record_type: 'PERK', editor_id: `${family}01`, name: family }],
-    getFallback: (target) =>
-      ({
-        header: { signature: 'PERK', form_id: target },
-        editor_id: target,
-        fields: {},
-      }) as unknown as EsmRecord,
+    getFallback: perkPlaceholder,
   });
 }
 
@@ -766,7 +690,7 @@ describe('extractPerks (direct entry-point special cases, 2026-08-28)', () => {
           fields: {},
         } as EsmRecord,
       },
-      rows: [{ form_id: formId, record_type: 'PERK', editor_id: 'Bandito01', name: 'Bandito' }],
+      rows: listRows([bandito01 as EsmRecord]),
       resolveEdidFallback: (id) =>
         ({
           '0x0004A0A0': 'WeaponTypePistol',
@@ -792,26 +716,11 @@ describe('extractPerks (direct entry-point special cases, 2026-08-28)', () => {
       { formId: '0x001D245C', perk: gunFu03 as EsmRecord, min: 4, value: 0.9 },
     ] as const;
     const records: Record<string, EsmRecord> = { ...plumbingPerkRecords() };
-    const rows: Array<{ form_id: string; record_type: string; editor_id: string; name: string }> =
-      [];
-    ranks.forEach(({ formId, perk }, i) => {
-      records[formId] = perk;
-      rows.push({
-        form_id: formId,
-        record_type: 'PERK',
-        editor_id: `GunFu0${i + 1}`,
-        name: 'Gun Fu',
-      });
-    });
+    for (const { formId, perk } of ranks) records[formId] = perk;
     const client = createInMemoryEsmSource({
       records,
-      rows,
-      getFallback: (target) =>
-        ({
-          header: { signature: 'PERK', form_id: target },
-          editor_id: target,
-          fields: {},
-        }) as unknown as EsmRecord,
+      rows: listRows(ranks.map((r) => r.perk)),
+      getFallback: perkPlaceholder,
     });
     const result = await extractPerks(client);
     const family = result.perks.find((p) => p.family === 'GunFu');

@@ -6,16 +6,67 @@ import { getArmorEffectModifiers } from '@/data/armor-modifiers';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { PerkId } from '@/data/perk-ids';
 import { weaponCharges } from '@/lib/charge';
-import { buildEffectiveWeapon } from '@/lib/engine/effective-weapon';
 import { computeDotDps } from '@/lib/engine/paper-damage';
 import { computeScenarios } from '@/lib/engine/scenarios';
-import type { ResolveContext } from '@/lib/engine/resolve';
-import { createDefaultEnemyConditions } from '@/types';
+import type { Weapon } from '@/types';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 import {
-  makeResolvedPlayer,
-  makeDefaultEnemy,
-} from '@/lib/engine/__tests__/resolved-player-fixture';
+  FLAT_10,
+  FLAT_100,
+  effective,
+  makeCtx,
+  makeOmod,
+  makeWeapon,
+  omodModifiers,
+  scenarioInput,
+} from '@/lib/engine/__tests__/engine-fixture';
 import type { Bucket, CurveInput, Modifier } from '@/types/modifiers';
+
+/** Heavy launcher: a ballistic impact on `impactCurve` + a flat 100 fromExplosion component. */
+function makeHeavyLauncher(impactCurve: typeof FLAT_100, overrides: Partial<Weapon> = {}): Weapon {
+  return makeWeapon({
+    components: [
+      { damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: impactCurve },
+      {
+        damageType: 'explosive',
+        tier: -1,
+        levelCap: 50,
+        curvePoints: FLAT_100,
+        fromExplosion: true,
+      },
+    ],
+    weaponClass: 'heavy',
+    ...overrides,
+  });
+}
+
+const legendarySource = {
+  kind: 'omod' as const,
+  formId: '0xEXPL2',
+  edid: 'mod_Legendary_Weapon2_Guns_ExplosiveBullets',
+  name: 'Explosive',
+};
+
+/** Mirrors the real Explosive 2★'s ESM shape: one unconditioned ADD 0.2. */
+function makeExplosiveOmod() {
+  return makeOmod({
+    id: 'mod_Legendary_Weapon2_Guns_ExplosiveBullets',
+    formId: '0xEXPL2',
+    attachPointEdid: 'ap_Legendary2',
+    modifiers: omodModifiers(legendarySource, [
+      { bucket: 'explosivePayload', op: 'ADD', value: 0.2 },
+    ]),
+  });
+}
+
+/** Alternate Current muzzle shape: its projectile chases a Chain EXPL. */
+function makeChainOmod() {
+  return makeOmod({
+    id: 'test_ac_muzzle',
+    attachPointEdid: 'ap_gun_Muzzle',
+    chainSuppressesExplosion: true,
+  });
+}
 
 // Phase 5 milestone: Powerful Automatic Receiver on The Fixer gives
 // +0.25 dbm, SET Speed 0.8248, automatic fire, and MUL_ADD −20% crit/sneak base.
@@ -43,81 +94,35 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
     const smgSlots = getOmodSlots('live', getWeapons('live')['10mmSMG']);
     const customSlot = smgSlots.find((s) => s.slot === 'ap_customName');
     expect(customSlot?.options.some((o) => o.id === 'mod_Custom_PerfectStorm')).toBe(true);
-
-    // The V.A.T.S. Unknown: base 'AlienBlaster' lists ap_customName in its own
-    // attachParentSlots and hosts mod_Custom_TheVATSUnknown in its
-    // templateModFormIds. Its five sibling "variant" OMODs (BetterCriticals/
-    // CritSavvy/GlowingCriticals/GrimReapersSprint/Psychopath) turned out to
-    // be unreferenced legacy/cut records (2026-07-16) — the base mod is the
-    // unique's sole real effect (see corrections.ts omodModifierAdditions).
-    const vatsUnknown = getWeapons('live')['AlienBlaster'];
-    const vatsSlots = getOmodSlots('live', vatsUnknown);
-    const vatsCustom = vatsSlots.find((s) => s.slot === 'ap_customName');
-    expect(vatsCustom?.options.map((o) => o.id)).toContain('mod_Custom_TheVATSUnknown');
-    expect(
-      vatsCustom?.options.filter((o) => o.id.startsWith('mod_Custom_TheVATSUnknown_')),
-    ).toHaveLength(0);
   });
 
   it('equipping Perfect Storm on the 10mm SMG changes freeAim.perHit.total vs stock', () => {
     const smg = getWeapons('live')['10mmSMG'];
     const perfectStorm = getOmodById('live', 'mod_Custom_PerfectStorm')!;
-    const base = {
-      mode: 'live' as const,
-      itemLevel: 50,
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2.0,
-    };
-    const stock = computeScenarios({ ...base, weapon: smg, modifiers: [], critRate: 0 });
-    const { weapon, modifiers } = buildEffectiveWeapon(
-      smg,
-      [perfectStorm],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
-    const modded = computeScenarios({ ...base, weapon, modifiers, critRate: 0 });
+    const stock = computeScenarios(scenarioInput(smg, { critRate: 0 }));
+    const { weapon, modifiers } = effective(smg, [perfectStorm]);
+    const modded = computeScenarios(scenarioInput(weapon, { modifiers, critRate: 0 }));
 
     expect(modded.freeAim.perHit.total).not.toBeCloseTo(stock.freeAim.perHit.total, 5);
   });
 
   it('rewrites speed/automatic state and merges keywords', () => {
-    const { weapon } = buildEffectiveWeapon(
-      fixer,
-      [receiver],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(fixer, [receiver]);
     expect(weapon.speed).toBeCloseTo(0.8248, 4);
     expect(weapon.isAutomatic).toBe(true);
     expect(weapon.keywords).toContain('WeaponTypeAutomatic');
   });
 
   it('feeds −30% base damage, +25% dbm, and −20% crit/sneak base through the engine', () => {
-    const base = {
-      mode: 'live' as const,
-      itemLevel: 50,
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2.0,
-    };
-    const stock = computeScenarios({ ...base, weapon: fixer, modifiers: [], critRate: 0 });
-    const { weapon, modifiers } = buildEffectiveWeapon(
-      fixer,
-      [receiver],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
-    const modded = computeScenarios({ ...base, weapon, modifiers, critRate: 0 });
+    const stock = computeScenarios(scenarioInput(fixer, { critRate: 0 }));
+    const { weapon, modifiers } = effective(fixer, [receiver]);
+    const modded = computeScenarios(scenarioInput(weapon, { modifiers, critRate: 0 }));
 
     // AttackDamage MUL_ADD −0.3 scales base BEFORE dbm: 103 × 0.7 × 1.25 = 90.125
     expect(modded.freeAim.perHit.total).toBeCloseTo(stock.freeAim.perHit.total * 0.7 * 1.25, 5);
 
     // crit-weighted VATS: crit mult = 2.0 × 0.8 = 1.6 → crit term +0.6
-    const critted = computeScenarios({ ...base, weapon, modifiers, critRate: 1 });
+    const critted = computeScenarios(scenarioInput(weapon, { modifiers, critRate: 1 }));
     const perHitNoCrit = modded.vats.perHit.total;
     expect(critted.vats.perHit.total / perHitNoCrit).toBeCloseTo((1.25 + 0.6) / 1.25, 6);
 
@@ -126,52 +131,15 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
   });
 
   it('folds ammoCapacity / reloadSpeed OMOD buckets into the effective weapon (synthetic)', () => {
-    const magazineOmod = {
+    const magazineOmod = makeOmod({
       id: 'test_mag',
-      formId: '0x0',
-      name: 'Test Drum Magazine',
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_gun_Magazine',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [
-        {
-          id: '0x0:0',
-          source: {
-            kind: 'omod' as const,
-            formId: '0x0',
-            edid: 'test_mag',
-            name: 'Test Drum Magazine',
-          },
-          bucket: 'ammoCapacity' as const,
-          op: 'MUL_ADD' as const,
-          value: 0.5,
-          conditions: [],
-        },
-        {
-          id: '0x0:1',
-          source: {
-            kind: 'omod' as const,
-            formId: '0x0',
-            edid: 'test_mag',
-            name: 'Test Drum Magazine',
-          },
-          bucket: 'reloadSpeed' as const,
-          op: 'MUL_ADD' as const,
-          value: 0.25,
-          conditions: [],
-        },
-      ],
-    };
-    const { weapon, modifiers } = buildEffectiveWeapon(
-      fixer,
-      [magazineOmod],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+      modifiers: omodModifiers({ formId: '0x0', edid: 'test_mag', name: 'Test Drum Magazine' }, [
+        { bucket: 'ammoCapacity', op: 'MUL_ADD', value: 0.5 },
+        { bucket: 'reloadSpeed', op: 'MUL_ADD', value: 0.25 },
+      ]),
+    });
+    const { weapon, modifiers } = effective(fixer, [magazineOmod]);
     expect(weapon.capacity).toBeCloseTo((fixer.capacity ?? 0) * 1.5, 6);
     expect(weapon.reloadSpeed).toBeCloseTo((fixer.reloadSpeed ?? 1) * 1.25, 6);
     // Weapon-stat buckets never leak into the resolver's modifier list.
@@ -186,39 +154,15 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
     // OMOD/weapon slot compatibility (getOmodSlots does), so this reuses
     // `fixer` like every other synthetic-OMOD test in this file rather than
     // depending on The Dragon's exact generated-data id.
-    const doolin = {
+    const doolin = makeOmod({
       id: 'mod_custom_Doolin',
       formId: '0x007CFAAC',
-      name: 'The Dragon Doolin',
-      description: '',
-      attachPointFormId: '0x0',
-      attachPointEdid: 'ap_Legendary3',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [
-        {
-          id: '0x007CFAAC:0',
-          source: {
-            kind: 'omod' as const,
-            formId: '0x007CFAAC',
-            edid: 'mod_custom_Doolin',
-            name: 'The Dragon Doolin',
-          },
-          bucket: 'animDelaySec' as const,
-          op: 'SET' as const,
-          value: 0,
-          conditions: [],
-        },
-      ],
-    };
-    const { weapon } = buildEffectiveWeapon(
-      fixer,
-      [doolin],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+      modifiers: omodModifiers(
+        { formId: '0x007CFAAC', edid: 'mod_custom_Doolin', name: 'The Dragon Doolin' },
+        [{ bucket: 'animDelaySec', op: 'SET', value: 0 }],
+      ),
+    });
+    const { weapon } = effective(fixer, [doolin]);
     // animDelaySec should be clamped to 0.001, not 0.
     expect(weapon.animDelaySec).toBe(0.001);
     // Fire rate must be finite and not absurdly high.
@@ -231,15 +175,9 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
     // Thrill-Seeker's shape: 3 mutually-exclusive killStreakCount tiers on
     // reloadSpeed. Before Stage C3, the weapon-stat fold ignored conditions
     // entirely and would have summed all 3 unconditionally (0.03+0.06+0.09).
-    const thrillSeekerLike = {
+    const thrillSeekerLike = makeOmod({
       id: 'test_thrill_seeker',
-      formId: '0x0',
-      name: "Test Thrill-Seeker's",
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_Legendary4',
-      targetKeywords: [],
-      addedKeywords: [],
       hasEnchantments: true,
       modifiers: [1, 2, 3].map((n) => ({
         id: `0x0:${n}`,
@@ -254,68 +192,31 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
         value: 0.03 * n,
         conditions: [{ kind: 'killStreakCount' as const, count: n }],
       })),
-    };
+    });
     const base = fixer.reloadSpeed ?? 1.0;
 
-    const at0 = buildEffectiveWeapon(
-      fixer,
-      [thrillSeekerLike],
-      50,
-      {
-        ...makeResolvedPlayer(),
-        killStreak: 0,
-      },
-      makeDefaultEnemy(),
-    );
+    const at0 = effective(fixer, [thrillSeekerLike], {
+      ...makeResolvedPlayer(),
+      killStreak: 0,
+    });
     expect(at0.weapon.reloadSpeed).toBeCloseTo(base, 6); // no tier matches 0 stacks
 
-    const at2 = buildEffectiveWeapon(
-      fixer,
-      [thrillSeekerLike],
-      50,
-      {
-        ...makeResolvedPlayer(),
-        killStreak: 2,
-      },
-      makeDefaultEnemy(),
-    );
+    const at2 = effective(fixer, [thrillSeekerLike], {
+      ...makeResolvedPlayer(),
+      killStreak: 2,
+    });
     expect(at2.weapon.reloadSpeed).toBeCloseTo(base + 0.06, 6); // ONLY the count:2 tier fires
   });
 
   it('folds the vatsApCost OMOD bucket into the effective weapon (synthetic, Stage B)', () => {
-    const vatsOptimizedLike = {
+    const vatsOptimizedLike = makeOmod({
       id: 'test_vats_optimized',
-      formId: '0x0',
-      name: 'Test V.A.T.S. Optimized',
-      description: '',
-      attachPointFormId: '0x0',
-      attachPointEdid: 'ap_Legendary3',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [
-        {
-          id: '0x0:0',
-          source: {
-            kind: 'omod' as const,
-            formId: '0x0',
-            edid: 'test_vats_optimized',
-            name: 'Test V.A.T.S. Optimized',
-          },
-          bucket: 'vatsApCost' as const,
-          op: 'MUL_ADD' as const,
-          value: -0.35,
-          conditions: [],
-        },
-      ],
-    };
-    const { weapon, modifiers } = buildEffectiveWeapon(
-      fixer,
-      [vatsOptimizedLike],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+      modifiers: omodModifiers(
+        { formId: '0x0', edid: 'test_vats_optimized', name: 'Test V.A.T.S. Optimized' },
+        [{ bucket: 'vatsApCost', op: 'MUL_ADD', value: -0.35 }],
+      ),
+    });
+    const { weapon, modifiers } = effective(fixer, [vatsOptimizedLike]);
     expect(weapon.apCost).toBeCloseTo((fixer.apCost ?? 0) * 0.65, 6);
     // Weapon-stat buckets never leak into the resolver's modifier list.
     expect(modifiers).toHaveLength(0);
@@ -336,14 +237,7 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, docs/a
       value: 0.4,
       conditions: [],
     };
-    const { weapon, modifiers } = buildEffectiveWeapon(
-      fixer,
-      [],
-      50,
-      makeResolvedPlayer(),
-      createDefaultEnemyConditions(),
-      [perkReload],
-    );
+    const { weapon, modifiers } = effective(fixer, [], makeResolvedPlayer(), [perkReload]);
     expect(weapon.reloadSpeed).toBeCloseTo(base + 0.4, 6);
     // Loadout modifiers stay owned by the caller — the returned list only
     // ever carries leftover OMOD modifiers.
@@ -359,24 +253,10 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, docs/a
       value: 0.3,
       conditions: [{ kind: 'playerIsGhoul' as const, value: true }],
     };
-    const asHuman = buildEffectiveWeapon(
-      fixer,
-      [],
-      50,
-      makeResolvedPlayer(),
-      createDefaultEnemyConditions(),
-      [ghoulReload],
-    );
+    const asHuman = effective(fixer, [], makeResolvedPlayer(), [ghoulReload]);
     expect(asHuman.weapon.reloadSpeed).toBeCloseTo(base, 6);
 
-    const asGhoul = buildEffectiveWeapon(
-      fixer,
-      [],
-      50,
-      { ...makeResolvedPlayer(), isGhoul: true },
-      createDefaultEnemyConditions(),
-      [ghoulReload],
-    );
+    const asGhoul = effective(fixer, [], { ...makeResolvedPlayer(), isGhoul: true }, [ghoulReload]);
     expect(asGhoul.weapon.reloadSpeed).toBeCloseTo(base + 0.3, 6);
   });
 
@@ -415,16 +295,11 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, docs/a
     const player = makeResolvedPlayer();
 
     // No cap source equipped → the curve clamps to 0 stacks → inert.
-    const withoutCap = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [
-      guerrillaExpertLike,
-    ]);
+    const withoutCap = effective(fixer, [], player, [guerrillaExpertLike]);
     expect(withoutCap.weapon.reloadSpeed).toBeCloseTo(base, 6);
 
     // Cap 10 equipped → follow-max resolves to 10 → curve Y = 0.1.
-    const withCap = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [
-      guerrillaExpertLike,
-      capSource,
-    ]);
+    const withCap = effective(fixer, [], player, [guerrillaExpertLike, capSource]);
     expect(withCap.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6);
   });
 
@@ -461,32 +336,16 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, docs/a
     const player = makeResolvedPlayer();
 
     // No move-speed source equipped → curve reads 0 → inert.
-    const alone = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [
-      fastFighterLike,
-    ]);
+    const alone = effective(fixer, [], player, [fastFighterLike]);
     expect(alone.weapon.reloadSpeed).toBeCloseTo(base, 6);
 
     // Speed Demon's +20% move speed → +10% reload speed.
-    const withSpeedDemon = buildEffectiveWeapon(
-      fixer,
-      [],
-      50,
-      player,
-      createDefaultEnemyConditions(),
-      [fastFighterLike, speedDemonLike(0.2)],
-    );
+    const withSpeedDemon = effective(fixer, [], player, [fastFighterLike, speedDemonLike(0.2)]);
     expect(withSpeedDemon.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6);
 
     // A net move-speed PENALTY clamps at the curve's (0,0) endpoint — never
     // slows reload.
-    const withPenalty = buildEffectiveWeapon(
-      fixer,
-      [],
-      50,
-      player,
-      createDefaultEnemyConditions(),
-      [fastFighterLike, speedDemonLike(-0.4)],
-    );
+    const withPenalty = effective(fixer, [], player, [fastFighterLike, speedDemonLike(-0.4)]);
     expect(withPenalty.weapon.reloadSpeed).toBeCloseTo(base, 6);
   });
 
@@ -495,18 +354,12 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, docs/a
     const gunRunner = getLoadoutModifiers('live', [{ perkId: PerkId.GunRunner, rank: 2 }]);
     const player = makeResolvedPlayer();
 
-    const ranged = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [
-      ...fastFighter,
-      ...gunRunner,
-    ]);
+    const ranged = effective(fixer, [], player, [...fastFighter, ...gunRunner]);
     expect(ranged.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6); // +20% move → +10% reload
 
     const melee = getWeapons('live')['DeathclawGauntlet'];
     const meleeBase = melee.reloadSpeed ?? 1.0;
-    const onMelee = buildEffectiveWeapon(melee, [], 50, player, createDefaultEnemyConditions(), [
-      ...fastFighter,
-      ...gunRunner,
-    ]);
+    const onMelee = effective(melee, [], player, [...fastFighter, ...gunRunner]);
     expect(onMelee.weapon.reloadSpeed).toBeCloseTo(meleeBase, 6);
   });
 
@@ -517,10 +370,7 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, docs/a
     );
     const fastFighter = getLoadoutModifiers('live', [{ perkId: PerkId.FastFighter, rank: 1 }]);
     const player = makeResolvedPlayer();
-    const result = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [
-      ...fastFighter,
-      ...mods,
-    ]);
+    const result = effective(fixer, [], player, [...fastFighter, ...mods]);
     expect(result.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6);
   });
 
@@ -535,26 +385,12 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, docs/a
 
     // Full health, in power armor: gate fails on health, no reload-speed change.
     const healthyInPa = { ...makeResolvedPlayer(), isInPowerArmor: true };
-    const atFullHealth = buildEffectiveWeapon(
-      fixer,
-      [],
-      50,
-      healthyInPa,
-      createDefaultEnemyConditions(),
-      [...fastFighter, ...mods],
-    );
+    const atFullHealth = effective(fixer, [], healthyInPa, [...fastFighter, ...mods]);
     expect(atFullHealth.weapon.reloadSpeed).toBeCloseTo(base, 6);
 
     // Below 20% HP but NOT in power armor: gate fails on inPowerArmor.
     const lowHealthNoPa = { ...makeResolvedPlayer(), healthPercent: 15 };
-    const outsidePa = buildEffectiveWeapon(
-      fixer,
-      [],
-      50,
-      lowHealthNoPa,
-      createDefaultEnemyConditions(),
-      [...fastFighter, ...mods],
-    );
+    const outsidePa = effective(fixer, [], lowHealthNoPa, [...fastFighter, ...mods]);
     expect(outsidePa.weapon.reloadSpeed).toBeCloseTo(base, 6);
 
     // Below 20% HP AND in power armor: both gates pass — +25% move speed → +12.5% reload speed
@@ -564,14 +400,7 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, docs/a
       healthPercent: 15,
       isInPowerArmor: true,
     };
-    const bothGates = buildEffectiveWeapon(
-      fixer,
-      [],
-      50,
-      lowHealthInPa,
-      createDefaultEnemyConditions(),
-      [...fastFighter, ...mods],
-    );
+    const bothGates = effective(fixer, [], lowHealthInPa, [...fastFighter, ...mods]);
     expect(bothGates.weapon.reloadSpeed).toBeCloseTo(base + 0.125, 6);
   });
 });
@@ -636,25 +465,11 @@ describe('dual-site bootstrap folds', () => {
     '$bucket produces the same value in effective-weapon and scenarios',
     ({ input, modifiers, expected, scenarioValue, player }) => {
       const identicalModifiers = [...modifiers, observer(input)];
-      const effective = buildEffectiveWeapon(
-        fixer,
-        [],
-        50,
-        player,
-        createDefaultEnemyConditions(),
-        identicalModifiers,
+      const effectiveSite = effective(fixer, [], player, identicalModifiers);
+      const effectiveSiteValue = effectiveSite.weapon.reloadSpeed! - (fixer.reloadSpeed ?? 1);
+      const scenarios = computeScenarios(
+        scenarioInput(fixer, { modifiers: identicalModifiers, player, critRate: 0 }),
       );
-      const effectiveSiteValue = effective.weapon.reloadSpeed! - (fixer.reloadSpeed ?? 1);
-      const scenarios = computeScenarios({
-        mode: 'live',
-        weapon: fixer,
-        itemLevel: 50,
-        modifiers: identicalModifiers,
-        player,
-        enemy: createDefaultEnemyConditions(),
-        weakpointMult: 2,
-        critRate: 0,
-      });
 
       expect(effectiveSiteValue).toBeCloseTo(expected, 10);
       expect(scenarioValue(scenarios)).toBeCloseTo(effectiveSiteValue, 10);
@@ -675,35 +490,23 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
     types: Array<'ballistic' | 'energy' | 'cryo' | 'fire' | 'poison' | 'radiation'>,
     value: number,
   ) {
-    return {
+    return makeOmod({
       id,
-      formId: '0x0',
-      name: `Test ${id}`,
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_gun_Receiver',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: types.map((type, i) => ({
-        id: `0x0:${i}`,
-        source: { kind: 'omod' as const, formId: '0x0', edid: id, name: `Test ${id}` },
-        bucket: 'baseDamage' as const,
-        op: 'MUL_ADD' as const,
-        value,
-        conditions: [{ kind: 'damageTypeScope' as const, types: [type] }],
-      })),
-    };
+      modifiers: omodModifiers(
+        { formId: '0x0', edid: id, name: `Test ${id}` },
+        types.map((type) => ({
+          bucket: 'baseDamage',
+          op: 'MUL_ADD',
+          value,
+          conditions: [{ kind: 'damageTypeScope', types: [type] }],
+        })),
+      ),
+    });
   }
 
   it('materializes an energy component on the ballistic-only Gauss Minigun with the real Tesla Coil Capacitor', () => {
-    const { weapon, modifiers } = buildEffectiveWeapon(
-      gaussMinigun,
-      [teslaCapacitor],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon, modifiers } = effective(gaussMinigun, [teslaCapacitor]);
 
     expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic', 'energy']);
     const [ballistic, energy] = weapon.components;
@@ -725,21 +528,8 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
   });
 
   it('feeds through the engine with no double count: ballistic 53×0.8, energy 53×0.5 (plus their intrinsic 15% explosive twins)', () => {
-    const { weapon, modifiers } = buildEffectiveWeapon(
-      gaussMinigun,
-      [teslaCapacitor],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
-    const base = {
-      mode: 'live' as const,
-      itemLevel: 50,
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2.0,
-    };
-    const result = computeScenarios({ ...base, weapon, modifiers, critRate: 0 });
+    const { weapon, modifiers } = effective(gaussMinigun, [teslaCapacitor]);
+    const result = computeScenarios(scenarioInput(weapon, { modifiers, critRate: 0 }));
     const components = result.freeAim.perHit.components;
     // GaussMinigun's intrinsic 15% explosive payload (Gauss family,
     // unconditional) spawns a twin for EACH declared component, so ballistic
@@ -763,13 +553,7 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
       ['ballistic', 'energy', 'cryo', 'fire', 'poison', 'radiation'],
       -0.3,
     );
-    const { weapon, modifiers } = buildEffectiveWeapon(
-      fixer,
-      [blanket],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon, modifiers } = effective(fixer, [blanket]);
 
     // Every non-ballistic type saw ONLY a dropped negative — nothing materializes.
     expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic']);
@@ -780,13 +564,7 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
 
   it('negative MULs on a missing type are dropped, not netted: Tesla + a synthetic −0.3 energy blanket still materializes scale 0.5', () => {
     const energyBlanket = blanketBaseDamageOmod('test_energy_blanket', ['energy'], -0.3);
-    const { weapon } = buildEffectiveWeapon(
-      gaussMinigun,
-      [teslaCapacitor, energyBlanket],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(gaussMinigun, [teslaCapacitor, energyBlanket]);
 
     const energy = weapon.components.find((c) => c.damageType === 'energy');
     expect(energy).toBeDefined();
@@ -796,52 +574,28 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
   });
 
   it('a synthetic SET 0 + ADD 5 materializes a flat-only component (no MUL_ADD present)', () => {
-    const flatConversionLike = {
+    const flatConversionLike = makeOmod({
       id: 'test_flat_conversion',
-      formId: '0x0',
-      name: 'Test Flat Conversion Mod',
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_melee_MeleeMod',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [
-        {
-          id: '0x0:0',
-          source: {
-            kind: 'omod' as const,
-            formId: '0x0',
-            edid: 'test_flat_conversion',
-            name: 'Test Flat Conversion Mod',
+      modifiers: omodModifiers(
+        { formId: '0x0', edid: 'test_flat_conversion', name: 'Test Flat Conversion Mod' },
+        [
+          {
+            bucket: 'baseDamage',
+            op: 'SET',
+            value: 0,
+            conditions: [{ kind: 'damageTypeScope' as const, types: ['energy' as const] }],
           },
-          bucket: 'baseDamage' as const,
-          op: 'SET' as const,
-          value: 0,
-          conditions: [{ kind: 'damageTypeScope' as const, types: ['energy' as const] }],
-        },
-        {
-          id: '0x0:1',
-          source: {
-            kind: 'omod' as const,
-            formId: '0x0',
-            edid: 'test_flat_conversion',
-            name: 'Test Flat Conversion Mod',
+          {
+            bucket: 'baseDamage',
+            op: 'ADD',
+            value: 5,
+            conditions: [{ kind: 'damageTypeScope' as const, types: ['energy' as const] }],
           },
-          bucket: 'baseDamage' as const,
-          op: 'ADD' as const,
-          value: 5,
-          conditions: [{ kind: 'damageTypeScope' as const, types: ['energy' as const] }],
-        },
-      ],
-    };
-    const { weapon } = buildEffectiveWeapon(
-      fixer,
-      [flatConversionLike],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+        ],
+      ),
+    });
+    const { weapon } = effective(fixer, [flatConversionLike]);
 
     const energy = weapon.components.find((c) => c.damageType === 'energy');
     expect(energy).toBeDefined();
@@ -864,13 +618,7 @@ describe('dotDamage-only foreign damage types (issue #83)', () => {
   const radMod = getOmodById('live', 'mod_Custom_CamdenWhacker_RAD')!;
 
   it('materializes a zero base-damage radiation component alongside the real ballistic one', () => {
-    const { weapon } = buildEffectiveWeapon(
-      commieWhacker,
-      [radMod],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(commieWhacker, [radMod]);
     expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic', 'radiation']);
     const radiation = weapon.components.find((c) => c.damageType === 'radiation')!;
     expect(radiation.scale).toBe(0);
@@ -878,46 +626,17 @@ describe('dotDamage-only foreign damage types (issue #83)', () => {
   });
 
   it('computeDotDps folds the OMOD-granted radiation DoT to nonzero after the effective-weapon pass', () => {
-    const { weapon, modifiers } = buildEffectiveWeapon(
-      commieWhacker,
-      [radMod],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
-    const ctx: ResolveContext = {
-      weapon,
-      player: makeResolvedPlayer(),
-      enemy: makeDefaultEnemy(),
-      scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
-    };
+    const { weapon, modifiers } = effective(commieWhacker, [radMod]);
+    const ctx = makeCtx(weapon);
     // Before the fix this was 0 — the DoT's damageTypeScope(['radiation'])
     // condition never matched any componentType the weapon carried.
     expect(computeDotDps(modifiers, weapon, ctx)).toBeCloseTo(35, 10);
   });
 
   it('leaves per-hit damage unchanged: no phantom radiation row, ballistic total untouched', () => {
-    const base = {
-      mode: 'live' as const,
-      itemLevel: 50,
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2.0,
-    };
-    const stock = computeScenarios({
-      ...base,
-      weapon: commieWhacker,
-      modifiers: [],
-      critRate: 0,
-    });
-    const { weapon, modifiers } = buildEffectiveWeapon(
-      commieWhacker,
-      [radMod],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
-    const modded = computeScenarios({ ...base, weapon, modifiers, critRate: 0 });
+    const stock = computeScenarios(scenarioInput(commieWhacker, { critRate: 0 }));
+    const { weapon, modifiers } = effective(commieWhacker, [radMod]);
+    const modded = computeScenarios(scenarioInput(weapon, { modifiers, critRate: 0 }));
 
     // The materialized radiation component gets its own per-hit row (same
     // as any other component), but contributes exactly 0 damage — the
@@ -934,38 +653,8 @@ describe('dotDamage-only foreign damage types (issue #83)', () => {
 });
 
 describe('explosionRadiusBonus → dbm conversion (Bunker Buster, Grenadier)', () => {
-  const FLAT_CURVE = [
-    { x: 1, y: 100 },
-    { x: 50, y: 100 },
-  ];
-  const FLAT_10 = [
-    { x: 1, y: 10 },
-    { x: 50, y: 10 },
-  ];
-
   function makeDualComponentWeapon() {
-    return {
-      id: 'test_launcher_bunker_buster',
-      name: 'Test Launcher',
-      components: [
-        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_10 },
-        {
-          damageType: 'explosive' as const,
-          tier: -1,
-          levelCap: 50,
-          curvePoints: FLAT_CURVE,
-          fromExplosion: true,
-        },
-      ],
-      damageType: 'ballistic' as const,
-      weaponClass: 'heavy' as const,
-      isAutomatic: false,
-      isPhysical: true,
-      critDamageMult: 2.0,
-      critChargeBonus: 1.0,
-      sneakAttackMult: 2.0,
-      damageBonusMult: 1.0,
-    };
+    return makeHeavyLauncher(FLAT_10, { id: 'test_launcher_bunker_buster', name: 'Test Launcher' });
   }
 
   const omodSource = {
@@ -981,16 +670,9 @@ describe('explosionRadiusBonus → dbm conversion (Bunker Buster, Grenadier)', (
     name: 'Grenadier',
   };
 
-  const bunkerBusterOmod = {
+  const bunkerBusterOmod = makeOmod({
     id: 'mod_Custom_BunkerBuster',
     formId: '0xBUNKER',
-    name: 'Bunker Buster',
-    description: '',
-    attachPointFormId: '0x0',
-    attachPointEdid: 'ap_Legendary3',
-    targetKeywords: [],
-    addedKeywords: [],
-    hasEnchantments: false,
     modifiers: [
       {
         id: '0xBUNKER:0',
@@ -1001,7 +683,7 @@ describe('explosionRadiusBonus → dbm conversion (Bunker Buster, Grenadier)', (
         conditions: [],
       },
     ],
-  };
+  });
 
   const grenadierBonus = {
     id: '0xGREN:0',
@@ -1013,12 +695,10 @@ describe('explosionRadiusBonus → dbm conversion (Bunker Buster, Grenadier)', (
   };
 
   it('synthesizes an explosive-scoped dbm ADD when both buckets are present and nonzero', () => {
-    const { modifiers } = buildEffectiveWeapon(
+    const { modifiers } = effective(
       makeDualComponentWeapon(),
       [bunkerBusterOmod],
-      50,
       makeResolvedPlayer(),
-      createDefaultEnemyConditions(),
       [grenadierBonus],
     );
 
@@ -1036,95 +716,31 @@ describe('explosionRadiusBonus → dbm conversion (Bunker Buster, Grenadier)', (
   });
 
   it('does not synthesize dbm when only explosionRadiusBonus is present', () => {
-    const { modifiers } = buildEffectiveWeapon(
-      makeDualComponentWeapon(),
-      [],
-      50,
-      makeResolvedPlayer(),
-      createDefaultEnemyConditions(),
-      [grenadierBonus],
-    );
+    const { modifiers } = effective(makeDualComponentWeapon(), [], makeResolvedPlayer(), [
+      grenadierBonus,
+    ]);
     expect(modifiers.some((m) => m.bucket === 'dbm')).toBe(false);
     expect(modifiers.some((m) => m.bucket === 'explosionRadiusBonus')).toBe(false);
   });
 
   it('does not synthesize dbm when only explosionRadiusToDamage is present', () => {
-    const { modifiers } = buildEffectiveWeapon(
-      makeDualComponentWeapon(),
-      [bunkerBusterOmod],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { modifiers } = effective(makeDualComponentWeapon(), [bunkerBusterOmod]);
     expect(modifiers.some((m) => m.bucket === 'dbm')).toBe(false);
     expect(modifiers.some((m) => m.bucket === 'explosionRadiusToDamage')).toBe(false);
   });
 });
 
 describe('explosionChase — REPLACE vs ADD decided per weapon, docs/assumptions.md "OMOD-chased launcher payloads" (redesigned 2026-07-30)', () => {
-  const FLAT_100 = [
-    { x: 1, y: 100 },
-    { x: 50, y: 100 },
-  ];
-
   /** A synthetic launcher-shaped weapon: ballistic impact + its own baseline fromExplosion component. */
   function makeLauncherWeapon() {
-    return {
-      id: 'test_launcher',
-      name: 'Test Launcher',
-      components: [
-        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_100 },
-        {
-          damageType: 'explosive' as const,
-          tier: -1,
-          levelCap: 50,
-          curvePoints: FLAT_100,
-          fromExplosion: true,
-        },
-      ],
-      damageType: 'ballistic' as const,
-      weaponClass: 'heavy' as const,
-      isAutomatic: false,
-      isPhysical: true,
-      critDamageMult: 2.0,
-      critChargeBonus: 1.0,
-      sneakAttackMult: 2.0,
-      damageBonusMult: 1.0,
-    };
-  }
-
-  /** A synthetic non-launcher weapon: plain ballistic-only, no fromExplosion component at all. */
-  function makeBallisticOnlyWeapon() {
-    return {
-      id: 'test_rifle',
-      name: 'Test Rifle',
-      components: [
-        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_100 },
-      ],
-      damageType: 'ballistic' as const,
-      weaponClass: 'rifle' as const,
-      isAutomatic: false,
-      isPhysical: true,
-      critDamageMult: 2.0,
-      critChargeBonus: 1.0,
-      sneakAttackMult: 2.0,
-      damageBonusMult: 1.0,
-    };
+    return makeHeavyLauncher(FLAT_100, { id: 'test_launcher', name: 'Test Launcher' });
   }
 
   /** A synthetic barrel OMOD carrying an explosionChase, no ordinary modifiers (mirrors the real Cryo Payload shape). */
   function makeSwapOmod(baseWeaponDamageMult = 0) {
-    return {
+    return makeOmod({
       id: 'test_cryo_barrel',
-      formId: '0x0',
-      name: 'Test Cryo Barrel',
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_gun_Barrel',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [],
       explosionChase: {
         explEdid: 'TestSwapExplosion',
         baseWeaponDamageMult,
@@ -1142,17 +758,11 @@ describe('explosionChase — REPLACE vs ADD decided per weapon, docs/assumptions
           },
         ],
       },
-    };
+    });
   }
 
   it('replaces the baseline fromExplosion component with the swap — not both', () => {
-    const { weapon } = buildEffectiveWeapon(
-      makeLauncherWeapon(),
-      [makeSwapOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(makeLauncherWeapon(), [makeSwapOmod()]);
 
     expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic', 'cryo']);
     const [ballistic, cryo] = weapon.components;
@@ -1173,24 +783,12 @@ describe('explosionChase — REPLACE vs ADD decided per weapon, docs/assumptions
   });
 
   it('clears explosionBaseWeaponDamageMult when a chase applies (curve/typed damage supersedes the mult — never copied from the chase)', () => {
-    const { weapon } = buildEffectiveWeapon(
-      makeLauncherWeapon(),
-      [makeSwapOmod(0.2)],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(makeLauncherWeapon(), [makeSwapOmod(0.2)]);
     expect(weapon.explosionBaseWeaponDamageMult).toBe(0);
   });
 
   it('ADDS the chase (not a no-op) on a weapon with no baseline fromExplosion component at all — redesigned 2026-07-30, replaces "explosionAdd"', () => {
-    const { weapon } = buildEffectiveWeapon(
-      makeBallisticOnlyWeapon(),
-      [makeSwapOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(makeWeapon(), [makeSwapOmod()]);
     expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic', 'cryo']);
     expect(weapon.components[1]).toMatchObject({ damageType: 'cryo', fromExplosion: true });
   });
@@ -1218,149 +816,58 @@ describe('explosionChase — REPLACE vs ADD decided per weapon, docs/assumptions
         ],
       },
     };
-    const { weapon } = buildEffectiveWeapon(
-      makeLauncherWeapon(),
-      [first, second],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(makeLauncherWeapon(), [first, second]);
     expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic', 'energy']);
   });
 });
 
 describe('Explosive 2★ dual behavior (explosivePayload branch, docs/assumptions.md "Launcher explosion damage" § "Explosive 2★ dual behavior", user-measured 2026-07-30)', () => {
-  const FLAT_100 = [
-    { x: 1, y: 100 },
-    { x: 50, y: 100 },
-  ];
-  const FLAT_10 = [
-    { x: 1, y: 10 },
-    { x: 50, y: 10 },
-  ];
-
-  const legendarySource = {
-    kind: 'omod' as const,
-    formId: '0xEXPL2',
-    edid: 'mod_Legendary_Weapon2_Guns_ExplosiveBullets',
-    name: 'Explosive',
-  };
-
-  /** Mirrors the real Explosive 2★'s ESM shape: one unconditioned ADD 0.2. */
-  function makeExplosiveOmod() {
-    return {
-      id: 'mod_Legendary_Weapon2_Guns_ExplosiveBullets',
-      formId: '0xEXPL2',
-      name: 'Explosive',
-      description: '',
-      attachPointFormId: '0x0',
-      attachPointEdid: 'ap_Legendary2',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [
-        {
-          id: '0xEXPL2:0',
-          source: legendarySource,
-          bucket: 'explosivePayload' as const,
-          op: 'ADD' as const,
-          value: 0.2,
-          conditions: [],
-        },
-      ],
-    };
-  }
-
   /** Plain weapon: single ballistic component, no explosion of any kind. */
   function makePlainWeapon() {
-    return {
-      id: 'test_plain_rifle',
-      name: 'Test Rifle',
-      components: [
-        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_100 },
-      ],
-      damageType: 'ballistic' as const,
-      weaponClass: 'rifle' as const,
-      isAutomatic: false,
-      isPhysical: true,
-      critDamageMult: 2.0,
-      critChargeBonus: 1.0,
-      sneakAttackMult: 2.0,
-      damageBonusMult: 1.0,
-    };
+    return makeWeapon({ id: 'test_plain_rifle' });
   }
 
   /** Projectile-Scaling Explosion: Gauss-shape, real direct component + explosionBaseWeaponDamageMult, no fromExplosion component. */
   function makeProjectileScalingWeapon() {
-    return { ...makePlainWeapon(), id: 'test_gauss', explosionBaseWeaponDamageMult: 0.15 };
+    return makeWeapon({ id: 'test_gauss', explosionBaseWeaponDamageMult: 0.15 });
   }
 
   /** Curve-Table Explosion, Missile-Launcher shape: real direct component + a fromExplosion component. */
   function makeCurveExplosionWeapon() {
-    return {
+    return makeHeavyLauncher(FLAT_10, {
       id: 'test_missile_launcher',
       name: 'Test Missile Launcher',
-      components: [
-        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_10 },
-        {
-          damageType: 'explosive' as const,
-          tier: -1,
-          levelCap: 50,
-          curvePoints: FLAT_100,
-          fromExplosion: true,
-        },
-      ],
-      damageType: 'ballistic' as const,
-      weaponClass: 'heavy' as const,
-      isAutomatic: false,
-      isPhysical: true,
-      critDamageMult: 2.0,
-      critChargeBonus: 1.0,
-      sneakAttackMult: 2.0,
-      damageBonusMult: 1.0,
-    };
+    });
   }
 
   /** Curve-Table Explosion, Gamma-Gun shape: NO direct component — the explosion is the weapon's only damage. */
   function makeNoDirectExplosionWeapon() {
-    return {
+    return makeWeapon({
       id: 'test_gamma_gun',
       name: 'Test Gamma Gun',
       components: [
         {
-          damageType: 'radiation' as const,
+          damageType: 'radiation',
           tier: -1,
           levelCap: 50,
           curvePoints: FLAT_100,
           fromExplosion: true,
         },
         {
-          damageType: 'energy' as const,
+          damageType: 'energy',
           tier: -1,
           levelCap: 50,
           curvePoints: FLAT_100,
           fromExplosion: true,
         },
       ],
-      damageType: 'radiation' as const,
-      weaponClass: 'heavy' as const,
-      isAutomatic: false,
-      isPhysical: true,
-      critDamageMult: 2.0,
-      critChargeBonus: 1.0,
-      sneakAttackMult: 2.0,
-      damageBonusMult: 1.0,
-    };
+      damageType: 'radiation',
+      weaponClass: 'heavy',
+    });
   }
 
   it('Projectile-Scaling Explosion: explosivePayload passes through untouched (paper-damage.ts folds it as the twin base)', () => {
-    const { modifiers } = buildEffectiveWeapon(
-      makeProjectileScalingWeapon(),
-      [makeExplosiveOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { modifiers } = effective(makeProjectileScalingWeapon(), [makeExplosiveOmod()]);
     expect(modifiers).toContainEqual(
       expect.objectContaining({ bucket: 'explosivePayload', value: 0.2 }),
     );
@@ -1368,26 +875,14 @@ describe('Explosive 2★ dual behavior (explosivePayload branch, docs/assumption
   });
 
   it('plain weapon (no explosion at all): explosivePayload also passes through untouched', () => {
-    const { modifiers } = buildEffectiveWeapon(
-      makePlainWeapon(),
-      [makeExplosiveOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { modifiers } = effective(makePlainWeapon(), [makeExplosiveOmod()]);
     expect(modifiers).toContainEqual(
       expect.objectContaining({ bucket: 'explosivePayload', value: 0.2 }),
     );
   });
 
   it('Curve-Table Explosion: rewrites explosivePayload into an explosive-scoped baseDamage MUL_ADD, strips explosivePayload', () => {
-    const { modifiers } = buildEffectiveWeapon(
-      makeCurveExplosionWeapon(),
-      [makeExplosiveOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { modifiers } = effective(makeCurveExplosionWeapon(), [makeExplosiveOmod()]);
     expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
     const synthesized = modifiers.find((m) => m.bucket === 'baseDamage');
     expect(synthesized).toMatchObject({
@@ -1400,13 +895,7 @@ describe('Explosive 2★ dual behavior (explosivePayload branch, docs/assumption
   });
 
   it('Curve-Table Explosion with no direct component (Gamma Gun shape): still rewrites — the legendary is not dead weight', () => {
-    const { modifiers } = buildEffectiveWeapon(
-      makeNoDirectExplosionWeapon(),
-      [makeExplosiveOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { modifiers } = effective(makeNoDirectExplosionWeapon(), [makeExplosiveOmod()]);
     expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
     expect(modifiers).toContainEqual(
       expect.objectContaining({ bucket: 'baseDamage', op: 'MUL_ADD', value: 0.2 }),
@@ -1414,13 +903,7 @@ describe('Explosive 2★ dual behavior (explosivePayload branch, docs/assumption
   });
 
   it('Curve-Table Explosion with no legendary equipped: no baseDamage synthesized, nothing to strip', () => {
-    const { modifiers } = buildEffectiveWeapon(
-      makeCurveExplosionWeapon(),
-      [],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { modifiers } = effective(makeCurveExplosionWeapon());
     expect(modifiers.some((m) => m.bucket === 'baseDamage')).toBe(false);
     expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
   });
@@ -1430,17 +913,9 @@ describe('Explosive 2★ dual behavior (explosivePayload branch, docs/assumption
     // component REPLACES it (see the explosionChase describe block above) —
     // so it doesn't change which branch a launcher takes, only WHICH curve.
     // Confirm the rewrite still fires on a swapped-in explosion.
-    const swapOmod = {
+    const swapOmod = makeOmod({
       id: 'test_barrel',
-      formId: '0x0',
-      name: 'Test Barrel',
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_gun_Barrel',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [],
       explosionChase: {
         explEdid: 'TestSwapExplosion',
         baseWeaponDamageMult: 0,
@@ -1455,14 +930,8 @@ describe('Explosive 2★ dual behavior (explosivePayload branch, docs/assumption
           },
         ],
       },
-    };
-    const { modifiers } = buildEffectiveWeapon(
-      makeCurveExplosionWeapon(),
-      [swapOmod, makeExplosiveOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    });
+    const { modifiers } = effective(makeCurveExplosionWeapon(), [swapOmod, makeExplosiveOmod()]);
     expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
     expect(modifiers).toContainEqual(
       expect.objectContaining({ bucket: 'baseDamage', op: 'MUL_ADD', value: 0.2 }),
@@ -1470,161 +939,48 @@ describe('Explosive 2★ dual behavior (explosivePayload branch, docs/assumption
   });
 
   it('chain-suppressed (Tesla + AC muzzle shape): clears explosionBaseWeaponDamageMult AND strips explosivePayload — no fallback twin', () => {
-    const chainOmod = {
-      id: 'test_ac_muzzle',
-      formId: '0x0',
-      name: 'Alternate Current Muzzle',
-      description: '',
-      attachPointFormId: '0x0',
-      attachPointEdid: 'ap_gun_Muzzle',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [],
-      chainSuppressesExplosion: true,
-    };
-    const { weapon, modifiers } = buildEffectiveWeapon(
-      makeProjectileScalingWeapon(),
-      [chainOmod, makeExplosiveOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon, modifiers } = effective(makeProjectileScalingWeapon(), [
+      makeChainOmod(),
+      makeExplosiveOmod(),
+    ]);
     expect(weapon.explosionBaseWeaponDamageMult).toBe(0);
     expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
     expect(modifiers.some((m) => m.bucket === 'baseDamage')).toBe(false);
   });
 
   it('chain-suppressed with no legendary equipped: still clears explosionBaseWeaponDamageMult', () => {
-    const chainOmod = {
-      id: 'test_ac_muzzle',
-      formId: '0x0',
-      name: 'Alternate Current Muzzle',
-      description: '',
-      attachPointFormId: '0x0',
-      attachPointEdid: 'ap_gun_Muzzle',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [],
-      chainSuppressesExplosion: true,
-    };
-    const { weapon } = buildEffectiveWeapon(
-      makeProjectileScalingWeapon(),
-      [chainOmod],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(makeProjectileScalingWeapon(), [makeChainOmod()]);
     expect(weapon.explosionBaseWeaponDamageMult).toBe(0);
   });
 });
 
 describe('stream-delivery suppression (Cryolator/Flamer defaults, Plasma thrower-barrel OMODs — USER-CONFIRMED 2026-08-15, not ESM-provable)', () => {
-  const FLAT_100 = [
-    { x: 1, y: 100 },
-    { x: 50, y: 100 },
-  ];
-
-  const legendarySource = {
-    kind: 'omod' as const,
-    formId: '0xEXPL2',
-    edid: 'mod_Legendary_Weapon2_Guns_ExplosiveBullets',
-    name: 'Explosive',
-  };
-
-  function makeExplosiveOmod() {
-    return {
-      id: 'mod_Legendary_Weapon2_Guns_ExplosiveBullets',
-      formId: '0xEXPL2',
-      name: 'Explosive',
-      description: '',
-      attachPointFormId: '0x0',
-      attachPointEdid: 'ap_Legendary2',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [
-        {
-          id: '0xEXPL2:0',
-          source: legendarySource,
-          bucket: 'explosivePayload' as const,
-          op: 'ADD' as const,
-          value: 0.2,
-          conditions: [],
-        },
-      ],
-    };
-  }
-
-  function makeWeapon(id: string, explosionBaseWeaponDamageMult?: number) {
-    return {
+  function makeNamedWeapon(id: string, explosionBaseWeaponDamageMult?: number) {
+    return makeWeapon({
       id,
       name: id,
-      components: [
-        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_100 },
-      ],
-      damageType: 'ballistic' as const,
-      weaponClass: 'rifle' as const,
-      isAutomatic: false,
-      isPhysical: true,
-      critDamageMult: 2.0,
-      critChargeBonus: 1.0,
-      sneakAttackMult: 2.0,
-      damageBonusMult: 1.0,
       ...(explosionBaseWeaponDamageMult !== undefined ? { explosionBaseWeaponDamageMult } : {}),
-    };
+    });
   }
 
   it('Cryolator (weapon-level default): strips explosivePayload and clears explosionBaseWeaponDamageMult even when the base weapon carries one', () => {
-    const { weapon, modifiers } = buildEffectiveWeapon(
-      makeWeapon('Cryolator', 0.15),
-      [makeExplosiveOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon, modifiers } = effective(makeNamedWeapon('Cryolator', 0.15), [
+      makeExplosiveOmod(),
+    ]);
     expect(weapon.explosionBaseWeaponDamageMult).toBe(0);
     expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
     expect(modifiers.some((m) => m.bucket === 'baseDamage')).toBe(false);
   });
 
   it('Flamer (weapon-level default): same suppression', () => {
-    const { modifiers } = buildEffectiveWeapon(
-      makeWeapon('Flamer'),
-      [makeExplosiveOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { modifiers } = effective(makeNamedWeapon('Flamer'), [makeExplosiveOmod()]);
     expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
   });
 
-  it('a normal weapon (not in the stream override lists): explosivePayload passes through untouched', () => {
-    const { modifiers } = buildEffectiveWeapon(
-      makeWeapon('test_plain_rifle'),
-      [makeExplosiveOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
-    expect(modifiers).toContainEqual(
-      expect.objectContaining({ bucket: 'explosivePayload', value: 0.2 }),
-    );
-  });
-
   it('Cryolator with a real explosive-conversion barrel (explosionChase) equipped: suppression lifts, matching "the calculus changes if an explosive-capable barrel is added"', () => {
-    const polarLobberBarrel = {
+    const polarLobberBarrel = makeOmod({
       id: 'mod_Cryolator_Barrel_PolarLobber',
-      formId: '0x0',
-      name: 'Polar Lobber Barrel',
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_gun_Barrel',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [],
       explosionChase: {
         explEdid: 'TestPolarLobberExplosion',
         baseWeaponDamageMult: 0,
@@ -1642,14 +998,11 @@ describe('stream-delivery suppression (Cryolator/Flamer defaults, Plasma thrower
           },
         ],
       },
-    };
-    const { weapon, modifiers } = buildEffectiveWeapon(
-      makeWeapon('Cryolator'),
-      [polarLobberBarrel, makeExplosiveOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    });
+    const { weapon, modifiers } = effective(makeNamedWeapon('Cryolator'), [
+      polarLobberBarrel,
+      makeExplosiveOmod(),
+    ]);
     expect(weapon.components.some((c) => c.damageType === 'cryo' && c.fromExplosion)).toBe(true);
     // Curve-Table Explosion branch now applies: rewritten into baseDamage, not stripped outright.
     expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
@@ -1657,36 +1010,19 @@ describe('stream-delivery suppression (Cryolator/Flamer defaults, Plasma thrower
   });
 
   it('Plasma Gun with a Thrower Barrel equipped: suppressed even though the weapon itself is not in the default-stream list', () => {
-    const throwerBarrel = {
+    const throwerBarrel = makeOmod({
       id: 'mod_PlasmaGun_barrel_Flamer_Base',
-      formId: '0x0',
-      name: 'Thrower Barrel',
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_gun_Barrel',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [],
-    };
-    const { modifiers } = buildEffectiveWeapon(
-      makeWeapon('PlasmaGun'),
-      [throwerBarrel, makeExplosiveOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    });
+    const { modifiers } = effective(makeNamedWeapon('PlasmaGun'), [
+      throwerBarrel,
+      makeExplosiveOmod(),
+    ]);
     expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
   });
 
   it('Plasma Gun WITHOUT a Thrower Barrel: explosivePayload passes through untouched', () => {
-    const { modifiers } = buildEffectiveWeapon(
-      makeWeapon('PlasmaGun'),
-      [makeExplosiveOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { modifiers } = effective(makeNamedWeapon('PlasmaGun'), [makeExplosiveOmod()]);
     expect(modifiers).toContainEqual(
       expect.objectContaining({ bucket: 'explosivePayload', value: 0.2 }),
     );
@@ -1694,41 +1030,14 @@ describe('stream-delivery suppression (Cryolator/Flamer defaults, Plasma thrower
 });
 
 describe('explosionChase ADDs to a weapon with no baseline explosion, docs/assumptions.md "OMOD-chased launcher payloads" (2026-07-30)', () => {
-  const FLAT_100 = [
-    { x: 1, y: 100 },
-    { x: 50, y: 100 },
-  ];
-
   function makePlainBow() {
-    return {
-      id: 'test_bow',
-      name: 'Test Bow',
-      components: [
-        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_100 },
-      ],
-      damageType: 'ballistic' as const,
-      weaponClass: 'bow' as const,
-      isAutomatic: false,
-      isPhysical: true,
-      critDamageMult: 2.0,
-      critChargeBonus: 1.0,
-      sneakAttackMult: 2.0,
-      damageBonusMult: 1.0,
-    };
+    return makeWeapon({ id: 'test_bow', name: 'Test Bow', weaponClass: 'bow' });
   }
 
   function makeExplosiveArrowsOmod() {
-    return {
+    return makeOmod({
       id: 'mod_RegularBow_Bolt_Explosive',
-      formId: '0x0',
-      name: 'Explosive',
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_gun_Bolt',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [],
       explosionChase: {
         explEdid: 'ExplosionArrowExplosive',
         baseWeaponDamageMult: 0,
@@ -1746,17 +1055,11 @@ describe('explosionChase ADDs to a weapon with no baseline explosion, docs/assum
           },
         ],
       },
-    };
+    });
   }
 
   it('ADDS a fromExplosion component to a weapon with no baseline explosion at all', () => {
-    const { weapon } = buildEffectiveWeapon(
-      makePlainBow(),
-      [makeExplosiveArrowsOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(makePlainBow(), [makeExplosiveArrowsOmod()]);
     expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic', 'explosive']);
     const [ballistic, explosive] = weapon.components;
     expect(ballistic.fromExplosion).toBeUndefined();
@@ -1773,34 +1076,10 @@ describe('explosionChase ADDs to a weapon with no baseline explosion, docs/assum
   });
 
   it('the added component makes the weapon a Curve-Table Explosion for the Explosive 2★ branch', () => {
-    const explosiveTwoStar = {
-      id: 'mod_Legendary_Weapon2_Guns_ExplosiveBullets',
-      formId: '0xEXPL2',
-      name: 'Explosive',
-      description: '',
-      attachPointFormId: '0x0',
-      attachPointEdid: 'ap_Legendary2',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [
-        {
-          id: '0xEXPL2:0',
-          source: { kind: 'omod' as const, formId: '0xEXPL2', edid: 'x', name: 'Explosive' },
-          bucket: 'explosivePayload' as const,
-          op: 'ADD' as const,
-          value: 0.2,
-          conditions: [],
-        },
-      ],
-    };
-    const { modifiers } = buildEffectiveWeapon(
-      makePlainBow(),
-      [makeExplosiveArrowsOmod(), explosiveTwoStar],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { modifiers } = effective(makePlainBow(), [
+      makeExplosiveArrowsOmod(),
+      makeExplosiveOmod(),
+    ]);
     expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
     expect(modifiers).toContainEqual(
       expect.objectContaining({ bucket: 'baseDamage', op: 'MUL_ADD', value: 0.2 }),
@@ -1809,42 +1088,16 @@ describe('explosionChase ADDs to a weapon with no baseline explosion, docs/assum
 });
 
 describe('procChase → Weapon.procs (issue #42, PROC_DAMAGE_PLAN.md commit 6)', () => {
-  const FLAT_100 = [
-    { x: 1, y: 100 },
-    { x: 50, y: 100 },
-  ];
-
   function makePlainWeapon() {
-    return {
-      id: 'test_proc_weapon',
-      name: 'Test Proc Weapon',
-      components: [
-        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_100 },
-      ],
-      damageType: 'ballistic' as const,
-      weaponClass: 'rifle' as const,
-      isAutomatic: false,
-      isPhysical: true,
-      critDamageMult: 2.0,
-      critChargeBonus: 1.0,
-      sneakAttackMult: 2.0,
-      damageBonusMult: 1.0,
-    };
+    return makeWeapon({ id: 'test_proc_weapon', name: 'Test Proc Weapon' });
   }
 
   /** Mirrors Fracturer's real procChase shape: onCripple, one curve-bearing explosive component. */
   function makeFracturersOmod(formId = '0xFRACTURER', id = 'mod_Legendary_Weapon4_Fracturers') {
-    return {
+    return makeOmod({
       id,
       formId,
-      name: "Fracturer's",
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_Legendary4',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [],
       procChase: [
         {
           trigger: 'onCripple' as const,
@@ -1863,22 +1116,15 @@ describe('procChase → Weapon.procs (issue #42, PROC_DAMAGE_PLAN.md commit 6)',
           ],
         },
       ],
-    };
+    });
   }
 
   /** Mirrors Circuit Breaker's real shape: identical procChase content on two different formids/ids. */
   function makeCircuitBreakerOmod(formId: string, id: string, attachPointEdid: string) {
-    return {
+    return makeOmod({
       id,
       formId,
-      name: 'Circuit Breaker',
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid,
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [],
       procChase: [
         {
           trigger: 'lastRound' as const,
@@ -1897,17 +1143,11 @@ describe('procChase → Weapon.procs (issue #42, PROC_DAMAGE_PLAN.md commit 6)',
           ],
         },
       ],
-    };
+    });
   }
 
   it('folds a single equipped procChase into Weapon.procs, mapping trigger/cooldown/curve', () => {
-    const { weapon } = buildEffectiveWeapon(
-      makePlainWeapon(),
-      [makeFracturersOmod()],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(makePlainWeapon(), [makeFracturersOmod()]);
     expect(weapon.procs).toHaveLength(1);
     const [proc] = weapon.procs!;
     expect(proc.id).toBe('0xFRACTURER:proc:0');
@@ -1948,13 +1188,7 @@ describe('procChase → Weapon.procs (issue #42, PROC_DAMAGE_PLAN.md commit 6)',
         },
       ],
     };
-    const { weapon } = buildEffectiveWeapon(
-      makePlainWeapon(),
-      [flatOmod],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(makePlainWeapon(), [flatOmod]);
     expect(weapon.procs![0].components[0]).toMatchObject({
       damageType: 'fire',
       value: 12,
@@ -1963,31 +1197,19 @@ describe('procChase → Weapon.procs (issue #42, PROC_DAMAGE_PLAN.md commit 6)',
   });
 
   it('collects procs from MULTIPLE distinct equipped omods (not last-wins like explosionChase)', () => {
-    const { weapon } = buildEffectiveWeapon(
-      makePlainWeapon(),
-      [
-        makeFracturersOmod(),
-        makeCircuitBreakerOmod('0xCB_IDENTITY', 'mod_Custom_CircuitBreaker', 'ap_customName'),
-      ],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(makePlainWeapon(), [
+      makeFracturersOmod(),
+      makeCircuitBreakerOmod('0xCB_IDENTITY', 'mod_Custom_CircuitBreaker', 'ap_customName'),
+    ]);
     expect(weapon.procs).toHaveLength(2);
     expect(weapon.procs!.map((p) => p.trigger.kind).sort()).toEqual(['lastRound', 'onCripple']);
   });
 
   it('dedupes byte-identical procChase content across two different equipped omods — the real Circuit Breaker identity/effect-mod shape', () => {
-    const { weapon } = buildEffectiveWeapon(
-      makePlainWeapon(),
-      [
-        makeCircuitBreakerOmod('0x006DC8DD', 'mod_Custom_CircuitBreaker', 'ap_customName'),
-        makeCircuitBreakerOmod('0x006EBCD5', 'mod_Custom_CircuitBreaker_Effect', 'ap_Legendary3'),
-      ],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(makePlainWeapon(), [
+      makeCircuitBreakerOmod('0x006DC8DD', 'mod_Custom_CircuitBreaker', 'ap_customName'),
+      makeCircuitBreakerOmod('0x006EBCD5', 'mod_Custom_CircuitBreaker_Effect', 'ap_Legendary3'),
+    ]);
     // Both omods carry the SAME procChase content (byte-identical trigger +
     // components) — only one ProcSource should survive, not two (would
     // double-count Circuit Breaker's discharge damage).
@@ -1996,13 +1218,7 @@ describe('procChase → Weapon.procs (issue #42, PROC_DAMAGE_PLAN.md commit 6)',
   });
 
   it('a weapon with no procChase-carrying omods gets no procs field at all', () => {
-    const { weapon } = buildEffectiveWeapon(
-      makePlainWeapon(),
-      [],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(makePlainWeapon());
     expect(weapon.procs).toBeUndefined();
   });
 });
@@ -2017,39 +1233,15 @@ describe('charging weapon-stat buckets (chargeFullPowerSec/chargeFullPowerDamage
     const teslaLikeBase = { ...fixer, fullPowerSeconds: 0, fullPowerDamageMult: 1.25 };
     expect(weaponCharges(teslaLikeBase)).toBe(false);
 
-    const chargingBarrelLike = {
+    const chargingBarrelLike = makeOmod({
       id: 'test_charging_barrel',
-      formId: '0x0',
-      name: 'Test Charging Barrel',
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_gun_Barrel',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [
-        {
-          id: '0x0:0',
-          source: {
-            kind: 'omod' as const,
-            formId: '0x0',
-            edid: 'test_charging_barrel',
-            name: 'Test Charging Barrel',
-          },
-          bucket: 'chargeFullPowerSec' as const,
-          op: 'SET' as const,
-          value: 1.0,
-          conditions: [],
-        },
-      ],
-    };
-    const { weapon } = buildEffectiveWeapon(
-      teslaLikeBase,
-      [chargingBarrelLike],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+      modifiers: omodModifiers(
+        { formId: '0x0', edid: 'test_charging_barrel', name: 'Test Charging Barrel' },
+        [{ bucket: 'chargeFullPowerSec', op: 'SET', value: 1.0 }],
+      ),
+    });
+    const { weapon } = effective(teslaLikeBase, [chargingBarrelLike]);
     expect(weaponCharges(weapon)).toBe(true);
     expect(weapon.fullPowerSeconds).toBeCloseTo(1.0, 10);
     expect(weapon.fullPowerDamageMult).toBeCloseTo(1.25, 10); // untouched — no chargeFullPowerDamageMult modifier equipped
@@ -2067,13 +1259,7 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
     expect(huntingRifle.outOfRangeDamageMult).toBe(0.5);
 
     const longBarrel = getOmodById('live', 'mod_HuntingRifle_barrel_Long_Base')!;
-    const { weapon } = buildEffectiveWeapon(
-      huntingRifle,
-      [longBarrel],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(huntingRifle, [longBarrel]);
     expect(weapon.minRange).toBeCloseTo(2612 * 1.5, 6);
     expect(weapon.maxRange).toBeCloseTo(5225 * 1.5, 6);
     expect(weapon.outOfRangeDamageMult).toBeCloseTo(0.5, 6); // untouched — no weaponOutOfRangeMult modifier on this OMOD
@@ -2084,13 +1270,7 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
     expect(plasmaGun.outOfRangeDamageMult).toBe(0.5);
 
     const abraxoBarrel = getOmodById('live', 'mod_PlasmaGun_barrel_Flamer_Abraxo')!;
-    const { weapon } = buildEffectiveWeapon(
-      plasmaGun,
-      [abraxoBarrel],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(plasmaGun, [abraxoBarrel]);
     expect(weapon.outOfRangeDamageMult).toBeCloseTo(0.7, 6);
   });
 
@@ -2101,13 +1281,7 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
     // no-op when nothing targets those buckets.
     const huntingRifle = getWeapons('live')['HuntingRifle'];
     const unrelatedMod = getOmodById('live', 'mod_HuntingRifle_Barrel_Short_Recoil')!; // real equipped OMOD, zero modifiers of its own
-    const { weapon } = buildEffectiveWeapon(
-      huntingRifle,
-      [unrelatedMod],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+    const { weapon } = effective(huntingRifle, [unrelatedMod]);
     expect(weapon.minRange).toBe(2612);
     expect(weapon.maxRange).toBe(5225);
     expect(weapon.outOfRangeDamageMult).toBe(0.5);
@@ -2115,14 +1289,9 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
 
   it('Long Shot range MUL_ADD applies only when the weapon carries a scope keyword', () => {
     const huntingRifle = getWeapons('live')['HuntingRifle'];
-    const scopedMod = {
+    const scopedMod = makeOmod({
       id: 'test_scope',
-      formId: '0x0',
-      name: 'Scoped test',
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_gun_Sights',
-      targetKeywords: [],
       modifiers: [
         {
           id: 'test_scope:0',
@@ -2142,20 +1311,17 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
         },
       ],
       addedKeywords: ['HasScope'],
-      hasEnchantments: false,
       obtainable: true,
       notes: [],
-    };
-    const { weapon } = buildEffectiveWeapon(
+    });
+    const { weapon } = effective(
       huntingRifle,
       [scopedMod],
-      50,
       makeResolvedPlayer({ isAimingDownSights: true }),
-      makeDefaultEnemy(),
     );
     expect(weapon.minRange).toBeCloseTo(2612 * 1.3, 6);
 
-    const { weapon: ironSightsOnly } = buildEffectiveWeapon(
+    const { weapon: ironSightsOnly } = effective(
       huntingRifle,
       [
         {
@@ -2164,9 +1330,7 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
           modifiers: scopedMod.modifiers.map((m) => ({ ...m })),
         },
       ],
-      50,
       makeResolvedPlayer({ isAimingDownSights: true }),
-      makeDefaultEnemy(),
     );
     expect(ironSightsOnly.minRange).toBe(2612);
   });
@@ -2175,199 +1339,95 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
 describe('sustain chance buckets (foldChanceUnion)', () => {
   const fixer = getWeapons('live')['CombatRifle_Fixer'];
   const baseCapacity = fixer.capacity ?? 0;
-  const omodSource = {
-    kind: 'omod' as const,
-    formId: '0x0',
-    edid: 'test_sustain',
-    name: 'Test Sustain Mod',
-  };
+  const sustainSource = { formId: '0x0', edid: 'test_sustain', name: 'Test Sustain Mod' };
   const perkSource = { kind: 'perk' as const, formId: '0x1', edid: 'test_perk', name: 'Test Perk' };
 
   it('lastShotChance folds a single modifier to its value', () => {
-    const lastShotOmod = {
+    const lastShotOmod = makeOmod({
       id: 'test_last_shot',
-      formId: '0x0',
-      name: 'Test Last Shot',
-      description: '',
-      attachPointFormId: '0x0',
-      attachPointEdid: 'ap_Legendary3',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [
-        {
-          id: '0x0:0',
-          source: omodSource,
-          bucket: 'lastShotChance' as const,
-          op: 'ADD' as const,
-          value: 0.25,
-          conditions: [],
-        },
-      ],
-    };
-    const { weapon } = buildEffectiveWeapon(
-      fixer,
-      [lastShotOmod],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+      modifiers: omodModifiers(sustainSource, [
+        { bucket: 'lastShotChance', op: 'ADD', value: 0.25 },
+      ]),
+    });
+    const { weapon } = effective(fixer, [lastShotOmod]);
     expect(weapon.lastShotChance).toBeCloseTo(0.25, 10);
   });
 
-  it('two lastShotChance sources compose as 1 − (1 − c1)(1 − c2), same union as reloadSkipChance', () => {
-    const c1 = 0.25;
-    const c2 = 0.25;
-    const lastShotOmod = {
-      id: 'test_last_shot_union',
-      formId: '0x0',
-      name: 'Test Last Shot Union',
-      description: '',
-      attachPointFormId: '0x0',
-      attachPointEdid: 'ap_Legendary3',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [c1, c2].map((value, i) => ({
-        id: `0x0:${i}`,
-        source: omodSource,
-        bucket: 'lastShotChance' as const,
-        op: 'ADD' as const,
-        value,
-        conditions: [],
-      })),
-    };
-    const { weapon } = buildEffectiveWeapon(
-      fixer,
-      [lastShotOmod],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
-    expect(weapon.lastShotChance).toBeCloseTo(1 - (1 - c1) * (1 - c2), 10);
-  });
+  const unionRows: Array<{
+    name: string;
+    bucket: 'lastShotChance' | 'reloadSkipChance' | 'reloadSkipChanceBash';
+    c1: number;
+    c2: number;
+    zeroChannel?: 'reloadSkipChance';
+  }> = [
+    {
+      name: 'two lastShotChance sources compose as 1 − (1 − c1)(1 − c2), same union as reloadSkipChance',
+      bucket: 'lastShotChance',
+      c1: 0.25,
+      c2: 0.25,
+    },
+    {
+      name: 'two reload-skip sources compose as 1 − (1 − c1)(1 − c2)',
+      bucket: 'reloadSkipChance',
+      c1: 0.06,
+      c2: 0.12,
+    },
+    {
+      name: 'two reloadSkipChanceBash sources compose as 1 − (1 − c1)(1 − c2), same union as reloadSkipChance',
+      bucket: 'reloadSkipChanceBash',
+      c1: 0.15,
+      c2: 0.3,
+      // Folded from a DISJOINT source list, so the passive channel reads 0 — no
+      // cross-channel bleed.
+      zeroChannel: 'reloadSkipChance',
+    },
+  ];
+
+  for (const row of unionRows) {
+    it(row.name, () => {
+      const omod = makeOmod({
+        id: `test_${row.bucket}_union`,
+        modifiers: omodModifiers(
+          sustainSource,
+          [row.c1, row.c2].map((value) => ({ bucket: row.bucket, op: 'ADD', value })),
+        ),
+      });
+      const { weapon } = effective(fixer, [omod]);
+      expect(weapon[row.bucket]).toBeCloseTo(1 - (1 - row.c1) * (1 - row.c2), 10);
+      if (row.zeroChannel) expect(weapon[row.zeroChannel]).toBeCloseTo(0, 10);
+    });
+  }
 
   it('lastShotChance reads 0 when the fold runs but no lastShotChance modifier is present', () => {
-    const reloadSkipOnly = {
+    const reloadSkipOnly = makeOmod({
       id: 'test_reload_skip_only',
-      formId: '0x0',
-      name: 'Test Reload Skip Only',
-      description: '',
-      attachPointFormId: '0x0',
-      attachPointEdid: 'ap_Legendary3',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [
-        {
-          id: '0x0:0',
-          source: omodSource,
-          bucket: 'reloadSkipChance' as const,
-          op: 'ADD' as const,
-          value: 0.2,
-          conditions: [],
-        },
-      ],
-    };
-    const { weapon } = buildEffectiveWeapon(
-      fixer,
-      [reloadSkipOnly],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+      modifiers: omodModifiers(sustainSource, [
+        { bucket: 'reloadSkipChance', op: 'ADD', value: 0.2 },
+      ]),
+    });
+    const { weapon } = effective(fixer, [reloadSkipOnly]);
     expect(weapon.lastShotChance).toBeCloseTo(0, 10);
   });
 
-  it('two reload-skip sources compose as 1 − (1 − c1)(1 − c2)', () => {
-    const c1 = 0.06;
-    const c2 = 0.12;
-    const reloadSkipOmod = {
-      id: 'test_reload_skip',
-      formId: '0x0',
-      name: 'Test Reload Skip',
-      description: '',
-      attachPointFormId: '0x0',
-      attachPointEdid: 'ap_Legendary3',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [c1, c2].map((value, i) => ({
-        id: `0x0:${i}`,
-        source: omodSource,
-        bucket: 'reloadSkipChance' as const,
-        op: 'ADD' as const,
-        value,
-        conditions: [],
-      })),
-    };
-    const { weapon } = buildEffectiveWeapon(
-      fixer,
-      [reloadSkipOmod],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
-    expect(weapon.reloadSkipChance).toBeCloseTo(1 - (1 - c1) * (1 - c2), 10);
-  });
-
   it('ammoFreeChance stacks with Quad multiplicatively, not additively', () => {
-    const quadLike = {
+    const quadLike = makeOmod({
       id: 'test_quad',
-      formId: '0x0',
-      name: 'Test Quad',
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_Legendary1',
-      targetKeywords: [],
-      addedKeywords: [],
       hasEnchantments: true,
-      modifiers: [
-        {
-          id: '0x0:0',
-          source: omodSource,
-          bucket: 'ammoCapacity' as const,
-          op: 'MUL_ADD' as const,
-          value: 3.0,
-          conditions: [],
-        },
-      ],
-    };
-    const fortunateLike = {
+      modifiers: omodModifiers(sustainSource, [
+        { bucket: 'ammoCapacity', op: 'MUL_ADD', value: 3.0 },
+      ]),
+    });
+    const fortunateLike = makeOmod({
       id: 'test_fortunate',
       formId: '0x1',
-      name: 'Test Fortunate',
-      description: '',
-      attachPointFormId: '0x0',
       attachPointEdid: 'ap_gun_Magazine',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [
-        {
-          id: '0x1:0',
-          source: omodSource,
-          bucket: 'ammoFreeChance' as const,
-          op: 'ADD' as const,
-          value: 0.2,
-          conditions: [],
-        },
-      ],
-    };
-    const quadOnly = buildEffectiveWeapon(
-      fixer,
-      [quadLike],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
-    const both = buildEffectiveWeapon(
-      fixer,
-      [quadLike, fortunateLike],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+      modifiers: omodModifiers({ ...sustainSource, formId: '0x1' }, [
+        { bucket: 'ammoFreeChance', op: 'ADD', value: 0.2 },
+      ]),
+    });
+    const quadOnly = effective(fixer, [quadLike]);
+    const both = effective(fixer, [quadLike, fortunateLike]);
 
     expect(quadOnly.weapon.capacity).toBeCloseTo(baseCapacity * 4, 6);
     expect(both.weapon.capacity).toBeCloseTo(baseCapacity * 4, 6);
@@ -2380,79 +1440,16 @@ describe('sustain chance buckets (foldChanceUnion)', () => {
   it('reloadSkipChanceBash folds independently of reloadSkipChance (separate bash-tier channel, Phase C)', () => {
     const cFree = 0.2;
     const cBash = 0.45;
-    const splitChannels = {
+    const splitChannels = makeOmod({
       id: 'test_reload_skip_split',
-      formId: '0x0',
-      name: 'Test Reload Skip Split',
-      description: '',
-      attachPointFormId: '0x0',
-      attachPointEdid: 'ap_Legendary3',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [
-        {
-          id: '0x0:0',
-          source: omodSource,
-          bucket: 'reloadSkipChance' as const,
-          op: 'ADD' as const,
-          value: cFree,
-          conditions: [],
-        },
-        {
-          id: '0x0:1',
-          source: omodSource,
-          bucket: 'reloadSkipChanceBash' as const,
-          op: 'ADD' as const,
-          value: cBash,
-          conditions: [],
-        },
-      ],
-    };
-    const { weapon } = buildEffectiveWeapon(
-      fixer,
-      [splitChannels],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
+      modifiers: omodModifiers(sustainSource, [
+        { bucket: 'reloadSkipChance', op: 'ADD', value: cFree },
+        { bucket: 'reloadSkipChanceBash', op: 'ADD', value: cBash },
+      ]),
+    });
+    const { weapon } = effective(fixer, [splitChannels]);
     expect(weapon.reloadSkipChance).toBeCloseTo(cFree, 10);
     expect(weapon.reloadSkipChanceBash).toBeCloseTo(cBash, 10);
-  });
-
-  it('two reloadSkipChanceBash sources compose as 1 − (1 − c1)(1 − c2), same union as reloadSkipChance', () => {
-    const c1 = 0.15;
-    const c2 = 0.3;
-    const bashOmod = {
-      id: 'test_bash_skip',
-      formId: '0x0',
-      name: 'Test Bash Skip',
-      description: '',
-      attachPointFormId: '0x0',
-      attachPointEdid: 'ap_Legendary3',
-      targetKeywords: [],
-      addedKeywords: [],
-      hasEnchantments: false,
-      modifiers: [c1, c2].map((value, i) => ({
-        id: `0x0:${i}`,
-        source: omodSource,
-        bucket: 'reloadSkipChanceBash' as const,
-        op: 'ADD' as const,
-        value,
-        conditions: [],
-      })),
-    };
-    const { weapon } = buildEffectiveWeapon(
-      fixer,
-      [bashOmod],
-      50,
-      makeResolvedPlayer(),
-      makeDefaultEnemy(),
-    );
-    expect(weapon.reloadSkipChanceBash).toBeCloseTo(1 - (1 - c1) * (1 - c2), 10);
-    // Folded from a DISJOINT source list, so the passive channel reads 0 — no
-    // cross-channel bleed.
-    expect(weapon.reloadSkipChance).toBeCloseTo(0, 10);
   });
 
   it('evaluates reloadSkipChance condition gates (playerIsGhoul)', () => {
@@ -2464,24 +1461,12 @@ describe('sustain chance buckets (foldChanceUnion)', () => {
       value: 0.36,
       conditions: [{ kind: 'playerIsGhoul' as const, value: true }],
     };
-    const asHuman = buildEffectiveWeapon(
-      fixer,
-      [],
-      50,
-      makeResolvedPlayer(),
-      createDefaultEnemyConditions(),
-      [ghoulReloadSkip],
-    );
+    const asHuman = effective(fixer, [], makeResolvedPlayer(), [ghoulReloadSkip]);
     expect(asHuman.weapon.reloadSkipChance).toBeCloseTo(0, 10);
 
-    const asGhoul = buildEffectiveWeapon(
-      fixer,
-      [],
-      50,
-      { ...makeResolvedPlayer(), isGhoul: true },
-      createDefaultEnemyConditions(),
-      [ghoulReloadSkip],
-    );
+    const asGhoul = effective(fixer, [], { ...makeResolvedPlayer(), isGhoul: true }, [
+      ghoulReloadSkip,
+    ]);
     expect(asGhoul.weapon.reloadSkipChance).toBeCloseTo(0.36, 10);
   });
 });

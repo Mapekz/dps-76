@@ -34,13 +34,15 @@ describe('getTargetDebuffModifiers — Taking One for the Team flat DR debuff', 
     expect(mods.some((m) => m.id === 'target-debuff:TakingOneForTheTeamDr')).toBe(true);
   });
 
-  it('Tenderizer stays unconditioned-except-for-stacks (regression guard)', () => {
+  it('Tenderizer is +0.001 dbm/stack, unconditioned except for stacks (regression guard)', () => {
     const mods = getTargetDebuffModifiers({});
     const tenderizer = mods.find((m) => m.id === 'target-debuff:Tenderizer');
+    expect(tenderizer).toMatchObject({ bucket: 'dbm', op: 'ADD', value: 0.001 });
     expect(tenderizer?.conditions[0]).toMatchObject({
       kind: 'stacks',
       counter: 'tenderizer',
-      max: TENDERIZER_MAX_STACKS,
+      max: 1000,
     });
+    expect(TENDERIZER_MAX_STACKS).toBe(1000);
   });
 });

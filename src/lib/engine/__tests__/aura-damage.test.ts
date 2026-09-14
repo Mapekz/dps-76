@@ -1,44 +1,8 @@
 import { describe, it, expect } from 'bun:test';
-import type { Weapon } from '@/types';
-import { createDefaultEnemyConditions } from '@/types';
 import type { AuraSource } from '@/types/auras';
-import type { ResolveContext } from '@/lib/engine/resolve';
 import { collectAuraStreams, computeAuraDps } from '@/lib/engine/aura-damage';
 import { computeScenarios } from '@/lib/engine/scenarios';
-import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
-import type { Modifier } from '@/types/modifiers';
-
-const FLAT_100 = [
-  { x: 1, y: 100 },
-  { x: 50, y: 100 },
-];
-
-function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
-  return {
-    id: 'test_rifle',
-    name: 'Test Rifle',
-    components: [{ damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
-    damageType: 'ballistic',
-    weaponClass: 'rifle',
-    isAutomatic: false,
-    isPhysical: true,
-    critDamageMult: 2.0,
-    critChargeBonus: 1.0,
-    sneakAttackMult: 2.0,
-    damageBonusMult: 1.0,
-    ...overrides,
-  };
-}
-
-function makeCtx(weapon: Weapon, overrides: Partial<ResolveContext> = {}): ResolveContext {
-  return {
-    weapon,
-    player: makeResolvedPlayer(),
-    enemy: createDefaultEnemyConditions(),
-    scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
-    ...overrides,
-  };
-}
+import { makeWeapon, makeCtx, scenarioInput } from '@/lib/engine/__tests__/engine-fixture';
 
 function makeAura(overrides: Partial<AuraSource> = {}): AuraSource {
   return {
@@ -120,29 +84,12 @@ describe('collectAuraStreams unresolved gates', () => {
 
 describe('computeScenarios: auraDps parallel stream', () => {
   const weapon = makeWeapon();
-  const modifiers: Modifier[] = [];
 
   it('surfaces auraDps without moving perHit/burstDps/sustain', () => {
-    const withAura = computeScenarios({
-      mode: 'live',
-      weapon,
-      itemLevel: 50,
-      modifiers,
-      auras: [makeAura({ magnitudePerTick: 50, tickSec: 1 })],
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-    });
-    const withoutAura = computeScenarios({
-      mode: 'live',
-      weapon,
-      itemLevel: 50,
-      modifiers,
-      auras: [],
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-    });
+    const withAura = computeScenarios(
+      scenarioInput(weapon, { auras: [makeAura({ magnitudePerTick: 50, tickSec: 1 })] }),
+    );
+    const withoutAura = computeScenarios(scenarioInput(weapon, { auras: [] }));
 
     expect(withAura.freeAim.auraDps).toBe(50);
     expect(withoutAura.freeAim.auraDps).toBe(0);
@@ -154,16 +101,9 @@ describe('computeScenarios: auraDps parallel stream', () => {
   });
 
   it('sets auraMagnitudePending when a source has pending magnitude', () => {
-    const s = computeScenarios({
-      mode: 'live',
-      weapon,
-      itemLevel: 50,
-      modifiers,
-      auras: [makeAura({ magnitudePending: true })],
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-    });
+    const s = computeScenarios(
+      scenarioInput(weapon, { auras: [makeAura({ magnitudePending: true })] }),
+    );
     expect(s.freeAim.auraMagnitudePending).toBe(true);
     expect(s.freeAim.auraDps).toBe(0);
   });

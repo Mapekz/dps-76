@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'bun:test';
-import type { EsmListRow, EsmRecord, EsmRefRow } from '../esm-client';
+import { beforeAll, describe, it, expect } from 'bun:test';
+import type { EsmRecord, EsmRefRow } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
 import { extractArmor, isExcludedArmorEdid } from '../extract-armor';
+import { listRows, refRow, stubRecord } from './esm-stubs';
 
 /**
  * Phase 3 armor pipeline (docs/assumptions.md "Armor extraction pipeline"):
@@ -35,62 +36,28 @@ describe('isExcludedArmorEdid', () => {
 
 /** Minimal in-memory source: canned ARMO rows/records + refs for the obtainability pass. */
 function makeStubClient() {
-  const rows: EsmListRow[] = [
-    {
-      form_id: '0xARMO_REAL',
-      record_type: 'ARMO',
-      editor_id: 'Armor_Test_Torso',
-      name: 'Test Torso',
-    },
-    {
-      form_id: '0xARMO_UNREACHABLE',
-      record_type: 'ARMO',
-      editor_id: 'Armor_Test_Unreachable',
-      name: 'Unreachable Torso',
-    },
-    { form_id: '0xARMO_NONAME', record_type: 'ARMO', editor_id: 'Armor_Test_NoName', name: null },
-    { form_id: '0xARMO_SKIN', record_type: 'ARMO', editor_id: 'SkinTestJunk', name: 'Junk Skin' },
-  ];
   const records: Record<string, EsmRecord> = {
-    '0xARMO_REAL': {
-      header: { signature: 'ARMO', form_id: '0xARMO_REAL' },
-      editor_id: 'Armor_Test_Torso',
-      fields: { Name: 'Test Torso' },
-    } as unknown as EsmRecord,
-    '0xARMO_UNREACHABLE': {
-      header: { signature: 'ARMO', form_id: '0xARMO_UNREACHABLE' },
-      editor_id: 'Armor_Test_Unreachable',
-      fields: { Name: 'Unreachable Torso' },
-    } as unknown as EsmRecord,
-    '0xARMO_NONAME': {
-      header: { signature: 'ARMO', form_id: '0xARMO_NONAME' },
-      editor_id: 'Armor_Test_NoName',
-      fields: {},
-    } as unknown as EsmRecord,
-    '0xARMO_SKIN': {
-      header: { signature: 'ARMO', form_id: '0xARMO_SKIN' },
-      editor_id: 'SkinTestJunk',
-      fields: { Name: 'Junk Skin' },
-    } as unknown as EsmRecord,
+    '0xARMO_REAL': stubRecord('ARMO', '0xARMO_REAL', 'Armor_Test_Torso', { Name: 'Test Torso' }),
+    '0xARMO_UNREACHABLE': stubRecord('ARMO', '0xARMO_UNREACHABLE', 'Armor_Test_Unreachable', {
+      Name: 'Unreachable Torso',
+    }),
+    '0xARMO_NONAME': stubRecord('ARMO', '0xARMO_NONAME', 'Armor_Test_NoName'),
+    '0xARMO_SKIN': stubRecord('ARMO', '0xARMO_SKIN', 'SkinTestJunk', { Name: 'Junk Skin' }),
   };
   const refs: Record<string, EsmRefRow[]> = {
-    '0xARMO_REAL': [
-      {
-        form_id: '0xCOBJ1',
-        record_type: 'COBJ',
-        editor_id: 'co_armor_Test_Torso',
-        name: null,
-        depth: 1,
-      },
-    ],
+    '0xARMO_REAL': [refRow('COBJ', '0xCOBJ1', 'co_armor_Test_Torso')],
     '0xARMO_UNREACHABLE': [],
   };
-  return createInMemoryEsmSource({ rows, records, refs });
+  return createInMemoryEsmSource({ rows: listRows(Object.values(records)), records, refs });
 }
 
 describe('extractArmor', () => {
-  it('pre-filters junk/non-equippable edids and no-Name records before touching obtainability', async () => {
-    const result = await extractArmor(makeStubClient());
+  let result: Awaited<ReturnType<typeof extractArmor>>;
+  beforeAll(async () => {
+    result = await extractArmor(makeStubClient());
+  });
+
+  it('pre-filters junk/non-equippable edids and no-Name records before touching obtainability', () => {
     const ids = result.armors.map((a) => a.id);
     expect(ids).not.toContain('SkinTestJunk');
     expect(ids).not.toContain('Armor_Test_NoName');
@@ -98,15 +65,13 @@ describe('extractArmor', () => {
     expect(ids).toContain('Armor_Test_Unreachable');
   });
 
-  it('derives obtainable via reverse references, same as weapons (COBJ referencer → obtainable)', async () => {
-    const result = await extractArmor(makeStubClient());
+  it('derives obtainable via reverse references, same as weapons (COBJ referencer → obtainable)', () => {
     const real = result.armors.find((a) => a.id === 'Armor_Test_Torso')!;
     expect(real.obtainable).toBe(true);
     expect(result.obtainableFormIds.has('0xARMO_REAL')).toBe(true);
   });
 
-  it('keeps an unreachable armor piece in the data flagged obtainable:false (review/rescue, not silently dropped)', async () => {
-    const result = await extractArmor(makeStubClient());
+  it('keeps an unreachable armor piece in the data flagged obtainable:false (review/rescue, not silently dropped)', () => {
     const unreachable = result.armors.find((a) => a.id === 'Armor_Test_Unreachable')!;
     expect(unreachable).toBeDefined();
     expect(unreachable.obtainable).toBe(false);

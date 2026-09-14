@@ -1,32 +1,9 @@
 import { describe, it, expect } from 'bun:test';
-import type { Weapon } from '@/types';
-import type { Modifier } from '@/types/modifiers';
-import { createDefaultEnemyConditions } from '@/types';
+import type { Bucket, Modifier } from '@/types/modifiers';
 import { BULLET_STORM_AMMO_PER_STACK, bulletStormAvgStacks } from '@/lib/engine/bulletstorm';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
-
-const FLAT_100 = [
-  { x: 1, y: 100 },
-  { x: 50, y: 100 },
-];
-
-function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
-  return {
-    id: 'test_weapon',
-    name: 'Test Weapon',
-    components: [{ damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
-    damageType: 'ballistic',
-    weaponClass: 'rifle',
-    isAutomatic: false,
-    isPhysical: true,
-    critDamageMult: 2.0,
-    critChargeBonus: 1.0,
-    sneakAttackMult: 2.0,
-    damageBonusMult: 1.0,
-    ...overrides,
-  };
-}
+import { makeWeapon, mod, scenarioInput } from '@/lib/engine/__tests__/engine-fixture';
 
 describe('bulletStormAvgStacks — accrual pinning (2-shot magazine, retention 0)', () => {
   // With retention 0 and a 2-shot magazine, the converged per-shot average is
@@ -215,62 +192,32 @@ describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp,
     animDelaySec: 0.5,
   });
 
-  const maxMod = (value: number): Modifier => ({
-    id: 'bs-max',
-    source: { kind: 'omod', formId: '0x0', edid: 'test', name: 'Test Max' },
-    bucket: 'bulletStormMaxStacks',
-    op: 'ADD',
-    value,
-    conditions: [],
-  });
-  const minMod = (value: number): Modifier => ({
-    id: 'bs-min',
-    source: { kind: 'omod', formId: '0x0', edid: 'test', name: 'Test Min' },
-    bucket: 'bulletStormMinStacks',
-    op: 'ADD',
-    value,
-    conditions: [],
-  });
-  const retentionMod = (value: number): Modifier => ({
-    id: 'bs-retention',
-    source: { kind: 'omod', formId: '0x0', edid: 'test', name: 'Test Retention' },
-    bucket: 'bulletStormRetention',
-    op: 'ADD',
-    value,
-    conditions: [],
-  });
+  const bulletStormMod = (bucket: Bucket, value: number, id: string): Modifier =>
+    mod({
+      id,
+      bucket,
+      op: 'ADD',
+      value,
+      source: { kind: 'omod', formId: '0x0', edid: 'test', name: 'Test Bullet Storm' },
+    });
+  const maxMod = (value: number) => bulletStormMod('bulletStormMaxStacks', value, 'bs-max');
+  const minMod = (value: number) => bulletStormMod('bulletStormMinStacks', value, 'bs-min');
+  const retentionMod = (value: number) =>
+    bulletStormMod('bulletStormRetention', value, 'bs-retention');
   // +1% dbm per Bullet Storm stack, uncapped by the modifier's own `max` (the
   // engine cap comes from bulletStormMaxStacks instead) — mirrors how
   // onslaught.test.ts's furiousDbm pins the shared-counter clamp via a
   // stack-scaled dbm modifier.
   const stackDbm: Modifier = {
-    id: 'bs-stack-dbm',
-    source: { kind: 'omod', formId: '0x0', edid: 'test', name: 'Test Stack Dbm' },
-    bucket: 'dbm',
-    op: 'ADD',
-    value: 0.01,
+    ...bulletStormMod('dbm', 0.01, 'bs-stack-dbm'),
     conditions: [{ kind: 'stacks', counter: 'bulletStorm', max: 999 }],
   };
 
   function ratioFor(modifiers: Modifier[], bulletStormStacks: number) {
-    const base = computeScenarios({
-      mode: 'live',
-      weapon,
-      itemLevel: 50,
-      modifiers: [],
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-    });
-    const withMods = computeScenarios({
-      mode: 'live',
-      weapon,
-      itemLevel: 50,
-      modifiers,
-      player: { ...makeResolvedPlayer(), bulletStormStacks },
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-    });
+    const base = computeScenarios(scenarioInput(weapon));
+    const withMods = computeScenarios(
+      scenarioInput(weapon, { modifiers, player: { ...makeResolvedPlayer(), bulletStormStacks } }),
+    );
     return withMods.freeAim.perHit.total / base.freeAim.perHit.total;
   }
 
@@ -279,15 +226,7 @@ describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp,
   });
 
   it('exposes the fold on ScenarioSet', () => {
-    const result = computeScenarios({
-      mode: 'live',
-      weapon,
-      itemLevel: 50,
-      modifiers: [maxMod(10), minMod(3)],
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-    });
+    const result = computeScenarios(scenarioInput(weapon, { modifiers: [maxMod(10), minMod(3)] }));
     expect(result.bulletStormMaxStacks).toBe(10);
     expect(result.bulletStormMinStacks).toBe(3);
   });
@@ -297,15 +236,9 @@ describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp,
     // (2-shot magazine, projectileCount 8 + ammoPerShot 5 → 12/30 accrual).
     const accrual = (8 + 5 - 1) / BULLET_STORM_AMMO_PER_STACK;
     const expectedAvg = accrual / 2;
-    const result = computeScenarios({
-      mode: 'live',
-      weapon,
-      itemLevel: 50,
-      modifiers: [maxMod(1000), retentionMod(0), stackDbm],
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-    });
+    const result = computeScenarios(
+      scenarioInput(weapon, { modifiers: [maxMod(1000), retentionMod(0), stackDbm] }),
+    );
     expect(result.bulletStormEffectiveStacks).toBeCloseTo(expectedAvg, 3);
   });
 });

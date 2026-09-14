@@ -21,7 +21,7 @@ describe('consumable picker', () => {
     }
   });
 
-  it('the Wasteland Fish Sandwich is visible as a selectable food', () => {
+  it('the Wasteland Fish Sandwich is visible as a selectable food, not badged "no effect yet" (its only modifier feeds Fast Fighter conditionally)', () => {
     const sandwich = getConsumables('live').find(
       (c) => c.id === 'SeasonalFish_Meal_SummerWastelandFishSandwich',
     );
@@ -29,6 +29,7 @@ describe('consumable picker', () => {
     expect(consumablesById('live').has('SeasonalFish_Meal_SummerWastelandFishSandwich')).toBe(true);
     expect(sandwich!.category).toBe('food');
     expect(sandwich!.obtainable).not.toBe(false);
+    expect(hasAnyEngineEffect(sandwich!.modifiers)).toBe(true);
   });
 });
 
@@ -51,12 +52,6 @@ describe('consumable "no effect yet" badge (hasAnyEngineEffect over item.modifie
     // gate would reintroduce conditions and fail this. Ungated is deliberate
     // despite the card text ("Heavy guns have a 20% chance…").
     expect(teslaScience5!.modifiers[0]!.conditions).toHaveLength(0);
-  });
-
-  it('does not flag the Wasteland Fish Sandwich, whose only modifier feeds Fast Fighter conditionally', () => {
-    const sandwich = byId('SeasonalFish_Meal_SummerWastelandFishSandwich');
-    expect(sandwich).toBeDefined();
-    expect(hasAnyEngineEffect(sandwich!.modifiers)).toBe(true);
   });
 
   it('does not flag wired magazines/bobbleheads — overrides replace unresolved conditions', () => {

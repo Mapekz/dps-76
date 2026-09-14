@@ -1,10 +1,5 @@
-import { describe, it, expect } from 'bun:test';
-import {
-  makeBuildReducer,
-  createDefaultBuildState,
-  type BuildAction,
-  type BuildState,
-} from '@/state/build-reducer';
+import { beforeAll, describe, it, expect } from 'bun:test';
+import { fixerOnlyState } from '@/state/__tests__/build-state-fixture';
 import { resolveLoadout } from '@/lib/loadout';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import {
@@ -28,29 +23,24 @@ import type { SuggestionGroup } from '@/lib/suggest/types';
  * includes fold-ins beyond the raw WEAP value).
  */
 
-const buildReducer = makeBuildReducer('live');
+const fixerState = fixerOnlyState();
 
-function stateFrom(
-  actions: BuildAction[],
-  from: BuildState = createDefaultBuildState(),
-): BuildState {
-  return actions.reduce(buildReducer, from);
-}
-
-const fixerState = stateFrom([{ type: 'weapon/select', weaponId: 'CombatRifle_Fixer' }]);
+// These assertions read the same build and report without mutating either.
+let vatsReport: ReturnType<typeof evaluateSuggestions>;
+let scenarios: ReturnType<typeof computeScenarios>;
+beforeAll(() => {
+  vatsReport = evaluateSuggestions(fixerState, 'live', 'vats');
+  scenarios = computeScenarios(resolveLoadout(fixerState.player, fixerState.enemy, 'live')!);
+});
 
 describe('canonical VATS metric (AP-limited when throttled)', () => {
   it('the default-AGI Fixer build is AP-throttled in VATS (sanity check for the rest of this file)', () => {
-    const input = resolveLoadout(fixerState.player, fixerState.enemy, 'live')!;
-    const scenarios = computeScenarios(input);
     expect(scenarios.vats.ap).toBeDefined();
     expect(scenarios.vats.ap!.uptime).toBeLessThan(1);
     expect(scenarios.vats.ap!.apLimitedDps).toBeLessThan(scenarios.vats.sustain.sustainedDps);
   });
 
   it('snapshotOf captures ap.apLimitedTotalDps for VATS when throttled, and raw totalDps for Free Aim (no ap economy)', () => {
-    const input = resolveLoadout(fixerState.player, fixerState.enemy, 'live')!;
-    const scenarios = computeScenarios(input);
     const snapshot = snapshotOf(scenarios);
     expect(snapshot.vats.totalDps).toBe(scenarios.vats.ap!.apLimitedTotalDps);
     expect(snapshot.freeAim.totalDps).toBe(scenarios.freeAim.totalDps);
@@ -62,7 +52,7 @@ describe('canonical VATS metric (AP-limited when throttled)', () => {
     // sustain.sustainedDps, so it was invisible to the pre-fix metric.
     // Carnivore: 0 modifiers in generated data — a true no-op for every
     // scenario field, the control for "ranks above a no-op".
-    const report = evaluateSuggestions(fixerState, 'live', 'vats');
+    const report = vatsReport;
     const tea = report.suggestions.find((s) => s.id === 'consumable:CompanyTea_RSVP02');
     const carnivore = report.suggestions.find((s) => s.id === 'mutation:Mutation_Carnivore');
     expect(tea).toBeDefined();
@@ -77,29 +67,14 @@ describe('canonical VATS metric (AP-limited when throttled)', () => {
   });
 });
 
-describe('canonical ranking objective', () => {
-  it('a VATS-only gain scores its blended share (delta.vats.totalDps / baseline.vats.totalDps)', () => {
-    const report = evaluateSuggestions(fixerState, 'live', 'vats');
-    const vatsOnly = report.suggestions.find(
-      (s) => s.delta.freeAim.totalDps === 0 && s.delta.vats.totalDps > 0,
-    );
-    expect(vatsOnly).toBeDefined();
-    expect(vatsOnly!.primaryDeltaPct).toBeCloseTo(
-      vatsOnly!.delta.vats.totalDps / report.baseline!.vats.totalDps,
-      6,
-    );
-  });
-
-  it('an AP-economy pick (Company Tea) still scores positive — anti-unblended-V guard (canonical blend contains uptime)', () => {
-    const report = evaluateSuggestions(fixerState, 'live', 'vats');
-    const tea = report.suggestions.find((s) => s.id === 'consumable:CompanyTea_RSVP02');
-    expect(tea).toBeDefined();
-    expect(tea!.primaryDeltaPct).toBeGreaterThan(0);
-  });
-
-  it('primaryDeltaPct IS the canonical delta ratio for every suggestion — a row contradicting the headline is structurally impossible', () => {
-    const report = evaluateSuggestions(fixerState, 'live', 'vats');
+describe('canonical ranking objective (ADR 0007)', () => {
+  it('primaryDeltaPct IS the canonical delta ratio for every suggestion, including a VATS-only gain — a row contradicting the headline is structurally impossible', () => {
+    const report = vatsReport;
     const metricBase = report.baseline!.vats.totalDps;
+    expect(metricBase).toBeGreaterThan(0);
+    expect(
+      report.suggestions.some((s) => s.delta.freeAim.totalDps === 0 && s.delta.vats.totalDps > 0),
+    ).toBe(true);
     for (const s of report.suggestions) {
       const expected = metricBase > 0 ? s.delta.vats.totalDps / metricBase : 0;
       expect(s.primaryDeltaPct).toBeCloseTo(expected, 6);
@@ -118,7 +93,7 @@ describe('canonical ranking objective', () => {
   it('Tesla Science 5 scores positive primaryDeltaPct while lowering VATS uptime — sustained up, uptime down', () => {
     // Exact shape that read ±0% under the window metric: magazine capacity
     // cuts reload downtime and therefore AP-regen time.
-    const report = evaluateSuggestions(fixerState, 'live', 'vats');
+    const report = vatsReport;
     const tesla = report.suggestions.find(
       (s) => s.id === 'consumable:Magazine_TeslaScience05_Potion',
     );
@@ -128,7 +103,7 @@ describe('canonical ranking objective', () => {
   });
 
   it('a damage receiver that raises canonical DPS but lowers uptime survives topSuggestions ranked', () => {
-    const report = evaluateSuggestions(fixerState, 'live', 'vats');
+    const report = vatsReport;
     const candidate = report.suggestions.find(
       (s) => s.group === 'mod' && s.delta.vats.totalDps > 0 && s.delta.vats.uptime < 0,
     );
@@ -139,7 +114,7 @@ describe('canonical ranking objective', () => {
 
   it('topSuggestions uptime filter selects AP-economy levers, not pure damage mods', () => {
     // Presentation scope only — filter must never influence primaryDeltaPct.
-    const report = evaluateSuggestions(fixerState, 'live', 'vats');
+    const report = vatsReport;
     const allGroups: ReadonlySet<SuggestionGroup> = new Set([...STRUCTURAL_GROUPS, 'consumable']);
     const { ranked } = topSuggestions(report, 50, undefined, {
       groups: allGroups,

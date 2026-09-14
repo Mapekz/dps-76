@@ -2,46 +2,9 @@ import { describe, it, expect } from 'bun:test';
 import type { EsmRecord } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
 import { decodeAuraFromCloakMgef } from '../normalize/aura';
-import type { MgefInfo, MgefTranslationDeps, SpellEffect } from '../normalize/mgef';
+import type { MgefTranslationDeps } from '../normalize/mgef';
 import { translateEnchantment, translateMagicEffect } from '../normalize/mgef';
-
-function mgef(overrides: Partial<MgefInfo> = {}): MgefInfo {
-  return {
-    edid: 'TestMgef',
-    name: 'Test',
-    archetype: 'Cloak',
-    actorValue: null,
-    resistValue: null,
-    perkToApply: null,
-    explosion: null,
-    keywords: [],
-    dispelWithKeywords: false,
-    detrimental: false,
-    conditionRows: [],
-    ...overrides,
-  };
-}
-
-function effect(overrides: Partial<SpellEffect> = {}): SpellEffect {
-  return {
-    mgefFormId: '0xM',
-    magnitude: 0,
-    duration: 0,
-    conditionRows: [],
-    curvePoints: null,
-    curveInputAv: null,
-    magnitudeGlobal: null,
-    cooldownDurationSec: null,
-    area: null,
-    ...overrides,
-  };
-}
-
-function esmEffectConditions(rows: Record<string, unknown>[]) {
-  return {
-    Conditions: rows.map((data) => ({ Condition: { 'Condition Data': data } })),
-  };
-}
+import { effect, esmEffectConditions, mgef } from './normalize-fixture';
 
 describe('decodeAuraFromCloakMgef (ADR-0023 fixture chains)', () => {
   // Tesla Coils — 20260821 live shape: Cloak MGEF → Contact SPEL → Damage MGEF
@@ -126,17 +89,19 @@ describe('decodeAuraFromCloakMgef (ADR-0023 fixture chains)', () => {
     resolveEdidMap: { [ENERGY_RESIST_AV]: 'EnergyResist', [IMMUNE_POISON_PERK]: 'ImmuneToPoison' },
   });
 
+  const teslaDeps = (): MgefTranslationDeps => ({
+    client: teslaClient,
+    routes: new Map(),
+    edidByFormId: new Map([
+      [ENERGY_RESIST_AV, 'EnergyResist'],
+      [IMMUNE_POISON_PERK, 'ImmuneToPoison'],
+    ]),
+  });
+
   it('decodes Tesla Coils cloak chain into energy aura (curve Y=5/tick, no dual amount)', async () => {
     const notes: string[] = [];
     const auras = await decodeAuraFromCloakMgef(
-      {
-        client: teslaClient,
-        routes: new Map(),
-        edidByFormId: new Map([
-          [ENERGY_RESIST_AV, 'EnergyResist'],
-          [IMMUNE_POISON_PERK, 'ImmuneToPoison'],
-        ]),
-      },
+      teslaDeps(),
       mgef({ edid: 'PowerArmor_mod_Lining_FieldGen_Radiation_CloakEffect', archetype: 'Cloak' }),
       effect({ mgefFormId: CLOAK_MGEF }),
       [],
@@ -413,15 +378,7 @@ describe('decodeAuraFromCloakMgef (ADR-0023 fixture chains)', () => {
   });
 
   it('translateMagicEffect routes Cloak archetype through aura chase', async () => {
-    const deps: MgefTranslationDeps = {
-      client: teslaClient,
-      routes: new Map(),
-      edidByFormId: new Map([
-        [ENERGY_RESIST_AV, 'EnergyResist'],
-        [IMMUNE_POISON_PERK, 'ImmuneToPoison'],
-      ]),
-    };
-    const result = await translateMagicEffect(deps, effect({ mgefFormId: CLOAK_MGEF }));
+    const result = await translateMagicEffect(teslaDeps(), effect({ mgefFormId: CLOAK_MGEF }));
     expect(result.auras?.length).toBe(1);
     expect(result.modifiers).toEqual([]);
     expect(result.notes.some((n) => n.includes('needs override'))).toBe(false);

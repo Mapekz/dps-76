@@ -1,20 +1,9 @@
 import { describe, it, expect } from 'bun:test';
 import { getArmorEffects } from '@/data/armor-modifiers';
-import { BATTLE_LOADERS, LIMIT_BREAKING, STRENGTH_2STAR, UNYIELDING } from './armor-test-helpers';
+import { BODY_JETPACK, DEEP_POCKETED } from '@/data/__tests__/armor-test-helpers';
 
 describe("ArmorStarTier: derived from the representative record's ap_LegendaryN attach point", () => {
   const effects = getArmorEffects('live');
-  const byId = new Map(effects.map((e) => [e.id, e]));
-
-  it('assigns the tier read directly off armor-omods.json attachPointEdid for known effects', () => {
-    // Unyielding: mod_Legendary_Armor1_LowHealthIncreasesStats @ ap_Legendary1.
-    expect(byId.get(UNYIELDING)?.starTier).toBe(1);
-    // 2★ Strength: mod_Legendary_Armor2_StatStrength @ ap_Legendary2.
-    expect(byId.get(STRENGTH_2STAR)?.starTier).toBe(2);
-    // Battle-Loader's and Limit-Breaking: mod_Legendary_Armor4_* @ ap_Legendary4.
-    expect(byId.get(BATTLE_LOADERS)?.starTier).toBe(4);
-    expect(byId.get(LIMIT_BREAKING)?.starTier).toBe(4);
-  });
 
   it(
     'Powered is a pre-existing data ambiguity: a non-obtainable tier-1 twin ' +
@@ -55,8 +44,13 @@ describe('ArmorSlotGroup: material/lining/misc split', () => {
     expect(byName.get('Targeting HUD')?.group).toBe('misc');
   });
 
-  it('excludes cosmetic attach points entirely', () => {
-    const excludedAttachPoints = ['ap_armor_Paint', 'ap_PowerArmor_BodyMod', 'ap_Legendary_Reroll'];
+  it('excludes cosmetic attach points and PA lining materials entirely', () => {
+    const excludedAttachPoints = [
+      'ap_armor_Paint',
+      'ap_PowerArmor_BodyMod',
+      'ap_Legendary_Reroll',
+      'ap_PowerArmor_Lining',
+    ];
     for (const e of effects) expect(excludedAttachPoints).not.toContain(e.attachPointEdid);
   });
 
@@ -76,12 +70,9 @@ describe('pieceReach, maxCount, and armorType derivation', () => {
   const effects = getArmorEffects('live');
   const byName = new Map(effects.map((e) => [e.name, e]));
 
-  const DEEP_POCKETED = 'DLC03_mod_armor_Marine_Lining_Limb_ImprovedCarryCapacity2';
   const CUSHIONED = 'DLC03_mod_armor_Marine_Lining_LimbLeg_ReducedFallingDamage';
   const AERODYNAMIC = 'DLC03_mod_armor_Marine_Lining_LimbArm_ReducedPowerAttack';
   const MUFFLED = 'DLC03_mod_armor_Marine_Lining_Limb_ReducedDetection';
-  const BODY_JETPACK = 'mod_armor_BOSInfantry_JetPack';
-  const EMERGENCY_PROTOCOLS = 'mod_PowerArmor_Excavator_Torso_Misc_Emergency';
   const STANDARD_MATERIAL = 'DLC03_mod_armor_Marine_Arm_Material_0';
 
   it('derives expected pieceReach, maxCount, and armorType for named priority effects', () => {
@@ -89,37 +80,26 @@ describe('pieceReach, maxCount, and armorType derivation', () => {
       id: DEEP_POCKETED,
       maxCount: 5,
       armorType: 'bodyArmor',
-      pieceReach: new Set(['torso', 'arm', 'leg']),
     });
     expect(byName.get('Cushioned')).toMatchObject({
       id: CUSHIONED,
       maxCount: 2,
       armorType: 'bodyArmor',
-      pieceReach: new Set(['leg']),
     });
     expect(byName.get('Aerodynamic')).toMatchObject({
       id: AERODYNAMIC,
       maxCount: 2,
       armorType: 'bodyArmor',
-      pieceReach: new Set(['arm']),
     });
     expect(byName.get('Muffled')).toMatchObject({
       id: MUFFLED,
       maxCount: 4,
       armorType: 'bodyArmor',
-      pieceReach: new Set(['arm', 'leg']),
-    });
-    expect(byName.get('Emergency Protocols')).toMatchObject({
-      id: EMERGENCY_PROTOCOLS,
-      maxCount: 1,
-      armorType: 'powerArmor',
-      pieceReach: new Set(['torso']),
     });
     expect(byName.get('Jetpack')).toMatchObject({
       id: BODY_JETPACK,
       maxCount: 1,
       armorType: 'bodyArmor',
-      pieceReach: new Set(['torso']),
     });
     expect(byName.get('Standard')).toMatchObject({
       id: STANDARD_MATERIAL,
@@ -132,8 +112,14 @@ describe('pieceReach, maxCount, and armorType derivation', () => {
     expect(byName.get('Targeting HUD')).toMatchObject({
       maxCount: 1,
       armorType: 'powerArmor',
-      pieceReach: new Set(['helmet']),
     });
+    // Bun's toMatchObject ignores Set contents, so pieceReach needs toEqual.
+    expect(byName.get('Deep Pocketed')?.pieceReach).toEqual(new Set(['torso', 'arm', 'leg']));
+    expect(byName.get('Cushioned')?.pieceReach).toEqual(new Set(['leg']));
+    expect(byName.get('Aerodynamic')?.pieceReach).toEqual(new Set(['arm']));
+    expect(byName.get('Muffled')?.pieceReach).toEqual(new Set(['arm', 'leg']));
+    expect(byName.get('Jetpack')?.pieceReach).toEqual(new Set(['torso']));
+    expect(byName.get('Targeting HUD')?.pieceReach).toEqual(new Set(['helmet']));
   });
 
   it('every obtainable non-legendary entry has non-empty pieceReach', () => {
@@ -154,9 +140,5 @@ describe('pieceReach, maxCount, and armorType derivation', () => {
     for (const [, types] of byNameType) {
       expect(types.size).toBe(1);
     }
-  });
-
-  it('PA lining materials are absent from getArmorEffects', () => {
-    expect(effects.some((e) => e.attachPointEdid === 'ap_PowerArmor_Lining')).toBe(false);
   });
 });

@@ -1,22 +1,12 @@
 import { describe, it, expect, vi } from 'bun:test';
-import {
-  makeBuildReducer,
-  createDefaultBuildState,
-  type BuildAction,
-  type BuildState,
-} from '@/state/build-reducer';
+import { createDefaultBuildState, type BuildAction } from '@/state/build-reducer';
+import { buildReducer, stateFrom } from '@/state/__tests__/build-state-fixture';
 import type { GeneratedBuff } from '@/types/generated';
 // Bun's `vi.mock` factory gets no `importOriginal` argument and is unhoisted,
 // so this namespace import is still the real module when the factory below
 // runs — it stands in for `importOriginal()`.
 import * as actualConsumableRules from '@/lib/consumable-rules';
 import { getArmorEffects, MAX_LEGENDARY_COUNT } from '@/data/armor-modifiers';
-
-const buildReducer = makeBuildReducer('live');
-
-function run(actions: BuildAction[], from: BuildState = createDefaultBuildState()): BuildState {
-  return actions.reduce(buildReducer, from);
-}
 
 // Stubs consumablesById's data source only — keeps the REAL toggleConsumable
 // (and every other export) so the reducer exercises the real stacking-rule
@@ -51,20 +41,20 @@ vi.mock('@/lib/consumable-rules', () => {
 
 describe('buildReducer', () => {
   it('weapon/select equips fresh and null unequips', () => {
-    const s = run([{ type: 'weapon/select', weaponId: 'CombatRifle_Fixer' }]);
+    const s = stateFrom([{ type: 'weapon/select', weaponId: 'CombatRifle_Fixer' }]);
     expect(s.player.weapon).toEqual({
       weaponId: 'CombatRifle_Fixer',
       mods: {},
       legendaryEffects: [],
     });
-    expect(run([{ type: 'weapon/select', weaponId: null }], s).player.weapon).toBeNull();
+    expect(stateFrom([{ type: 'weapon/select', weaponId: null }], s).player.weapon).toBeNull();
   });
 
   it('weapon/mod and weapon/legendary require an equipped weapon and patch slots', () => {
-    const noWeapon = run([{ type: 'weapon/mod', slot: 'ap_gun_Receiver', omodId: 'x' }]);
+    const noWeapon = stateFrom([{ type: 'weapon/mod', slot: 'ap_gun_Receiver', omodId: 'x' }]);
     expect(noWeapon.player.weapon).toBeNull();
 
-    const s = run([
+    const s = stateFrom([
       { type: 'weapon/select', weaponId: 'w' },
       { type: 'weapon/mod', slot: 'ap_gun_Receiver', omodId: 'mod_a' },
       { type: 'weapon/legendary', slotIndex: 0, omodId: 'leg_a' },
@@ -73,12 +63,12 @@ describe('buildReducer', () => {
     expect(s.player.weapon?.mods['ap_gun_Receiver']).toBe('mod_a');
     expect(s.player.weapon?.legendaryEffects).toEqual(['leg_a', 'leg_b']);
 
-    const cleared = run([{ type: 'weapon/legendary', slotIndex: 0, omodId: null }], s);
+    const cleared = stateFrom([{ type: 'weapon/legendary', slotIndex: 0, omodId: null }], s);
     expect(cleared.player.weapon?.legendaryEffects).toEqual([null, 'leg_b']);
   });
 
   it('weapon/selectUnique cross-base installs preset with per-slot legendary merge', () => {
-    const fromFixer = run([
+    const fromFixer = stateFrom([
       { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
       {
         type: 'weapon/legendary',
@@ -86,7 +76,7 @@ describe('buildReducer', () => {
         omodId: 'mod_Legendary_Weapon1_Guns_AmmoCapacity4x',
       },
     ]);
-    const salt = run(
+    const salt = stateFrom(
       [{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }],
       fromFixer,
     );
@@ -99,7 +89,7 @@ describe('buildReducer', () => {
   });
 
   it('weapon/selectUnique on same base without unique only sets identity slot', () => {
-    const bare = run([
+    const bare = stateFrom([
       { type: 'weapon/select', weaponId: 'DoubleBarrelShotgun' },
       {
         type: 'weapon/mod',
@@ -112,7 +102,7 @@ describe('buildReducer', () => {
         omodId: 'mod_Legendary_Weapon1_Guns_AmmoCapacity4x',
       },
     ]);
-    const salt = run(
+    const salt = stateFrom(
       [{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }],
       bare,
     );
@@ -124,10 +114,10 @@ describe('buildReducer', () => {
   });
 
   it('weapon/selectUnique same-base different unique applies full preset', () => {
-    const cold = run([
+    const cold = stateFrom([
       { type: 'weapon/selectUnique', uniqueId: 'mod_custom_Coldshoulder_DmgvsCryptid' },
     ]);
-    const salt = run(
+    const salt = stateFrom(
       [{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }],
       cold,
     );
@@ -139,8 +129,10 @@ describe('buildReducer', () => {
   });
 
   it('weapon/selectUnique re-select is a no-op', () => {
-    const equipped = run([{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }]);
-    const again = run(
+    const equipped = stateFrom([
+      { type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' },
+    ]);
+    const again = stateFrom(
       [{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }],
       equipped,
     );
@@ -148,20 +140,22 @@ describe('buildReducer', () => {
   });
 
   it('clamps itemLevel to 1–50', () => {
-    expect(run([{ type: 'weapon/itemLevel', value: 99 }]).player.itemLevel).toBe(50);
-    expect(run([{ type: 'weapon/itemLevel', value: 0 }]).player.itemLevel).toBe(1);
+    expect(stateFrom([{ type: 'weapon/itemLevel', value: 99 }]).player.itemLevel).toBe(50);
+    expect(stateFrom([{ type: 'weapon/itemLevel', value: 0 }]).player.itemLevel).toBe(1);
   });
 
   it('special/set clamps to 1–15 and refuses raises past the 56-point pool', () => {
     // Fresh build starts at 1 across the board.
     expect(createDefaultBuildState().player.conditions.strength).toBe(1);
-    expect(run([{ type: 'special/set', stat: 'luck', value: 33 }]).player.conditions.luck).toBe(15);
     expect(
-      run([{ type: 'special/set', stat: 'strength', value: -1 }]).player.conditions.strength,
+      stateFrom([{ type: 'special/set', stat: 'luck', value: 33 }]).player.conditions.luck,
+    ).toBe(15);
+    expect(
+      stateFrom([{ type: 'special/set', stat: 'strength', value: -1 }]).player.conditions.strength,
     ).toBe(1);
 
     // All stats at 8 = exactly 56 allocated; any further raise is refused.
-    const maxedPool = run(
+    const maxedPool = stateFrom(
       (
         [
           'strength',
@@ -178,22 +172,25 @@ describe('buildReducer', () => {
         value: 8,
       })),
     );
-    const refused = run([{ type: 'special/set', stat: 'luck', value: 9 }], maxedPool);
+    const refused = stateFrom([{ type: 'special/set', stat: 'luck', value: 9 }], maxedPool);
     expect(refused).toBe(maxedPool);
     // Lowering is always allowed.
     expect(
-      run([{ type: 'special/set', stat: 'luck', value: 3 }], maxedPool).player.conditions.luck,
+      stateFrom([{ type: 'special/set', stat: 'luck', value: 3 }], maxedPool).player.conditions
+        .luck,
     ).toBe(3);
   });
 
   it('blocks card slotting past min(15, base + Legendary SPECIAL bonus) and past the 6 legendary slots', () => {
     // Base Perception 1 → budget 1: a second Perception card point is refused.
-    const one = run([{ type: 'perk/add', perkId: 'CenterMasochist', rank: 1, legendary: false }]);
-    const refused = run([{ type: 'perk/setRank', perkId: 'CenterMasochist', rank: 2 }], one);
+    const one = stateFrom([
+      { type: 'perk/add', perkId: 'CenterMasochist', rank: 1, legendary: false },
+    ]);
+    const refused = stateFrom([{ type: 'perk/setRank', perkId: 'CenterMasochist', rank: 2 }], one);
     expect(refused).toBe(one); // unchanged — blocked, not clamped
 
     // Raising base Perception unlocks the rank-up.
-    const raised = run(
+    const raised = stateFrom(
       [
         { type: 'special/set', stat: 'perception', value: 3 },
         { type: 'perk/setRank', perkId: 'CenterMasochist', rank: 3 },
@@ -203,7 +200,7 @@ describe('buildReducer', () => {
     expect(raised.player.perks).toEqual([{ perkId: 'CenterMasochist', rank: 3 }]);
 
     // A Legendary SPECIAL card raises the budget too (+1 at rank 1).
-    const viaLeggo = run(
+    const viaLeggo = stateFrom(
       [
         { type: 'perk/add', perkId: 'LegendaryPerception', rank: 1, legendary: true },
         { type: 'perk/setRank', perkId: 'CenterMasochist', rank: 2 },
@@ -212,7 +209,7 @@ describe('buildReducer', () => {
     );
     expect(viaLeggo.player.perks).toEqual([{ perkId: 'CenterMasochist', rank: 2 }]);
 
-    const legendaries = run([
+    const legendaries = stateFrom([
       { type: 'perk/add', perkId: 'LegendaryStrength', rank: 1, legendary: true },
       { type: 'perk/add', perkId: 'LegendaryPerception', rank: 1, legendary: true },
       { type: 'perk/add', perkId: 'LegendaryEndurance', rank: 1, legendary: true },
@@ -220,7 +217,7 @@ describe('buildReducer', () => {
       { type: 'perk/add', perkId: 'LegendaryIntelligence', rank: 1, legendary: true },
       { type: 'perk/add', perkId: 'LegendaryAgility', rank: 1, legendary: true },
     ]);
-    const seventh = run(
+    const seventh = stateFrom(
       [{ type: 'perk/add', perkId: 'LegendaryLuck', rank: 1, legendary: true }],
       legendaries,
     );
@@ -228,7 +225,7 @@ describe('buildReducer', () => {
   });
 
   it('perk add / setRank / remove work across regular and legendary lists', () => {
-    const s = run([
+    const s = stateFrom([
       { type: 'special/set', stat: 'perception', value: 3 }, // budget for Center Masochist rank 3
       { type: 'perk/add', perkId: 'CenterMasochist', rank: 1, legendary: false },
       { type: 'perk/add', perkId: 'LegendaryLuck', rank: 2, legendary: true },
@@ -239,7 +236,7 @@ describe('buildReducer', () => {
     expect(s.player.perks).toEqual([{ perkId: 'CenterMasochist', rank: 3 }]);
     expect(s.player.legendaryPerks).toEqual([{ perkId: 'LegendaryLuck', rank: 4 }]);
 
-    const removed = run(
+    const removed = stateFrom(
       [
         { type: 'perk/remove', perkId: 'CenterMasochist' },
         { type: 'perk/remove', perkId: 'LegendaryLuck' },
@@ -251,41 +248,43 @@ describe('buildReducer', () => {
   });
 
   it('mutation/consumable toggles flip membership', () => {
-    const on = run([{ type: 'mutation/toggle', id: 'SpeedDemon' }]);
+    const on = stateFrom([{ type: 'mutation/toggle', id: 'SpeedDemon' }]);
     expect(on.player.mutations).toEqual(['SpeedDemon']);
-    expect(run([{ type: 'mutation/toggle', id: 'SpeedDemon' }], on).player.mutations).toEqual([]);
-  });
-
-  it('Carnivore ↔ Herbivore are mutually exclusive (selecting one evicts the other)', () => {
-    const carn = run([{ type: 'mutation/toggle', id: 'Mutation_Carnivore' }]);
-    expect(carn.player.mutations).toEqual(['Mutation_Carnivore']);
-    const herb = run([{ type: 'mutation/toggle', id: 'Mutation_Herbivore' }], carn);
-    expect(herb.player.mutations).toEqual(['Mutation_Herbivore']);
-    // Toggling the active one OFF does not resurrect the evicted twin.
-    expect(
-      run([{ type: 'mutation/toggle', id: 'Mutation_Herbivore' }], herb).player.mutations,
-    ).toEqual([]);
-  });
-
-  it('consumable/toggle enforces stacking rules (auto-displaces a colliding chem)', () => {
-    const withA = run([{ type: 'consumable/toggle', id: 'ChemA' }]);
-    expect(withA.player.consumables).toEqual(['ChemA']);
-    const withB = run([{ type: 'consumable/toggle', id: 'ChemB' }], withA);
-    expect(withB.player.consumables).toEqual(['ChemB']); // ChemA auto-displaced
-    const removed = run([{ type: 'consumable/toggle', id: 'ChemB' }], withB);
-    expect(removed.player.consumables).toEqual([]); // active id: plain removal
-  });
-
-  it('addiction/toggle flips membership, independent of consumable selection', () => {
-    const on = run([{ type: 'addiction/toggle', id: 'AbAddictionX' }]);
-    expect(on.player.addictions).toEqual(['AbAddictionX']);
-    expect(run([{ type: 'addiction/toggle', id: 'AbAddictionX' }], on).player.addictions).toEqual(
+    expect(stateFrom([{ type: 'mutation/toggle', id: 'SpeedDemon' }], on).player.mutations).toEqual(
       [],
     );
   });
 
+  it('Carnivore ↔ Herbivore are mutually exclusive (selecting one evicts the other)', () => {
+    const carn = stateFrom([{ type: 'mutation/toggle', id: 'Mutation_Carnivore' }]);
+    expect(carn.player.mutations).toEqual(['Mutation_Carnivore']);
+    const herb = stateFrom([{ type: 'mutation/toggle', id: 'Mutation_Herbivore' }], carn);
+    expect(herb.player.mutations).toEqual(['Mutation_Herbivore']);
+    // Toggling the active one OFF does not resurrect the evicted twin.
+    expect(
+      stateFrom([{ type: 'mutation/toggle', id: 'Mutation_Herbivore' }], herb).player.mutations,
+    ).toEqual([]);
+  });
+
+  it('consumable/toggle enforces stacking rules (auto-displaces a colliding chem)', () => {
+    const withA = stateFrom([{ type: 'consumable/toggle', id: 'ChemA' }]);
+    expect(withA.player.consumables).toEqual(['ChemA']);
+    const withB = stateFrom([{ type: 'consumable/toggle', id: 'ChemB' }], withA);
+    expect(withB.player.consumables).toEqual(['ChemB']); // ChemA auto-displaced
+    const removed = stateFrom([{ type: 'consumable/toggle', id: 'ChemB' }], withB);
+    expect(removed.player.consumables).toEqual([]); // active id: plain removal
+  });
+
+  it('addiction/toggle flips membership, independent of consumable selection', () => {
+    const on = stateFrom([{ type: 'addiction/toggle', id: 'AbAddictionX' }]);
+    expect(on.player.addictions).toEqual(['AbAddictionX']);
+    expect(
+      stateFrom([{ type: 'addiction/toggle', id: 'AbAddictionX' }], on).player.addictions,
+    ).toEqual([]);
+  });
+
   it('condition/set and enemy/condition patch the right config', () => {
-    const s = run([
+    const s = stateFrom([
       { type: 'condition/set', key: 'isSneaking', value: true },
       { type: 'condition/set', key: 'healthPercent', value: 25 },
       { type: 'enemy/condition', key: 'healthPercent', value: 35 },
@@ -296,8 +295,8 @@ describe('buildReducer', () => {
   });
 
   it('build/importNd splits legendary perks by N&D key, replaces the loadout, merges SPECIAL', () => {
-    const before = run([{ type: 'perk/add', perkId: 'OldPerk', rank: 1, legendary: false }]);
-    const s = run(
+    const before = stateFrom([{ type: 'perk/add', perkId: 'OldPerk', rank: 1, legendary: false }]);
+    const s = stateFrom(
       [
         {
           type: 'build/importNd',
@@ -334,7 +333,7 @@ describe('buildReducer', () => {
   });
 
   it('build/importNd sets race from the caller-resolved isGhoul and prunes perks that no longer fit', () => {
-    const s = run([
+    const s = stateFrom([
       {
         type: 'build/importNd',
         perks: [{ key: '0n', name: 'GlowingCriticals', rank: 1 }],
@@ -347,7 +346,7 @@ describe('buildReducer', () => {
     expect(s.player.conditions.isGhoul).toBe(true);
 
     // A mixed-race (invalid) link imported as Human drops the ghoul-only card.
-    const mixed = run([
+    const mixed = stateFrom([
       {
         type: 'build/importNd',
         perks: [
@@ -364,53 +363,55 @@ describe('buildReducer', () => {
   });
 
   it('build/hydrate replaces state wholesale and is idempotent', () => {
-    const target = run([
+    const target = stateFrom([
       { type: 'weapon/select', weaponId: 'w' },
       { type: 'condition/set', key: 'isSneaking', value: true },
       { type: 'view/set', view: { emphasized: 'vats', breakdownOpen: true } },
     ]);
-    const hydrated = run([{ type: 'build/hydrate', state: target }]);
+    const hydrated = stateFrom([{ type: 'build/hydrate', state: target }]);
     expect(hydrated).toEqual(target);
-    expect(run([{ type: 'build/hydrate', state: target }], hydrated)).toEqual(target);
+    expect(stateFrom([{ type: 'build/hydrate', state: target }], hydrated)).toEqual(target);
   });
 });
 
 describe('body-part mult and race forcing', () => {
   it('weapon/weakpointMult floors at 0.1', () => {
-    const s = run([{ type: 'weapon/weakpointMult', value: 0 }]);
+    const s = stateFrom([{ type: 'weapon/weakpointMult', value: 0 }]);
     expect(s.player.weakpointMult).toBe(0.1);
-    const s2 = run([{ type: 'weapon/weakpointMult', value: 0.15 }]);
+    const s2 = stateFrom([{ type: 'weapon/weakpointMult', value: 0.15 }]);
     expect(s2.player.weakpointMult).toBe(0.15);
   });
 
   it('weapon/chargeTime sets the value, floors at 0, and is not upper-clamped (OMODs can extend the window)', () => {
     expect(createDefaultBuildState().player.chargeTimeSec).toBeUndefined();
-    const s = run([{ type: 'weapon/chargeTime', value: 1.5 }]);
+    const s = stateFrom([{ type: 'weapon/chargeTime', value: 1.5 }]);
     expect(s.player.chargeTimeSec).toBe(1.5);
-    const negative = run([{ type: 'weapon/chargeTime', value: -1 }]);
+    const negative = stateFrom([{ type: 'weapon/chargeTime', value: -1 }]);
     expect(negative.player.chargeTimeSec).toBe(0);
     // No upper bound in the reducer — the engine clamps against the
     // effective (OMOD-extended) fullPowerSeconds instead.
-    const huge = run([{ type: 'weapon/chargeTime', value: 999 }]);
+    const huge = stateFrom([{ type: 'weapon/chargeTime', value: 999 }]);
     expect(huge.player.chargeTimeSec).toBe(999);
   });
 
   it('weapon/select resets chargeTimeSec to undefined (new weapon defaults to full charge)', () => {
-    const charged = run([{ type: 'weapon/chargeTime', value: 1.5 }]);
-    const reselected = run([{ type: 'weapon/select', weaponId: 'w' }], charged);
+    const charged = stateFrom([{ type: 'weapon/chargeTime', value: 1.5 }]);
+    const reselected = stateFrom([{ type: 'weapon/select', weaponId: 'w' }], charged);
     expect(reselected.player.chargeTimeSec).toBeUndefined();
   });
 
   it('rejects adding a ghoul-only perk while Human is selected (state unchanged)', () => {
     // Fresh builds start Human. Ghoul cards are regular SPECIAL-slotted perks (not legendary).
-    const s = run([{ type: 'perk/add', perkId: 'GlowingCriticals', rank: 1, legendary: false }]);
+    const s = stateFrom([
+      { type: 'perk/add', perkId: 'GlowingCriticals', rank: 1, legendary: false },
+    ]);
     expect(s.player.perks.some((p) => p.perkId === 'GlowingCriticals')).toBe(false);
     expect(s.player.conditions.isGhoul).toBe(false);
   });
 
   it('adds a ghoul-only perk once the race is already Ghoul', () => {
-    const asGhoul = run([{ type: 'race/set', isGhoul: true }]);
-    const s = run(
+    const asGhoul = stateFrom([{ type: 'race/set', isGhoul: true }]);
+    const s = stateFrom(
       [{ type: 'perk/add', perkId: 'GlowingCriticals', rank: 1, legendary: false }],
       asGhoul,
     );
@@ -418,62 +419,75 @@ describe('body-part mult and race forcing', () => {
   });
 
   it('adding an unrestricted perk leaves race alone', () => {
-    const s = run([{ type: 'perk/add', perkId: 'Commando', rank: 1, legendary: false }]);
+    const s = stateFrom([{ type: 'perk/add', perkId: 'Commando', rank: 1, legendary: false }]);
     expect(s.player.conditions.isGhoul).toBe(false);
   });
 
   it('race/set switches race and prunes equipped perks locked to the old race', () => {
-    const withHumanPerk = run([
+    const withHumanPerk = stateFrom([
       { type: 'race/set', isGhoul: false },
       { type: 'perk/add', perkId: 'QuickHands', rank: 1, legendary: false },
     ]);
     expect(withHumanPerk.player.perks).toEqual([{ perkId: 'QuickHands', rank: 1 }]);
 
-    const switched = run([{ type: 'race/set', isGhoul: true }], withHumanPerk);
+    const switched = stateFrom([{ type: 'race/set', isGhoul: true }], withHumanPerk);
     expect(switched.player.conditions.isGhoul).toBe(true);
     expect(switched.player.perks).toEqual([]); // Quick Hands (human-only) pruned
 
-    const back = run([{ type: 'race/set', isGhoul: false }], switched);
+    const back = stateFrom([{ type: 'race/set', isGhoul: false }], switched);
     expect(back.player.conditions.isGhoul).toBe(false);
   });
 
-  it('race/set to Ghoul resets Health % to 100 (low-HP builds rely on Rads, which Ghouls convert to Glow instead)', () => {
-    const lowHealth = run([{ type: 'condition/set', key: 'healthPercent', value: 20 }]);
-    expect(lowHealth.player.conditions.healthPercent).toBe(20);
+  const raceHealthRows: {
+    name: string;
+    from: BuildAction[];
+    fromHealthPercent: number;
+    action: BuildAction;
+    healthPercent: number;
+  }[] = [
+    {
+      name: 'race/set to Ghoul resets Health % to 100 (low-HP builds rely on Rads, which Ghouls convert to Glow instead)',
+      from: [{ type: 'condition/set', key: 'healthPercent', value: 20 }],
+      fromHealthPercent: 20,
+      action: { type: 'race/set', isGhoul: true },
+      healthPercent: 100,
+    },
+    {
+      name: 'race/set to Human leaves Health % untouched',
+      from: [
+        { type: 'race/set', isGhoul: true },
+        { type: 'condition/set', key: 'healthPercent', value: 40 },
+      ],
+      fromHealthPercent: 40,
+      action: { type: 'race/set', isGhoul: false },
+      healthPercent: 40,
+    },
+    {
+      name: 'build/importNd as Ghoul resets Health % to 100',
+      from: [{ type: 'condition/set', key: 'healthPercent', value: 20 }],
+      fromHealthPercent: 20,
+      action: { type: 'build/importNd', perks: [], name: null, special: null, isGhoul: true },
+      healthPercent: 100,
+    },
+    {
+      name: 'build/importNd as Human leaves Health % untouched',
+      from: [{ type: 'condition/set', key: 'healthPercent', value: 20 }],
+      fromHealthPercent: 20,
+      action: { type: 'build/importNd', perks: [], name: null, special: null, isGhoul: false },
+      healthPercent: 20,
+    },
+  ];
 
-    const asGhoul = run([{ type: 'race/set', isGhoul: true }], lowHealth);
-    expect(asGhoul.player.conditions.healthPercent).toBe(100);
-  });
-
-  it('race/set to Human leaves Health % untouched', () => {
-    const lowHealthGhoul = run(
-      [{ type: 'condition/set', key: 'healthPercent', value: 40 }],
-      run([{ type: 'race/set', isGhoul: true }]),
-    );
-    const backToHuman = run([{ type: 'race/set', isGhoul: false }], lowHealthGhoul);
-    expect(backToHuman.player.conditions.healthPercent).toBe(40);
-  });
-
-  it('build/importNd as Ghoul resets Health % to 100', () => {
-    const lowHealth = run([{ type: 'condition/set', key: 'healthPercent', value: 20 }]);
-    const imported = run(
-      [{ type: 'build/importNd', perks: [], name: null, special: null, isGhoul: true }],
-      lowHealth,
-    );
-    expect(imported.player.conditions.healthPercent).toBe(100);
-  });
-
-  it('build/importNd as Human leaves Health % untouched', () => {
-    const lowHealth = run([{ type: 'condition/set', key: 'healthPercent', value: 20 }]);
-    const imported = run(
-      [{ type: 'build/importNd', perks: [], name: null, special: null, isGhoul: false }],
-      lowHealth,
-    );
-    expect(imported.player.conditions.healthPercent).toBe(20);
-  });
+  for (const row of raceHealthRows) {
+    it(row.name, () => {
+      const from = stateFrom(row.from);
+      expect(from.player.conditions.healthPercent).toBe(row.fromHealthPercent);
+      expect(stateFrom([row.action], from).player.conditions.healthPercent).toBe(row.healthPercent);
+    });
+  }
 
   it('race/set leaves unrestricted perks equipped across the switch', () => {
-    const s = run([
+    const s = stateFrom([
       { type: 'perk/add', perkId: 'Commando', rank: 1, legendary: false },
       { type: 'race/set', isGhoul: true },
     ]);
@@ -488,7 +502,7 @@ describe('armorEffect/setCount: per-star-tier budget', () => {
   const LIMIT_BREAKING = 'mod_Legendary_Armor4_LimitBreak';
 
   it("clamps an incoming count to the tier's remaining budget, leaving the other effect's stored count untouched", () => {
-    const s = run([
+    const s = stateFrom([
       { type: 'armorEffect/setCount', id: BATTLE_LOADERS, count: 3 },
       { type: 'armorEffect/setCount', id: LIMIT_BREAKING, count: 5 },
     ]);
@@ -500,13 +514,13 @@ describe('armorEffect/setCount: per-star-tier budget', () => {
 
   it('swap order is never blocked: lowering one effect first always frees room for raising the other', () => {
     // Tier is full: 3 + 2 = MAX_LEGENDARY_COUNT.
-    const full = run([
+    const full = stateFrom([
       { type: 'armorEffect/setCount', id: BATTLE_LOADERS, count: 3 },
       { type: 'armorEffect/setCount', id: LIMIT_BREAKING, count: 2 },
     ]);
     expect(full.player.armorEffects).toEqual({ [BATTLE_LOADERS]: 3, [LIMIT_BREAKING]: 2 });
 
-    const swapped = run(
+    const swapped = stateFrom(
       [
         { type: 'armorEffect/setCount', id: BATTLE_LOADERS, count: 1 },
         { type: 'armorEffect/setCount', id: LIMIT_BREAKING, count: 4 },
@@ -517,7 +531,7 @@ describe('armorEffect/setCount: per-star-tier budget', () => {
   });
 
   it("raising an effect's own count within its own tier space works when it alone occupies the tier", () => {
-    const s = run([
+    const s = stateFrom([
       { type: 'armorEffect/setCount', id: BATTLE_LOADERS, count: 3 },
       { type: 'armorEffect/setCount', id: BATTLE_LOADERS, count: 5 },
     ]);
@@ -529,12 +543,15 @@ describe('armorEffect/setCount: per-star-tier budget', () => {
     if (!misc)
       throw new Error('expected a misc armor effect with maxCount > 1 in the live dataset');
 
-    const full = run([
+    const full = stateFrom([
       { type: 'armorEffect/setCount', id: BATTLE_LOADERS, count: MAX_LEGENDARY_COUNT },
     ]);
     expect(full.player.armorEffects[BATTLE_LOADERS]).toBe(MAX_LEGENDARY_COUNT);
 
-    const s = run([{ type: 'armorEffect/setCount', id: misc.id, count: misc.maxCount }], full);
+    const s = stateFrom(
+      [{ type: 'armorEffect/setCount', id: misc.id, count: misc.maxCount }],
+      full,
+    );
     expect(s.player.armorEffects[misc.id]).toBe(misc.maxCount);
     expect(s.player.armorEffects[BATTLE_LOADERS]).toBe(MAX_LEGENDARY_COUNT); // untouched
   });
@@ -547,7 +564,7 @@ describe('armorEffect/setCount: piece slot exclusivity', () => {
   const EMERGENCY_PROTOCOLS = 'mod_PowerArmor_Excavator_Torso_Misc_Emergency';
 
   it('Jetpack=1 caps Deep Pocketed at 4 on setCount', () => {
-    const s = run([
+    const s = stateFrom([
       { type: 'armorEffect/setCount', id: BODY_JETPACK, count: 1 },
       { type: 'armorEffect/setCount', id: DEEP_POCKETED, count: 5 },
     ]);
@@ -555,7 +572,7 @@ describe('armorEffect/setCount: piece slot exclusivity', () => {
   });
 
   it('Emergency Protocols=1 blocks Jet Pack entirely', () => {
-    const s = run([
+    const s = stateFrom([
       { type: 'armorEffect/setCount', id: EMERGENCY_PROTOCOLS, count: 1 },
       { type: 'armorEffect/setCount', id: PA_JETPACK, count: 1 },
     ]);
@@ -570,7 +587,7 @@ describe('armorType/set', () => {
   const CASUAL_STYLE = 'mod_armor_UnderArmor_style_Casual';
 
   it('flips the condition and prunes mismatched effects; both-type effects survive', () => {
-    const s = run([
+    const s = stateFrom([
       { type: 'armorEffect/setCount', id: UNYIELDING, count: 3 },
       { type: 'armorEffect/setCount', id: PROPPELLING, count: 2 },
       { type: 'armorEffect/setCount', id: CASUAL_STYLE, count: 1 },
@@ -584,7 +601,7 @@ describe('armorType/set', () => {
   });
 
   it('plain condition/set on isInPowerArmor does not prune armor effects', () => {
-    const s = run([
+    const s = stateFrom([
       { type: 'armorEffect/setCount', id: UNYIELDING, count: 3 },
       { type: 'condition/set', key: 'isInPowerArmor', value: true },
     ]);
@@ -593,7 +610,7 @@ describe('armorType/set', () => {
   });
 
   it("armorWorn 'none' clears every armor effect and leaves isInPowerArmor false", () => {
-    const s = run([
+    const s = stateFrom([
       { type: 'armorEffect/setCount', id: UNYIELDING, count: 3 },
       { type: 'armorEffect/setCount', id: PROPPELLING, count: 2 },
       { type: 'armorEffect/setCount', id: CASUAL_STYLE, count: 1 },

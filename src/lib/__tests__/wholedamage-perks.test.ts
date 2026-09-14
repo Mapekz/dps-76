@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'bun:test';
-import { resolveLoadout } from '@/lib/loadout';
-import { createDefaultEnemyConfig, createDefaultPlayerConfig, type PlayerConfig } from '@/types';
+import { createDefaultPlayerConfig, type PlayerConfig } from '@/types';
+import { loadoutFor, weapon } from '@/lib/__tests__/loadout-fixture';
 
 /**
  * Follow Through / Taking One for the Team model a conditional 10s-window
@@ -11,12 +11,7 @@ import { createDefaultEnemyConfig, createDefaultPlayerConfig, type PlayerConfig 
  */
 
 function loadout(overrides: Partial<PlayerConfig> = {}) {
-  const playerConfig: PlayerConfig = {
-    ...createDefaultPlayerConfig(),
-    weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
-    ...overrides,
-  };
-  return resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live');
+  return loadoutFor({ weapon: weapon('CombatRifle_Fixer'), ...overrides });
 }
 
 describe('Follow Through / Taking One for the Team wholeDamage toggles', () => {

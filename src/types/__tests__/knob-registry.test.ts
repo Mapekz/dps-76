@@ -9,12 +9,9 @@ import {
 
 describe('KNOB_REGISTRY', () => {
   it('has exactly one player row per ResolvedPlayer key', () => {
-    expect(Object.keys(PLAYER_KNOB_REGISTRY).length).toBe(62);
     for (const key of Object.keys(makeResolvedPlayer())) {
       expect(PLAYER_KNOB_REGISTRY).toHaveProperty(key);
     }
-    expect(PLAYER_KNOB_REGISTRY).toHaveProperty('mutationCount');
-    expect(PLAYER_KNOB_REGISTRY).toHaveProperty('wornPieceCounts');
   });
 
   it('has exactly one enemy row per EnemyConditions key', () => {

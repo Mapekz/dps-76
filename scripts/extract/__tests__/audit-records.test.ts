@@ -26,44 +26,22 @@ import {
   type AuditFinding,
 } from '../../audit-records';
 import { createInMemoryEsmSource } from '../esm-source-fake';
+import { omodRecord, stubRecord } from './esm-stubs';
 
-function weapRecord(formId: string, editorId: string, fields: Record<string, unknown>): EsmRecord {
-  return {
-    header: { signature: 'WEAP', form_id: formId },
-    editor_id: editorId,
-    fields,
-  };
-}
-
-function omodRecord(
-  formId: string,
-  editorId: string,
-  data: Record<string, unknown>,
-  extraFields: Record<string, unknown> = {},
-): EsmRecord {
-  return {
-    header: { signature: 'OMOD', form_id: formId },
-    editor_id: editorId,
-    fields: { Data: data, ...extraFields },
-  };
-}
-
-const byFormIdForBulk = new Map<string, EsmRecord>();
-
-const mockClient = {
-  resolveEdid: async (formId: string) => {
-    const map: Record<string, string> = {
+function auditClient(records: Record<string, EsmRecord> = {}): EsmSource {
+  return createInMemoryEsmSource({
+    records,
+    resolveEdidMap: {
       '0xAP': 'ap_gun_Receiver',
       '0xKW1': 'ma_Rifle',
       '0xKW2': 'ma_Gun',
       '0xADD': 'Keyword_Added',
       '0xINC': 'mod_IncludedParent',
       '0xINC_KW': 'IsAmmoType_FlamerFuel',
-    };
-    return map[formId] ?? `edid_${formId}`;
-  },
-  bulkGet: async (formIds: string[]) => formIds.map((id) => byFormIdForBulk.get(id) ?? null),
-};
+    },
+    resolveEdidFallback: (formId) => `edid_${formId}`,
+  });
+}
 
 describe('sortFindings', () => {
   it('orders identity before silent-drop before field-mismatch', () => {
@@ -98,7 +76,7 @@ describe('auditIdentity', () => {
       expectedEdid: 'CombatRifle_Fixer',
       expectedName: 'The Fixer',
       expectedSignature: 'WEAP',
-      esmRecord: weapRecord('0x1', 'CombatRifle_Fixer', { Name: 'The Fixer' }),
+      esmRecord: stubRecord('WEAP', '0x1', 'CombatRifle_Fixer', { Name: 'The Fixer' }),
     });
     expect(findings).toHaveLength(0);
   });
@@ -170,8 +148,8 @@ describe('auditWeaponTier2', () => {
 describe('extractWeaponTier2Source', () => {
   it('reads verbatim speed/capacity/levels from fixture-shaped fields', async () => {
     const source = await extractWeaponTier2Source(
-      mockClient as EsmSource,
-      weapRecord('0x1', 'Gun', {
+      auditClient(),
+      stubRecord('WEAP', '0x1', 'Gun', {
         Data: { Speed: 0.75, Capacity: 20, 'Base Damage': 10 },
         'Eligible Levels': [5, 15],
         Keywords: { Keywords: ['0xKW1'] },
@@ -236,11 +214,11 @@ describe('omod tier 2/3', () => {
     ],
     ['0xINC', parentOmod],
   ]);
-  byFormIdForBulk.set('0xINC', parentOmod);
+  const client = auditClient({ '0xINC': parentOmod });
 
   it('collectProperties via Includes matches extractor addedKeywords/hasEnchantments', async () => {
     const rec = byFormId.get('0xOMOD')!;
-    const source = await extractOmodTier2Source(mockClient as EsmSource, rec, byFormId);
+    const source = await extractOmodTier2Source(client, rec, byFormId);
     expect(source.attachPointEdid).toBe('ap_gun_Receiver');
     expect(source.targetKeywords).toEqual(['ma_Gun', 'ma_Rifle']);
     expect(source.addedKeywords).toEqual(['IsAmmoType_FlamerFuel', 'Keyword_Added']);
@@ -264,7 +242,7 @@ describe('omod tier 2/3', () => {
 
   it('expandOmodIncludeGraph fetches missing include targets', async () => {
     const seed = new Map([['0xOMOD', byFormId.get('0xOMOD')!]]);
-    const expanded = await expandOmodIncludeGraph(mockClient as EsmSource, seed);
+    const expanded = await expandOmodIncludeGraph(client, seed);
     expect(expanded.has('0xINC')).toBe(true);
   });
 
@@ -484,7 +462,9 @@ describe('unresolvedForRecord', () => {
 
 describe('enumerateWeaponCarriers', () => {
   it('returns an enchantment carrier when present', () => {
-    const carriers = enumerateWeaponCarriers(weapRecord('0x1', 'Gun', { Enchantment: '0xENCH' }));
+    const carriers = enumerateWeaponCarriers(
+      stubRecord('WEAP', '0x1', 'Gun', { Enchantment: '0xENCH' }),
+    );
     expect(carriers).toEqual([{ key: 'enchantment:0xENCH', label: 'Enchantment 0xENCH' }]);
   });
 });

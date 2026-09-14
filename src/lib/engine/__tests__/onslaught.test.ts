@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'bun:test';
 import type { Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
-import { createDefaultEnemyConditions } from '@/types';
-import { foldBucket, type ResolveContext } from '@/lib/engine/resolve';
+import { foldBucket } from '@/lib/engine/resolve';
 import {
   onslaughtHitEventsPerShot,
   reverseOnslaughtAvgStacks,
@@ -11,38 +10,21 @@ import {
   weaponHasNonExplosionPhysical,
 } from '@/lib/engine/onslaught';
 import { computeScenarios } from '@/lib/engine/scenarios';
-import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
+import {
+  FLAT_100,
+  makeWeapon,
+  makeCtx,
+  scenarioInput,
+} from '@/lib/engine/__tests__/engine-fixture';
 
-const FLAT_100 = [
-  { x: 1, y: 100 },
-  { x: 50, y: 100 },
-];
-
-function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
-  return {
-    id: 'test_weapon',
-    name: 'Test Weapon',
-    components: [{ damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
-    damageType: 'ballistic',
-    weaponClass: 'rifle',
-    isAutomatic: false,
-    isPhysical: true,
-    critDamageMult: 2.0,
-    critChargeBonus: 1.0,
-    sneakAttackMult: 2.0,
-    damageBonusMult: 1.0,
-    ...overrides,
-  };
-}
-
-function makeCtx(weapon: Weapon): ResolveContext {
-  return {
-    weapon,
-    player: makeResolvedPlayer(),
-    enemy: createDefaultEnemyConditions(),
-    scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
-  };
-}
+const furiousDbm: Modifier = {
+  id: 'furious-dbm',
+  source: { kind: 'omod', formId: '0x0', edid: 'Furious', name: 'Furious' },
+  bucket: 'dbm',
+  op: 'ADD',
+  value: 0.05,
+  conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
+};
 
 describe('reverseOnslaughtAvgStacks', () => {
   it('fast multi-projectile auto with explosive payload drains to ~0', () => {
@@ -194,23 +176,16 @@ describe('reverseOnslaughtAvgStacks', () => {
 });
 
 describe('reverse onslaught scenarios (GSM + Furious)', () => {
-  const furiousDbm: Modifier = {
-    id: 'furious-dbm',
-    source: { kind: 'omod', formId: '0x0', edid: 'Furious', name: 'Furious' },
-    bucket: 'dbm',
-    op: 'ADD',
-    value: 0.05,
-    conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
+  const gsmSource: Modifier['source'] = {
+    kind: 'perk',
+    formId: '0x0004A09F',
+    edid: 'GunslingerMaster',
+    name: 'Gunslinger Master',
+    rank: 1,
   };
   const gsmReverse: Modifier = {
     id: 'gsm-reverse',
-    source: {
-      kind: 'perk',
-      formId: '0x0004A09F',
-      edid: 'GunslingerMaster',
-      name: 'Gunslinger Master',
-      rank: 1,
-    },
+    source: gsmSource,
     bucket: 'onslaughtReverse',
     op: 'ADD',
     value: 1,
@@ -218,13 +193,7 @@ describe('reverse onslaught scenarios (GSM + Furious)', () => {
   };
   const gsmMax: Modifier = {
     id: 'gsm-max',
-    source: {
-      kind: 'perk',
-      formId: '0x0004A09F',
-      edid: 'GunslingerMaster',
-      name: 'Gunslinger Master',
-      rank: 1,
-    },
+    source: gsmSource,
     bucket: 'onslaughtMaxStacks',
     op: 'ADD',
     value: 10,
@@ -232,24 +201,12 @@ describe('reverse onslaught scenarios (GSM + Furious)', () => {
   };
 
   function furiousBonusRatio(weapon: Weapon, extraMods: Modifier[] = []) {
-    const base = computeScenarios({
-      mode: 'live',
-      weapon,
-      itemLevel: 50,
-      modifiers: [...extraMods, gsmMax, gsmReverse, furiousDbm],
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-    });
-    const noFurious = computeScenarios({
-      mode: 'live',
-      weapon,
-      itemLevel: 50,
-      modifiers: [...extraMods, gsmMax, gsmReverse],
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-    });
+    const base = computeScenarios(
+      scenarioInput(weapon, { modifiers: [...extraMods, gsmMax, gsmReverse, furiousDbm] }),
+    );
+    const noFurious = computeScenarios(
+      scenarioInput(weapon, { modifiers: [...extraMods, gsmMax, gsmReverse] }),
+    );
     const withDmg = base.freeAim.perHit.total;
     const withoutDmg = noFurious.freeAim.perHit.total;
     return (withDmg - withoutDmg) / withoutDmg;
@@ -294,15 +251,11 @@ describe('reverse onslaught scenarios (GSM + Furious)', () => {
   });
 
   it('surfaces reverse mode and avg stacks on ScenarioSet', () => {
-    const result = computeScenarios({
-      mode: 'live',
-      weapon: makeWeapon({ animDelaySec: 2, capacity: 5, animationReloadSec: 3 }),
-      itemLevel: 50,
-      modifiers: [gsmMax, gsmReverse],
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-    });
+    const result = computeScenarios(
+      scenarioInput(makeWeapon({ animDelaySec: 2, capacity: 5, animationReloadSec: 3 }), {
+        modifiers: [gsmMax, gsmReverse],
+      }),
+    );
     expect(result.onslaughtReverse).toBe(true);
     expect(result.onslaughtEffectiveStacks).toBeGreaterThan(0);
     expect(result.onslaughtMaxStacks).toBe(10);
@@ -377,14 +330,6 @@ describe('forwardOnslaughtAvgStacks', () => {
   });
 });
 describe('forward onslaught scenarios (non-reverse Onslaught sources)', () => {
-  const furiousDbm: Modifier = {
-    id: 'furious-dbm',
-    source: { kind: 'omod', formId: '0x0', edid: 'Furious', name: 'Furious' },
-    bucket: 'dbm',
-    op: 'ADD',
-    value: 0.05,
-    conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
-  };
   const furiousMax: Modifier = {
     id: 'furious-max',
     source: { kind: 'omod', formId: '0x0', edid: 'Furious', name: 'Furious' },
@@ -401,15 +346,7 @@ describe('forward onslaught scenarios (non-reverse Onslaught sources)', () => {
       ammoPerShot: 1,
       animationReloadSec: 2,
     });
-    const result = computeScenarios({
-      mode: 'live',
-      weapon: rifle,
-      itemLevel: 50,
-      modifiers: [furiousMax, furiousDbm],
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-    });
+    const result = computeScenarios(scenarioInput(rifle, { modifiers: [furiousMax, furiousDbm] }));
     expect(result.onslaughtReverse).toBe(false);
     expect(result.onslaughtMaxStacks).toBe(9);
     expect(result.onslaughtEffectiveStacks).toBeGreaterThan(0);
@@ -431,24 +368,12 @@ describe('forward onslaught scenarios (non-reverse Onslaught sources)', () => {
       ammoPerShot: 1,
       animationReloadSec: 3,
     });
-    const fastResult = computeScenarios({
-      mode: 'live',
-      weapon: fastWeapon,
-      itemLevel: 50,
-      modifiers: [furiousMax, furiousDbm],
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-    });
-    const slowResult = computeScenarios({
-      mode: 'live',
-      weapon: slowWeapon,
-      itemLevel: 50,
-      modifiers: [furiousMax, furiousDbm],
-      player: makeResolvedPlayer(),
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-    });
+    const fastResult = computeScenarios(
+      scenarioInput(fastWeapon, { modifiers: [furiousMax, furiousDbm] }),
+    );
+    const slowResult = computeScenarios(
+      scenarioInput(slowWeapon, { modifiers: [furiousMax, furiousDbm] }),
+    );
     expect(fastResult.onslaughtEffectiveStacks).toBeGreaterThan(
       slowResult.onslaughtEffectiveStacks,
     );

@@ -1,57 +1,8 @@
 import { describe, expect, it } from 'bun:test';
-import type { Weapon } from '@/types';
 import { createDefaultEnemyConditions } from '@/types';
-import type { Bucket, Condition, ModOp, Modifier } from '@/types/modifiers';
-import { foldBucket, type ResolveContext } from '@/lib/engine/resolve';
+import { foldBucket } from '@/lib/engine/resolve';
 import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
-
-const FLAT_100 = [
-  { x: 1, y: 100 },
-  { x: 50, y: 100 },
-];
-
-function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
-  return {
-    id: 'test_rifle',
-    name: 'Test Rifle',
-    components: [{ damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
-    damageType: 'ballistic',
-    weaponClass: 'rifle',
-    isAutomatic: false,
-    isPhysical: true,
-    critDamageMult: 2.0,
-    critChargeBonus: 1.0,
-    sneakAttackMult: 2.0,
-    damageBonusMult: 1.0,
-    ...overrides,
-  };
-}
-
-function mod(partial: {
-  bucket: Bucket;
-  op: ModOp;
-  value: number;
-  conditions?: Condition[];
-}): Modifier {
-  return {
-    id: 'test-mod',
-    source: { kind: 'perk', formId: '0x0', edid: 'TestSource', name: 'Test Source' },
-    bucket: partial.bucket,
-    op: partial.op,
-    value: partial.value,
-    conditions: partial.conditions ?? [],
-  };
-}
-
-function makeCtx(weapon: Weapon, overrides: Partial<ResolveContext> = {}): ResolveContext {
-  return {
-    weapon,
-    player: makeResolvedPlayer(),
-    enemy: createDefaultEnemyConditions(),
-    scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
-    ...overrides,
-  };
-}
+import { makeWeapon, makeCtx, mod } from '@/lib/engine/__tests__/engine-fixture';
 
 describe('scaledByMissingHealth', () => {
   const weapon = makeWeapon();

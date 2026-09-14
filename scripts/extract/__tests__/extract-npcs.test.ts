@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'bun:test';
+import { beforeAll, describe, it, expect, beforeEach } from 'bun:test';
 import type { GeneratedNpcDamageType } from '../../../src/types/generated';
 import type { EsmSource, EsmRecord } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
@@ -149,29 +149,33 @@ describe('resolveStat', () => {
   });
 });
 
-describe('RACE_NPC_TEMPLATES', () => {
-  it('has an entry for every RACE-signature curated row, and no dangling entries for rows not in CURATED_TARGETS', () => {
-    const curatedEdids = new Set(CURATED_TARGETS.map((t) => t.edid));
-    for (const key of Object.keys(RACE_NPC_TEMPLATES)) {
-      expect(
-        curatedEdids.has(key),
-        `RACE_NPC_TEMPLATES key "${key}" is not a curated target edid`,
-      ).toBe(true);
-    }
-  });
+const curatedKeyedTables: Array<{ name: string; title: string; table: Record<string, unknown> }> = [
+  {
+    name: 'RACE_NPC_TEMPLATES',
+    title: 'has no dangling entries for rows not in CURATED_TARGETS',
+    table: RACE_NPC_TEMPLATES,
+  },
+  {
+    name: 'BOSS_EPIC_RANK_QUESTS',
+    title: 'has an entry for every mapped boss, keyed by a real curated target edid',
+    table: BOSS_EPIC_RANK_QUESTS,
+  },
+];
+
+describe('curated-target-keyed tables', () => {
+  for (const row of curatedKeyedTables) {
+    it(`${row.name} ${row.title}`, () => {
+      const curatedEdids = new Set(CURATED_TARGETS.map((t) => t.edid));
+      for (const key of Object.keys(row.table)) {
+        expect(curatedEdids.has(key), `${row.name} key "${key}" is not a curated target edid`).toBe(
+          true,
+        );
+      }
+    });
+  }
 });
 
 describe('BOSS_EPIC_RANK_QUESTS', () => {
-  it('has an entry for every mapped boss, keyed by a real curated target edid', () => {
-    const curatedEdids = new Set(CURATED_TARGETS.map((t) => t.edid));
-    for (const key of Object.keys(BOSS_EPIC_RANK_QUESTS)) {
-      expect(
-        curatedEdids.has(key),
-        `BOSS_EPIC_RANK_QUESTS key "${key}" is not a curated target edid`,
-      ).toBe(true);
-    }
-  });
-
   it('covers exactly the 3 ESM-proven bosses (SBQ, Earle, Storm Goliath) — Earle stays mapped despite resolving to no rank (see extract-npcs.ts header note)', () => {
     expect(Object.keys(BOSS_EPIC_RANK_QUESTS).sort()).toEqual(
       ['EncScorchbeastQueen01Template', 'StormBossRace', 'WendigoColossusRace'].sort(),
@@ -342,33 +346,48 @@ describe('resolveNormalizedLevelAdjustment', () => {
     expect(result).toEqual({ min: { op: 'set', value: 150 }, max: { op: 'set', value: 200 } });
   });
 
-  it('two Add perks accumulate cumulatively per bound', async () => {
-    const client = fakeClientWith({
-      '0xAAA': {
-        fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Add Value', 10)] },
-      } as unknown as EsmRecord,
-      '0xBBB': {
-        fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Add Value', 25)] },
-      } as unknown as EsmRecord,
+  const twoPerkRows: Array<{
+    name: string;
+    functionName: string;
+    floats: [number, number];
+    min: Awaited<ReturnType<typeof resolveNormalizedLevelAdjustment>>['min'];
+  }> = [
+    {
+      name: 'two Add perks accumulate cumulatively per bound',
+      functionName: 'Add Value',
+      floats: [10, 25],
+      min: { op: 'add', delta: 35 },
+    },
+    {
+      name: 'two Set perks: last one (in Perks array order) wins',
+      functionName: 'Set Value',
+      floats: [15, 40],
+      min: { op: 'set', value: 40 },
+    },
+  ];
+  for (const row of twoPerkRows) {
+    it(row.name, async () => {
+      const client = fakeClientWith({
+        '0xAAA': {
+          fields: {
+            Effects: [
+              entryPointEffect('Mod NPC Normalized Min Level', row.functionName, row.floats[0]),
+            ],
+          },
+        } as unknown as EsmRecord,
+        '0xBBB': {
+          fields: {
+            Effects: [
+              entryPointEffect('Mod NPC Normalized Min Level', row.functionName, row.floats[1]),
+            ],
+          },
+        } as unknown as EsmRecord,
+      });
+      const npc = npcWithPerks(['0xAAA', '0xBBB']);
+      const result = await resolveNormalizedLevelAdjustment(client, npc, 'x', []);
+      expect(result.min).toEqual(row.min);
     });
-    const npc = npcWithPerks(['0xAAA', '0xBBB']);
-    const result = await resolveNormalizedLevelAdjustment(client, npc, 'x', []);
-    expect(result.min).toEqual({ op: 'add', delta: 35 });
-  });
-
-  it('two Set perks: last one (in Perks array order) wins', async () => {
-    const client = fakeClientWith({
-      '0xAAA': {
-        fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Set Value', 15)] },
-      } as unknown as EsmRecord,
-      '0xBBB': {
-        fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Set Value', 40)] },
-      } as unknown as EsmRecord,
-    });
-    const npc = npcWithPerks(['0xAAA', '0xBBB']);
-    const result = await resolveNormalizedLevelAdjustment(client, npc, 'x', []);
-    expect(result.min).toEqual({ op: 'set', value: 40 });
-  });
+  }
 
   it('an unresolvable Perks entry pushes an unresolved note and is skipped, not a crash', async () => {
     const unresolved: string[] = [];
@@ -454,9 +473,13 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
   // `unresolved` rather than crashing. That's fine: this test only asserts
   // the 3 stocked rows resolve correctly plus a total-shape sanity check.
   const fakeClient = createInMemoryEsmSource({ records });
+  let result: Awaited<ReturnType<typeof extractNpcs>>;
+  beforeAll(async () => {
+    result = await extractNpcs(fakeClient);
+  });
 
-  it('resolves Earle (WendigoColossusRace → the Earle override, not the generic template); its epic rank stays unset (E06_Colossus proves neither VMAD shape)', async () => {
-    const { npcs, unresolved } = await extractNpcs(fakeClient);
+  it('resolves Earle (WendigoColossusRace → the Earle override, not the generic template); its epic rank stays unset (E06_Colossus proves neither VMAD shape)', () => {
+    const { npcs, unresolved } = result;
     const earle = npcs.find((n) => n.id === 'WendigoColossusRace');
     expect(earle).toBeDefined();
     expect(earle!.formId).toBe('0x0059E02F');
@@ -472,8 +495,8 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
     ).toBe(true);
   });
 
-  it('resolves the Scorchbeast Queen curated row (EncScorchbeastQueen01Template, already NPC_-keyed); epicRank 3 from CB15_ScorchedEarth', async () => {
-    const { npcs } = await extractNpcs(fakeClient);
+  it('resolves the Scorchbeast Queen curated row (EncScorchbeastQueen01Template, already NPC_-keyed); epicRank 3 from CB15_ScorchedEarth', () => {
+    const { npcs } = result;
     const sbq = npcs.find((n) => n.id === 'EncScorchbeastQueen01Template');
     expect(sbq).toBeDefined();
     expect(sbq!.name).toBe('Scorchbeast Queen');
@@ -483,31 +506,26 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
     expect(sbq!.epicRank).toBe(3);
   });
 
-  it('a curated row with no BOSS_EPIC_RANK_QUESTS entry (SuperMutantRace) never gets an epicRank', async () => {
-    const { npcs } = await extractNpcs(fakeClient);
-    const sm = npcs.find((n) => n.id === 'SuperMutantRace');
-    expect(sm!.epicRank).toBeUndefined();
-  });
-
-  it('resolves SuperMutantRace through its mapped template, and the RACE fallback layer never clobbers the NPC_-carried Health curve', async () => {
-    const { npcs } = await extractNpcs(fakeClient);
+  it('resolves SuperMutantRace through its mapped template, and the RACE fallback layer never clobbers the NPC_-carried Health curve; with no BOSS_EPIC_RANK_QUESTS entry it never gets an epicRank', () => {
+    const { npcs } = result;
     const sm = npcs.find((n) => n.id === 'SuperMutantRace');
     expect(sm).toBeDefined();
     expect(sm!.formId).toBe('0x0001A00C'); // EncSuperMutant_Template's own formId, not SuperMutantRace's.
     expect(sm!.healthCurveTier).toBe(23);
     expect(sm!.healthFlatValue).toBe(0);
+    expect(sm!.epicRank).toBeUndefined();
   });
 
-  it('unfetchable rows land in unresolved, not a crash', async () => {
-    const { npcs, unresolved } = await extractNpcs(fakeClient);
+  it('unfetchable rows land in unresolved, not a crash', () => {
+    const { npcs, unresolved } = result;
     // Only 3 of CURATED_TARGETS's rows are stocked in the fake store.
     expect(npcs.length).toBeLessThan(CURATED_TARGETS.length);
     expect(unresolved.length).toBeGreaterThan(0);
     expect(unresolved.every((u) => u.startsWith('npcs:'))).toBe(true);
   });
 
-  it('every resolved npc carries exactly the 6 documented resist damage types', async () => {
-    const { npcs } = await extractNpcs(fakeClient);
+  it('every resolved npc carries exactly the 6 documented resist damage types', () => {
+    const { npcs } = result;
     const expected: GeneratedNpcDamageType[] = [
       'cryo',
       'energy',

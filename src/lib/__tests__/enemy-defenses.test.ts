@@ -55,23 +55,28 @@ describe('getEnemyDefenses — epic HP mult (Phase A, data-driven off GeneratedN
     expect(result!.hp).toBeCloseTo(BASE_HP * 3.2, 6);
   });
 
-  it('rank absent: plain curve HP, no scaling', () => {
-    stubNpc = npc({ id: 'PlainRace', epicAllowed: true, epicRank: undefined });
-    const result = getEnemyDefenses('live', 'PlainRace', 100);
-    expect(result!.hp).toBe(BASE_HP);
-  });
+  const plainHpRows: { name: string; npc: GeneratedNpc }[] = [
+    {
+      name: 'rank absent: plain curve HP, no scaling',
+      npc: npc({ id: 'PlainRace', epicAllowed: true, epicRank: undefined }),
+    },
+    {
+      name: 'epicAllowed false blocks the mult even when a rank is (implausibly) present — defensive, matches a structurally-excluded npc',
+      npc: npc({ id: 'BlockedRace', epicAllowed: false, epicRank: 3 }),
+    },
+    {
+      name: 'an out-of-table rank fails open to plain curve HP rather than throwing',
+      npc: npc({ id: 'WeirdRankRace', epicAllowed: true, epicRank: 99 }),
+    },
+  ];
 
-  it('epicAllowed false blocks the mult even when a rank is (implausibly) present — defensive, matches a structurally-excluded npc', () => {
-    stubNpc = npc({ id: 'BlockedRace', epicAllowed: false, epicRank: 3 });
-    const result = getEnemyDefenses('live', 'BlockedRace', 100);
-    expect(result!.hp).toBe(BASE_HP);
-  });
-
-  it('an out-of-table rank fails open to plain curve HP rather than throwing', () => {
-    stubNpc = npc({ id: 'WeirdRankRace', epicAllowed: true, epicRank: 99 });
-    const result = getEnemyDefenses('live', 'WeirdRankRace', 100);
-    expect(result!.hp).toBe(BASE_HP);
-  });
+  for (const row of plainHpRows) {
+    it(row.name, () => {
+      stubNpc = row.npc;
+      const result = getEnemyDefenses('live', row.npc.id, 100);
+      expect(result!.hp).toBe(BASE_HP);
+    });
+  }
 
   it('DR/ER are never scaled by epic rank — resists pass through the curve/flat lookup untouched', () => {
     stubNpc = npc({

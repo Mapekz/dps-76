@@ -28,15 +28,12 @@ import {
   writeView,
   writeWeapon,
 } from '@/lib/persist/wire-sections';
-import { createDefaultBuildState, makeBuildReducer, type BuildAction } from '@/state/build-reducer';
+import { createDefaultBuildState } from '@/state/build-reducer';
+import { stateFrom } from '@/state/__tests__/build-state-fixture';
 import { ENEMY_KNOB_REGISTRY, PLAYER_KNOB_REGISTRY } from '@/types/knob-registry';
 import { createDefaultPlayerConfig, type PerkLoadout, type PlayerConfig } from '@/types';
 
 const mode = 'live' as const;
-
-function stateFrom(actions: BuildAction[]) {
-  return actions.reduce(makeBuildReducer(mode), createDefaultBuildState());
-}
 
 function roundTripBytes(write: (w: BitWriter) => void, read: (r: BitReader) => void): void {
   const w = new BitWriter();
@@ -230,21 +227,21 @@ describe('wire-sections', () => {
         (w) => writeAddictions(w, addictions),
         (r) => {
           const warnings: string[] = [];
-          const decoded = readAddictions(r, mode, warnings);
-          if (decoded.length > 0) expect(decoded).toEqual(addictions);
+          expect(readAddictions(r, mode, warnings)).toEqual(addictions);
+          expect(warnings).toEqual([]);
         },
       );
     });
 
     it('round-trips consumables and armor effects', () => {
-      const consumables = ['Buffout', 'Psycho', 'Fury', 'Overdrive', 'Med-X'];
+      const consumables = ['Buffout', 'Psycho', 'Fury', 'Overdrive', 'MedX'];
       roundTripBytes(
         (w) => writeConsumables(w, consumables),
         (r) => {
           const warnings: string[] = [];
           const decoded = readConsumables(r, mode, warnings);
-          expect(decoded.length).toBeGreaterThan(0);
-          expect(decoded.every((id) => consumables.includes(id))).toBe(true);
+          expect([...decoded].sort()).toEqual([...consumables].sort());
+          expect(warnings).toEqual([]);
         },
       );
 
@@ -255,10 +252,8 @@ describe('wire-sections', () => {
         (w) => writeArmorEffects(w, armorEffects),
         (r) => {
           const warnings: string[] = [];
-          const decoded = readArmorEffects(r, mode, warnings);
-          for (const [id, count] of Object.entries(armorEffects)) {
-            if (decoded[id] !== undefined) expect(decoded[id]).toBe(count);
-          }
+          expect(readArmorEffects(r, mode, warnings)).toEqual(armorEffects);
+          expect(warnings).toEqual([]);
         },
       );
     });
@@ -383,16 +378,8 @@ describe('wire-sections', () => {
 
   describe('knob registry bit widths', () => {
     it('fits every clamped row range in its derived fixed width', () => {
-      for (const row of Object.values(PLAYER_KNOB_REGISTRY)) {
-        if (!row?.clamp) continue;
-        const range = row.clamp.max - row.clamp.min;
-        const width = knobValueBitWidth(row as Parameters<typeof knobValueBitWidth>[0]);
-        if (typeof width === 'number' && range <= 64) {
-          expect(2 ** width).toBeGreaterThanOrEqual(range + 1);
-          expect(width).toBe(clampedBitWidth(row.clamp));
-        }
-      }
-      for (const row of Object.values(ENEMY_KNOB_REGISTRY)) {
+      const rows = [...Object.values(PLAYER_KNOB_REGISTRY), ...Object.values(ENEMY_KNOB_REGISTRY)];
+      for (const row of rows) {
         if (!row?.clamp) continue;
         const range = row.clamp.max - row.clamp.min;
         const width = knobValueBitWidth(row as Parameters<typeof knobValueBitWidth>[0]);
@@ -404,8 +391,8 @@ describe('wire-sections', () => {
     });
   });
 
-  describe('representative heavy build packed size', () => {
-    it('reports byte count for a realistic heavy build', () => {
+  describe('representative heavy build', () => {
+    it('writes every section of a raw (un-normalized) heavy build', () => {
       const perkIds = Object.keys(perksDictionary.ids).slice(0, 46);
       const perks = perkIds.map((perkId, i) => ({
         perkId,
@@ -426,7 +413,7 @@ describe('wire-sections', () => {
           'Mutation_HerdMentality',
           'Mutation_ScalySkin',
         ],
-        consumables: ['Buffout', 'Psycho', 'Fury', 'Overdrive', 'Med-X'],
+        consumables: ['Buffout', 'Psycho', 'Fury', 'Overdrive', 'MedX'],
         armorEffects: {
           mod_Legendary_Armor4_LimitBreak: 5,
         },
@@ -480,10 +467,7 @@ describe('wire-sections', () => {
       writeBuildName(w, 'Heavy Fixer Commando');
       writeView(w, { emphasized: 'vats', breakdownOpen: true });
 
-      const byteCount = w.toBytes().length;
-      // eslint-disable-next-line no-console
-      console.log(`Heavy build packed payload: ${byteCount} bytes`);
-      expect(byteCount).toBeGreaterThan(0);
+      expect(w.toBytes().length).toBeGreaterThan(0);
     });
   });
 });

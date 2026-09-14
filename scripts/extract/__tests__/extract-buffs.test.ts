@@ -11,7 +11,9 @@ import {
   deriveEffectDescription,
   substituteMagTemplate,
 } from '../extract-buffs';
-import type { SpellEffect, AvifRoute } from '../normalize/mgef';
+import type { AvifRoute } from '../normalize/mgef';
+import { stubRecord } from './esm-stubs';
+import { effect } from './normalize-fixture';
 import mutationEggHead from './fixtures/spel-mutation-egghead.json';
 import mgefTreatedEffect from './fixtures/mgef-mutation-treatedeffect.json';
 import mgefReduceStrength from './fixtures/mgef-mutation-reducestrength.json';
@@ -194,20 +196,6 @@ function stubClientFor(records: Record<string, EsmRecord>) {
   return createInMemoryEsmSource({ records });
 }
 
-function spellEffect(mgefFormId: string): SpellEffect {
-  return {
-    mgefFormId,
-    magnitude: 0,
-    duration: 0,
-    conditionRows: [],
-    curvePoints: null,
-    curveInputAv: null,
-    magnitudeGlobal: null,
-    cooldownDurationSec: null,
-    area: null,
-  };
-}
-
 describe('buildDispelKeys', () => {
   // Mirrors the real proof point (esm get FortifyStrengthChemEffect /
   // FortifyStrengthFood, 20260710 ESM — see fixtures/mgef-fortifystrengthchemeffect.json):
@@ -278,13 +266,13 @@ describe('buildDispelKeys', () => {
 
   it('a dispel-flagged effect contributes a sorted, joined keyword-set key', async () => {
     const client = stubClientFor({ '0xCHEM_STR': strChem, ...keywordRecords });
-    const keys = await buildDispelKeys(client, [spellEffect('0xCHEM_STR')]);
+    const keys = await buildDispelKeys(client, [effect({ mgefFormId: '0xCHEM_STR' })]);
     expect(keys).toEqual(['ChemDispelEffects|ChemEffect|StackBuffStrength']);
   });
 
   it('a non-dispel-flagged effect contributes nothing', async () => {
     const client = stubClientFor({ '0xNON_DISPEL': nonDispel, ...keywordRecords });
-    const keys = await buildDispelKeys(client, [spellEffect('0xNON_DISPEL')]);
+    const keys = await buildDispelKeys(client, [effect({ mgefFormId: '0xNON_DISPEL' })]);
     expect(keys).toEqual([]);
   });
 
@@ -294,16 +282,16 @@ describe('buildDispelKeys', () => {
       '0xFOOD_STR': strFood,
       ...keywordRecords,
     });
-    const chemKeys = await buildDispelKeys(client, [spellEffect('0xCHEM_STR')]);
-    const foodKeys = await buildDispelKeys(client, [spellEffect('0xFOOD_STR')]);
+    const chemKeys = await buildDispelKeys(client, [effect({ mgefFormId: '0xCHEM_STR' })]);
+    const foodKeys = await buildDispelKeys(client, [effect({ mgefFormId: '0xFOOD_STR' })]);
     expect(chemKeys).not.toEqual(foodKeys);
   });
 
   it('dedupes identical keys across multiple effects on the same buff', async () => {
     const client = stubClientFor({ '0xCHEM_STR': strChem, ...keywordRecords });
     const keys = await buildDispelKeys(client, [
-      spellEffect('0xCHEM_STR'),
-      spellEffect('0xCHEM_STR'),
+      effect({ mgefFormId: '0xCHEM_STR' }),
+      effect({ mgefFormId: '0xCHEM_STR' }),
     ]);
     expect(keys).toEqual(['ChemDispelEffects|ChemEffect|StackBuffStrength']);
   });
@@ -328,26 +316,27 @@ describe('resolveAddiction', () => {
     expect(notes.size).toBe(0);
   });
 
-  it('returns undefined when Effect Data.Addiction is absent (null) — e.g. Milk_Chally', async () => {
-    const client = stubClientFor({});
-    const milkChally = record({ fields: { 'Effect Data': { Addiction: null } } });
-    const ref = await resolveAddiction(client, milkChally, new Set());
-    expect(ref).toBeUndefined();
-  });
-
-  it("returns undefined for the zero formid '0x00000000'", async () => {
-    const client = stubClientFor({});
-    const nonAddictive = record({ fields: { 'Effect Data': { Addiction: '0x00000000' } } });
-    const ref = await resolveAddiction(client, nonAddictive, new Set());
-    expect(ref).toBeUndefined();
-  });
-
-  it('returns undefined when Effect Data is entirely missing', async () => {
-    const client = stubClientFor({});
-    const bare = record({ fields: {} });
-    const ref = await resolveAddiction(client, bare, new Set());
-    expect(ref).toBeUndefined();
-  });
+  const nonAddictiveRows: Array<{ name: string; fields: Record<string, unknown> }> = [
+    {
+      name: 'returns undefined when Effect Data.Addiction is absent (null) — e.g. Milk_Chally',
+      fields: { 'Effect Data': { Addiction: null } },
+    },
+    {
+      name: "returns undefined for the zero formid '0x00000000'",
+      fields: { 'Effect Data': { Addiction: '0x00000000' } },
+    },
+    { name: 'returns undefined when Effect Data is entirely missing', fields: {} },
+  ];
+  for (const row of nonAddictiveRows) {
+    it(row.name, async () => {
+      const ref = await resolveAddiction(
+        stubClientFor({}),
+        record({ fields: row.fields }),
+        new Set(),
+      );
+      expect(ref).toBeUndefined();
+    });
+  }
 });
 
 describe('extractMutation (penaltyModifierIds tagging, 2026-07-14)', () => {
@@ -362,9 +351,6 @@ describe('extractMutation (penaltyModifierIds tagging, 2026-07-14)', () => {
   // against the same dump rather than fixture files, since only their
   // editor_id matters here (see buildDispelKeys' keywordRecords above for the
   // same inline-stub precedent).
-  const edidOnly = (formId: string, signature: string, editorId: string): EsmRecord =>
-    record({ header: { signature, form_id: formId }, editor_id: editorId });
-
   const mutationClient = stubClientFor({
     Mutation_EggHead: mutationEggHead as unknown as EsmRecord,
     '0x0028D3BD': mgefTreatedEffect as unknown as EsmRecord,
@@ -373,19 +359,19 @@ describe('extractMutation (penaltyModifierIds tagging, 2026-07-14)', () => {
     '0x003C404A': mgefFortifyIntelligence as unknown as EsmRecord,
     '0x006C2DBC': mgefAbMutationCount as unknown as EsmRecord,
     // Condition-row Parameter 1 formids.
-    '0x00024057': edidOnly('0x00024057', 'ALCH', 'RadX'),
-    '0x0050A5CB': edidOnly('0x0050A5CB', 'ALCH', 'Serum_EggHead'),
-    '0x00467939': edidOnly('0x00467939', 'CNDF', 'Mutation_Check_UseNormalVersion'),
-    '0x0046793B': edidOnly('0x0046793B', 'CNDF', 'Mutation_Check_UseSuperVersion'),
+    '0x00024057': stubRecord('ALCH', '0x00024057', 'RadX'),
+    '0x0050A5CB': stubRecord('ALCH', '0x0050A5CB', 'Serum_EggHead'),
+    '0x00467939': stubRecord('CNDF', '0x00467939', 'Mutation_Check_UseNormalVersion'),
+    '0x0046793B': stubRecord('CNDF', '0x0046793B', 'Mutation_Check_UseSuperVersion'),
     // Actor Value formids the effects target.
-    '0x000002C2': edidOnly('0x000002C2', 'AVIF', 'Strength'),
-    '0x000002C4': edidOnly('0x000002C4', 'AVIF', 'Endurance'),
-    '0x000002C6': edidOnly('0x000002C6', 'AVIF', 'Intelligence'),
-    '0x006C2DBA': edidOnly('0x006C2DBA', 'AVIF', 'MutationCount'),
+    '0x000002C2': stubRecord('AVIF', '0x000002C2', 'Strength'),
+    '0x000002C4': stubRecord('AVIF', '0x000002C4', 'Endurance'),
+    '0x000002C6': stubRecord('AVIF', '0x000002C6', 'Intelligence'),
+    '0x006C2DBA': stubRecord('AVIF', '0x006C2DBA', 'MutationCount'),
     // Penalty-tag keyword formids, resolved in extractMutation's own loop.
-    '0x00391F0F': edidOnly('0x00391F0F', 'KYWD', 'AbilityTypeMutation_NegativeEffect'),
-    '0x003808CE': edidOnly('0x003808CE', 'KYWD', 'AbilityTypeMutation'),
-    '0x003808D3': edidOnly('0x003808D3', 'KYWD', 'AbilityTypeMutation_PositiveEffect'),
+    '0x00391F0F': stubRecord('KYWD', '0x00391F0F', 'AbilityTypeMutation_NegativeEffect'),
+    '0x003808CE': stubRecord('KYWD', '0x003808CE', 'AbilityTypeMutation'),
+    '0x003808D3': stubRecord('KYWD', '0x003808D3', 'AbilityTypeMutation_PositiveEffect'),
   });
 
   it('emits specialStrength/specialEndurance −3 and specialIntelligence +6/+8, tagging exactly the two negatives as penaltyModifierIds', async () => {
@@ -439,15 +425,12 @@ describe('extractAddictionEffects (2026-07-14)', () => {
   // list is exactly [abReduceAgilityAlcoholAddiction, abReduceCharismaAlcoholAddiction,
   // abAddictionCount] — the last MUST be skipped by edid (bookkeeping, no AV
   // route note) per ADDICTION_BOOKKEEPING_MGEF_EDIDS.
-  const edidOnly = (formId: string, editorId: string): EsmRecord =>
-    record({ header: { signature: 'AVIF', form_id: formId }, editor_id: editorId });
-
   const addictionClient = stubClientFor({
     '0x0010224F': mgefReduceAgilityAlcohol as unknown as EsmRecord,
     '0x00102251': mgefReduceCharismaAlcohol as unknown as EsmRecord,
     '0x001EB997': mgefAbAddictionCount as unknown as EsmRecord,
-    '0x000002C7': edidOnly('0x000002C7', 'Agility'),
-    '0x000002C5': edidOnly('0x000002C5', 'Charisma'),
+    '0x000002C7': stubRecord('AVIF', '0x000002C7', 'Agility'),
+    '0x000002C5': stubRecord('AVIF', '0x000002C5', 'Charisma'),
   });
 
   it('emits unconditional specialAgility/specialCharisma −1 addiction modifiers and skips abAddictionCount entirely', async () => {

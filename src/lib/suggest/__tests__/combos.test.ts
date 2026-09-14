@@ -1,23 +1,10 @@
-import { describe, it, expect } from 'bun:test';
-import {
-  makeBuildReducer,
-  createDefaultBuildState,
-  type BuildAction,
-  type BuildState,
-} from '@/state/build-reducer';
+import { beforeAll, describe, it, expect } from 'bun:test';
+import type { BuildAction, BuildState } from '@/state/build-reducer';
+import { stateFrom } from '@/state/__tests__/build-state-fixture';
 import { allocationOf } from '@/lib/build-rules';
 import { enumerateCombos } from '@/lib/suggest/combos';
 import { comboCharts, evaluateSuggestions, TIED_THRESHOLD_PCT } from '@/lib/suggest/evaluate';
 import { PerkId } from '@/data/perk-ids';
-
-const buildReducer = makeBuildReducer('live');
-
-function stateFrom(
-  actions: BuildAction[],
-  from: BuildState = createDefaultBuildState(),
-): BuildState {
-  return actions.reduce(buildReducer, from);
-}
 
 const PLASMA_CASTER = 'PlasmaCaster';
 const THE_FIXER = 'CombatRifle_Fixer';
@@ -40,15 +27,6 @@ function sniperCasterState(extra: BuildAction[] = []): BuildState {
   ]);
 }
 
-function evaluatedCasterState(): BuildState {
-  return stateFrom([
-    { type: 'weapon/select', weaponId: PLASMA_CASTER },
-    { type: 'weapon/mod', slot: 'ap_gun_Barrel', omodId: CASTER_SNIPER_BARREL },
-    { type: 'special/set', stat: 'perception', value: 3 },
-    { type: 'special/set', stat: 'agility', value: 4 },
-  ]);
-}
-
 function fixerAutoState(): BuildState {
   return stateFrom([
     { type: 'weapon/select', weaponId: THE_FIXER },
@@ -60,9 +38,10 @@ function fixerAutoState(): BuildState {
 
 describe('enumerateCombos', () => {
   describe('onslaught discovery', () => {
-    it('discovers expected forward pieces on a clean sniper Plasma Caster', () => {
+    it('discovers expected forward pieces on a clean sniper Plasma Caster, with Gunslinger Master only in the reverse variant', () => {
       const combos = enumerateCombos(sniperCasterState(), 'live', 'vats');
       const forward = combos.find((c) => c.id === 'combo:onslaught-forward');
+      const reverse = combos.find((c) => c.id === 'combo:onslaught-reverse');
       expect(forward).toBeDefined();
       expect(forward!.comboPieces).toEqual(
         expect.arrayContaining([
@@ -73,21 +52,21 @@ describe('enumerateCombos', () => {
         ]),
       );
       expect(forward!.comboPieces).not.toContain(`perk:${GUNSLINGER_MASTER}`);
-    });
-
-    it('includes Gunslinger Master only in the reverse variant', () => {
-      const combos = enumerateCombos(sniperCasterState(), 'live', 'vats');
-      const forward = combos.find((c) => c.id === 'combo:onslaught-forward');
-      const reverse = combos.find((c) => c.id === 'combo:onslaught-reverse');
       expect(reverse).toBeDefined();
       expect(reverse!.comboPieces).toContain(`perk:${GUNSLINGER_MASTER}`);
-      expect(forward!.comboPieces).not.toContain(`perk:${GUNSLINGER_MASTER}`);
     });
   });
 
   describe('aggregate value (historical blindness case)', () => {
     it('surfaces Full Reverse Onslaught with a large positive delta when constituents chart ≈0', () => {
-      const report = evaluateSuggestions(evaluatedCasterState(), 'live', 'vats');
+      const report = evaluateSuggestions(
+        sniperCasterState([
+          { type: 'special/set', stat: 'perception', value: 3 },
+          { type: 'special/set', stat: 'agility', value: 4 },
+        ]),
+        'live',
+        'vats',
+      );
       expect(report.baseline).not.toBeNull();
 
       const reverse = report.suggestions.find((s) => s.family === 'combo:onslaught-reverse');
@@ -107,8 +86,12 @@ describe('enumerateCombos', () => {
   });
 
   describe('fast-weapon policy semantics', () => {
+    let report: ReturnType<typeof evaluateSuggestions>;
+    beforeAll(() => {
+      report = evaluateSuggestions(fixerAutoState(), 'live', 'vats');
+    });
+
     it('comboCharts: door-closed / margin / positive on auto Fixer where Furious alone charts', () => {
-      const report = evaluateSuggestions(fixerAutoState(), 'live', 'vats');
       const furious = report.suggestions.find(
         (s) => s.group === 'legendary' && s.id.endsWith(`:${FURIOUS_1STAR}`),
       );
@@ -126,7 +109,6 @@ describe('enumerateCombos', () => {
     });
 
     it('still surfaces the Onslaught bundle under the default positive policy', () => {
-      const report = evaluateSuggestions(fixerAutoState(), 'live', 'vats');
       const onslaught = report.suggestions.find(
         (s) => s.group === 'combo' && s.family === 'combo:onslaught-forward',
       );
@@ -137,9 +119,7 @@ describe('enumerateCombos', () => {
 
   describe('degenerate suppression', () => {
     it('does not emit a bundle when only one new piece remains', () => {
-      const state = stateFrom([
-        { type: 'weapon/select', weaponId: PLASMA_CASTER },
-        { type: 'weapon/mod', slot: 'ap_gun_Barrel', omodId: CASTER_SNIPER_BARREL },
+      const state = sniperCasterState([
         { type: 'special/set', stat: 'perception', value: 3 },
         { type: 'special/set', stat: 'agility', value: 15 },
         { type: 'perk/add', perkId: GUERRILLA_EXPERT, rank: 3, legendary: false },
@@ -149,9 +129,7 @@ describe('enumerateCombos', () => {
       const combos = enumerateCombos(state, 'live', 'vats');
       expect(combos.find((c) => c.id === 'combo:onslaught-forward')).toBeUndefined();
 
-      const onlyGsmMissing = stateFrom([
-        { type: 'weapon/select', weaponId: PLASMA_CASTER },
-        { type: 'weapon/mod', slot: 'ap_gun_Barrel', omodId: CASTER_SNIPER_BARREL },
+      const onlyGsmMissing = sniperCasterState([
         { type: 'special/set', stat: 'perception', value: 3 },
         { type: 'special/set', stat: 'agility', value: 15 },
         { type: 'weapon/legendary', slotIndex: 0, omodId: FURIOUS_1STAR },
@@ -213,9 +191,7 @@ describe('enumerateCombos', () => {
 
   describe('no-slot skip', () => {
     it('emits a bundle without weapon legendary pieces when all slots are full', () => {
-      const state = stateFrom([
-        { type: 'weapon/select', weaponId: PLASMA_CASTER },
-        { type: 'weapon/mod', slot: 'ap_gun_Barrel', omodId: CASTER_SNIPER_BARREL },
+      const state = sniperCasterState([
         { type: 'weapon/legendary', slotIndex: 0, omodId: 'mod_Legendary_Weapon2_DmgCrits' },
         { type: 'weapon/legendary', slotIndex: 1, omodId: 'mod_Legendary_Weapon3_StatLuck' },
         { type: 'weapon/legendary', slotIndex: 2, omodId: 'mod_Legendary_Weapon3_CritSpeed' },

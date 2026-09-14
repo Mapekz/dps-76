@@ -3,104 +3,52 @@ import type { GeneratedOmod, GeneratedWeapon } from '../../../src/types/generate
 import type { EsmRecord } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
 import { extractUniques, isExcludedIdentityOmod } from '../extract-uniques';
-import { hiddenOmodIds } from '../../../src/data/overrides/omod-corrections';
+import { minimalOmod, minimalWeapon } from './esm-stubs';
 import doubleBarrel from './fixtures/weap-double-barrel-shotgun.json';
 
 const omods: GeneratedOmod[] = [
-  {
+  minimalOmod({
     id: 'mod_Custom_SaltOfTheEarth',
     formId: '0x008F0DCD',
     name: 'Salt Of The Earth',
-    description: '',
-    attachPointFormId: '0x0047A264',
-    attachPointEdid: 'ap_customName',
-    targetKeywords: [],
-    modifiers: [],
     addedKeywords: ['ObjectTypeUnique'],
-    hasEnchantments: false,
-  },
-  {
+  }),
+  minimalOmod({
     id: 'mod_Legendary_Weapon1_Guns_AmmoCapacity4x',
     formId: '0x004F6AB1',
     name: 'Quad',
-    description: '',
     attachPointFormId: '0x004E89A8',
     attachPointEdid: 'ap_Legendary1',
-    targetKeywords: [],
-    modifiers: [],
-    addedKeywords: [],
-    hasEnchantments: false,
-  },
-  {
+  }),
+  minimalOmod({
     id: 'mod_Legendary_Weapon3_Guns_ReloadSpeed',
     formId: '0x00524150',
     name: 'Swift',
-    description: '',
     attachPointFormId: '0x004E89A9',
     attachPointEdid: 'ap_Legendary3',
-    targetKeywords: [],
-    modifiers: [],
-    addedKeywords: [],
-    hasEnchantments: false,
-  },
-  {
+  }),
+  minimalOmod({
     id: 'mod_custom_Coldshoulder_DmgvsCryptid',
     formId: '0x00690C7D',
     name: 'Paranormal Mod',
-    description: '',
-    attachPointFormId: '0x0047A264',
-    attachPointEdid: 'ap_customName',
-    targetKeywords: [],
-    modifiers: [],
     addedKeywords: ['ObjectTypeUnique'],
-    hasEnchantments: false,
-  },
-  {
+  }),
+  minimalOmod({
     id: 'mod_DoubleBarrelShotgun_Receiver_FastTrigger-HipAccuracy',
     formId: '0x0029D4C4',
     name: 'Steadfast',
-    description: '',
     attachPointFormId: '0x00024004',
     attachPointEdid: 'ap_gun_Receiver',
-    targetKeywords: [],
-    modifiers: [],
-    addedKeywords: [],
-    hasEnchantments: false,
-  },
+  }),
 ];
 
 const weapons: GeneratedWeapon[] = [
-  {
+  minimalWeapon({
     id: 'DoubleBarrelShotgun',
     formId: '0x00092217',
     name: 'Double-Barrel Shotgun',
-    weaponTypeName: 'Gun',
-    keywords: [],
-    components: [
-      { damageType: 'ballistic', damageTypeEdid: null, amount: 1, tier: 1, curve: null },
-    ],
-    isAutomaticFlag: false,
-    critDamageMult: 2,
-    critChargeBonus: 1,
-    sneakAttackMult: 2,
-    speed: 1,
-    attackDelaySec: 0,
-    animationAttackSec: 0,
-    animationFireSec: 0,
-    reloadSpeed: 1,
-    capacity: 2,
-    ammoPerShot: 1,
-    actionPointCost: 0,
-    projectileCount: 1,
-    reach: 1,
-    secondaryDamage: 0,
-    damageBonusMult: 1,
     eligibleLevels: [50],
-    templateModFormIds: [],
-    defaultModFormIds: [],
-    attachParentSlots: [],
-    modifiers: [],
-  },
+  }),
 ];
 
 // Real formIds from the live ESM (verified 2026-07-15, Foundation's Vengeance
@@ -119,19 +67,13 @@ const stubClient = createInMemoryEsmSource({
 });
 
 describe('isExcludedIdentityOmod', () => {
-  const base: GeneratedOmod = {
+  const base = minimalOmod({
     id: 'ATX_mod_44_Weapon_Custom_Lawbringer',
     formId: '0x0090AB94',
     name: 'Lawbringer',
-    description: '',
-    attachPointFormId: '0x0047A264',
-    attachPointEdid: 'ap_customName',
     targetKeywords: ['ma_44'],
-    modifiers: [],
-    addedKeywords: [],
-    hasEnchantments: false,
     obtainable: true,
-  };
+  });
 
   it('allows obtainable ap_customName mods without ObjectTypeUnique', () => {
     expect(isExcludedIdentityOmod(base)).toBe(false);
@@ -182,19 +124,13 @@ describe('extractUniques', () => {
   });
 
   it('prefers identity OMOD Name over Combination.Name (combo "Default" → "Love Tap")', async () => {
-    const loveTapOmod: GeneratedOmod = {
+    const loveTapOmod = minimalOmod({
       id: 'E09C_mod_Custom_LoveTap',
       formId: '0x00663B0C',
       name: 'Love Tap',
-      description: '',
-      attachPointFormId: '0x0047A264',
-      attachPointEdid: 'ap_customName',
-      targetKeywords: [],
-      modifiers: [],
       addedKeywords: ['ObjectTypeUnique'],
-      hasEnchantments: false,
       obtainable: true,
-    };
+    });
     const comboFixture = {
       ...doubleBarrel,
       fields: {
@@ -226,32 +162,22 @@ describe('extractUniques', () => {
 
   it('uses distinct OMOD names for Tesla presets (V63-BERTHA vs Night Light)', async () => {
     const teslaMods: GeneratedOmod[] = [
-      {
+      minimalOmod({
         id: 'mod_custom_V63-BERTHA_customName',
         formId: '0x0075C3B7',
         name: 'V63-BERTHA',
-        description: '',
-        attachPointFormId: '0x0047A264',
-        attachPointEdid: 'ap_customName',
         targetKeywords: ['DLC01ma_LightningGun'],
-        modifiers: [],
         addedKeywords: ['ObjectTypeUnique'],
-        hasEnchantments: false,
         obtainable: true,
-      },
-      {
+      }),
+      minimalOmod({
         id: 'mod_Custom_NightLight',
         formId: '0x008F0DD3',
         name: 'Night Light',
-        description: '',
-        attachPointFormId: '0x0047A264',
-        attachPointEdid: 'ap_customName',
         targetKeywords: ['DLC01ma_LightningGun'],
-        modifiers: [],
         addedKeywords: ['ObjectTypeUnique'],
-        hasEnchantments: false,
         obtainable: true,
-      },
+      }),
     ];
     const teslaFixture = {
       ...doubleBarrel,
@@ -294,19 +220,13 @@ describe('extractUniques', () => {
   });
 
   it('prefers obtainable base weapons when identity mod is shared (Love Tap regression)', async () => {
-    const sharedIdentityOmod: GeneratedOmod = {
+    const sharedIdentityOmod = minimalOmod({
       id: 'mod_Custom_TestShared',
       formId: '0x00TEST001',
       name: 'Test Shared Unique',
-      description: '',
-      attachPointFormId: '0x0047A264',
-      attachPointEdid: 'ap_customName',
-      targetKeywords: [],
-      modifiers: [],
       addedKeywords: ['ObjectTypeUnique'],
-      hasEnchantments: false,
       obtainable: true,
-    };
+    });
     const identityCombo = {
       Combination: {
         Name: 'Default',
@@ -337,47 +257,17 @@ describe('extractUniques', () => {
       },
       resolveEdidFallback: () => '<unresolved>',
     });
-    const baseWeaponFields = {
-      weaponTypeName: 'Gun',
-      keywords: [],
-      components: [
-        { damageType: 'ballistic' as const, damageTypeEdid: null, amount: 1, tier: 1, curve: null },
-      ],
-      isAutomaticFlag: false,
-      critDamageMult: 2,
-      critChargeBonus: 1,
-      sneakAttackMult: 2,
-      speed: 1,
-      attackDelaySec: 0,
-      animationAttackSec: 0,
-      animationFireSec: 0,
-      reloadSpeed: 1,
-      capacity: 2,
-      ammoPerShot: 1,
-      actionPointCost: 0,
-      projectileCount: 1,
-      reach: 1,
-      secondaryDamage: 0,
-      damageBonusMult: 1,
-      eligibleLevels: [50],
-      templateModFormIds: [],
-      defaultModFormIds: [],
-      attachParentSlots: [],
-      modifiers: [],
-    };
-    const unobtainableWeapon: GeneratedWeapon = {
+    const unobtainableWeapon = minimalWeapon({
       id: 'LegacyShell_Weapon',
       formId: '0xAAAA0001',
       name: 'Legacy Shell',
-      ...baseWeaponFields,
       obtainable: false,
-    };
-    const obtainableWeapon: GeneratedWeapon = {
+    });
+    const obtainableWeapon = minimalWeapon({
       id: 'GenericWeapon',
       formId: '0xAAAA0002',
       name: 'Generic Weapon',
-      ...baseWeaponFields,
-    };
+    });
     const { uniques, skipped } = await extractUniques(
       client,
       [unobtainableWeapon, obtainableWeapon],
@@ -396,32 +286,21 @@ describe('extractUniques', () => {
 
   it('emits COBJ-granted sibling identity mods sharing a target-keyword gate', async () => {
     const cosmicMods: GeneratedOmod[] = [
-      {
+      minimalOmod({
         id: 'mod_custom_CosmicKnife',
         formId: '0x00832CB6',
         name: 'Cosmic Knife',
-        description: '',
-        attachPointFormId: '0x0047A264',
-        attachPointEdid: 'ap_customName',
         targetKeywords: ['ma_CosmicKnife'],
-        modifiers: [],
         addedKeywords: ['ObjectTypeUnique'],
-        hasEnchantments: false,
         obtainable: true,
-      },
-      {
+      }),
+      minimalOmod({
         id: 'mod_custom_CosmicKnife_Superheated',
         formId: '0x00837E13',
         name: 'Cosmic Knife Super-Heated',
-        description: '',
-        attachPointFormId: '0x0047A264',
-        attachPointEdid: 'ap_customName',
         targetKeywords: ['ma_CosmicKnife'],
-        modifiers: [],
-        addedKeywords: [],
-        hasEnchantments: false,
         obtainable: true,
-      },
+      }),
     ];
     const cosmicFixture = {
       ...doubleBarrel,
@@ -461,87 +340,49 @@ describe('extractUniques', () => {
 
 describe('extractUniques (variant container presets)', () => {
   const camdenVariants: GeneratedOmod[] = [
-    {
+    minimalOmod({
       id: 'mod_Custom_CamdenWhacker_Bleed',
       formId: '0x008EDF27',
       name: 'Camden Whacker (Bleed)',
-      description: '',
-      attachPointFormId: '0x0047A264',
-      attachPointEdid: 'ap_customName',
-      targetKeywords: [],
-      modifiers: [],
-      addedKeywords: [],
       hasEnchantments: true,
       variantOf: 'mod_Custom_CamdenWhacker',
-    },
-    {
+    }),
+    minimalOmod({
       id: 'mod_Custom_CamdenWhacker_Poison',
       formId: '0x008EDF2C',
       name: 'Camden Whacker (Poison)',
-      description: '',
-      attachPointFormId: '0x0047A264',
-      attachPointEdid: 'ap_customName',
-      targetKeywords: [],
-      modifiers: [],
-      addedKeywords: [],
       hasEnchantments: true,
       variantOf: 'mod_Custom_CamdenWhacker',
-    },
-    {
+    }),
+    minimalOmod({
       id: 'mod_Custom_CamdenWhacker_Fire',
       formId: '0x008EDF2B',
       name: 'Camden Whacker (Fire)',
-      description: '',
-      attachPointFormId: '0x0047A264',
-      attachPointEdid: 'ap_customName',
-      targetKeywords: [],
-      modifiers: [],
-      addedKeywords: [],
       hasEnchantments: true,
       variantOf: 'mod_Custom_CamdenWhacker',
-    },
-    {
+    }),
+    minimalOmod({
       id: 'mod_Custom_CamdenWhacker_Cryo',
       formId: '0x008EDF2A',
       name: 'Camden Whacker (Cryo)',
-      description: '',
-      attachPointFormId: '0x0047A264',
-      attachPointEdid: 'ap_customName',
-      targetKeywords: [],
-      modifiers: [],
-      addedKeywords: [],
-      hasEnchantments: false,
       variantOf: 'mod_Custom_CamdenWhacker',
-    },
-    {
+    }),
+    minimalOmod({
       id: 'mod_Custom_CamdenWhacker_Energy',
       formId: '0x008EDF28',
       name: 'Camden Whacker (Energy)',
-      description: '',
-      attachPointFormId: '0x0047A264',
-      attachPointEdid: 'ap_customName',
-      targetKeywords: [],
-      modifiers: [],
-      addedKeywords: [],
-      hasEnchantments: false,
       variantOf: 'mod_Custom_CamdenWhacker',
-    },
-    {
+    }),
+    minimalOmod({
       id: 'mod_Custom_CamdenWhacker_RAD',
       formId: '0x008EDF29',
       // resolveVariantDisplayName title-cases the all-caps "RAD" suffix
       // token — see resolveVariantDisplayName's acronym test in
       // extract-omods.test.ts.
       name: 'Camden Whacker (Rad)',
-      description: '',
-      attachPointFormId: '0x0047A264',
-      attachPointEdid: 'ap_customName',
-      targetKeywords: [],
-      modifiers: [],
-      addedKeywords: [],
       hasEnchantments: true,
       variantOf: 'mod_Custom_CamdenWhacker',
-    },
+    }),
   ];
 
   const commieWhacker = {
@@ -603,11 +444,5 @@ describe('extractUniques (variant container presets)', () => {
       mods: { ap_customName: 'mod_Custom_CamdenWhacker_Bleed' },
     });
     expect(camdenPresets[0].variantIds).toHaveLength(6);
-  });
-
-  it('does not emit P62 Drifter presets when identity mods are hidden', () => {
-    expect(hiddenOmodIds.has('P62_Mod_Custom_Splinter_CustomName')).toBe(true);
-    expect(hiddenOmodIds.has('P62_Mod_Custom_Tempest_CustomName')).toBe(true);
-    expect(hiddenOmodIds.has('P62_Mod_Custom_ChaosEngine_CustomName')).toBe(true);
   });
 });

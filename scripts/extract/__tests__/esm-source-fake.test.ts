@@ -1,12 +1,9 @@
 import { describe, it, expect } from 'bun:test';
 import type { EsmListRow, EsmRecord, EsmRefRow } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
+import { stubRecord } from './esm-stubs';
 
-const rec = (formId: string, editorId: string): EsmRecord => ({
-  header: { signature: 'WEAP', form_id: formId },
-  editor_id: editorId,
-  fields: {},
-});
+const rec = (formId: string, editorId: string): EsmRecord => stubRecord('WEAP', formId, editorId);
 
 const row = (
   formId: string,

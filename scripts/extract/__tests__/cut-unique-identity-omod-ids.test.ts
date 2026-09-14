@@ -19,8 +19,7 @@ const EXPECTED_IDS = [
 ] as const;
 
 describe('cutUniqueIdentityOmodIds', () => {
-  it('is a non-empty subset of hiddenOmodIds', () => {
-    expect(cutUniqueIdentityOmodIds.size).toBeGreaterThan(0);
+  it('is a subset of hiddenOmodIds', () => {
     for (const id of cutUniqueIdentityOmodIds) {
       expect(hiddenOmodIds.has(id)).toBe(true);
     }
@@ -28,6 +27,5 @@ describe('cutUniqueIdentityOmodIds', () => {
 
   it('contains exactly the four expected identity-attach-point ids', () => {
     expect([...cutUniqueIdentityOmodIds].sort()).toEqual([...EXPECTED_IDS].sort());
-    expect(cutUniqueIdentityOmodIds.size).toBe(EXPECTED_IDS.length);
   });
 });

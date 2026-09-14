@@ -15,13 +15,15 @@ import { PerkId } from '@/data/perk-ids';
 import { createDefaultEnemyConfig, createDefaultPlayerConfig, type PlayerConfig } from '@/types';
 import {
   BATTLE_LOADERS,
+  BODY_JETPACK,
   ctx,
+  DEEP_POCKETED,
   effectiveValue,
   EMERGENCY_PROTOCOLS,
   LIMIT_BREAKING,
   STRENGTH_2STAR,
   UNYIELDING,
-} from './armor-test-helpers';
+} from '@/data/__tests__/armor-test-helpers';
 
 describe('getArmorTierUsage', () => {
   it('sums selected counts within a tier and ignores misc/unknown ids', () => {
@@ -209,10 +211,13 @@ describe('getArmorEffectModifiers + getArmorEffectWornPieceCounts: self-scaling 
 describe('Number Cruncher exemption: armor selections never feed scaledByWeaponApCost', () => {
   const nc = getLoadoutModifiers('live', [{ perkId: PerkId.NumberCruncher, rank: 1 }]);
 
-  function resolve(armorEffects: Record<string, number>) {
+  const fullArmor = () => ({ [BATTLE_LOADERS]: 5, [UNYIELDING]: 5, [STRENGTH_2STAR]: 5 });
+
+  function resolve(armorEffects: Record<string, number>, perks: PlayerConfig['perks'] = []) {
     const playerConfig: PlayerConfig = {
       ...createDefaultPlayerConfig(),
       weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
+      perks,
       armorEffects,
     };
     const result = resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live');
@@ -222,44 +227,21 @@ describe('Number Cruncher exemption: armor selections never feed scaledByWeaponA
 
   it("the effective weapon's apCost is identical with and without armor selections", () => {
     const bare = resolve({});
-    const withArmor = resolve({ [BATTLE_LOADERS]: 5, [UNYIELDING]: 5, [STRENGTH_2STAR]: 5 });
+    const withArmor = resolve(fullArmor());
     expect(withArmor.weapon.apCost).toBe(bare.weapon.apCost);
   });
 
   it("Number Cruncher's dbm scaling is unaffected by armor selections (same weapon, same perk)", () => {
-    const bareMods = [...nc];
-    const armorMods = getArmorEffectModifiers('live', {
-      [BATTLE_LOADERS]: 5,
-      [UNYIELDING]: 5,
-      [STRENGTH_2STAR]: 5,
-    });
-    const bare = resolveLoadout(
-      {
-        ...createDefaultPlayerConfig(),
-        weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
-        perks: [{ perkId: PerkId.NumberCruncher, rank: 1 }],
-      },
-      createDefaultEnemyConfig(),
-      'live',
-    )!;
-    const withArmor = resolveLoadout(
-      {
-        ...createDefaultPlayerConfig(),
-        weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
-        perks: [{ perkId: PerkId.NumberCruncher, rank: 1 }],
-        armorEffects: { [BATTLE_LOADERS]: 5, [UNYIELDING]: 5, [STRENGTH_2STAR]: 5 },
-      },
-      createDefaultEnemyConfig(),
-      'live',
-    )!;
+    const perks = [{ perkId: PerkId.NumberCruncher, rank: 1 }];
+    const bare = resolve({}, perks);
+    const withArmor = resolve(fullArmor(), perks);
     expect(withArmor.weapon.apCost).toBe(bare.weapon.apCost);
-    expect(bareMods.length).toBeGreaterThan(0);
-    expect(armorMods.length).toBeGreaterThan(0);
+    expect(nc.length).toBeGreaterThan(0);
+    expect(getArmorEffectModifiers('live', fullArmor()).length).toBeGreaterThan(0);
   });
 });
 
 describe('wrongArmorTypeEffects', () => {
-  const UNYIELDING = 'mod_Legendary_Armor1_LowHealthIncreasesStats';
   const PROPPELLING = 'mod_Legendary_PowerArmor4_Propelling';
   const CASUAL_STYLE = 'mod_armor_UnderArmor_style_Casual';
 
@@ -275,10 +257,7 @@ describe('wrongArmorTypeEffects', () => {
 });
 
 describe('slot exclusivity feasibility', () => {
-  const DEEP_POCKETED = 'DLC03_mod_armor_Marine_Lining_Limb_ImprovedCarryCapacity2';
-  const BODY_JETPACK = 'mod_armor_BOSInfantry_JetPack';
   const PA_JETPACK = 'mod_PowerArmor_Hellcat_Torso_Misc_JetPack';
-  const EMERGENCY_PROTOCOLS = 'mod_PowerArmor_Excavator_Torso_Misc_Emergency';
 
   it('Jetpack=1 caps Deep Pocketed at 4', () => {
     const max = maxFeasibleArmorEffectCount('live', DEEP_POCKETED, { [BODY_JETPACK]: 1 });

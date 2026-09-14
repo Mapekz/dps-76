@@ -1,47 +1,12 @@
 import { describe, it, expect } from 'bun:test';
-import type { Weapon } from '@/types';
-import { createDefaultEnemyConditions } from '@/types';
 import type { ProcSource } from '@/types/procs';
-import type { ResolveContext } from '@/lib/engine/resolve';
 import { computeProcDps } from '@/lib/engine/proc-damage';
-import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
+import { makeWeapon, makeCtx } from '@/lib/engine/__tests__/engine-fixture';
 
 // computeProcDps unit tests: synthetic ProcSources, hand-computed
 // expectations. Mirrors computeDotDps's describe block (engine.test.ts) —
 // one case per trigger kind, plus charge-time independence (procs take no
 // chargeTimeSec input at all, structurally impossible to reach it).
-
-const FLAT_100 = [
-  { x: 1, y: 100 },
-  { x: 50, y: 100 },
-];
-
-function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
-  return {
-    id: 'test_rifle',
-    name: 'Test Rifle',
-    components: [{ damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
-    damageType: 'ballistic',
-    weaponClass: 'rifle',
-    isAutomatic: false,
-    isPhysical: true,
-    critDamageMult: 2.0,
-    critChargeBonus: 1.0,
-    sneakAttackMult: 2.0,
-    damageBonusMult: 1.0,
-    ...overrides,
-  };
-}
-
-function makeCtx(weapon: Weapon, overrides: Partial<ResolveContext> = {}): ResolveContext {
-  return {
-    weapon,
-    player: makeResolvedPlayer(),
-    enemy: createDefaultEnemyConditions(),
-    scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
-    ...overrides,
-  };
-}
 
 function makeProc(overrides: Partial<ProcSource> = {}): ProcSource {
   return {
@@ -179,13 +144,6 @@ describe('computeProcDps (issue #42, PROC_DAMAGE_PLAN.md commit 7)', () => {
       });
       // Test weapon is a 'rifle' — weaponClass ['heavy'] never matches.
       expect(computeProcDps([proc], 50, ctx, { magDumpSec: 1, reloadSec: 0 }, 0)).toBe(0);
-    });
-
-    it('an empty conditions array (every proc today) is vacuously active', () => {
-      const proc = makeProc({ trigger: { kind: 'reloadCycle' }, conditions: [] });
-      expect(computeProcDps([proc], 50, ctx, { magDumpSec: 1, reloadSec: 0 }, 0)).toBeGreaterThan(
-        0,
-      );
     });
   });
 

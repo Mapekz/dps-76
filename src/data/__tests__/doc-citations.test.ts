@@ -52,6 +52,23 @@ function walk(dir: string, exts: string[]): string[] {
 
 const ASSUMPTIONS_PATH = resolve(projectRoot, 'docs/assumptions.md');
 
+let assumptionsContent: string | undefined;
+function readAssumptions(): string {
+  assumptionsContent ??= readFileSync(ASSUMPTIONS_PATH, 'utf-8');
+  return assumptionsContent;
+}
+
+let sourceFiles: { file: string; content: string }[] | undefined;
+function readSourceFiles(): { file: string; content: string }[] {
+  sourceFiles ??= [
+    // Includes .json: generated data (weapons.json etc.) embeds real
+    // identifiers — ESM keyword names, bucket names — that a doc may cite.
+    ...walk(resolve(projectRoot, 'src'), ['.ts', '.tsx', '.json']),
+    ...walk(resolve(projectRoot, 'scripts'), ['.ts']),
+  ].map((file) => ({ file, content: readFileSync(file, 'utf-8') }));
+  return sourceFiles;
+}
+
 /** Matches `assumptions.md "text` or the JSON-escaped `assumptions.md \"text`
  * form; the citation text itself is read by `readWrappedCitation` below,
  * which joins comment-wrapped continuation lines rather than truncating at
@@ -103,20 +120,18 @@ function readWrappedCitation(content: string, start: number): string {
   return out.trim().replace(/\s+/g, ' ');
 }
 
+let citations: { file: string; text: string }[] | undefined;
 function collectCitations(): { file: string; text: string }[] {
-  const files = [
-    ...walk(resolve(projectRoot, 'src'), ['.ts', '.tsx', '.json']),
-    ...walk(resolve(projectRoot, 'scripts'), ['.ts']),
-  ];
+  if (citations) return citations;
   const hits: { file: string; text: string }[] = [];
-  for (const file of files) {
-    const content = readFileSync(file, 'utf-8');
+  for (const { file, content } of readSourceFiles()) {
     for (const m of content.matchAll(CITATION_START_RE)) {
       const text = readWrappedCitation(content, m.index + m[0].length);
       if (text) hits.push({ file: file.slice(projectRoot.length + 1), text });
     }
   }
-  return hits;
+  citations = hits;
+  return citations;
 }
 
 const STATUS_TAG_PREFIXES = [
@@ -142,7 +157,7 @@ const STATUS_TAG_PREFIXES = [
  * ever leads with the tag instead.
  */
 function collectAnchors(): string[] {
-  const content = readFileSync(ASSUMPTIONS_PATH, 'utf-8');
+  const content = readAssumptions();
   const anchors: string[] = [];
 
   for (const m of content.matchAll(/^#{2,3}\s+(.+)$/gm)) {
@@ -284,13 +299,9 @@ function collectDocIdentifiers(): { file: string; ident: string }[] {
 }
 
 function collectCodeSource(): string {
-  const files = [
-    // Includes .json: generated data (weapons.json etc.) embeds real
-    // identifiers — ESM keyword names, bucket names — that a doc may cite.
-    ...walk(resolve(projectRoot, 'src'), ['.ts', '.tsx', '.json']),
-    ...walk(resolve(projectRoot, 'scripts'), ['.ts']),
-  ];
-  return files.map((f) => readFileSync(f, 'utf-8')).join('\n');
+  return readSourceFiles()
+    .map(({ content }) => content)
+    .join('\n');
 }
 
 describe('doc identifier guard', () => {
@@ -379,7 +390,7 @@ const UNCITED_SECTIONS: Record<string, string> = {
 
 describe('docs/assumptions.md section coverage', () => {
   it('every section is cited from code/scripts, or allowlisted with a reason', () => {
-    const content = readFileSync(ASSUMPTIONS_PATH, 'utf-8');
+    const content = readAssumptions();
     const sections = [...content.matchAll(/^#{2,3}\s+(.+)$/gm)]
       .map((m) => m[1].trim())
       .filter((h) => !PART_HEADERS.has(h));
@@ -415,7 +426,7 @@ const PROOF_STATUS_SIGNAL_RE =
   /user[- ]confirmed|user[- ]measured|user[- ]decision|user[- ]decided|user[- ]spec(?:ified)?|user[- ]supplied|user[- ]stated|user[- ]clarified|esm[- ]proven|esm[- ]provable/i;
 
 function collectPartABullets(): { line: number; text: string }[] {
-  const content = readFileSync(ASSUMPTIONS_PATH, 'utf-8');
+  const content = readAssumptions();
   const lines = content.split('\n');
   const partAStart = lines.findIndex((l) => l.trim() === '## Part A — Unproven claims');
   const partBStart = lines.findIndex(

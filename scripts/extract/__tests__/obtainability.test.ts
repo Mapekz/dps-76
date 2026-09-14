@@ -2,7 +2,7 @@ import { describe, it, expect } from 'bun:test';
 import type { EsmRefRow } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
 import { ObtainabilityClassifier } from '../obtainability';
-import { emptyCobjIndex, type CobjIndex, type CobjInfo } from '../cobj-index';
+import { cobjIndexOf, cobjInfo, refRow } from './esm-stubs';
 import bookFastTriggerRefs from './fixtures/refs-book-fasttrigger-plan.json';
 import minigunVertibird from './fixtures/refs-minigun-vertibird.json';
 import rd01CrAssaultRifle from './fixtures/refs-rd01-crassaultrifle.json';
@@ -108,20 +108,8 @@ describe('ObtainabilityClassifier', () => {
   it('synthetic: only referencer is a _REPAIRONLY/_NOCRAFT COBJ → unobtainable, noGrantCobj', async () => {
     const client = stubClient({
       '0xWEAPON_DEAD_UNIQUE': [
-        {
-          form_id: '0xCOBJ1',
-          record_type: 'COBJ',
-          editor_id: 'co_SuperSledge_TheFarmhand_REPAIRONLY',
-          name: null,
-          depth: 1,
-        },
-        {
-          form_id: '0xCOBJ2',
-          record_type: 'COBJ',
-          editor_id: 'co_Weapon_Melee_SomeUnique_NOCRAFT',
-          name: null,
-          depth: 1,
-        },
+        refRow('COBJ', '0xCOBJ1', 'co_SuperSledge_TheFarmhand_REPAIRONLY'),
+        refRow('COBJ', '0xCOBJ2', 'co_Weapon_Melee_SomeUnique_NOCRAFT'),
       ],
     });
     const classifier = new ObtainabilityClassifier(client);
@@ -144,15 +132,7 @@ describe('ObtainabilityClassifier', () => {
     // depth 1 — so the chain-classification recursion itself is exercised
     // against real ESM data, only the entry point is fabricated.
     const client = stubClient({
-      '0xSYNTH_LVLI_ONLY_WEAPON': [
-        {
-          form_id: '0x001ACFB9',
-          record_type: 'LVLI',
-          editor_id: 'LL_Weapon_Simple_Ranged_44',
-          name: null,
-          depth: 1,
-        },
-      ],
+      '0xSYNTH_LVLI_ONLY_WEAPON': [refRow('LVLI', '0x001ACFB9', 'LL_Weapon_Simple_Ranged_44')],
       '0x001ACFB9': lvliLoot,
     });
     const classifier = new ObtainabilityClassifier(client);
@@ -166,15 +146,9 @@ describe('ObtainabilityClassifier', () => {
 
   it('synthetic: LVLI A ↔ LVLI B cycle with no terminal → unobtainable, does not hang', async () => {
     const client = stubClient({
-      '0xWEAPON_CYCLE': [
-        { form_id: '0xLVLI_A', record_type: 'LVLI', editor_id: 'LVLI_A', name: null, depth: 1 },
-      ],
-      '0xLVLI_A': [
-        { form_id: '0xLVLI_B', record_type: 'LVLI', editor_id: 'LVLI_B', name: null, depth: 1 },
-      ],
-      '0xLVLI_B': [
-        { form_id: '0xLVLI_A', record_type: 'LVLI', editor_id: 'LVLI_A', name: null, depth: 1 },
-      ],
+      '0xWEAPON_CYCLE': [refRow('LVLI', '0xLVLI_A', 'LVLI_A')],
+      '0xLVLI_A': [refRow('LVLI', '0xLVLI_B', 'LVLI_B')],
+      '0xLVLI_B': [refRow('LVLI', '0xLVLI_A', 'LVLI_A')],
     });
     const classifier = new ObtainabilityClassifier(client);
     const verdicts = await classifier.classify([{ formId: '0xWEAPON_CYCLE', edid: 'CycleWeapon' }]);
@@ -196,9 +170,7 @@ describe('ObtainabilityClassifier', () => {
 
   it('synthetic: an NPC_-only referencer is never sufficient → unobtainable, npcOnly', async () => {
     const client = stubClient({
-      '0xWEAPON_NPC': [
-        { form_id: '0xNPC1', record_type: 'NPC_', editor_id: 'SomeCreature', name: null, depth: 1 },
-      ],
+      '0xWEAPON_NPC': [refRow('NPC_', '0xNPC1', 'SomeCreature')],
     });
     const classifier = new ObtainabilityClassifier(client);
     const verdicts = await classifier.classify([{ formId: '0xWEAPON_NPC', edid: 'NpcWeapon' }]);
@@ -209,24 +181,8 @@ describe('ObtainabilityClassifier', () => {
 
   it('synthetic: a WEAP referencer rides along only when that weapon is already obtainable', async () => {
     const client = stubClient({
-      '0xOMOD_OK': [
-        {
-          form_id: '0xWEAPON_OK',
-          record_type: 'WEAP',
-          editor_id: 'SomeWeaponEdid',
-          name: null,
-          depth: 1,
-        },
-      ],
-      '0xOMOD_BAD': [
-        {
-          form_id: '0xWEAPON_BAD',
-          record_type: 'WEAP',
-          editor_id: 'OtherWeaponEdid',
-          name: null,
-          depth: 1,
-        },
-      ],
+      '0xOMOD_OK': [refRow('WEAP', '0xWEAPON_OK', 'SomeWeaponEdid')],
+      '0xOMOD_BAD': [refRow('WEAP', '0xWEAPON_BAD', 'OtherWeaponEdid')],
     });
     const classifier = new ObtainabilityClassifier(client, new Set(['0xWEAPON_OK']));
     const verdicts = await classifier.classify([
@@ -241,24 +197,8 @@ describe('ObtainabilityClassifier', () => {
 
   it('synthetic: an ARMO referencer rides along only when that armor piece is already obtainable (Phase 3 armor pipeline, 2026-07-18)', async () => {
     const client = stubClient({
-      '0xOMOD_OK': [
-        {
-          form_id: '0xARMO_OK',
-          record_type: 'ARMO',
-          editor_id: 'SomeArmorEdid',
-          name: null,
-          depth: 1,
-        },
-      ],
-      '0xOMOD_BAD': [
-        {
-          form_id: '0xARMO_BAD',
-          record_type: 'ARMO',
-          editor_id: 'OtherArmorEdid',
-          name: null,
-          depth: 1,
-        },
-      ],
+      '0xOMOD_OK': [refRow('ARMO', '0xARMO_OK', 'SomeArmorEdid')],
+      '0xOMOD_BAD': [refRow('ARMO', '0xARMO_BAD', 'OtherArmorEdid')],
     });
     const classifier = new ObtainabilityClassifier(
       client,
@@ -318,24 +258,8 @@ describe('ObtainabilityClassifier', () => {
     // Same shape as the Sarsaparilla machine, but the activator has no COBJ —
     // a world activator that merely holds a loot list proves nothing.
     const client = stubClient({
-      '0xALCH_VIA_WORLD_ACTI': [
-        {
-          form_id: '0xLVLI_X',
-          record_type: 'LVLI',
-          editor_id: 'LL_SomeDispenser',
-          name: null,
-          depth: 1,
-        },
-      ],
-      '0xLVLI_X': [
-        {
-          form_id: '0xACTI_X',
-          record_type: 'ACTI',
-          editor_id: 'SomeWorldActivator',
-          name: null,
-          depth: 1,
-        },
-      ],
+      '0xALCH_VIA_WORLD_ACTI': [refRow('LVLI', '0xLVLI_X', 'LL_SomeDispenser')],
+      '0xLVLI_X': [refRow('ACTI', '0xACTI_X', 'SomeWorldActivator')],
       '0xACTI_X': [
         { form_id: '0xREFR_X', record_type: 'REFR', editor_id: null, name: null, depth: 1 },
       ],
@@ -392,38 +316,6 @@ describe('ObtainabilityClassifier', () => {
   });
 });
 
-/** Minimal CobjInfo factory for learn-method-gated tests. */
-function cobjInfo(overrides: Partial<CobjInfo> & Pick<CobjInfo, 'formId' | 'edid'>): CobjInfo {
-  return {
-    createdObjectFormId: null,
-    learnMethod: null,
-    repairMethod: null,
-    learnRecipeFrom: null,
-    ...overrides,
-  };
-}
-
-function indexOf(...infos: CobjInfo[]): CobjIndex {
-  const index = emptyCobjIndex();
-  for (const info of infos) {
-    index.byFormId.set(info.formId, info);
-    if (info.createdObjectFormId) {
-      const list = index.byCreatedObject.get(info.createdObjectFormId) ?? [];
-      list.push(info);
-      index.byCreatedObject.set(info.createdObjectFormId, list);
-    }
-  }
-  return index;
-}
-
-const COBJ_REF = (formId: string, edid: string): EsmRefRow => ({
-  form_id: formId,
-  record_type: 'COBJ',
-  editor_id: edid,
-  name: null,
-  depth: 1,
-});
-
 describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () => {
   it('plan-taught recipe (Learn Method 4) with an obtainable BOOK → obtainable, cobjBook', async () => {
     // refs-book-fasttrigger-plan.json is the REAL captured refs of BOOK
@@ -433,20 +325,14 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
     // junk-named), so proof must come through the vendor LVLI chase — stubbed
     // here to reach a CONT vendor chest in one hop.
     const client = stubClient({
-      '0xOMOD_PLAN': [COBJ_REF('0x00525025', 'co_mod_AssaultRifle_Receiver_FastTrigger-CritDMG')],
+      '0xOMOD_PLAN': [
+        refRow('COBJ', '0x00525025', 'co_mod_AssaultRifle_Receiver_FastTrigger-CritDMG'),
+      ],
       '0x00000871': bookFastTriggerRefs,
       // First vendor LVLI in the book's refs → a vendor container.
-      '0x003EC64A': [
-        {
-          form_id: '0xCONT_V',
-          record_type: 'CONT',
-          editor_id: 'LC060_WhitespringVendorChest_BoS',
-          name: null,
-          depth: 1,
-        },
-      ],
+      '0x003EC64A': [refRow('CONT', '0xCONT_V', 'LC060_WhitespringVendorChest_BoS')],
     });
-    const index = indexOf(
+    const index = cobjIndexOf(
       cobjInfo({
         formId: '0x00525025',
         edid: 'co_mod_AssaultRifle_Receiver_FastTrigger-CritDMG',
@@ -470,21 +356,15 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
 
   it('plan-taught recipe whose BOOK reaches nothing → unobtainable, cobjBookUnproven', async () => {
     const client = stubClient({
-      '0xOMOD_CUT': [COBJ_REF('0xCOBJ_CUT', 'co_mod_Cut_Content')],
+      '0xOMOD_CUT': [refRow('COBJ', '0xCOBJ_CUT', 'co_mod_Cut_Content')],
       // The BOOK's only referencers: the teaching COBJ (circular) and an
       // exclusion FLST — neither proves a player can get the plan.
       '0xBOOK_CUT': [
-        COBJ_REF('0xCOBJ_CUT', 'co_mod_Cut_Content'),
-        {
-          form_id: '0xFLST_EX',
-          record_type: 'FLST',
-          editor_id: 'BabylonExcludeList',
-          name: null,
-          depth: 1,
-        },
+        refRow('COBJ', '0xCOBJ_CUT', 'co_mod_Cut_Content'),
+        refRow('FLST', '0xFLST_EX', 'BabylonExcludeList'),
       ],
     });
-    const index = indexOf(
+    const index = cobjIndexOf(
       cobjInfo({
         formId: '0xCOBJ_CUT',
         edid: 'co_mod_Cut_Content',
@@ -509,39 +389,15 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
     // the general cap of 4 this is a truncated false; the book chase's own
     // cap must walk it to the CONT terminal.
     const chain: Record<string, TestRefsEntry> = {
-      '0xOMOD_VENDOR': [COBJ_REF('0xCOBJ_VENDOR', 'co_mod_Vendor_Taught')],
-      '0xBOOK_VENDOR': [
-        {
-          form_id: '0xLVL1',
-          record_type: 'LVLI',
-          editor_id: 'LLS_Recipes_L1',
-          name: null,
-          depth: 1,
-        },
-      ],
+      '0xOMOD_VENDOR': [refRow('COBJ', '0xCOBJ_VENDOR', 'co_mod_Vendor_Taught')],
+      '0xBOOK_VENDOR': [refRow('LVLI', '0xLVL1', 'LLS_Recipes_L1')],
     };
     for (let i = 1; i < 8; i++) {
-      chain[`0xLVL${i}`] = [
-        {
-          form_id: `0xLVL${i + 1}`,
-          record_type: 'LVLI',
-          editor_id: `LL_Recipes_L${i + 1}`,
-          name: null,
-          depth: 1,
-        },
-      ];
+      chain[`0xLVL${i}`] = [refRow('LVLI', `0xLVL${i + 1}`, `LL_Recipes_L${i + 1}`)];
     }
-    chain['0xLVL8'] = [
-      {
-        form_id: '0xCONT_VENDOR',
-        record_type: 'CONT',
-        editor_id: 'VendorChest',
-        name: null,
-        depth: 1,
-      },
-    ];
+    chain['0xLVL8'] = [refRow('CONT', '0xCONT_VENDOR', 'VendorChest')];
     const client = stubClient(chain);
-    const index = indexOf(
+    const index = cobjIndexOf(
       cobjInfo({
         formId: '0xCOBJ_VENDOR',
         edid: 'co_mod_Vendor_Taught',
@@ -563,10 +419,10 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
 
   it('scrap-taught recipe (Learn Method 1): obtainable WEAP scrap source proves access; unobtainable one does not', async () => {
     const client = stubClient({
-      '0xOMOD_BAYONET': [COBJ_REF('0xCOBJ_BAYONET', 'co_mod_BlackPowder_Rifle_Bayonet')],
-      '0xOMOD_UNSCRAP': [COBJ_REF('0xCOBJ_UNSCRAP', 'co_mod_Cut_Scrap')],
+      '0xOMOD_BAYONET': [refRow('COBJ', '0xCOBJ_BAYONET', 'co_mod_BlackPowder_Rifle_Bayonet')],
+      '0xOMOD_UNSCRAP': [refRow('COBJ', '0xCOBJ_UNSCRAP', 'co_mod_Cut_Scrap')],
     });
-    const index = indexOf(
+    const index = cobjIndexOf(
       cobjInfo({
         formId: '0xCOBJ_BAYONET',
         edid: 'co_mod_BlackPowder_Rifle_Bayonet',
@@ -597,9 +453,9 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
 
   it('scrap-taught recipe whose scrap source is the created object itself cannot bootstrap access', async () => {
     const client = stubClient({
-      '0xOMOD_SELF': [COBJ_REF('0xCOBJ_SELF', 'co_mod_Self_Scrap')],
+      '0xOMOD_SELF': [refRow('COBJ', '0xCOBJ_SELF', 'co_mod_Self_Scrap')],
     });
-    const index = indexOf(
+    const index = cobjIndexOf(
       cobjInfo({
         formId: '0xCOBJ_SELF',
         edid: 'co_mod_Self_Scrap',
@@ -615,9 +471,9 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
 
   it('field-based NOCRAFT: a dummy-learn-from recipe is non-granting even with a clean edid', async () => {
     const client = stubClient({
-      '0xWEAP_DEAD': [COBJ_REF('0xCOBJ_DUMMY', 'co_Weapon_CleanSoundingName')],
+      '0xWEAP_DEAD': [refRow('COBJ', '0xCOBJ_DUMMY', 'co_Weapon_CleanSoundingName')],
     });
-    const index = indexOf(
+    const index = cobjIndexOf(
       cobjInfo({
         formId: '0xCOBJ_DUMMY',
         edid: 'co_Weapon_CleanSoundingName',
@@ -639,10 +495,10 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
 
   it('learn methods 0/3 and unindexed COBJs grant unconditionally (pre-index behavior)', async () => {
     const client = stubClient({
-      '0xOMOD_DEFAULT': [COBJ_REF('0xCOBJ_KNOWN', 'co_mod_Known_By_Default')],
-      '0xOMOD_NOINDEX': [COBJ_REF('0xCOBJ_MISSING', 'co_mod_Not_In_Index')],
+      '0xOMOD_DEFAULT': [refRow('COBJ', '0xCOBJ_KNOWN', 'co_mod_Known_By_Default')],
+      '0xOMOD_NOINDEX': [refRow('COBJ', '0xCOBJ_MISSING', 'co_mod_Not_In_Index')],
     });
-    const index = indexOf(
+    const index = cobjIndexOf(
       cobjInfo({
         formId: '0xCOBJ_KNOWN',
         edid: 'co_mod_Known_By_Default',

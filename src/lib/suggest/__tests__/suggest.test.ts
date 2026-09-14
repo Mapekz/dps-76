@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'bun:test';
+import { beforeAll, describe, it, expect } from 'bun:test';
+import { createDefaultBuildState, type BuildState } from '@/state/build-reducer';
 import {
-  makeBuildReducer,
-  createDefaultBuildState,
-  type BuildAction,
-  type BuildState,
-} from '@/state/build-reducer';
+  buildReducer,
+  fixerCenterMasochistState,
+  stateFrom,
+} from '@/state/__tests__/build-state-fixture';
 import { getPerks } from '@/data';
 import { getArmorEffects } from '@/data/armor-modifiers';
 import { computePerkBudget } from '@/data/perk-budget';
@@ -21,19 +21,7 @@ import { resolveLoadout } from '@/lib/loadout';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import { PerkId } from '@/data/perk-ids';
 
-const buildReducer = makeBuildReducer('live');
-
-function stateFrom(
-  actions: BuildAction[],
-  from: BuildState = createDefaultBuildState(),
-): BuildState {
-  return actions.reduce(buildReducer, from);
-}
-
-const fixerState = stateFrom([
-  { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
-  { type: 'perk/add', perkId: PerkId.CenterMasochist, rank: 1, legendary: false },
-]);
+const fixerCmState = fixerCenterMasochistState();
 
 // Tier-4 legendary armor effects (all engine-effective, per getArmorEffects'
 // own curation filter) used across the armor-enumeration tests below.
@@ -42,6 +30,11 @@ const ARMOR_B = 'mod_Legendary_Armor4_LimitBreak'; // Limit-Breaking
 const ARMOR_MISC = 'mod_armor_UnderArmor_style_Casual'; // Casual Style (misc, maxCount 1)
 
 describe('enumerateVariants', () => {
+  let fixerCmVariants: ReturnType<typeof enumerateVariants>;
+  beforeAll(() => {
+    fixerCmVariants = enumerateVariants(fixerCmState, 'live', 'vats');
+  });
+
   it('emits omod alternatives per slot but never the equipped option', () => {
     const withReceiver = stateFrom(
       [
@@ -51,7 +44,7 @@ describe('enumerateVariants', () => {
           omodId: 'mod_CombatRifle_Receiver_Damage-Auto',
         },
       ],
-      fixerState,
+      fixerCmState,
     );
     const variants = enumerateVariants(withReceiver, 'live', 'vats');
     const receiverMods = variants.filter((v) => v.id.startsWith('mod:ap_gun_Receiver'));
@@ -63,15 +56,7 @@ describe('enumerateVariants', () => {
     expect(receiverMods.some((v) => v.id === 'mod:ap_gun_Receiver:stock')).toBe(true);
   });
 
-  it('offers per-rank rank-ups for equipped perks and per-rank adds for damage-relevant unequipped ones', () => {
-    const variants = enumerateVariants(fixerState, 'live', 'vats');
-    const rankUp = variants.find((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2:alloc`);
-    expect(rankUp?.action).toEqual([
-      { type: 'special/set', stat: 'perception', value: 2 },
-      { type: 'perk/setRank', perkId: PerkId.CenterMasochist, rank: 2 },
-    ]);
-    expect(rankUp?.family).toBe(`perk:${PerkId.CenterMasochist}`);
-    expect(variants.some((v) => v.id.startsWith('perk-add:'))).toBe(true);
+  it('offers no candidate in the family of an equipped perk at max rank', () => {
     // Perk at max rank offers no candidate anywhere in its family (base raised
     // so the rank-up isn't merely budget-blocked — the family is genuinely empty).
     const maxed = stateFrom(
@@ -79,7 +64,7 @@ describe('enumerateVariants', () => {
         { type: 'special/set', stat: 'perception', value: 3 },
         { type: 'perk/setRank', perkId: PerkId.CenterMasochist, rank: 3 },
       ],
-      fixerState,
+      fixerCmState,
     );
     expect(
       enumerateVariants(maxed, 'live', 'vats').some(
@@ -91,40 +76,50 @@ describe('enumerateVariants', () => {
   it('turns over-budget perk rank-ups into allocation compounds', () => {
     // Base Perception 1 with its 1 card point spent (Center Masochist rank 1)
     // → the rank-up becomes [special/set, perk/setRank], not a bare illegal row.
-    const variants = enumerateVariants(fixerState, 'live', 'vats');
-    expect(variants.some((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2`)).toBe(false);
-    const rankUp = variants.find((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2:alloc`);
+    expect(fixerCmVariants.some((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2`)).toBe(
+      false,
+    );
+    const rankUp = fixerCmVariants.find(
+      (v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2:alloc`,
+    );
     expect(rankUp).toBeDefined();
     expect(rankUp!.action).toEqual([
       { type: 'special/set', stat: 'perception', value: 2 },
       { type: 'perk/setRank', perkId: PerkId.CenterMasochist, rank: 2 },
     ]);
+    expect(rankUp!.family).toBe(`perk:${PerkId.CenterMasochist}`);
     expect(rankUp!.label).toMatch(/\(\+\d+ PER\)$/);
   });
 
   it('emits one candidate per rank above current, for a multi-rank equipped perk', () => {
     // Center Masochist: maxRank 3, costs [1, 2, 3] — rank 1 is equipped in
-    // fixerState, so ranks 2 and 3 should both be offered, same family, with
+    // fixerCmState, so ranks 2 and 3 should both be offered, same family, with
     // point deltas 1 (2-1) and 2 (3-1) respectively.
     const perk = getPerks('live')[PerkId.CenterMasochist];
     expect(perk.maxRank).toBe(3);
 
-    const variants = enumerateVariants(fixerState, 'live', 'vats');
-    const rank2 = variants.find((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2:alloc`);
-    const rank3 = variants.find((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:3:alloc`);
+    const rank2 = fixerCmVariants.find(
+      (v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2:alloc`,
+    );
+    const rank3 = fixerCmVariants.find(
+      (v) => v.id === `perk-rank:${PerkId.CenterMasochist}:3:alloc`,
+    );
     expect(rank2).toBeDefined();
     expect(rank3).toBeDefined();
     expect(rank2!.family).toBe(rank3!.family);
     expect(rank2!.cost).toBe(2);
     expect(rank3!.cost).toBe(4);
     // No rank-4 (past maxRank) or rank-1 (current) candidate.
-    expect(variants.some((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:4`)).toBe(false);
-    expect(variants.some((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:1`)).toBe(false);
+    expect(fixerCmVariants.some((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:4`)).toBe(
+      false,
+    );
+    expect(fixerCmVariants.some((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:1`)).toBe(
+      false,
+    );
   });
 
   it('offers every rank 1..maxRank for unequipped damage-relevant perks', () => {
-    const variants = enumerateVariants(fixerState, 'live', 'vats');
-    const addCandidates = variants.filter((v) => v.id.startsWith('perk-add:'));
+    const addCandidates = fixerCmVariants.filter((v) => v.id.startsWith('perk-add:'));
     expect(addCandidates.length).toBeGreaterThan(0);
 
     const byPerk = new Map<string, typeof addCandidates>();
@@ -147,8 +142,9 @@ describe('enumerateVariants', () => {
   });
 
   it('offers mutation toggles in both directions', () => {
-    const variants = enumerateVariants(fixerState, 'live', 'vats');
-    const takes = variants.filter((v) => v.group === 'mutation' && v.label.startsWith('Take'));
+    const takes = fixerCmVariants.filter(
+      (v) => v.group === 'mutation' && v.label.startsWith('Take'),
+    );
     expect(takes.length).toBeGreaterThan(0);
     const firstAction = takes[0].action[0];
     const withMutation = stateFrom(
@@ -158,7 +154,7 @@ describe('enumerateVariants', () => {
           id: firstAction.type === 'mutation/toggle' ? firstAction.id : '',
         },
       ],
-      fixerState,
+      fixerCmState,
     );
     const drops = enumerateVariants(withMutation, 'live', 'vats').filter(
       (v) => v.group === 'mutation' && v.label.startsWith('Drop'),
@@ -167,10 +163,19 @@ describe('enumerateVariants', () => {
   });
 
   describe('armor effects', () => {
+    let fullTierVariants: ReturnType<typeof enumerateVariants>;
+    beforeAll(() => {
+      const fullTier = stateFrom(
+        [{ type: 'armorEffect/setCount', id: ARMOR_A, count: 5 }],
+        fixerCmState,
+      );
+      fullTierVariants = enumerateVariants(fullTier, 'live', 'vats');
+    });
+
     it('caps plain increases to the remaining per-tier budget and offers same-tier swaps', () => {
       const withA = stateFrom(
         [{ type: 'armorEffect/setCount', id: ARMOR_A, count: 3 }],
-        fixerState,
+        fixerCmState,
       );
       const variants = enumerateVariants(withA, 'live', 'vats');
 
@@ -195,29 +200,20 @@ describe('enumerateVariants', () => {
     });
 
     it('offers no plain increases anywhere in a full tier, only swaps', () => {
-      const fullTier = stateFrom(
-        [{ type: 'armorEffect/setCount', id: ARMOR_A, count: 5 }],
-        fixerState,
-      );
-      const variants = enumerateVariants(fullTier, 'live', 'vats');
-
-      const tier4Increases = variants.filter(
+      const tier4Increases = fullTierVariants.filter(
         (v) => v.group === 'armor' && v.id.startsWith('armor-count:') && v.id.includes('Armor4'),
       );
       expect(tier4Increases).toEqual([]);
 
-      const swaps = variants.filter((v) => v.id.startsWith(`armor-swap:${ARMOR_A}:${ARMOR_B}:`));
+      const swaps = fullTierVariants.filter((v) =>
+        v.id.startsWith(`armor-swap:${ARMOR_A}:${ARMOR_B}:`),
+      );
       const swapKs = swaps.map((v) => Number(v.id.split(':')[3])).sort((a, b) => a - b);
       expect(swapKs).toEqual([1, 2, 3, 4, 5]);
     });
 
     it('offers plain increases for misc effects with no per-tier cap', () => {
-      const fullTier = stateFrom(
-        [{ type: 'armorEffect/setCount', id: ARMOR_A, count: 5 }],
-        fixerState,
-      );
-      const variants = enumerateVariants(fullTier, 'live', 'vats');
-      const miscIncrease = variants.find((v) => v.id === `armor-count:${ARMOR_MISC}:1`);
+      const miscIncrease = fullTierVariants.find((v) => v.id === `armor-count:${ARMOR_MISC}:1`);
       expect(miscIncrease).toBeDefined();
       expect(miscIncrease?.group).toBe('armor');
     });
@@ -229,7 +225,7 @@ describe('enumerateVariants', () => {
 
       const withJetpack = stateFrom(
         [{ type: 'armorEffect/setCount', id: BODY_JETPACK, count: 1 }],
-        fixerState,
+        fixerCmState,
       );
       const increases = enumerateVariants(withJetpack, 'live', 'vats').filter((v) =>
         v.id.startsWith(`armor-count:${ULTRA_LIGHT}:`),
@@ -237,7 +233,7 @@ describe('enumerateVariants', () => {
       expect(increases.length).toBeGreaterThan(0);
       expect(increases.every((v) => Number(v.id.split(':')[2]) <= 4)).toBe(true);
 
-      const inPa = stateFrom([{ type: 'armorType/set', armorWorn: 'power' }], fixerState);
+      const inPa = stateFrom([{ type: 'armorType/set', armorWorn: 'power' }], fixerCmState);
       const paVariants = enumerateVariants(inPa, 'live', 'vats');
       expect(paVariants.some((v) => v.id.includes(UNYIELDING))).toBe(false);
       expect(
@@ -248,16 +244,24 @@ describe('enumerateVariants', () => {
 });
 
 describe('evaluateSuggestions', () => {
-  it('baseline equals a direct computeScenarios of the unpatched config (drift guard)', () => {
-    const report = evaluateSuggestions(fixerState, 'live', 'freeAim');
-    const direct = snapshotOf(
-      computeScenarios(resolveLoadout(fixerState.player, fixerState.enemy, 'live')!),
+  let freeAimReport: ReturnType<typeof evaluateSuggestions>;
+  let vatsReport: ReturnType<typeof evaluateSuggestions>;
+  let baselineScenarios: ReturnType<typeof computeScenarios>;
+
+  beforeAll(() => {
+    baselineScenarios = computeScenarios(
+      resolveLoadout(fixerCmState.player, fixerCmState.enemy, 'live')!,
     );
-    expect(report.baseline).toEqual(direct);
+    freeAimReport = evaluateSuggestions(fixerCmState, 'live', 'freeAim');
+    vatsReport = evaluateSuggestions(fixerCmState, 'live', 'vats');
+  });
+
+  it('baseline equals a direct computeScenarios of the unpatched config (drift guard)', () => {
+    expect(freeAimReport.baseline).toEqual(snapshotOf(baselineScenarios));
   });
 
   it('ranks by the chosen metric and computes hand-checkable deltas', () => {
-    const report = evaluateSuggestions(fixerState, 'live', 'freeAim');
+    const report = freeAimReport;
     // Center Masochist rank 2 on torso hits: +25% dbm over rank 1's +75%... rank deltas
     // are data-driven; just verify ordering and delta arithmetic consistency.
     for (const s of report.suggestions.slice(0, 20)) {
@@ -281,22 +285,20 @@ describe('evaluateSuggestions', () => {
   });
 
   it('topSuggestions splits ranked movers from <1% ties and surfaces allocation compounds', () => {
-    const report = evaluateSuggestions(fixerState, 'live', 'vats');
+    const report = vatsReport;
     const { ranked, tied } = topSuggestions(report, 8);
     expect(ranked.every((s) => s.primaryDeltaPct >= 0.01)).toBe(true);
     expect(tied.every((s) => s.primaryDeltaPct > 0 && s.primaryDeltaPct < 0.01)).toBe(true);
     expect(ranked.length).toBeLessThanOrEqual(8);
     expect(report.suggestions.some((s) => s.id.endsWith(':alloc'))).toBe(true);
-    const allocation = [
-      ...topSuggestions(report, 500).ranked,
-      ...topSuggestions(report, 500).tied,
-    ].find((s) => s.id.endsWith(':alloc'));
+    const all = topSuggestions(report, 500);
+    const allocation = [...all.ranked, ...all.tied].find((s) => s.id.endsWith(':alloc'));
     expect(allocation).toBeDefined();
     expect(allocation!.action.some((a) => a.type === 'special/set')).toBe(true);
   });
 
   it('topSuggestions defaults to structural groups only, but an explicit group set can select consumables', () => {
-    const report = evaluateSuggestions(fixerState, 'live', 'vats');
+    const report = vatsReport;
 
     const consumableOnly = topSuggestions(report, 20, 0.01, { groups: new Set(['consumable']) });
     const allConsumable = [...consumableOnly.ranked, ...consumableOnly.tied];
@@ -312,7 +314,7 @@ describe('evaluateSuggestions', () => {
     // Electrician's damage is entirely Weapon.procs (reload-cycle explosion) —
     // it never touches sustain.sustainedDps, so the pre-totalDps metric printed
     // ±0%. Rank on freeAim so AP blending cannot hide the proc stream.
-    const report = evaluateSuggestions(fixerState, 'live', 'freeAim');
+    const report = freeAimReport;
     const electrician = report.suggestions.find((s) =>
       s.id.includes('mod_Legendary_Weapon4_Guns_Electricians'),
     );
@@ -320,12 +322,11 @@ describe('evaluateSuggestions', () => {
     expect(electrician!.delta.freeAim.totalDps).toBeGreaterThan(0);
     expect(electrician!.primaryDeltaPct).toBeGreaterThan(0);
 
-    const patched = stateFrom(electrician!.action, fixerState);
+    const patched = stateFrom(electrician!.action, fixerCmState);
     const withProc = computeScenarios(resolveLoadout(patched.player, patched.enemy, 'live')!);
-    const baseline = computeScenarios(resolveLoadout(fixerState.player, fixerState.enemy, 'live')!);
     expect(withProc.freeAim.procDps).toBeGreaterThan(0);
     expect(withProc.freeAim.sustain.sustainedDps).toBeCloseTo(
-      baseline.freeAim.sustain.sustainedDps,
+      baselineScenarios.freeAim.sustain.sustainedDps,
       8,
     );
   });
@@ -374,26 +375,63 @@ describe('collapseSuggestionFamilies', () => {
     expect(result.map((r) => r.id)).toEqual(['f2:1']);
   });
 
-  it('passes size-1 families through untouched', () => {
-    const members = [fixture('f3:0', 'f3', 0, -0.05)];
-    const result = collapseSuggestionFamilies(members);
-    expect(result).toEqual(members);
-  });
+  const sizeOneRows: { name: string; member: EvaluatedSuggestion }[] = [
+    { name: 'passes size-1 families through untouched', member: fixture('f3:0', 'f3', 0, -0.05) },
+    {
+      name: 'passes a positive size-1 family through untouched',
+      member: fixture('solo:0', 'solo', 0, 0.08),
+    },
+  ];
 
-  it('collapses an all-non-positive family to a single best member', () => {
-    const members = [
-      fixture('f4:0', 'f4', 0, -0.1),
-      fixture('f4:1', 'f4', 1, 0),
-      fixture('f4:2', 'f4', 2, -0.2),
-    ];
-    const result = collapseSuggestionFamilies(members);
-    expect(result.map((r) => r.id)).toEqual(['f4:1']);
-  });
+  for (const row of sizeOneRows) {
+    it(row.name, () => {
+      const members = [row.member];
+      expect(collapseSuggestionFamilies(members)).toEqual(members);
+    });
+  }
+
+  const singleBestRows: { name: string; members: EvaluatedSuggestion[]; best: string }[] = [
+    {
+      name: 'collapses an all-non-positive family to a single best member',
+      members: [
+        fixture('f4:0', 'f4', 0, -0.1),
+        fixture('f4:1', 'f4', 1, 0),
+        fixture('f4:2', 'f4', 2, -0.2),
+      ],
+      best: 'f4:1',
+    },
+    {
+      name: 'collapses a family with no positive member to a single best row',
+      members: [
+        fixture('neg:0', 'neg', 0, -0.2),
+        fixture('neg:1', 'neg', 1, -0.05),
+        fixture('neg:2', 'neg', 2, -0.1),
+      ],
+      best: 'neg:1',
+    },
+  ];
+
+  for (const row of singleBestRows) {
+    it(row.name, () => {
+      expect(collapseSuggestionFamilies(row.members).map((r) => r.id)).toEqual([row.best]);
+    });
+  }
 
   it('leaves distinct families independent of each other', () => {
     const members = [fixture('a:0', 'a', 0, 0.05), fixture('b:0', 'b', 0, 0.1)];
     const result = collapseSuggestionFamilies(members);
     expect(result.map((r) => r.id).sort()).toEqual(['a:0', 'b:0']);
+  });
+
+  it('keeps the cheapest positive step and the best when they differ in a 4-member family', () => {
+    const members = [
+      fixture('fam:0', 'fam', 0, -0.05),
+      fixture('fam:1', 'fam', 1, 0.05),
+      fixture('fam:2', 'fam', 2, 0.12),
+      fixture('fam:3', 'fam', 3, 0.2),
+    ];
+    const result = collapseSuggestionFamilies(members);
+    expect(result.map((r) => r.id)).toEqual(['fam:1', 'fam:3']);
   });
 });
 
@@ -406,20 +444,24 @@ describe('manual-uptime sneak gate (Follow Through / Taking One for the Team)', 
   const sneaking = (state: BuildState, value: boolean): BuildState =>
     stateFrom([{ type: 'condition/set', key: 'isSneaking', value }], state);
 
+  let notSneakingCandidates: ReturnType<typeof enumerateVariants>;
+  let sneakingCandidates: ReturnType<typeof enumerateVariants>;
+  beforeAll(() => {
+    notSneakingCandidates = enumerateVariants(sneaking(fixerCmState, false), 'live', 'vats');
+    sneakingCandidates = enumerateVariants(sneaking(fixerCmState, true), 'live', 'vats');
+  });
+
   it('never suggests Follow Through while not sneaking', () => {
-    const candidates = enumerateVariants(sneaking(fixerState, false), 'live', 'vats');
-    expect(candidates.some((c) => c.id.includes(PerkId.FollowThrough))).toBe(false);
+    expect(notSneakingCandidates.some((c) => c.id.includes(PerkId.FollowThrough))).toBe(false);
   });
 
   it('suggests Follow Through while sneaking', () => {
-    const candidates = enumerateVariants(sneaking(fixerState, true), 'live', 'vats');
-    expect(candidates.some((c) => c.id.includes(PerkId.FollowThrough))).toBe(true);
+    expect(sneakingCandidates.some((c) => c.id.includes(PerkId.FollowThrough))).toBe(true);
   });
 
   it('never suggests adding Taking One for the Team while sneaking', () => {
-    const candidates = enumerateVariants(sneaking(fixerState, true), 'live', 'vats');
     expect(
-      candidates.some(
+      sneakingCandidates.some(
         (c) =>
           c.id.includes(PerkId.TakingOneForTheTeam) &&
           !c.id.startsWith('leg-perk-swap:TakingOneForTheTeam->'),
@@ -428,8 +470,7 @@ describe('manual-uptime sneak gate (Follow Through / Taking One for the Team)', 
   });
 
   it('suggests Taking One for the Team while not sneaking', () => {
-    const candidates = enumerateVariants(sneaking(fixerState, false), 'live', 'vats');
-    expect(candidates.some((c) => c.id.includes(PerkId.TakingOneForTheTeam))).toBe(true);
+    expect(notSneakingCandidates.some((c) => c.id.includes(PerkId.TakingOneForTheTeam))).toBe(true);
   });
 
   it('still offers swaps that REPLACE an equipped TOftT while sneaking', () => {
@@ -442,7 +483,7 @@ describe('manual-uptime sneak gate (Follow Through / Taking One for the Team)', 
         { type: 'perk/add', perkId: PerkId.LegendaryAgility, rank: 4, legendary: true },
         { type: 'perk/add', perkId: PerkId.LegendaryIntelligence, rank: 4, legendary: true },
       ],
-      sneaking(fixerState, true),
+      sneaking(fixerCmState, true),
     );
     const candidates = enumerateVariants(sixLegendaries, 'live', 'vats');
     expect(candidates.some((c) => c.id.startsWith('leg-perk-swap:TakingOneForTheTeam->'))).toBe(
@@ -521,6 +562,11 @@ describe('legendary swap budget soundness', () => {
     luck: 1,
   }); // sum 46 — 10 free points
 
+  let withPoolCandidates: ReturnType<typeof enumerateVariants>;
+  beforeAll(() => {
+    withPoolCandidates = enumerateVariants(withPool, 'live', 'vats');
+  });
+
   it('skips Legendary Strength swap-outs when the orphaned STR cards cannot be re-funded', () => {
     const candidates = enumerateVariants(exhausted, 'live', 'vats');
     expect(
@@ -529,8 +575,7 @@ describe('legendary swap budget soundness', () => {
   });
 
   it('emits the swap with a pool-funded allocation fix when the pool covers the deficit', () => {
-    const candidates = enumerateVariants(withPool, 'live', 'vats');
-    const swap = candidates.find(
+    const swap = withPoolCandidates.find(
       (c) =>
         c.id.startsWith(`leg-perk-swap:${PerkId.LegendaryStrength}->`) &&
         /\(\+\d+ STR\)$/.test(c.label),
@@ -564,9 +609,8 @@ describe('legendary swap budget soundness', () => {
   });
 
   it('still emits plain swaps for stats with no orphaned cards', () => {
-    const candidates = enumerateVariants(withPool, 'live', 'vats');
     expect(
-      candidates.some(
+      withPoolCandidates.some(
         (c) =>
           c.id.startsWith(`leg-perk-swap:${PerkId.LegendaryEndurance}->`) &&
           !c.label.includes('(+'),

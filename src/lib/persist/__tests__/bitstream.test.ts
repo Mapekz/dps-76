@@ -57,44 +57,36 @@ describe('BitWriter / BitReader', () => {
 
     for (const groupWidth of groupWidths) {
       const oneGroupMax = maxForWidth(groupWidth);
+      const rows: { name: string; value: number }[] = [
+        { name: `round-trips 0 with groupWidth ${groupWidth}`, value: 0 },
+        {
+          name: `round-trips exactly one group max (${oneGroupMax}) with groupWidth ${groupWidth}`,
+          value: oneGroupMax,
+        },
+        {
+          name: `round-trips one over boundary (${oneGroupMax + 1}) with groupWidth ${groupWidth}`,
+          value: oneGroupMax + 1,
+        },
+        {
+          name: `round-trips several groups deep with groupWidth ${groupWidth}`,
+          // Three groups: keep shifts within safe integer range for JS number math.
+          value: Number(
+            (BigInt(oneGroupMax) << BigInt(groupWidth * 2)) |
+              (BigInt(oneGroupMax) << BigInt(groupWidth)) |
+              3n,
+          ),
+        },
+      ];
 
-      it(`round-trips 0 with groupWidth ${groupWidth}`, () => {
-        const writer = new BitWriter();
-        writer.writeGroupedVarint(0, groupWidth);
-        const reader = new BitReader(writer.toBytes());
-        expect(reader.readGroupedVarint(groupWidth)).toBe(0);
-        expect(reader.overrun).toBe(false);
-      });
-
-      it(`round-trips exactly one group max (${oneGroupMax}) with groupWidth ${groupWidth}`, () => {
-        const writer = new BitWriter();
-        writer.writeGroupedVarint(oneGroupMax, groupWidth);
-        const reader = new BitReader(writer.toBytes());
-        expect(reader.readGroupedVarint(groupWidth)).toBe(oneGroupMax);
-        expect(reader.overrun).toBe(false);
-      });
-
-      it(`round-trips one over boundary (${oneGroupMax + 1}) with groupWidth ${groupWidth}`, () => {
-        const writer = new BitWriter();
-        writer.writeGroupedVarint(oneGroupMax + 1, groupWidth);
-        const reader = new BitReader(writer.toBytes());
-        expect(reader.readGroupedVarint(groupWidth)).toBe(oneGroupMax + 1);
-        expect(reader.overrun).toBe(false);
-      });
-
-      it(`round-trips several groups deep with groupWidth ${groupWidth}`, () => {
-        // Three groups: keep shifts within safe integer range for JS number math.
-        const deep =
-          (BigInt(oneGroupMax) << BigInt(groupWidth * 2)) |
-          (BigInt(oneGroupMax) << BigInt(groupWidth)) |
-          3n;
-        const deepNum = Number(deep);
-        const writer = new BitWriter();
-        writer.writeGroupedVarint(deepNum, groupWidth);
-        const reader = new BitReader(writer.toBytes());
-        expect(reader.readGroupedVarint(groupWidth)).toBe(deepNum);
-        expect(reader.overrun).toBe(false);
-      });
+      for (const row of rows) {
+        it(row.name, () => {
+          const writer = new BitWriter();
+          writer.writeGroupedVarint(row.value, groupWidth);
+          const reader = new BitReader(writer.toBytes());
+          expect(reader.readGroupedVarint(groupWidth)).toBe(row.value);
+          expect(reader.overrun).toBe(false);
+        });
+      }
     }
   });
 

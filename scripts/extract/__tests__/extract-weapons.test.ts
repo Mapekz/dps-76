@@ -10,7 +10,7 @@ import {
   walkWeaponCombinations,
 } from '../extract-weapons';
 import type { AvifRoute } from '../normalize/mgef';
-import { isExcludedOmodEdid } from '../extract-omods';
+import { getIsPlayerConditions, kywdPlaceholder } from './esm-stubs';
 import fixer from './fixtures/weap-fixer.json';
 import huntingRifle from './fixtures/weap-huntingrifle.json';
 import gatlingPlasma from './fixtures/weap-gatling-plasma.json';
@@ -305,40 +305,14 @@ function makeWeaponEnchantmentStubClient(): EsmSource {
                   { x: 50, y: 32 },
                 ],
               },
-              Conditions: {
-                Conditions: [
-                  {
-                    Condition: {
-                      'Condition Data': {
-                        Function: 'GetIsPlayer',
-                        'Comparison Value': 0,
-                        Operator: 'Equal To',
-                        'Run On': 'Subject',
-                      },
-                    },
-                  },
-                ],
-              },
+              Conditions: getIsPlayerConditions(0),
             },
           },
           {
             Effect: {
               'Base Effect': mgefFormId,
               'Effect Item Data': { Magnitude: 3, Duration: 6 },
-              Conditions: {
-                Conditions: [
-                  {
-                    Condition: {
-                      'Condition Data': {
-                        Function: 'GetIsPlayer',
-                        'Comparison Value': 1,
-                        Operator: 'Equal To',
-                        'Run On': 'Subject',
-                      },
-                    },
-                  },
-                ],
-              },
+              Conditions: getIsPlayerConditions(1),
             },
           },
         ],
@@ -365,12 +339,7 @@ function makeWeaponEnchantmentStubClient(): EsmSource {
   };
   return createInMemoryEsmSource({
     records,
-    getFallback: (target) =>
-      ({
-        header: { signature: 'KYWD', form_id: target },
-        editor_id: target,
-        fields: {},
-      }) as unknown as EsmRecord,
+    getFallback: kywdPlaceholder,
   });
 }
 
@@ -456,34 +425,6 @@ describe('isExcludedWeaponEdid', () => {
     expect(isExcludedWeaponEdid('crossbow')).toBe(false);
     expect(isExcludedWeaponEdid('CombatRifle_Fixer')).toBe(false);
     expect(isExcludedWeaponEdid('TeslaRifle')).toBe(false);
-  });
-});
-
-describe('isExcludedOmodEdid', () => {
-  it('excludes debug/deleted/cut/test/player-tier junk edids', () => {
-    expect(isExcludedOmodEdid('DEBUG_ATX_mod_melee_Sledgehammer')).toBe(true);
-    expect(isExcludedOmodEdid('DEL_E08A_mod_x')).toBe(true);
-    expect(isExcludedOmodEdid('CUT_AAA_mod')).toBe(true);
-    expect(isExcludedOmodEdid('ZZZ_mod_Legendary_Weapon4_Crafting')).toBe(true);
-  });
-
-  it('does not exclude legitimate omod edids — ATX is deliberately NOT junk-filtered for omods', () => {
-    expect(isExcludedOmodEdid('mod_Legendary_Weapon1_DamageAddiction')).toBe(false);
-    expect(isExcludedOmodEdid('ATX_mod_StarletRifle')).toBe(false);
-    expect(isExcludedOmodEdid('dlc01_mod_melee_assaultronblade_Standard')).toBe(false);
-  });
-
-  it('does not exclude p62_ — a real content prefix (The Drifter boss drops + a real legendary family), not junk (2026-07-12, found chasing Splinter)', () => {
-    expect(isExcludedOmodEdid('P62_Mod_Custom_Splinter_SpecialEffect')).toBe(false);
-    expect(isExcludedOmodEdid('P62_mod_Legendary_Weapon4_Satiated')).toBe(false);
-  });
-
-  it('excludes hyphenated POST-mod_ cut tree but keeps POST-DLC04_ content (2026-08-28)', () => {
-    expect(isExcludedOmodEdid('POST-mod_melee_SuperSledge_ShockAndStun')).toBe(true);
-    expect(isExcludedOmodEdid('POST-Parent_mod_melee_Weapon_ShockAndStun')).toBe(true);
-    expect(
-      isExcludedOmodEdid('POST-DLC04_mod_melee_BaseballBat_Rocket_SpikesLarge_ShockAndStun'),
-    ).toBe(false);
   });
 });
 

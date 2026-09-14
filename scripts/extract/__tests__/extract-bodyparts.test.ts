@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'bun:test';
+import { beforeAll, describe, it, expect } from 'bun:test';
 import { bptdToParts, extractBodyParts } from '../extract-bodyparts';
 import type { EsmRecord } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
+import { humanBodyPartRecords } from './extract-fixtures';
 import stormGoliath from './fixtures/bptd-storm-goliath.json';
 import human from './fixtures/bptd-human.json';
 import guardian from './fixtures/bptd-guardian.json';
@@ -149,47 +150,11 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
   // Records mimic the wire shape (header.signature/form_id + editor_id +
   // fields); BPTDs reuse the fixtures above.
   const records: Record<string, EsmRecord> = {
-    HumanRace: {
-      header: { signature: 'RACE', form_id: '0x00013746' },
-      editor_id: 'HumanRace',
-      // Mixed KWDA: only the ActorType* entries survive into `keywords`.
-      fields: {
-        'Body Part Data': '0x00017AD4',
-        Keywords: { Keywords: ['0x0002CB72', '0x00013794', '0x00249612'] },
-      },
-    },
-    '0x0002CB72': {
-      header: { signature: 'KYWD', form_id: '0x0002CB72' },
-      editor_id: 'ActorTypeHuman',
-      fields: {},
-    },
-    '0x00013794': {
-      header: { signature: 'KYWD', form_id: '0x00013794' },
-      editor_id: 'ActorTypeNPC',
-      fields: {},
-    },
-    '0x00249612': {
-      header: { signature: 'KYWD', form_id: '0x00249612' },
-      editor_id: 'NoPowerArmorUse',
-      fields: {},
-    },
+    ...humanBodyPartRecords(),
     Burn_BountyTarget_BIG_Death: {
       header: { signature: 'NPC_', form_id: '0x007CFAA9' },
       editor_id: 'Burn_BountyTarget_BIG_Death',
       fields: { Race: '0x00013746' },
-    },
-    '0x00013746': {
-      header: { signature: 'RACE', form_id: '0x00013746' },
-      editor_id: 'HumanRace',
-      fields: {
-        'Body Part Data': '0x00017AD4',
-        Keywords: { Keywords: ['0x0002CB72', '0x00013794', '0x00249612'] },
-      },
-    },
-    '0x00017AD4': {
-      header: { signature: 'BPTD', form_id: '0x00017AD4' },
-      editor_id: 'HumanBodyPartData',
-      fields: (human as { fields: unknown }).fields as Record<string, unknown>,
     },
     // Guardian: NPC_ → RACE → BPTD, exercises `conditionPartsOnly` end to end.
     RD01_Enc01_GuardianBot: {
@@ -215,9 +180,13 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
     },
   };
   const fakeClient = createInMemoryEsmSource({ records });
+  let result: Awaited<ReturnType<typeof extractBodyParts>>;
+  beforeAll(async () => {
+    result = await extractBodyParts(fakeClient);
+  });
 
-  it('resolves NPC_ rows through fields.Race and RACE rows directly', async () => {
-    const { races } = await extractBodyParts(fakeClient);
+  it('resolves NPC_ rows through fields.Race and RACE rows directly', () => {
+    const { races } = result;
     const boss = races.find((r) => r.id === 'Burn_BountyTarget_BIG_Death');
     const race = races.find((r) => r.id === 'HumanRace');
     expect(boss).toBeDefined();
@@ -232,8 +201,8 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
     expect(race!.formId).toBe('0x00013746');
   });
 
-  it('records the resolved RACE edid and its ActorType* keywords for enemy-type matching', async () => {
-    const { races } = await extractBodyParts(fakeClient);
+  it('records the resolved RACE edid and its ActorType* keywords for enemy-type matching', () => {
+    const { races } = result;
     const race = races.find((r) => r.id === 'HumanRace');
     const boss = races.find((r) => r.id === 'Burn_BountyTarget_BIG_Death');
     const guardianBoss = races.find((r) => r.id === 'RD01_Enc01_GuardianBot');
@@ -248,8 +217,8 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
     expect(guardianBoss!.keywords).toEqual([]);
   });
 
-  it('applies conditionPartsOnly through the full NPC_ → RACE → BPTD resolution', async () => {
-    const { races } = await extractBodyParts(fakeClient);
+  it('applies conditionPartsOnly through the full NPC_ → RACE → BPTD resolution', () => {
+    const { races } = result;
     const boss = races.find((r) => r.id === 'RD01_Enc01_GuardianBot');
     expect(boss).toBeDefined();
     expect(boss!.parts.map((p) => p.name).sort()).toEqual(
@@ -259,8 +228,8 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
     expect(boss!.noCripple).toBe(false);
   });
 
-  it('forces every part non-crippable and crippableLimbCount to 0 for a crippleImmune race', async () => {
-    const { races } = await extractBodyParts(fakeClient);
+  it('forces every part non-crippable and crippableLimbCount to 0 for a crippleImmune race', () => {
+    const { races } = result;
     const blueDevil = races.find((r) => r.id === 'BlueDevilRace');
     expect(blueDevil).toBeDefined();
     expect(blueDevil!.noCripple).toBe(true);
@@ -270,8 +239,8 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
     expect(blueDevil!.parts.length).toBeGreaterThan(0);
   });
 
-  it('files unfetchable rows under unresolved instead of crashing', async () => {
-    const { unresolved } = await extractBodyParts(fakeClient);
+  it('files unfetchable rows under unresolved instead of crashing', () => {
+    const { unresolved } = result;
     // Every curated row missing from the fake store is reported, none throw.
     expect(unresolved.length).toBeGreaterThan(0);
     expect(unresolved.every((u) => u.startsWith('bodyparts:'))).toBe(true);

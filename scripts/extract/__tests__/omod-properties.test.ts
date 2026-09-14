@@ -1,14 +1,7 @@
 import { describe, it, expect } from 'bun:test';
 import type { EsmRecord } from '../esm-client';
 import { collectProperties } from '../omod-properties';
-
-function omodRecord(formId: string, editorId: string, data: Record<string, unknown>): EsmRecord {
-  return {
-    header: { signature: 'OMOD', form_id: formId },
-    editor_id: editorId,
-    fields: { Data: data },
-  };
-}
+import { omodRecord } from './esm-stubs';
 
 function prop(name: string, value1: unknown = 1.0): Record<string, unknown> {
   return {

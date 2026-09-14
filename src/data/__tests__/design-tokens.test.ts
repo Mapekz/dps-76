@@ -50,11 +50,18 @@ const TOKEN_MAP: Record<string, string> = {
   'phosphor-green': '--positive',
 };
 
-function readDesignMdColors(): Record<string, string> {
+let designMdFrontmatter: string | undefined;
+function readDesignMdFrontmatter(): string {
+  if (designMdFrontmatter !== undefined) return designMdFrontmatter;
   const content = readFileSync(resolve(projectRoot, 'DESIGN.md'), 'utf-8');
   const frontmatter = content.match(/^---\n([\s\S]*?)\n---/);
   if (!frontmatter) throw new Error('DESIGN.md: no frontmatter block found');
-  const colorsBlock = frontmatter[1].match(/^colors:\n((?:  .+\n?)+)/m);
+  designMdFrontmatter = frontmatter[1];
+  return designMdFrontmatter;
+}
+
+function readDesignMdColors(): Record<string, string> {
+  const colorsBlock = readDesignMdFrontmatter().match(/^colors:\n((?:  .+\n?)+)/m);
   if (!colorsBlock) throw new Error('DESIGN.md: no frontmatter `colors:` block found');
 
   const colors: Record<string, string> = {};
@@ -186,10 +193,7 @@ function deriveVoice(classes: string) {
 }
 
 function readDesignMdTypography(): Record<string, Record<string, string | number>> {
-  const content = readFileSync(resolve(projectRoot, 'DESIGN.md'), 'utf-8');
-  const frontmatter = content.match(/^---\n([\s\S]*?)\n---/);
-  if (!frontmatter) throw new Error('DESIGN.md: no frontmatter block found');
-  const typographyBlock = frontmatter[1].match(/^typography:\n((?:  .+\n?)+)/m);
+  const typographyBlock = readDesignMdFrontmatter().match(/^typography:\n((?:  .+\n?)+)/m);
   if (!typographyBlock) throw new Error('DESIGN.md: no frontmatter `typography:` block found');
 
   const voices: Record<string, Record<string, string | number>> = {};

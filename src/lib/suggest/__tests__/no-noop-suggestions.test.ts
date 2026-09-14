@@ -1,11 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 import type { GameMode } from '@/types';
-import {
-  makeBuildReducer,
-  createDefaultBuildState,
-  type BuildAction,
-  type BuildState,
-} from '@/state/build-reducer';
+import type { BuildState } from '@/state/build-reducer';
+import { buildReducer, stateFrom } from '@/state/__tests__/build-state-fixture';
 import { PerkId } from '@/data/perk-ids';
 import { allocationOf } from '@/lib/build-rules';
 import { getPerks, getWeapons } from '@/data';
@@ -17,21 +13,7 @@ import type { EvaluatedSuggestion, SuggestionReport } from '@/lib/suggest/types'
 import { buildStaticLoadoutContext } from '@/lib/suggest/loadout-context';
 
 const MODE: GameMode = 'live';
-const buildReducer = makeBuildReducer(MODE);
 const BIG_LIMIT = 500;
-
-function stateFrom(
-  actions: BuildAction[],
-  from: BuildState = createDefaultBuildState(),
-): BuildState {
-  return actions.reduce(buildReducer, from);
-}
-
-function applyActions(state: BuildState, actions: readonly BuildAction[]): BuildState {
-  let next = state;
-  for (const action of actions) next = buildReducer(next, action);
-  return next;
-}
 
 function surfaced(report: SuggestionReport, groups?: ReadonlySet<EvaluatedSuggestion['group']>) {
   const opts = groups ? { groups } : {};
@@ -43,7 +25,7 @@ function assertUniversalInvariants(state: BuildState, report: SuggestionReport):
   for (const scope of [surfaced(report), surfaced(report, new Set(['consumable'] as const))]) {
     for (const suggestion of scope) {
       expect(suggestion.primaryDeltaPct).toBeGreaterThan(0);
-      const applied = applyActions(state, suggestion.action);
+      const applied = stateFrom(suggestion.action, state);
       expect(applied).not.toEqual(state);
     }
   }
@@ -90,7 +72,7 @@ describe('over-budget perk WITH free pool points', () => {
     expect(allocation.every((s) => s.primaryDeltaPct > 0)).toBe(true);
 
     const pick = allocation.find((s) => s.action[0]?.type === 'special/set') ?? allocation[0];
-    const applied = applyActions(state, pick.action);
+    const applied = stateFrom(pick.action, state);
     expect(applied.player.conditions.luck).toBeGreaterThan(state.player.conditions.luck);
     expect(applied.player.perks.some((p) => p.perkId === PerkId.BetterCriticals)).toBe(true);
 
@@ -132,7 +114,7 @@ describe('full legendary perk slots (6 equipped)', () => {
     ).toBe(false);
 
     for (const suggestion of legSuggestions) {
-      const applied = applyActions(state, suggestion.action);
+      const applied = stateFrom(suggestion.action, state);
       const before = new Set(state.player.legendaryPerks.map((p) => p.perkId));
       const after = new Set(applied.player.legendaryPerks.map((p) => p.perkId));
       expect(before).not.toEqual(after);

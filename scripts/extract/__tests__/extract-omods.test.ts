@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'bun:test';
-import type { EsmSource, EsmRecord, EsmRefRow } from '../esm-client';
-import { createInMemoryEsmSource } from '../esm-source-fake';
+import { beforeAll, describe, it, expect } from 'bun:test';
+import type { EsmSource, EsmRecord } from '../esm-client';
+import { createInMemoryEsmSource, type InMemoryEsmSourceData } from '../esm-source-fake';
 import type { CobjIndex } from '../cobj-index';
 import {
   extractOmods,
@@ -36,6 +36,16 @@ import wellTunedSpell from './fixtures/spel-welltuned.json';
 import fortifyDmgMeleeAll from './fixtures/mgef-fortifydmgmeleeall.json';
 import customItemNameToneDeath from './fixtures/kywd-customitemname-tonedeath.json';
 import statDmgMeleeAvif from './fixtures/avif-stat-dmgmelee.json';
+import {
+  cobjIndexOf,
+  cobjInfo,
+  getIsPlayerConditions,
+  kywdPlaceholder,
+  listRows,
+  omodRecord,
+  refRow,
+} from './esm-stubs';
+import { CONTAINER_ID, variantContainerClient } from './extract-fixtures';
 
 // Fixtures are verbatim `esm --esm <esmPath> get <edid|formid> --json` output
 // (20260710 ESM). These pin the unique-mod rework's two previously-undecoded
@@ -76,13 +86,17 @@ describe('propertyName (property 116 raw-numeric decode)', () => {
   });
 });
 
-/** Harmless KYWD placeholder — see makeStubClient() comment convention. */
-function kywdPlaceholder(formId: string): EsmRecord {
-  return {
-    header: { signature: 'KYWD', form_id: formId },
-    editor_id: formId,
-    fields: {},
-  } as unknown as EsmRecord;
+/** In-memory source listing every OMOD in `records`; unstocked formids resolve to a KYWD placeholder. */
+function omodClient(
+  records: Record<string, EsmRecord>,
+  extra: Partial<InMemoryEsmSourceData> = {},
+): EsmSource {
+  return createInMemoryEsmSource({
+    records,
+    rows: listRows(Object.values(records).filter((r) => r.header.signature === 'OMOD')),
+    getFallback: kywdPlaceholder,
+    ...extra,
+  });
 }
 
 /**
@@ -93,41 +107,25 @@ function kywdPlaceholder(formId: string): EsmRecord {
  * placeholder record — the test doesn't assert on those.
  */
 function makeStubClient(): EsmSource {
-  return createInMemoryEsmSource({
-    records: {
-      '0x0047187E': allRiseOmod as unknown as EsmRecord,
-      '0x008F0DD2': unstoppableMonsterOmod as unknown as EsmRecord,
-      '0x0069CBF4': unstoppableMonsterPerk as unknown as EsmRecord,
-      '0x000002D4': {
-        header: { signature: 'AVIF', form_id: '0x000002D4' },
-        editor_id: 'Health',
-        fields: {},
-      } as unknown as EsmRecord,
-    },
-    rows: [
-      {
-        form_id: '0x0047187E',
-        record_type: 'OMOD',
-        editor_id: 'mod_Custom_AllRise',
-        name: 'All Rise Custom Mod',
-      },
-      {
-        form_id: '0x008F0DD2',
-        record_type: 'OMOD',
-        editor_id: 'mod_Custom_UnstoppableMonster',
-        name: 'Unstoppable Monster',
-      },
-    ],
-    getFallback: kywdPlaceholder,
+  return omodClient({
+    '0x0047187E': allRiseOmod as unknown as EsmRecord,
+    '0x008F0DD2': unstoppableMonsterOmod as unknown as EsmRecord,
+    '0x0069CBF4': unstoppableMonsterPerk as unknown as EsmRecord,
+    '0x000002D4': {
+      header: { signature: 'AVIF', form_id: '0x000002D4' },
+      editor_id: 'Health',
+      fields: {},
+    } as unknown as EsmRecord,
   });
 }
 
 describe('extractOmods (unique-mod rework, 2026-07-13)', () => {
-  it('mod_Custom_UnstoppableMonster: property 116 resolves the attached perk, whose two "Mod Incoming Weapon Damage" effects split into one incomingDamageMult modifier (flat -5%) and one skipped note (killstreak-scaled, AV-mult function unhandled) — never a silent drop, never an unknown property', async () => {
-    const result = await extractOmods({
-      client: makeStubClient(),
-      obtainableWeaponFormIds: new Set(),
-    });
+  let result: Awaited<ReturnType<typeof extractOmods>>;
+  beforeAll(async () => {
+    result = await extractOmods({ client: makeStubClient(), obtainableWeaponFormIds: new Set() });
+  });
+
+  it('mod_Custom_UnstoppableMonster: property 116 resolves the attached perk, whose two "Mod Incoming Weapon Damage" effects split into one incomingDamageMult modifier (flat -5%) and one skipped note (killstreak-scaled, AV-mult function unhandled) — never a silent drop, never an unknown property', () => {
     const omod = result.omods.find((o) => o.id === 'mod_Custom_UnstoppableMonster');
     expect(omod).toBeDefined();
     // Function "Multiply Value" Float 0.95 (flat -5% incoming damage) now
@@ -178,11 +176,7 @@ describe('extractOmods (unique-mod rework, 2026-07-13)', () => {
     expect(result.unknownProperties.some((p) => p.startsWith('Property#'))).toBe(false);
   });
 
-  it('mod_Custom_AllRise: ActorValues ADD Health 50.0 decodes to a maxHealth modifier of value 50', async () => {
-    const result = await extractOmods({
-      client: makeStubClient(),
-      obtainableWeaponFormIds: new Set(),
-    });
+  it('mod_Custom_AllRise: ActorValues ADD Health 50.0 decodes to a maxHealth modifier of value 50', () => {
     const omod = result.omods.find((o) => o.id === 'mod_Custom_AllRise');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -199,24 +193,13 @@ describe('extractOmods (unique-mod rework, 2026-07-13)', () => {
 function makeBunkerBusterStubClient(): EsmSource {
   const omodFormId = '0x00471880';
   const convertAv = '0x00919EE2';
-  return createInMemoryEsmSource({
-    records: {
-      [omodFormId]: bunkerBusterOmod as unknown as EsmRecord,
-      [convertAv]: {
-        header: { signature: 'AVIF', form_id: convertAv },
-        editor_id: 'ConvertExplosiveRadiusToDamage',
-        fields: {},
-      } as unknown as EsmRecord,
-    },
-    rows: [
-      {
-        form_id: omodFormId,
-        record_type: 'OMOD',
-        editor_id: 'mod_Custom_BunkerBuster',
-        name: 'Bunker Buster',
-      },
-    ],
-    getFallback: kywdPlaceholder,
+  return omodClient({
+    [omodFormId]: bunkerBusterOmod as unknown as EsmRecord,
+    [convertAv]: {
+      header: { signature: 'AVIF', form_id: convertAv },
+      editor_id: 'ConvertExplosiveRadiusToDamage',
+      fields: {},
+    } as unknown as EsmRecord,
   });
 }
 
@@ -248,53 +231,42 @@ function makeDamageTypeValuesStubClient(): EsmSource {
   const dtEnergyFormId = '0x0001CA9F';
   const dtFireFormId = '0x0001CAA0';
   const omodFormId = '0x00DEC001';
-  return createInMemoryEsmSource({
-    records: {
-      [omodFormId]: {
-        header: { signature: 'OMOD', form_id: omodFormId },
-        editor_id: 'mod_Test_DamageTypeValues',
-        fields: {
-          Name: 'Test Damage Type Values Mod',
-          Data: {
-            'Form Type': { name: 'Weapon' },
-            'Attach Point': '0x0047A264',
-            Properties: [
-              {
-                'Function Type': { name: 'ADD' },
-                Property: { name: 'DamageTypeValues' },
-                'Value 1': dtEnergyFormId,
-                'Value 2': 5,
-              },
-              {
-                'Function Type': { name: 'SET' },
-                Property: { name: 'DamageTypeValues' },
-                'Value 1': dtFireFormId,
-                'Value 2': 0,
-              },
-            ],
-          },
+  return omodClient({
+    [omodFormId]: {
+      header: { signature: 'OMOD', form_id: omodFormId },
+      editor_id: 'mod_Test_DamageTypeValues',
+      fields: {
+        Name: 'Test Damage Type Values Mod',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0047A264',
+          Properties: [
+            {
+              'Function Type': { name: 'ADD' },
+              Property: { name: 'DamageTypeValues' },
+              'Value 1': dtEnergyFormId,
+              'Value 2': 5,
+            },
+            {
+              'Function Type': { name: 'SET' },
+              Property: { name: 'DamageTypeValues' },
+              'Value 1': dtFireFormId,
+              'Value 2': 0,
+            },
+          ],
         },
-      } as unknown as EsmRecord,
-      [dtEnergyFormId]: {
-        header: { signature: 'DMGT', form_id: dtEnergyFormId },
-        editor_id: 'dtEnergy',
-        fields: {},
-      } as unknown as EsmRecord,
-      [dtFireFormId]: {
-        header: { signature: 'DMGT', form_id: dtFireFormId },
-        editor_id: 'dtFire',
-        fields: {},
-      } as unknown as EsmRecord,
-    },
-    rows: [
-      {
-        form_id: omodFormId,
-        record_type: 'OMOD',
-        editor_id: 'mod_Test_DamageTypeValues',
-        name: 'Test Damage Type Values Mod',
       },
-    ],
-    getFallback: kywdPlaceholder,
+    } as unknown as EsmRecord,
+    [dtEnergyFormId]: {
+      header: { signature: 'DMGT', form_id: dtEnergyFormId },
+      editor_id: 'dtEnergy',
+      fields: {},
+    } as unknown as EsmRecord,
+    [dtFireFormId]: {
+      header: { signature: 'DMGT', form_id: dtFireFormId },
+      editor_id: 'dtFire',
+      fields: {},
+    } as unknown as EsmRecord,
   });
 }
 
@@ -336,43 +308,32 @@ describe('extractOmods (DamageTypeValues ADD/SET, Task A 2026-07-13)', () => {
  */
 function makeChargingBarrelStubClient(): EsmSource {
   const omodFormId = '0x00DEC002';
-  return createInMemoryEsmSource({
-    records: {
-      [omodFormId]: {
-        header: { signature: 'OMOD', form_id: omodFormId },
-        editor_id: 'mod_Test_ChargingBarrel',
-        fields: {
-          Name: 'Test Charging Barrel',
-          Data: {
-            'Form Type': { name: 'Weapon' },
-            'Attach Point': '0x0047A264',
-            Properties: [
-              {
-                'Function Type': { name: 'SET' },
-                Property: { name: 'FullPowerSeconds' },
-                'Value 1': 1.0,
-                'Value 2': 1.0,
-              },
-              {
-                'Function Type': { name: 'SET' },
-                Property: { name: 'FullPowerDamageMult' },
-                'Value 1': 2.0,
-                'Value 2': 0.0,
-              },
-            ],
-          },
+  return omodClient({
+    [omodFormId]: {
+      header: { signature: 'OMOD', form_id: omodFormId },
+      editor_id: 'mod_Test_ChargingBarrel',
+      fields: {
+        Name: 'Test Charging Barrel',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0047A264',
+          Properties: [
+            {
+              'Function Type': { name: 'SET' },
+              Property: { name: 'FullPowerSeconds' },
+              'Value 1': 1.0,
+              'Value 2': 1.0,
+            },
+            {
+              'Function Type': { name: 'SET' },
+              Property: { name: 'FullPowerDamageMult' },
+              'Value 1': 2.0,
+              'Value 2': 0.0,
+            },
+          ],
         },
-      } as unknown as EsmRecord,
-    },
-    rows: [
-      {
-        form_id: omodFormId,
-        record_type: 'OMOD',
-        editor_id: 'mod_Test_ChargingBarrel',
-        name: 'Test Charging Barrel',
       },
-    ],
-    getFallback: kywdPlaceholder,
+    } as unknown as EsmRecord,
   });
 }
 
@@ -395,10 +356,33 @@ describe('extractOmods (charging-barrel FullPowerSeconds/FullPowerDamageMult, ch
   });
 });
 
-describe('isExcludedOmodEdid (regression, unrelated pre-filter)', () => {
-  it('still drops dev/test-prefixed edids', () => {
+describe('isExcludedOmodEdid', () => {
+  it('excludes debug/deleted/cut/test/player-tier junk edids', () => {
+    expect(isExcludedOmodEdid('DEBUG_ATX_mod_melee_Sledgehammer')).toBe(true);
+    expect(isExcludedOmodEdid('DEL_E08A_mod_x')).toBe(true);
+    expect(isExcludedOmodEdid('CUT_AAA_mod')).toBe(true);
+    expect(isExcludedOmodEdid('ZZZ_mod_Legendary_Weapon4_Crafting')).toBe(true);
     expect(isExcludedOmodEdid('zzzDeprecatedMod')).toBe(true);
+  });
+
+  it('does not exclude legitimate omod edids — ATX is deliberately NOT junk-filtered for omods', () => {
+    expect(isExcludedOmodEdid('mod_Legendary_Weapon1_DamageAddiction')).toBe(false);
+    expect(isExcludedOmodEdid('ATX_mod_StarletRifle')).toBe(false);
+    expect(isExcludedOmodEdid('dlc01_mod_melee_assaultronblade_Standard')).toBe(false);
     expect(isExcludedOmodEdid('mod_Custom_AllRise')).toBe(false);
+  });
+
+  it('does not exclude p62_ — a real content prefix (The Drifter boss drops + a real legendary family), not junk (2026-07-12, found chasing Splinter)', () => {
+    expect(isExcludedOmodEdid('P62_Mod_Custom_Splinter_SpecialEffect')).toBe(false);
+    expect(isExcludedOmodEdid('P62_mod_Legendary_Weapon4_Satiated')).toBe(false);
+  });
+
+  it('excludes hyphenated POST-mod_ cut tree but keeps POST-DLC04_ content (2026-08-28)', () => {
+    expect(isExcludedOmodEdid('POST-mod_melee_SuperSledge_ShockAndStun')).toBe(true);
+    expect(isExcludedOmodEdid('POST-Parent_mod_melee_Weapon_ShockAndStun')).toBe(true);
+    expect(
+      isExcludedOmodEdid('POST-DLC04_mod_melee_BaseballBat_Rocket_SpikesLarge_ShockAndStun'),
+    ).toBe(false);
   });
 });
 
@@ -416,119 +400,82 @@ function makeSlowBurnerStubClient(): EsmSource {
   const newEnchFormId = '0xNEWENCH';
   const newMgefFormId = '0xNEWMGEF';
   const fireResistFormId = '0xFIRERESIST';
-  return createInMemoryEsmSource({
-    records: {
-      [omodFormId]: {
-        header: { signature: 'OMOD', form_id: omodFormId },
-        editor_id: 'mod_Test_SlowBurner',
-        fields: {
-          Name: 'Test Slow-Burning Tank',
-          Data: {
-            'Form Type': { name: 'Weapon' },
-            'Attach Point': '0x0047A264',
-            Properties: [
-              {
-                'Function Type': { name: 'REM' },
-                Property: { name: 'Enchantments' },
-                'Value 1': '0xBASEENCH',
-                'Value 2': 1,
-              },
-              {
-                'Function Type': { name: 'ADD' },
-                Property: { name: 'Enchantments' },
-                'Value 1': newEnchFormId,
-                'Value 2': 1,
-              },
-            ],
-          },
-        },
-      } as unknown as EsmRecord,
-      ['0xBASEENCH']: {
-        header: { signature: 'ENCH', form_id: '0xBASEENCH' },
-        editor_id: 'BaseFireHitEnch',
-        fields: {
-          'Effect Data': { 'Target Type': { name: 'Contact' } },
-          Effects: [
+  return omodClient({
+    [omodFormId]: {
+      header: { signature: 'OMOD', form_id: omodFormId },
+      editor_id: 'mod_Test_SlowBurner',
+      fields: {
+        Name: 'Test Slow-Burning Tank',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0047A264',
+          Properties: [
             {
-              Effect: {
-                'Base Effect': '0xBASEMGEF',
-                'Effect Item Data': { Magnitude: 3, Duration: 6 },
-                Conditions: {
-                  Conditions: [
-                    {
-                      Condition: {
-                        'Condition Data': {
-                          Function: 'GetIsPlayer',
-                          'Comparison Value': 1,
-                          Operator: 'Equal To',
-                          'Run On': 'Subject',
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
+              'Function Type': { name: 'REM' },
+              Property: { name: 'Enchantments' },
+              'Value 1': '0xBASEENCH',
+              'Value 2': 1,
+            },
+            {
+              'Function Type': { name: 'ADD' },
+              Property: { name: 'Enchantments' },
+              'Value 1': newEnchFormId,
+              'Value 2': 1,
             },
           ],
         },
-      } as unknown as EsmRecord,
-      [newEnchFormId]: {
-        header: { signature: 'ENCH', form_id: newEnchFormId },
-        editor_id: 'NewSlowBurnEnch',
-        fields: {
-          'Effect Data': { 'Target Type': { name: 'Contact' } },
-          Effects: [
-            {
-              Effect: {
-                'Base Effect': newMgefFormId,
-                'Effect Item Data': { Magnitude: 16, Duration: 12 },
-                Conditions: {
-                  Conditions: [
-                    {
-                      Condition: {
-                        'Condition Data': {
-                          Function: 'GetIsPlayer',
-                          'Comparison Value': 0,
-                          Operator: 'Equal To',
-                          'Run On': 'Subject',
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-          ],
-        },
-      } as unknown as EsmRecord,
-      [newMgefFormId]: {
-        header: { signature: 'MGEF', form_id: newMgefFormId },
-        editor_id: 'NewSlowBurnMgef',
-        fields: {
-          'Magic Effect Data': {
-            Data: {
-              Archetype: { name: 'Damage' },
-              'Resist Value': fireResistFormId,
-              Flags: { value: '0x0', flags: [] },
-            },
-          },
-        },
-      } as unknown as EsmRecord,
-      [fireResistFormId]: {
-        header: { signature: 'AVIF', form_id: fireResistFormId },
-        editor_id: 'FireResist',
-        fields: {},
-      } as unknown as EsmRecord,
-    },
-    rows: [
-      {
-        form_id: omodFormId,
-        record_type: 'OMOD',
-        editor_id: 'mod_Test_SlowBurner',
-        name: 'Test Slow-Burning Tank',
       },
-    ],
-    getFallback: kywdPlaceholder,
+    } as unknown as EsmRecord,
+    ['0xBASEENCH']: {
+      header: { signature: 'ENCH', form_id: '0xBASEENCH' },
+      editor_id: 'BaseFireHitEnch',
+      fields: {
+        'Effect Data': { 'Target Type': { name: 'Contact' } },
+        Effects: [
+          {
+            Effect: {
+              'Base Effect': '0xBASEMGEF',
+              'Effect Item Data': { Magnitude: 3, Duration: 6 },
+              Conditions: getIsPlayerConditions(1),
+            },
+          },
+        ],
+      },
+    } as unknown as EsmRecord,
+    [newEnchFormId]: {
+      header: { signature: 'ENCH', form_id: newEnchFormId },
+      editor_id: 'NewSlowBurnEnch',
+      fields: {
+        'Effect Data': { 'Target Type': { name: 'Contact' } },
+        Effects: [
+          {
+            Effect: {
+              'Base Effect': newMgefFormId,
+              'Effect Item Data': { Magnitude: 16, Duration: 12 },
+              Conditions: getIsPlayerConditions(0),
+            },
+          },
+        ],
+      },
+    } as unknown as EsmRecord,
+    [newMgefFormId]: {
+      header: { signature: 'MGEF', form_id: newMgefFormId },
+      editor_id: 'NewSlowBurnMgef',
+      fields: {
+        'Magic Effect Data': {
+          Data: {
+            Archetype: { name: 'Damage' },
+            'Resist Value': fireResistFormId,
+            Flags: { value: '0x0', flags: [] },
+          },
+        },
+      },
+    } as unknown as EsmRecord,
+    [fireResistFormId]: {
+      header: { signature: 'AVIF', form_id: fireResistFormId },
+      editor_id: 'FireResist',
+      fields: {},
+    } as unknown as EsmRecord,
   });
 }
 
@@ -571,92 +518,81 @@ function makeLobberStubClient(cosmetic = false): EsmSource {
   const spelFormId = '0xSPEL1';
   const mgefFormId = '0xHAZMGEF';
   const energyResistFormId = '0xENERGYRESIST';
-  return createInMemoryEsmSource({
-    records: {
-      [omodFormId]: {
-        header: { signature: 'OMOD', form_id: omodFormId },
-        editor_id: 'mod_Test_LobberBarrel',
-        fields: {
-          Name: 'Test Lobber Barrel',
-          Data: {
-            'Form Type': { name: 'Weapon' },
-            'Attach Point': '0x0002249D',
-            Properties: [
-              {
-                'Function Type': { name: 'SET' },
-                Property: { name: 'OverrideProjectile' },
-                'Value 1': projFormId,
-                'Value 2': 1,
-              },
-            ],
-          },
-          'Target OMOD Keywords': ['0xMA_TESTLAUNCHER'],
-        },
-      } as unknown as EsmRecord,
-      [projFormId]: {
-        header: { signature: 'PROJ', form_id: projFormId },
-        editor_id: 'TestLobberProjectile',
-        fields: {
-          Data: cosmetic
-            ? { Flags: { flags: [] }, Explosion: explFormId }
-            : { Flags: { flags: ['Explosion'] }, Explosion: explFormId },
-        },
-      } as unknown as EsmRecord,
-      [explFormId]: {
-        header: { signature: 'EXPL', form_id: explFormId },
-        editor_id: 'TestLobberExplosion',
-        fields: { Data: { Damage: 0, 'Placed Object': hazdFormId, 'Base Weapon Damage Mult': 0 } },
-      } as unknown as EsmRecord,
-      [hazdFormId]: {
-        header: { signature: 'HAZD', form_id: hazdFormId },
-        editor_id: 'TestLobberHazard',
-        fields: {
-          Data: { Limit: 20, Radius: 25, Lifetime: 7, 'Target Interval': 0.3, Effect: spelFormId },
-        },
-      } as unknown as EsmRecord,
-      [spelFormId]: {
-        header: { signature: 'SPEL', form_id: spelFormId },
-        editor_id: 'TestLobberHazardSpell',
-        fields: {
-          Data: { 'Target Type': { name: 'Contact' }, 'Cast Type': { name: 'Fire and Forget' } },
-          Effects: [
+  return omodClient({
+    [omodFormId]: {
+      header: { signature: 'OMOD', form_id: omodFormId },
+      editor_id: 'mod_Test_LobberBarrel',
+      fields: {
+        Name: 'Test Lobber Barrel',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0002249D',
+          Properties: [
             {
-              Effect: {
-                'Base Effect': mgefFormId,
-                'Effect Item Data': { Magnitude: 34, Duration: 1 },
-              },
+              'Function Type': { name: 'SET' },
+              Property: { name: 'OverrideProjectile' },
+              'Value 1': projFormId,
+              'Value 2': 1,
             },
           ],
         },
-      } as unknown as EsmRecord,
-      [mgefFormId]: {
-        header: { signature: 'MGEF', form_id: mgefFormId },
-        editor_id: 'TestLobberHazardEffect',
-        fields: {
-          'Magic Effect Data': {
-            Data: {
-              Archetype: { name: 'Damage' },
-              'Resist Value': energyResistFormId,
-              Flags: { value: '0x0', flags: [] },
+        'Target OMOD Keywords': ['0xMA_TESTLAUNCHER'],
+      },
+    } as unknown as EsmRecord,
+    [projFormId]: {
+      header: { signature: 'PROJ', form_id: projFormId },
+      editor_id: 'TestLobberProjectile',
+      fields: {
+        Data: cosmetic
+          ? { Flags: { flags: [] }, Explosion: explFormId }
+          : { Flags: { flags: ['Explosion'] }, Explosion: explFormId },
+      },
+    } as unknown as EsmRecord,
+    [explFormId]: {
+      header: { signature: 'EXPL', form_id: explFormId },
+      editor_id: 'TestLobberExplosion',
+      fields: { Data: { Damage: 0, 'Placed Object': hazdFormId, 'Base Weapon Damage Mult': 0 } },
+    } as unknown as EsmRecord,
+    [hazdFormId]: {
+      header: { signature: 'HAZD', form_id: hazdFormId },
+      editor_id: 'TestLobberHazard',
+      fields: {
+        Data: { Limit: 20, Radius: 25, Lifetime: 7, 'Target Interval': 0.3, Effect: spelFormId },
+      },
+    } as unknown as EsmRecord,
+    [spelFormId]: {
+      header: { signature: 'SPEL', form_id: spelFormId },
+      editor_id: 'TestLobberHazardSpell',
+      fields: {
+        Data: { 'Target Type': { name: 'Contact' }, 'Cast Type': { name: 'Fire and Forget' } },
+        Effects: [
+          {
+            Effect: {
+              'Base Effect': mgefFormId,
+              'Effect Item Data': { Magnitude: 34, Duration: 1 },
             },
           },
-        },
-      } as unknown as EsmRecord,
-      [energyResistFormId]: {
-        header: { signature: 'AVIF', form_id: energyResistFormId },
-        editor_id: 'EnergyResist',
-        fields: {},
-      } as unknown as EsmRecord,
-    },
-    rows: [
-      {
-        form_id: omodFormId,
-        record_type: 'OMOD',
-        editor_id: 'mod_Test_LobberBarrel',
-        name: 'Test Lobber Barrel',
+        ],
       },
-    ],
-    getFallback: kywdPlaceholder,
+    } as unknown as EsmRecord,
+    [mgefFormId]: {
+      header: { signature: 'MGEF', form_id: mgefFormId },
+      editor_id: 'TestLobberHazardEffect',
+      fields: {
+        'Magic Effect Data': {
+          Data: {
+            Archetype: { name: 'Damage' },
+            'Resist Value': energyResistFormId,
+            Flags: { value: '0x0', flags: [] },
+          },
+        },
+      },
+    } as unknown as EsmRecord,
+    [energyResistFormId]: {
+      header: { signature: 'AVIF', form_id: energyResistFormId },
+      editor_id: 'EnergyResist',
+      fields: {},
+    } as unknown as EsmRecord,
   });
 }
 
@@ -755,6 +691,23 @@ function makeHellstormStubClient(payload: 'cryo' | 'napalm'): EsmSource {
   });
 }
 
+/** Tier33 (58 @L1 → 194 @L50), both payload EXPLs' typed-damage curve. */
+function tier33Curve() {
+  return [
+    { x: 1, y: 58 },
+    { x: 5, y: 65 },
+    { x: 10, y: 73 },
+    { x: 15, y: 83 },
+    { x: 20, y: 94 },
+    { x: 25, y: 106 },
+    { x: 30, y: 119 },
+    { x: 35, y: 135 },
+    { x: 40, y: 152 },
+    { x: 45, y: 172 },
+    { x: 50, y: 194 },
+  ];
+}
+
 describe('extractOmods (OverrideProjectile explosionChase, real Hellstorm fixtures, 2026-07-29)', () => {
   it('Cryo Payload: OverrideProjectile → EXPL with typed cryo damage (no hazard, no Enchantment) becomes an explosionChase with one fromExplosion cryo component — no ordinary modifiers', async () => {
     const result = await extractOmods({
@@ -773,19 +726,7 @@ describe('extractOmods (OverrideProjectile explosionChase, real Hellstorm fixtur
           damageTypeEdid: 'dtCryo',
           amount: 0,
           tier: 33,
-          curve: [
-            { x: 1, y: 58 },
-            { x: 5, y: 65 },
-            { x: 10, y: 73 },
-            { x: 15, y: 83 },
-            { x: 20, y: 94 },
-            { x: 25, y: 106 },
-            { x: 30, y: 119 },
-            { x: 35, y: 135 },
-            { x: 40, y: 152 },
-            { x: 45, y: 172 },
-            { x: 50, y: 194 },
-          ],
+          curve: tier33Curve(),
           fromExplosion: true,
         },
       ],
@@ -808,19 +749,7 @@ describe('extractOmods (OverrideProjectile explosionChase, real Hellstorm fixtur
           damageTypeEdid: 'dtFire',
           amount: 0,
           tier: 33,
-          curve: [
-            { x: 1, y: 58 },
-            { x: 5, y: 65 },
-            { x: 10, y: 73 },
-            { x: 15, y: 83 },
-            { x: 20, y: 94 },
-            { x: 25, y: 106 },
-            { x: 30, y: 119 },
-            { x: 35, y: 135 },
-            { x: 40, y: 152 },
-            { x: 45, y: 172 },
-            { x: 50, y: 194 },
-          ],
+          curve: tier33Curve(),
           fromExplosion: true,
         },
       ],
@@ -886,67 +815,56 @@ function makeCosmeticReskinStubClient(): EsmSource {
   const omodFormId = '0xCOSMETIC';
   const projFormId = '0xCOSMETICPROJ';
   const explFormId = '0xCOSMETICEXPL';
-  return createInMemoryEsmSource({
-    records: {
-      [omodFormId]: {
-        header: { signature: 'OMOD', form_id: omodFormId },
-        editor_id: 'mod_Test_CosmeticReskin',
-        fields: {
-          Name: 'Test Cosmetic Reskin',
-          Data: {
-            'Form Type': { name: 'Weapon' },
-            'Attach Point': '0x00024004',
-            Properties: [
-              {
-                'Function Type': { name: 'SET' },
-                Property: { name: 'OverrideProjectile' },
-                'Value 1': projFormId,
-                'Value 2': 1,
-              },
-            ],
-          },
-        },
-      } as unknown as EsmRecord,
-      [projFormId]: {
-        header: { signature: 'PROJ', form_id: projFormId },
-        editor_id: 'TestReskinProjectile',
-        fields: { Data: { Flags: { flags: ['Explosion'] }, Explosion: explFormId } },
-      } as unknown as EsmRecord,
-      [explFormId]: {
-        header: { signature: 'EXPL', form_id: explFormId },
-        editor_id: 'TestReskinExplosion',
-        fields: {
-          Data: { Damage: 0, 'Placed Object': null, 'Base Weapon Damage Mult': 0 },
-          'Damage Types': [
+  return omodClient({
+    [omodFormId]: {
+      header: { signature: 'OMOD', form_id: omodFormId },
+      editor_id: 'mod_Test_CosmeticReskin',
+      fields: {
+        Name: 'Test Cosmetic Reskin',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x00024004',
+          Properties: [
             {
-              Type: '0xDTFIRE',
-              Amount: 25,
-              'Curve Table': {
-                curve_path: 'Player\\Damage\\Damage_Universal_Tier13.json',
-                curve: [
-                  { x: 1, y: 10 },
-                  { x: 50, y: 32 },
-                ],
-              },
+              'Function Type': { name: 'SET' },
+              Property: { name: 'OverrideProjectile' },
+              'Value 1': projFormId,
+              'Value 2': 1,
             },
           ],
         },
-      } as unknown as EsmRecord,
-      '0xDTFIRE': {
-        header: { signature: 'DMGT', form_id: '0xDTFIRE' },
-        editor_id: 'dtFire',
-        fields: {},
-      } as unknown as EsmRecord,
-    },
-    rows: [
-      {
-        form_id: omodFormId,
-        record_type: 'OMOD',
-        editor_id: 'mod_Test_CosmeticReskin',
-        name: 'Test Cosmetic Reskin',
       },
-    ],
-    getFallback: kywdPlaceholder,
+    } as unknown as EsmRecord,
+    [projFormId]: {
+      header: { signature: 'PROJ', form_id: projFormId },
+      editor_id: 'TestReskinProjectile',
+      fields: { Data: { Flags: { flags: ['Explosion'] }, Explosion: explFormId } },
+    } as unknown as EsmRecord,
+    [explFormId]: {
+      header: { signature: 'EXPL', form_id: explFormId },
+      editor_id: 'TestReskinExplosion',
+      fields: {
+        Data: { Damage: 0, 'Placed Object': null, 'Base Weapon Damage Mult': 0 },
+        'Damage Types': [
+          {
+            Type: '0xDTFIRE',
+            Amount: 25,
+            'Curve Table': {
+              curve_path: 'Player\\Damage\\Damage_Universal_Tier13.json',
+              curve: [
+                { x: 1, y: 10 },
+                { x: 50, y: 32 },
+              ],
+            },
+          },
+        ],
+      },
+    } as unknown as EsmRecord,
+    '0xDTFIRE': {
+      header: { signature: 'DMGT', form_id: '0xDTFIRE' },
+      editor_id: 'dtFire',
+      fields: {},
+    } as unknown as EsmRecord,
   });
 }
 
@@ -990,8 +908,8 @@ describe('extractOmods (OverrideProjectile REM/SET, 2026-07-14)', () => {
     const spelFormId = '0xSETSPEL';
     const mgefFormId = '0xSETMGEF';
     const forbidden = new Set(['0xREMEXPL']);
-    const client = createInMemoryEsmSource({
-      records: {
+    const client = omodClient(
+      {
         [omodFormId]: {
           header: { signature: 'OMOD', form_id: omodFormId },
           editor_id: 'mod_Test_PinkLike',
@@ -1078,20 +996,14 @@ describe('extractOmods (OverrideProjectile REM/SET, 2026-07-14)', () => {
           fields: { Data: { Flags: { flags: ['Explosion'] }, Explosion: '0xREMEXPL' } },
         } as unknown as EsmRecord,
       },
-      rows: [
-        {
-          form_id: omodFormId,
-          record_type: 'OMOD',
-          editor_id: 'mod_Test_PinkLike',
-          name: 'Test Pink-Like',
+      {
+        getFallback: (target) => {
+          if (forbidden.has(target))
+            throw new Error(`unexpected get(${target}) — the REMed branch must never be chased`);
+          return kywdPlaceholder(target);
         },
-      ],
-      getFallback: (target) => {
-        if (forbidden.has(target))
-          throw new Error(`unexpected get(${target}) — the REMed branch must never be chased`);
-        return kywdPlaceholder(target);
       },
-    });
+    );
 
     const result = await extractOmods({ client, obtainableWeaponFormIds: new Set() });
     const omod = result.omods.find((o) => o.id === 'mod_Test_PinkLike');
@@ -1124,88 +1036,57 @@ function makeLegendaryCraftStub(): {
   const plainFormId = '0xPLAINRIDE';
   const weaponFormId = '0xLEGWEAP';
   const legKeywordFormId = '0xMALEGCRAFT';
-  const omodRecord = (formId: string, edid: string, name: string, legendary: boolean): EsmRecord =>
-    ({
-      header: { signature: 'OMOD', form_id: formId },
-      editor_id: edid,
-      fields: {
-        Name: name,
-        Data: {
-          'Form Type': { name: 'Weapon' },
-          'Attach Point': '0x0002249D',
-          Properties: [],
-        },
-        ...(legendary ? { 'Target OMOD Keywords': [legKeywordFormId] } : {}),
-      },
-    }) as unknown as EsmRecord;
-  const cobjInfo = {
-    formId: '0xCOBJGRANT',
-    edid: 'co_mod_Test_Legendary_WithRecipe',
-    createdObjectFormId: withCobjFormId,
-    learnMethod: 3,
-    repairMethod: null,
-    learnRecipeFrom: null,
-  };
-  const cobjIndex: CobjIndex = {
-    byFormId: new Map([[cobjInfo.formId, cobjInfo]]),
-    byCreatedObject: new Map([[withCobjFormId, [cobjInfo]]]),
-  };
+  const legendaryCraftOmod = (formId: string, edid: string, name: string, legendary: boolean) =>
+    omodRecord(
+      formId,
+      edid,
+      { 'Form Type': { name: 'Weapon' }, 'Attach Point': '0x0002249D', Properties: [] },
+      { Name: name, ...(legendary ? { 'Target OMOD Keywords': [legKeywordFormId] } : {}) },
+    );
+  const cobjIndex = cobjIndexOf(
+    cobjInfo({
+      formId: '0xCOBJGRANT',
+      edid: 'co_mod_Test_Legendary_WithRecipe',
+      createdObjectFormId: withCobjFormId,
+      learnMethod: 3,
+    }),
+  );
   // Every OMOD's only reverse reference is the obtainable host weapon.
-  const weapRef: EsmRefRow = {
-    form_id: weaponFormId,
-    record_type: 'WEAP',
-    editor_id: 'HostHuntingRifle',
-    name: null,
-    depth: 1,
-  };
-  const client = createInMemoryEsmSource({
-    records: {
-      [withCobjFormId]: omodRecord(
+  const weapRef = () => [refRow('WEAP', weaponFormId, 'HostHuntingRifle')];
+  const client = omodClient(
+    {
+      [withCobjFormId]: legendaryCraftOmod(
         withCobjFormId,
         'mod_Test_Legendary_WithRecipe',
         'With Recipe',
         true,
       ),
-      [noCobjFormId]: omodRecord(
+      [noCobjFormId]: legendaryCraftOmod(
         noCobjFormId,
         'mod_Test_Legendary_LockedLike',
         'Locked-Like',
         true,
       ),
-      [plainFormId]: omodRecord(plainFormId, 'mod_Test_PlainTemplateRide', 'Plain Ride', false),
+      [plainFormId]: legendaryCraftOmod(
+        plainFormId,
+        'mod_Test_PlainTemplateRide',
+        'Plain Ride',
+        false,
+      ),
       [legKeywordFormId]: {
         header: { signature: 'KYWD', form_id: legKeywordFormId },
         editor_id: 'ma_legendarycrafting_weapon',
         fields: {},
       } as unknown as EsmRecord,
     },
-    rows: [
-      {
-        form_id: withCobjFormId,
-        record_type: 'OMOD',
-        editor_id: 'mod_Test_Legendary_WithRecipe',
-        name: 'With Recipe',
+    {
+      refs: {
+        [withCobjFormId]: weapRef(),
+        [noCobjFormId]: weapRef(),
+        [plainFormId]: weapRef(),
       },
-      {
-        form_id: noCobjFormId,
-        record_type: 'OMOD',
-        editor_id: 'mod_Test_Legendary_LockedLike',
-        name: 'Locked-Like',
-      },
-      {
-        form_id: plainFormId,
-        record_type: 'OMOD',
-        editor_id: 'mod_Test_PlainTemplateRide',
-        name: 'Plain Ride',
-      },
-    ],
-    refs: {
-      [withCobjFormId]: [weapRef],
-      [noCobjFormId]: [weapRef],
-      [plainFormId]: [weapRef],
     },
-    getFallback: kywdPlaceholder,
-  });
+  );
   return { client, cobjIndex, weaponFormId };
 }
 
@@ -1253,81 +1134,68 @@ function makeBulletStormStubClient(): EsmSource {
   const onKillAvFormId = '0x00924DB9';
   const minStacksOmodFormId = '0x00DEC003';
   const onKillOmodFormId = '0x00DEC004';
-  return createInMemoryEsmSource({
-    records: {
-      [minStacksOmodFormId]: {
-        header: { signature: 'OMOD', form_id: minStacksOmodFormId },
-        editor_id: 'mod_Test_ResoluteVeteran',
-        fields: {
-          Name: 'Test Resolute Veteran',
-          Data: {
-            'Form Type': { name: 'Weapon' },
-            'Attach Point': '0x0047A264',
-            Properties: [
-              {
-                'Function Type': { name: 'ADD' },
-                Property: { name: 'ActorValues' },
-                'Value 1': minStacksAvFormId,
-                'Value 2': 5.0,
-              },
-            ],
-          },
+  return omodClient({
+    [minStacksOmodFormId]: {
+      header: { signature: 'OMOD', form_id: minStacksOmodFormId },
+      editor_id: 'mod_Test_ResoluteVeteran',
+      fields: {
+        Name: 'Test Resolute Veteran',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0047A264',
+          Properties: [
+            {
+              'Function Type': { name: 'ADD' },
+              Property: { name: 'ActorValues' },
+              'Value 1': minStacksAvFormId,
+              'Value 2': 5.0,
+            },
+          ],
         },
-      } as unknown as EsmRecord,
-      [onKillOmodFormId]: {
-        header: { signature: 'OMOD', form_id: onKillOmodFormId },
-        editor_id: 'mod_Test_FinalWord',
-        fields: {
-          Name: 'Test Final Word',
-          Data: {
-            'Form Type': { name: 'Weapon' },
-            'Attach Point': '0x0047A264',
-            Properties: [
-              {
-                'Function Type': { name: 'SET' },
-                Property: { name: 'ActorValues' },
-                'Value 1': onKillAvFormId,
-                'Value 2': 1.0,
-              },
-            ],
-          },
+      },
+    } as unknown as EsmRecord,
+    [onKillOmodFormId]: {
+      header: { signature: 'OMOD', form_id: onKillOmodFormId },
+      editor_id: 'mod_Test_FinalWord',
+      fields: {
+        Name: 'Test Final Word',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0047A264',
+          Properties: [
+            {
+              'Function Type': { name: 'SET' },
+              Property: { name: 'ActorValues' },
+              'Value 1': onKillAvFormId,
+              'Value 2': 1.0,
+            },
+          ],
         },
-      } as unknown as EsmRecord,
-      [minStacksAvFormId]: {
-        header: { signature: 'AVIF', form_id: minStacksAvFormId },
-        editor_id: 'AmmoSpenderMinStacks',
-        fields: {},
-      } as unknown as EsmRecord,
-      [onKillAvFormId]: {
-        header: { signature: 'AVIF', form_id: onKillAvFormId },
-        editor_id: 'EnableAmmoSpenderOnKill',
-        fields: {},
-      } as unknown as EsmRecord,
-    },
-    rows: [
-      {
-        form_id: minStacksOmodFormId,
-        record_type: 'OMOD',
-        editor_id: 'mod_Test_ResoluteVeteran',
-        name: 'Test Resolute Veteran',
       },
-      {
-        form_id: onKillOmodFormId,
-        record_type: 'OMOD',
-        editor_id: 'mod_Test_FinalWord',
-        name: 'Test Final Word',
-      },
-    ],
-    getFallback: kywdPlaceholder,
+    } as unknown as EsmRecord,
+    [minStacksAvFormId]: {
+      header: { signature: 'AVIF', form_id: minStacksAvFormId },
+      editor_id: 'AmmoSpenderMinStacks',
+      fields: {},
+    } as unknown as EsmRecord,
+    [onKillAvFormId]: {
+      header: { signature: 'AVIF', form_id: onKillAvFormId },
+      editor_id: 'EnableAmmoSpenderOnKill',
+      fields: {},
+    } as unknown as EsmRecord,
   });
 }
 
 describe('extractOmods (Bullet Storm ActorValues — AmmoSpenderMinStacks/EnableAmmoSpenderOnKill, 2026-07-16)', () => {
-  it('ActorValues ADD 5.0 on AmmoSpenderMinStacks decodes to a bulletStormMinStacks ADD modifier of value 5', async () => {
-    const result = await extractOmods({
+  let result: Awaited<ReturnType<typeof extractOmods>>;
+  beforeAll(async () => {
+    result = await extractOmods({
       client: makeBulletStormStubClient(),
       obtainableWeaponFormIds: new Set(),
     });
+  });
+
+  it('ActorValues ADD 5.0 on AmmoSpenderMinStacks decodes to a bulletStormMinStacks ADD modifier of value 5', () => {
     const omod = result.omods.find((o) => o.id === 'mod_Test_ResoluteVeteran');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -1336,11 +1204,7 @@ describe('extractOmods (Bullet Storm ActorValues — AmmoSpenderMinStacks/Enable
     expect(omod!.notes).not.toContain('ActorValues on AmmoSpenderMinStacks — unmapped');
   });
 
-  it('ActorValues SET 1.0 on EnableAmmoSpenderOnKill decodes to a bulletStormOnKill SET modifier (regression: SET must not downgrade to ADD)', async () => {
-    const result = await extractOmods({
-      client: makeBulletStormStubClient(),
-      obtainableWeaponFormIds: new Set(),
-    });
+  it('ActorValues SET 1.0 on EnableAmmoSpenderOnKill decodes to a bulletStormOnKill SET modifier (regression: SET must not downgrade to ADD)', () => {
     const omod = result.omods.find((o) => o.id === 'mod_Test_FinalWord');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -1425,8 +1289,8 @@ describe('extractOmods (range barrel MinRange/MaxRange, Phase 1 extraction half)
 
   it('maps a synthetic OutOfRangeDamageMult property to weaponOutOfRangeMult (no real OMOD carries this property in the sampled range barrels — synthetic pin for completeness)', async () => {
     const omodFormId = '0x00DEC006';
-    const client = createInMemoryEsmSource({
-      records: {
+    const client = omodClient(
+      {
         [omodFormId]: {
           header: { signature: 'OMOD', form_id: omodFormId },
           editor_id: 'mod_Test_OutOfRangeMult',
@@ -1447,17 +1311,8 @@ describe('extractOmods (range barrel MinRange/MaxRange, Phase 1 extraction half)
           },
         } as unknown as EsmRecord,
       },
-      rows: [
-        {
-          form_id: omodFormId,
-          record_type: 'OMOD',
-          editor_id: 'mod_Test_OutOfRangeMult',
-          name: 'Test Out Of Range Mult',
-        },
-      ],
-      getFallback: kywdPlaceholder,
-      resolveEdidMap: { [omodFormId]: omodFormId },
-    });
+      { resolveEdidMap: { [omodFormId]: omodFormId } },
+    );
 
     const result = await extractOmods({ client, obtainableWeaponFormIds: new Set() });
     const omod = result.omods.find((o) => o.id === 'mod_Test_OutOfRangeMult');
@@ -1492,54 +1347,41 @@ describe('extractOmods (range barrel MinRange/MaxRange, Phase 1 extraction half)
  *   flattenPerkConditionRows).
  */
 function makeArmorStubClient(): EsmSource {
-  return createInMemoryEsmSource({
-    records: {
-      '0x004EE54E': armor2StatStrengthOmod as unknown as EsmRecord,
-      '0x00792A28': battleLoadersOmod as unknown as EsmRecord,
-      '0x00792948': battleLoadersEnch as unknown as EsmRecord,
-      '0x0079B51F': battleLoadersMgef as unknown as EsmRecord,
-      '0x0079B522': battleLoadersPerk as unknown as EsmRecord,
-      // AVIF the 2★ SPECIAL mod's ActorValues property targets directly (the
-      // raw SPECIAL AVIF, not a STAT_* plumbing stat) — must resolve to the
-      // exact edid FALLBACK_AVIF_ROUTES keys on.
-      '0x000002C2': {
-        header: { signature: 'AVIF', form_id: '0x000002C2' },
-        editor_id: 'Strength',
-        fields: {},
-      } as unknown as EsmRecord,
-      // The worn-keyword Battle-Loader's WornApparelHasKeywordCount conditions
-      // gate on — must resolve to the exact edid the wornPieceCount condition
-      // carries.
-      '0x00792A12': {
-        header: { signature: 'KYWD', form_id: '0x00792A12' },
-        editor_id: 'HasLegendary_Armor_BattleLoaders',
-        fields: {},
-      } as unknown as EsmRecord,
-    },
-    rows: [
-      {
-        form_id: '0x004EE54E',
-        record_type: 'OMOD',
-        editor_id: 'mod_Legendary_Armor2_StatStrength',
-        name: 'Strength',
-      },
-      {
-        form_id: '0x00792A28',
-        record_type: 'OMOD',
-        editor_id: 'mod_Legendary_Armor4_BattleLoaders',
-        name: "Battle-Loader's",
-      },
-    ],
-    getFallback: kywdPlaceholder,
+  return omodClient({
+    '0x004EE54E': armor2StatStrengthOmod as unknown as EsmRecord,
+    '0x00792A28': battleLoadersOmod as unknown as EsmRecord,
+    '0x00792948': battleLoadersEnch as unknown as EsmRecord,
+    '0x0079B51F': battleLoadersMgef as unknown as EsmRecord,
+    '0x0079B522': battleLoadersPerk as unknown as EsmRecord,
+    // AVIF the 2★ SPECIAL mod's ActorValues property targets directly (the
+    // raw SPECIAL AVIF, not a STAT_* plumbing stat) — must resolve to the
+    // exact edid FALLBACK_AVIF_ROUTES keys on.
+    '0x000002C2': {
+      header: { signature: 'AVIF', form_id: '0x000002C2' },
+      editor_id: 'Strength',
+      fields: {},
+    } as unknown as EsmRecord,
+    // The worn-keyword Battle-Loader's WornApparelHasKeywordCount conditions
+    // gate on — must resolve to the exact edid the wornPieceCount condition
+    // carries.
+    '0x00792A12': {
+      header: { signature: 'KYWD', form_id: '0x00792A12' },
+      editor_id: 'HasLegendary_Armor_BattleLoaders',
+      fields: {},
+    } as unknown as EsmRecord,
   });
 }
 
 describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
-  it('routes both armor OMODs into armorOmods, and neither into the weapon omods array', async () => {
-    const result = await extractOmods({
+  let result: Awaited<ReturnType<typeof extractOmods>>;
+  beforeAll(async () => {
+    result = await extractOmods({
       client: makeArmorStubClient(),
       obtainableWeaponFormIds: new Set(),
     });
+  });
+
+  it('routes both armor OMODs into armorOmods, and neither into the weapon omods array', () => {
     expect(result.armorOmods.map((o) => o.id).sort()).toEqual(
       ['mod_Legendary_Armor2_StatStrength', 'mod_Legendary_Armor4_BattleLoaders'].sort(),
     );
@@ -1547,11 +1389,7 @@ describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
     expect(result.omods.find((o) => o.id === 'mod_Legendary_Armor4_BattleLoaders')).toBeUndefined();
   });
 
-  it('2★ SPECIAL (Strength): ActorValues ADD Strength 2.0 decodes to a specialStrength modifier via the existing fallback route', async () => {
-    const result = await extractOmods({
-      client: makeArmorStubClient(),
-      obtainableWeaponFormIds: new Set(),
-    });
+  it('2★ SPECIAL (Strength): ActorValues ADD Strength 2.0 decodes to a specialStrength modifier via the existing fallback route', () => {
     const omod = result.armorOmods.find((o) => o.id === 'mod_Legendary_Armor2_StatStrength');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -1560,11 +1398,7 @@ describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
     expect(omod!.notes ?? []).not.toContain('ActorValues on Strength — unmapped');
   });
 
-  it("Battle-Loader's: 5 reloadSkipChanceBash modifiers at the right per-worn-piece chances, carrying ONLY the matching wornPieceCount condition", async () => {
-    const result = await extractOmods({
-      client: makeArmorStubClient(),
-      obtainableWeaponFormIds: new Set(),
-    });
+  it("Battle-Loader's: 5 reloadSkipChanceBash modifiers at the right per-worn-piece chances, carrying ONLY the matching wornPieceCount condition", () => {
     const omod = result.armorOmods.find((o) => o.id === 'mod_Legendary_Armor4_BattleLoaders');
     expect(omod).toBeDefined();
 
@@ -1629,24 +1463,13 @@ describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
  * normalize.test.ts).
  */
 function makeVatsEnhancedStubClient(): EsmSource {
-  return createInMemoryEsmSource({
-    records: {
-      '0x00524153': vatsEnhancedOmod as unknown as EsmRecord,
-      '0x006C2035': {
-        header: { signature: 'AVIF', form_id: '0x006C2035' },
-        editor_id: 'STAT_VATSAccuracy',
-        fields: {},
-      } as unknown as EsmRecord,
-    },
-    rows: [
-      {
-        form_id: '0x00524153',
-        record_type: 'OMOD',
-        editor_id: 'mod_Legendary_Weapon2_Guns_VATSAccuracy',
-        name: 'V.A.T.S. Enhanced',
-      },
-    ],
-    getFallback: kywdPlaceholder,
+  return omodClient({
+    '0x00524153': vatsEnhancedOmod as unknown as EsmRecord,
+    '0x006C2035': {
+      header: { signature: 'AVIF', form_id: '0x006C2035' },
+      editor_id: 'STAT_VATSAccuracy',
+      fields: {},
+    } as unknown as EsmRecord,
   });
 }
 
@@ -1695,153 +1518,9 @@ describe('resolveVariantDisplayName', () => {
 });
 
 describe('extractOmods (variant container split)', () => {
-  const CONTAINER_ID = '0x00CA0001';
-  const VARIANT_FIRE_ID = '0x00CA0002';
-  const VARIANT_POISON_ID = '0x00CA0003';
-  const AP_CUSTOM = '0x0047A264';
-  const FIRE_ENCH = '0x00CA00E1';
-  const POISON_ENCH = '0x00CA00E2';
-
-  function makeVariantContainerStub(): EsmSource {
-    const records: Record<string, EsmRecord> = {
-      [CONTAINER_ID]: {
-        header: { signature: 'OMOD', form_id: CONTAINER_ID },
-        editor_id: 'mod_Test_VariantContainer',
-        fields: {
-          Name: 'Test Whacker',
-          Data: {
-            'Property Count': 0,
-            'Form Type': { name: 'Weapon' },
-            'Attach Point': AP_CUSTOM,
-            Includes: [
-              { Mod: VARIANT_FIRE_ID, "Don't Use All": { value: 1, name: 'True' } },
-              { Mod: VARIANT_POISON_ID, "Don't Use All": { value: 1, name: 'True' } },
-            ],
-          },
-        },
-      } as unknown as EsmRecord,
-      [VARIANT_FIRE_ID]: {
-        header: { signature: 'OMOD', form_id: VARIANT_FIRE_ID },
-        editor_id: 'mod_Test_VariantContainer_Fire',
-        fields: {
-          Data: {
-            'Property Count': 1,
-            'Form Type': { name: 'Weapon' },
-            'Attach Point': AP_CUSTOM,
-            Properties: [
-              {
-                'Function Type': { name: 'ADD' },
-                Property: { name: 'Enchantments' },
-                'Value 1': FIRE_ENCH,
-                'Value 2': 1,
-              },
-            ],
-          },
-        },
-      } as unknown as EsmRecord,
-      [VARIANT_POISON_ID]: {
-        header: { signature: 'OMOD', form_id: VARIANT_POISON_ID },
-        editor_id: 'mod_Test_VariantContainer_Poison',
-        fields: {
-          Data: {
-            'Property Count': 1,
-            'Form Type': { name: 'Weapon' },
-            'Attach Point': AP_CUSTOM,
-            Properties: [
-              {
-                'Function Type': { name: 'ADD' },
-                Property: { name: 'Enchantments' },
-                'Value 1': POISON_ENCH,
-                'Value 2': 1,
-              },
-            ],
-          },
-        },
-      } as unknown as EsmRecord,
-      [FIRE_ENCH]: {
-        header: { signature: 'ENCH', form_id: FIRE_ENCH },
-        editor_id: 'ench_Test_Fire',
-        fields: {
-          'Effect Data': { 'Target Type': { name: 'Contact' } },
-          Effects: [
-            {
-              Effect: {
-                'Base Effect': '0x00CA00A1',
-                'Effect Item Data': { Magnitude: 10, Duration: 3 },
-              },
-            },
-          ],
-        },
-      } as unknown as EsmRecord,
-      [POISON_ENCH]: {
-        header: { signature: 'ENCH', form_id: POISON_ENCH },
-        editor_id: 'ench_Test_Poison',
-        fields: {
-          'Effect Data': { 'Target Type': { name: 'Contact' } },
-          Effects: [
-            {
-              Effect: {
-                'Base Effect': '0x00CA00A2',
-                'Effect Item Data': { Magnitude: 5, Duration: 5 },
-              },
-            },
-          ],
-        },
-      } as unknown as EsmRecord,
-      '0x00CA00A1': {
-        header: { signature: 'MGEF', form_id: '0x00CA00A1' },
-        editor_id: 'mgef_Test_Fire',
-        fields: {
-          'Magic Effect Data': {
-            Data: {
-              Archetype: { name: 'Damage' },
-              Delivery: { name: 'Contact' },
-              'Actor Value': '0x00000000',
-            },
-          },
-        },
-      } as unknown as EsmRecord,
-      '0x00CA00A2': {
-        header: { signature: 'MGEF', form_id: '0x00CA00A2' },
-        editor_id: 'mgef_Test_Poison',
-        fields: {
-          'Magic Effect Data': {
-            Data: {
-              Archetype: { name: 'Damage' },
-              Delivery: { name: 'Contact' },
-              'Actor Value': '0x00000000',
-            },
-          },
-        },
-      } as unknown as EsmRecord,
-      [AP_CUSTOM]: {
-        header: { signature: 'KYWD', form_id: AP_CUSTOM },
-        editor_id: 'ap_customName',
-        fields: {},
-      } as unknown as EsmRecord,
-    };
-
-    return createInMemoryEsmSource({
-      records,
-      rows: Object.values(records)
-        .filter((r) => r.header.signature === 'OMOD')
-        .map((r) => ({
-          form_id: r.header.form_id,
-          record_type: 'OMOD',
-          editor_id: r.editor_id,
-          name: (r.fields['Name'] as string) ?? r.editor_id,
-        })),
-      getFallback: (formId) => ({
-        header: { signature: 'KYWD', form_id: formId },
-        editor_id: 'ma_placeholder',
-        fields: {},
-      }),
-    });
-  }
-
   it('emits each variant with disjoint modifiers and never emits the container', async () => {
     const result = await extractOmods({
-      client: makeVariantContainerStub(),
+      client: variantContainerClient(),
       obtainableWeaponFormIds: new Set(),
     });
     expect(result.omods.some((o) => o.id === 'mod_Test_VariantContainer')).toBe(false);
@@ -1924,40 +1603,29 @@ function makeToneDeathStubClient(): EsmSource {
     },
   } as unknown as EsmRecord;
 
-  return createInMemoryEsmSource({
-    records: {
-      [TONE_DEATH_FORM_ID]: toneDeathOmod as unknown as EsmRecord,
-      SURV_WellTunedSpell: wellTunedSpell as unknown as EsmRecord,
-      [WELL_TUNED_SPELL]: wellTunedSpell as unknown as EsmRecord,
-      [FORTIFY_DMG_MELEE_ALL]: fortifyDmgMeleeAll as unknown as EsmRecord,
-      [TONE_DEATH_KEYWORD]: customItemNameToneDeath as unknown as EsmRecord,
-      [STAT_DMG_MELEE]: statDmgMeleeAvif as unknown as EsmRecord,
-      STAT_DamagePerk: statDamagePerk,
-      [WEAPON_TYPE_UNARMED]: {
-        header: { signature: 'KYWD', form_id: WEAPON_TYPE_UNARMED },
-        editor_id: 'WeaponTypeUnarmed',
-        fields: {},
-      } as unknown as EsmRecord,
-      [WEAPON_TYPE_MELEE_GENERAL]: {
-        header: { signature: 'KYWD', form_id: WEAPON_TYPE_MELEE_GENERAL },
-        editor_id: 'WeaponTypeMeleeGeneral',
-        fields: {},
-      } as unknown as EsmRecord,
-      [AP_CUSTOM_NAME]: {
-        header: { signature: 'KYWD', form_id: AP_CUSTOM_NAME },
-        editor_id: 'ap_customName',
-        fields: {},
-      } as unknown as EsmRecord,
-    },
-    rows: [
-      {
-        form_id: TONE_DEATH_FORM_ID,
-        record_type: 'OMOD',
-        editor_id: 'E08B_mod_Custom_ToneDeath',
-        name: 'Tone Death',
-      },
-    ],
-    getFallback: kywdPlaceholder,
+  return omodClient({
+    [TONE_DEATH_FORM_ID]: toneDeathOmod as unknown as EsmRecord,
+    SURV_WellTunedSpell: wellTunedSpell as unknown as EsmRecord,
+    [WELL_TUNED_SPELL]: wellTunedSpell as unknown as EsmRecord,
+    [FORTIFY_DMG_MELEE_ALL]: fortifyDmgMeleeAll as unknown as EsmRecord,
+    [TONE_DEATH_KEYWORD]: customItemNameToneDeath as unknown as EsmRecord,
+    [STAT_DMG_MELEE]: statDmgMeleeAvif as unknown as EsmRecord,
+    STAT_DamagePerk: statDamagePerk,
+    [WEAPON_TYPE_UNARMED]: {
+      header: { signature: 'KYWD', form_id: WEAPON_TYPE_UNARMED },
+      editor_id: 'WeaponTypeUnarmed',
+      fields: {},
+    } as unknown as EsmRecord,
+    [WEAPON_TYPE_MELEE_GENERAL]: {
+      header: { signature: 'KYWD', form_id: WEAPON_TYPE_MELEE_GENERAL },
+      editor_id: 'WeaponTypeMeleeGeneral',
+      fields: {},
+    } as unknown as EsmRecord,
+    [AP_CUSTOM_NAME]: {
+      header: { signature: 'KYWD', form_id: AP_CUSTOM_NAME },
+      editor_id: 'ap_customName',
+      fields: {},
+    } as unknown as EsmRecord,
   });
 }
 

@@ -7,7 +7,7 @@ import { getGeneratedPerk, getLoadoutModifiers } from '@/data/perk-modifiers';
 import { computePerkBudget } from '@/data/perk-budget';
 import { perkCardOverrides } from '@/data/overrides/perk-overrides';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
-import { SPECIAL_KEYS, type SpecialKey } from '@/lib/player-stats';
+import { baseSpecial } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 /**
  * Drift detection for the ESM-derived perk registry (src/data/perk-cards.ts),
@@ -15,15 +15,6 @@ import { SPECIAL_KEYS, type SpecialKey } from '@/lib/player-stats';
  * and fails loudly (with the offending list) when a future `bun run extract`
  * changes the join surface.
  */
-
-function baseSpecial(
-  overrides: Partial<Record<SpecialKey, number>> = {},
-): Record<SpecialKey, number> {
-  return {
-    ...(Object.fromEntries(SPECIAL_KEYS.map((k) => [k, 1])) as Record<SpecialKey, number>),
-    ...overrides,
-  };
-}
 
 describe('perk card registry — join coverage', () => {
   it('every non-legendary carded generated family is claimed by a registry PerkId, except the known gender-twin "Girl" cards', () => {

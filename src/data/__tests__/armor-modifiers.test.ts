@@ -6,31 +6,38 @@ import {
   LIMIT_BREAKING,
   STRENGTH_2STAR,
   UNYIELDING,
-} from './armor-test-helpers';
+} from '@/data/__tests__/armor-test-helpers';
 
 describe('getArmorEffects (curated inventory)', () => {
   const effects = getArmorEffects('live');
 
   it('includes the named priority effects with the expected classification', () => {
     const byId = new Map(effects.map((e) => [e.id, e]));
+    // starTier is read directly off armor-omods.json attachPointEdid.
+    // Unyielding: mod_Legendary_Armor1_LowHealthIncreasesStats @ ap_Legendary1.
     expect(byId.get(UNYIELDING)).toMatchObject({
       name: 'Unyielding',
       group: 'legendary',
       maxCount: 5,
       selfScaling: false,
+      starTier: 1,
     });
+    // 2★ Strength: mod_Legendary_Armor2_StatStrength @ ap_Legendary2.
     expect(byId.get(STRENGTH_2STAR)).toMatchObject({
       name: 'Strength',
       group: 'legendary',
       maxCount: 5,
       selfScaling: false,
+      starTier: 2,
     });
+    // Battle-Loader's and Limit-Breaking: mod_Legendary_Armor4_* @ ap_Legendary4.
     expect(byId.get(BATTLE_LOADERS)).toMatchObject({
       name: "Battle-Loader's",
       group: 'legendary',
       maxCount: 5,
       selfScaling: true,
       wornPieceKeyword: 'HasLegendary_Armor_BattleLoaders',
+      starTier: 4,
     });
     expect(byId.get(LIMIT_BREAKING)).toMatchObject({
       name: 'Limit-Breaking',
@@ -38,6 +45,7 @@ describe('getArmorEffects (curated inventory)', () => {
       maxCount: 5,
       selfScaling: true,
       wornPieceKeyword: 'HasLegendary_Armor_LimitBreak',
+      starTier: 4,
     });
   });
 
@@ -49,7 +57,13 @@ describe('getArmorEffects (curated inventory)', () => {
       group: 'misc',
       maxCount: 1,
       selfScaling: false,
+      armorType: 'powerArmor',
     });
+    // Bun's toMatchObject ignores Set contents, so pieceReach needs toEqual.
+    expect(emergencyProtocols?.pieceReach).toEqual(new Set(['torso']));
+    expect(effects.filter((e) => e.name === 'Emergency Protocols').map((e) => e.id)).toEqual([
+      EMERGENCY_PROTOCOLS,
+    ]);
   });
 
   it("excludes known-bad records (Overeater's, Punishing) and broken duplicates never show up twice", () => {
@@ -76,11 +90,6 @@ describe('getArmorEffects (curated inventory)', () => {
         expect(m.conditions.some((c) => c.kind === 'unresolved')).toBe(false);
       }
     }
-  });
-
-  it('the roster now includes non-engine-effective entries, badged inert', () => {
-    const inert = effects.filter((e) => e.badge === 'inert');
-    expect(inert.length).toBeGreaterThan(0);
   });
 });
 

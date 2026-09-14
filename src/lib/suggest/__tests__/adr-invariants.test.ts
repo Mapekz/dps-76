@@ -1,11 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import {
-  makeBuildReducer,
-  createDefaultBuildState,
-  type BuildAction,
-  type BuildState,
-} from '@/state/build-reducer';
-import { PerkId } from '@/data/perk-ids';
+import { fixerCenterMasochistState, fixerOnlyState } from '@/state/__tests__/build-state-fixture';
 import {
   collapseSuggestionFamilies,
   evaluateActions,
@@ -16,94 +10,10 @@ import {
   COMBO_GATE_POLICY,
 } from '@/lib/suggest/evaluate';
 import { enumerateVariants } from '@/lib/suggest/variants';
-import type {
-  DpsSnapshot,
-  EvaluatedSuggestion,
-  ScenarioHeadline,
-  SuggestionGroup,
-} from '@/lib/suggest/types';
+import type { EvaluatedSuggestion, SuggestionGroup } from '@/lib/suggest/types';
 import { createMemoScope } from '@/lib/loadout-memo';
 
-const buildReducer = makeBuildReducer('live');
-
-function stateFrom(
-  actions: BuildAction[],
-  from: BuildState = createDefaultBuildState(),
-): BuildState {
-  return actions.reduce(buildReducer, from);
-}
-
-const fixerState = stateFrom([{ type: 'weapon/select', weaponId: 'CombatRifle_Fixer' }]);
-
-describe('ADR 0007: suggestions rank on canonical totalDps delta', () => {
-  it('primaryDeltaPct equals delta[metric].totalDps / baseline[metric].totalDps for every candidate', () => {
-    const report = evaluateSuggestions(fixerState, 'live', 'vats');
-    const metricBase = report.baseline!.vats.totalDps;
-    for (const s of report.suggestions) {
-      const expected = metricBase > 0 ? s.delta.vats.totalDps / metricBase : 0;
-      expect(s.primaryDeltaPct).toBeCloseTo(expected, 6);
-    }
-  });
-});
-
-describe('ADR 0007: AP-economy lever still scores > 0 (anti-unblended-V guard)', () => {
-  it('Company Tea scores positive primaryDeltaPct because the canonical blend contains uptime', () => {
-    const report = evaluateSuggestions(fixerState, 'live', 'vats');
-    const tea = report.suggestions.find((s) => s.id === 'consumable:CompanyTea_RSVP02');
-    expect(tea).toBeDefined();
-    expect(tea!.primaryDeltaPct).toBeGreaterThan(0);
-  });
-});
-
-describe('family collapse emits at most 2 rows per family (next positive + best)', () => {
-  const headline: ScenarioHeadline = { perHit: 0, burstDps: 0, totalDps: 0, uptime: 1 };
-  const snapshot: DpsSnapshot = { freeAim: headline, vats: headline };
-
-  function fixture(
-    id: string,
-    family: string,
-    cost: number,
-    primaryDeltaPct: number,
-  ): EvaluatedSuggestion {
-    return {
-      id,
-      action: [],
-      label: id,
-      group: 'perk',
-      family,
-      cost,
-      result: snapshot,
-      delta: snapshot,
-      primaryDeltaPct,
-    };
-  }
-
-  it('keeps the cheapest positive step and the best when they differ in a 4-member family', () => {
-    const members = [
-      fixture('fam:0', 'fam', 0, -0.05),
-      fixture('fam:1', 'fam', 1, 0.05),
-      fixture('fam:2', 'fam', 2, 0.12),
-      fixture('fam:3', 'fam', 3, 0.2),
-    ];
-    const result = collapseSuggestionFamilies(members);
-    expect(result.map((r) => r.id)).toEqual(['fam:1', 'fam:3']);
-  });
-
-  it('collapses a family with no positive member to a single best row', () => {
-    const members = [
-      fixture('neg:0', 'neg', 0, -0.2),
-      fixture('neg:1', 'neg', 1, -0.05),
-      fixture('neg:2', 'neg', 2, -0.1),
-    ];
-    const result = collapseSuggestionFamilies(members);
-    expect(result.map((r) => r.id)).toEqual(['neg:1']);
-  });
-
-  it('passes size-1 families through untouched', () => {
-    const members = [fixture('solo:0', 'solo', 0, 0.08)];
-    expect(collapseSuggestionFamilies(members)).toEqual(members);
-  });
-});
+const fixerState = fixerOnlyState();
 
 describe('two-tier scope: STRUCTURAL_GROUPS excludes consumables', () => {
   it('contains the structural groups and omits consumables', () => {
@@ -115,7 +25,8 @@ describe('two-tier scope: STRUCTURAL_GROUPS excludes consumables', () => {
   it('defaults topSuggestions to structural groups only, while an explicit consumable scope selects consumables', () => {
     const report = evaluateSuggestions(fixerState, 'live', 'vats');
 
-    const structural = [...topSuggestions(report, 50).ranked, ...topSuggestions(report, 50).tied];
+    const { ranked, tied } = topSuggestions(report, 50);
+    const structural = [...ranked, ...tied];
     expect(structural.every((s) => s.group !== 'consumable')).toBe(true);
 
     const consumableOnly = topSuggestions(report, 50, 0.01, {
@@ -129,10 +40,7 @@ describe('two-tier scope: STRUCTURAL_GROUPS excludes consumables', () => {
 
 describe('ADR 0011: the sweep evaluates every candidate (no pruning)', () => {
   it('evaluates every enumerated candidate with real deltas — no placeholder skip path', () => {
-    const state = stateFrom([
-      { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
-      { type: 'perk/add', perkId: PerkId.CenterMasochist, rank: 1, legendary: false },
-    ]);
+    const state = fixerCenterMasochistState();
     const report = evaluateSuggestions(state, 'live', 'vats');
     expect(report.baseline).not.toBeNull();
 
