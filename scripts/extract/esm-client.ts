@@ -161,7 +161,8 @@ export class EsmClient implements EsmSource {
       if (type) args.push('--type', type);
       if (paths) args.push('--paths');
       args.push('--json');
-      cached = this.run(args).then((out) => JSON.parse(out));
+      // `refs --json` emits the whole walk result; the rows are under `rows`.
+      cached = this.run(args).then((out) => (JSON.parse(out) as { rows: EsmRefRow[] }).rows);
       this.refsCache.set(key, cached);
     }
     return cached;
