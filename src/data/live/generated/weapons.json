@@ -8129,6 +8129,126 @@
   "obtainable": true
  },
  {
+  "id": "CharGen_GolfClub_NoName",
+  "formId": "0x003C96E6",
+  "name": "CharGen_GolfClub_NoName",
+  "weaponTypeName": "TwoHandSword",
+  "keywords": [
+   "Anims2hmWideWeapon",
+   "WeaponTypeMelee2H",
+   "QuickkeyMelee",
+   "WeaponTypeMeleeGeneral",
+   "ObjectTypeWeapon",
+   "WeaponTypeArchaic",
+   "WeaponTypeWeird",
+   "WeaponTypeBlunt",
+   "ma_golfclub",
+   "UI_WeaponTypeMelee2H"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 23,
+    "tier": 19,
+    "curve": [
+     {
+      "x": 1,
+      "y": 20
+     },
+     {
+      "x": 5,
+      "y": 22
+     },
+     {
+      "x": 10,
+      "y": 25
+     },
+     {
+      "x": 15,
+      "y": 28
+     },
+     {
+      "x": 20,
+      "y": 32
+     },
+     {
+      "x": 25,
+      "y": 36
+     },
+     {
+      "x": 30,
+      "y": 40
+     },
+     {
+      "x": 35,
+      "y": 46
+     },
+     {
+      "x": 40,
+      "y": 52
+     },
+     {
+      "x": 45,
+      "y": 58
+     },
+     {
+      "x": 50,
+      "y": 66
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 1.8000101,
+  "animationFireSec": 0,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 40,
+  "projectileCount": 1,
+  "reach": 0.8,
+  "secondaryDamage": 10,
+  "damageBonusMult": 1,
+  "minRange": 0,
+  "maxRange": 10,
+  "outOfRangeDamageMult": -1,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   1,
+   5,
+   10,
+   15,
+   20,
+   25,
+   30,
+   35,
+   40,
+   45,
+   50
+  ],
+  "templateModFormIds": [
+   "0x0002B52A"
+  ],
+  "defaultModFormIds": [
+   "0x0002B52A"
+  ],
+  "attachParentSlots": [
+   "0x0005524C",
+   "0x0000283C"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
   "id": "ChineseOfficerSword",
   "formId": "0x00147BE4",
   "name": "Chinese Officer Sword",
@@ -12569,426 +12689,6 @@
   "obtainable": true
  },
  {
-  "id": "CharGen_GolfClub_NoName",
-  "formId": "0x003C96E6",
-  "name": "Default",
-  "weaponTypeName": "TwoHandSword",
-  "keywords": [
-   "Anims2hmWideWeapon",
-   "WeaponTypeMelee2H",
-   "QuickkeyMelee",
-   "WeaponTypeMeleeGeneral",
-   "ObjectTypeWeapon",
-   "WeaponTypeArchaic",
-   "WeaponTypeWeird",
-   "WeaponTypeBlunt",
-   "ma_golfclub",
-   "UI_WeaponTypeMelee2H"
-  ],
-  "isAutomaticFlag": false,
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 23,
-    "tier": 19,
-    "curve": [
-     {
-      "x": 1,
-      "y": 20
-     },
-     {
-      "x": 5,
-      "y": 22
-     },
-     {
-      "x": 10,
-      "y": 25
-     },
-     {
-      "x": 15,
-      "y": 28
-     },
-     {
-      "x": 20,
-      "y": 32
-     },
-     {
-      "x": 25,
-      "y": 36
-     },
-     {
-      "x": 30,
-      "y": 40
-     },
-     {
-      "x": 35,
-      "y": 46
-     },
-     {
-      "x": 40,
-      "y": 52
-     },
-     {
-      "x": 45,
-      "y": 58
-     },
-     {
-      "x": 50,
-      "y": 66
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 2,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2,
-  "speed": 1,
-  "attackDelaySec": 0,
-  "animationAttackSec": 1.8000101,
-  "animationFireSec": 0,
-  "reloadSpeed": 1,
-  "animationReloadSec": 0,
-  "capacity": 0,
-  "ammoPerShot": 1,
-  "actionPointCost": 40,
-  "projectileCount": 1,
-  "reach": 0.8,
-  "secondaryDamage": 10,
-  "damageBonusMult": 1,
-  "minRange": 0,
-  "maxRange": 10,
-  "outOfRangeDamageMult": -1,
-  "fullPowerSeconds": 0,
-  "fullPowerDamageMult": 0,
-  "minimumChargeTime": 0,
-  "eligibleLevels": [
-   1,
-   5,
-   10,
-   15,
-   20,
-   25,
-   30,
-   35,
-   40,
-   45,
-   50
-  ],
-  "templateModFormIds": [
-   "0x0002B52A"
-  ],
-  "defaultModFormIds": [
-   "0x0002B52A"
-  ],
-  "attachParentSlots": [
-   "0x0005524C",
-   "0x0000283C"
-  ],
-  "modifiers": [],
-  "obtainable": false
- },
- {
-  "id": "DoubleBarrelShotgun_WL005",
-  "formId": "0x0054A77C",
-  "name": "Default",
-  "weaponTypeName": "Gun",
-  "keywords": [
-   "ma_DoubleBarrelShotgun",
-   "WeaponTypeBallistic",
-   "QuickkeyGun",
-   "ObjectTypeWeapon",
-   "s_40_ShotgunDoubleBarrel",
-   "animsDoubleBarrelShotgun",
-   "WeaponTypeRanged",
-   "ma_CanHaveNullMuzzle",
-   "WeaponTypeShotgun",
-   "UI_WeaponTypeShotgun"
-  ],
-  "isAutomaticFlag": false,
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 67,
-    "tier": 36,
-    "curve": [
-     {
-      "x": 1,
-      "y": 63
-     },
-     {
-      "x": 12,
-      "y": 71
-     },
-     {
-      "x": 23,
-      "y": 80
-     },
-     {
-      "x": 34,
-      "y": 90
-     },
-     {
-      "x": 45,
-      "y": 101
-     },
-     {
-      "x": 56,
-      "y": 114
-     },
-     {
-      "x": 67,
-      "y": 129
-     },
-     {
-      "x": 78,
-      "y": 145
-     },
-     {
-      "x": 89,
-      "y": 164
-     },
-     {
-      "x": 100,
-      "y": 184
-     },
-     {
-      "x": 111,
-      "y": 208
-     },
-     {
-      "x": 122,
-      "y": 234
-     },
-     {
-      "x": 133,
-      "y": 264
-     },
-     {
-      "x": 144,
-      "y": 297
-     },
-     {
-      "x": 155,
-      "y": 335
-     },
-     {
-      "x": 166,
-      "y": 377
-     },
-     {
-      "x": 177,
-      "y": 425
-     },
-     {
-      "x": 188,
-      "y": 478
-     },
-     {
-      "x": 199,
-      "y": 539
-     },
-     {
-      "x": 210,
-      "y": 607
-     },
-     {
-      "x": 221,
-      "y": 684
-     },
-     {
-      "x": 232,
-      "y": 770
-     },
-     {
-      "x": 243,
-      "y": 868
-     },
-     {
-      "x": 254,
-      "y": 978
-     },
-     {
-      "x": 265,
-      "y": 1102
-     },
-     {
-      "x": 276,
-      "y": 1241
-     },
-     {
-      "x": 287,
-      "y": 1398
-     },
-     {
-      "x": 298,
-      "y": 1575
-     },
-     {
-      "x": 309,
-      "y": 1775
-     },
-     {
-      "x": 320,
-      "y": 2000
-     },
-     {
-      "x": 331,
-      "y": 2253
-     },
-     {
-      "x": 342,
-      "y": 2539
-     },
-     {
-      "x": 353,
-      "y": 2860
-     },
-     {
-      "x": 364,
-      "y": 3222
-     },
-     {
-      "x": 375,
-      "y": 3631
-     },
-     {
-      "x": 386,
-      "y": 4091
-     },
-     {
-      "x": 397,
-      "y": 4609
-     },
-     {
-      "x": 408,
-      "y": 5193
-     },
-     {
-      "x": 419,
-      "y": 5851
-     },
-     {
-      "x": 430,
-      "y": 6592
-     },
-     {
-      "x": 441,
-      "y": 7427
-     },
-     {
-      "x": 452,
-      "y": 8369
-     },
-     {
-      "x": 463,
-      "y": 9429
-     },
-     {
-      "x": 474,
-      "y": 10624
-     },
-     {
-      "x": 485,
-      "y": 11971
-     },
-     {
-      "x": 496,
-      "y": 13488
-     },
-     {
-      "x": 507,
-      "y": 15197
-     },
-     {
-      "x": 518,
-      "y": 17123
-     },
-     {
-      "x": 529,
-      "y": 19293
-     },
-     {
-      "x": 540,
-      "y": 21739
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 2,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2,
-  "speed": 1,
-  "attackDelaySec": 0.275,
-  "animationAttackSec": 1,
-  "animationFireSec": 0.00001,
-  "reloadSpeed": 1,
-  "animationReloadSec": 3.0666769,
-  "capacity": 2,
-  "ammoPerShot": 1,
-  "actionPointCost": 30,
-  "projectileCount": 8,
-  "reach": 1,
-  "secondaryDamage": 15,
-  "damageBonusMult": 1,
-  "minRange": 599,
-  "maxRange": 1199,
-  "outOfRangeDamageMult": 0.1,
-  "fullPowerSeconds": 0,
-  "fullPowerDamageMult": 0,
-  "minimumChargeTime": 0,
-  "eligibleLevels": [
-   15,
-   25,
-   35,
-   45
-  ],
-  "templateModFormIds": [
-   "0x000498A1",
-   "0x0027A5CF",
-   "0x0023D8A1",
-   "0x002D5D0B",
-   "0x0004F21D",
-   "0x0023D8F8",
-   "0x001C6F3B",
-   "0x001C6F39",
-   "0x001C6F38",
-   "0x001C6F3C",
-   "0x001C6F3A"
-  ],
-  "defaultModFormIds": [
-   "0x000498A1",
-   "0x0027A5CF",
-   "0x0023D8A1",
-   "0x002D5D0B",
-   "0x0004F21D",
-   "0x0023D8F8"
-  ],
-  "attachParentSlots": [
-   "0x00024004",
-   "0x000498A0",
-   "0x001E32C8",
-   "0x004E89A8",
-   "0x004E89A9",
-   "0x004E89AA",
-   "0x004E89AB",
-   "0x0004B6E1",
-   "0x0002249D",
-   "0x0002249F",
-   "0x00149CA8",
-   "0x0002249C",
-   "0x00022499",
-   "0x00179B4C",
-   "0x0003579B",
-   "0x0012ECEC",
-   "0x00050F03",
-   "0x00147AFE"
-  ],
-  "modifiers": [],
-  "obtainable": false
- },
- {
   "id": "E08B_HuntingRifle_DoctorsOrders",
   "formId": "0x006477EE",
   "name": "Doctor's Orders",
@@ -13764,6 +13464,306 @@
    "0x004E89AB",
    "0x00114364",
    "0x006214D8",
+   "0x0004B6E1",
+   "0x0002249D",
+   "0x0002249F",
+   "0x00149CA8",
+   "0x0002249C",
+   "0x00022499",
+   "0x00179B4C",
+   "0x0003579B",
+   "0x0012ECEC",
+   "0x00050F03",
+   "0x00147AFE"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
+  "id": "DoubleBarrelShotgun_WL005",
+  "formId": "0x0054A77C",
+  "name": "DoubleBarrelShotgun_WL005",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "ma_DoubleBarrelShotgun",
+   "WeaponTypeBallistic",
+   "QuickkeyGun",
+   "ObjectTypeWeapon",
+   "s_40_ShotgunDoubleBarrel",
+   "animsDoubleBarrelShotgun",
+   "WeaponTypeRanged",
+   "ma_CanHaveNullMuzzle",
+   "WeaponTypeShotgun",
+   "UI_WeaponTypeShotgun"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 67,
+    "tier": 36,
+    "curve": [
+     {
+      "x": 1,
+      "y": 63
+     },
+     {
+      "x": 12,
+      "y": 71
+     },
+     {
+      "x": 23,
+      "y": 80
+     },
+     {
+      "x": 34,
+      "y": 90
+     },
+     {
+      "x": 45,
+      "y": 101
+     },
+     {
+      "x": 56,
+      "y": 114
+     },
+     {
+      "x": 67,
+      "y": 129
+     },
+     {
+      "x": 78,
+      "y": 145
+     },
+     {
+      "x": 89,
+      "y": 164
+     },
+     {
+      "x": 100,
+      "y": 184
+     },
+     {
+      "x": 111,
+      "y": 208
+     },
+     {
+      "x": 122,
+      "y": 234
+     },
+     {
+      "x": 133,
+      "y": 264
+     },
+     {
+      "x": 144,
+      "y": 297
+     },
+     {
+      "x": 155,
+      "y": 335
+     },
+     {
+      "x": 166,
+      "y": 377
+     },
+     {
+      "x": 177,
+      "y": 425
+     },
+     {
+      "x": 188,
+      "y": 478
+     },
+     {
+      "x": 199,
+      "y": 539
+     },
+     {
+      "x": 210,
+      "y": 607
+     },
+     {
+      "x": 221,
+      "y": 684
+     },
+     {
+      "x": 232,
+      "y": 770
+     },
+     {
+      "x": 243,
+      "y": 868
+     },
+     {
+      "x": 254,
+      "y": 978
+     },
+     {
+      "x": 265,
+      "y": 1102
+     },
+     {
+      "x": 276,
+      "y": 1241
+     },
+     {
+      "x": 287,
+      "y": 1398
+     },
+     {
+      "x": 298,
+      "y": 1575
+     },
+     {
+      "x": 309,
+      "y": 1775
+     },
+     {
+      "x": 320,
+      "y": 2000
+     },
+     {
+      "x": 331,
+      "y": 2253
+     },
+     {
+      "x": 342,
+      "y": 2539
+     },
+     {
+      "x": 353,
+      "y": 2860
+     },
+     {
+      "x": 364,
+      "y": 3222
+     },
+     {
+      "x": 375,
+      "y": 3631
+     },
+     {
+      "x": 386,
+      "y": 4091
+     },
+     {
+      "x": 397,
+      "y": 4609
+     },
+     {
+      "x": 408,
+      "y": 5193
+     },
+     {
+      "x": 419,
+      "y": 5851
+     },
+     {
+      "x": 430,
+      "y": 6592
+     },
+     {
+      "x": 441,
+      "y": 7427
+     },
+     {
+      "x": 452,
+      "y": 8369
+     },
+     {
+      "x": 463,
+      "y": 9429
+     },
+     {
+      "x": 474,
+      "y": 10624
+     },
+     {
+      "x": 485,
+      "y": 11971
+     },
+     {
+      "x": 496,
+      "y": 13488
+     },
+     {
+      "x": 507,
+      "y": 15197
+     },
+     {
+      "x": 518,
+      "y": 17123
+     },
+     {
+      "x": 529,
+      "y": 19293
+     },
+     {
+      "x": 540,
+      "y": 21739
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0.275,
+  "animationAttackSec": 1,
+  "animationFireSec": 0.00001,
+  "reloadSpeed": 1,
+  "animationReloadSec": 3.0666769,
+  "capacity": 2,
+  "ammoPerShot": 1,
+  "actionPointCost": 30,
+  "projectileCount": 8,
+  "reach": 1,
+  "secondaryDamage": 15,
+  "damageBonusMult": 1,
+  "minRange": 599,
+  "maxRange": 1199,
+  "outOfRangeDamageMult": 0.1,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   15,
+   25,
+   35,
+   45
+  ],
+  "templateModFormIds": [
+   "0x000498A1",
+   "0x0027A5CF",
+   "0x0023D8A1",
+   "0x002D5D0B",
+   "0x0004F21D",
+   "0x0023D8F8",
+   "0x001C6F3B",
+   "0x001C6F39",
+   "0x001C6F38",
+   "0x001C6F3C",
+   "0x001C6F3A"
+  ],
+  "defaultModFormIds": [
+   "0x000498A1",
+   "0x0027A5CF",
+   "0x0023D8A1",
+   "0x002D5D0B",
+   "0x0004F21D",
+   "0x0023D8F8"
+  ],
+  "attachParentSlots": [
+   "0x00024004",
+   "0x000498A0",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
    "0x0004B6E1",
    "0x0002249D",
    "0x0002249F",

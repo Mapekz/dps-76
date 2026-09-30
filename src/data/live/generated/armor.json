@@ -1848,30 +1848,6 @@
   "obtainable": true
  },
  {
-  "id": "TW003_FeralGhoulPantsRndColor",
-  "formId": "0x0036C201",
-  "name": "Color1",
-  "obtainable": false
- },
- {
-  "id": "TW003_FeralGhoulShirtRndColor",
-  "formId": "0x0036C1FB",
-  "name": "Color1",
-  "obtainable": false
- },
- {
-  "id": "TW003_FeralGhoulShirtSmallRndColor",
-  "formId": "0x0036C1FD",
-  "name": "Color1",
-  "obtainable": false
- },
- {
-  "id": "TW003_FeralGhoulShortsRndColor",
-  "formId": "0x0036C1FF",
-  "name": "Color1",
-  "obtainable": false
- },
- {
   "id": "Armor_Combat_Torso",
   "formId": "0x0011D3C3",
   "name": "Combat Armor Chest Piece",
@@ -2476,36 +2452,6 @@
   "formId": "0x005AD136",
   "name": "Deep Cave Hunter Outfit",
   "obtainable": true
- },
- {
-  "id": "Armor_EnclaveScoutUniform_ArmLeft_NotPlayable",
-  "formId": "0x003B7D8F",
-  "name": "Default",
-  "obtainable": false
- },
- {
-  "id": "Armor_EnclaveScoutUniform_ArmRight_NotPlayable",
-  "formId": "0x003B7D90",
-  "name": "Default",
-  "obtainable": false
- },
- {
-  "id": "Armor_EnclaveScoutUniform_LegLeft_NotPlayable",
-  "formId": "0x003B7D91",
-  "name": "Default",
-  "obtainable": false
- },
- {
-  "id": "Armor_EnclaveScoutUniform_LegRight_NotPlayable",
-  "formId": "0x003B7D92",
-  "name": "Default",
-  "obtainable": false
- },
- {
-  "id": "Armor_EnclaveScoutUniform_Torso_NotPlayable",
-  "formId": "0x003B7D93",
-  "name": "Default",
-  "obtainable": false
  },
  {
   "id": "SCORE_S6_Clothes_Raider_Demolisher",
