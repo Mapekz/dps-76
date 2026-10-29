@@ -438,7 +438,7 @@ picker badge.
 | Two Shot | ×1.75 confirmed (Fixer@50: 103→180.25); extra projectile feeds no damage term yet | USER-CONFIRMED | ESM property; multiplier confirmed in-game |
 | Anti-Armor family | −50% target armor via `armorPen`, live (`mitigation.ts`) | ESM-PROVEN | — |
 | Bleed/burn/shock mod DoTs | `dotDamage`, refresh-only model (re-applying resets the timer). Exempt from sneak/crit/body-part | INFERENCE | ESM proves total-over-duration; reading it as dmg/sec is ours, not record-proven |
-| Adrenal Reaction (mutation) | +5%/stack (+6.25% SiN); below x=1 the curve clamps to its lowest point (standard curve-table convention) | ESM-PROVEN | curve-driven |
+| Adrenal Reaction (mutation) | +5%/stack (+6.25% SiN); 0 stacks = 0 (explicit (0,0) point since 20261026) | ESM-PROVEN | curve-driven |
 | **Tenderizer** | +0.1% dbm/stack, manual 0–1000 (cap +100%), target-side, applied UNCONDITIONALLY | ASSUMPTION | ESM per-stack value; the 0–1000 manual cap (+100%) is not ESM-derived |
 | Follow Through / Taking One for the Team | Both `wholeDamage` ×(1+value) target-side debuffs (10/20/30/40%/rank), manual toggle default 0, composing multiplicatively. Both grant a PERK to the struck actor via a spell chain carrying "Mod Incoming Weapon Damage" | ESM-PROVEN | esm-walk-confirmed spell chain |
 | **Follow Through / TOftT suggestion sneak gate** | Suggestions offer YOUR OWN card only when it can proc: Follow Through requires `isSneaking`, TOftT requires NOT sneaking (`manualUptimePerkSuggestible`, manual-uptime.ts; variants.ts add+swap-in loops). Knobs stay unconditional — any player's card places the debuff | USER-CONFIRMED | proc gating is card-text/game behavior, not record-proven |

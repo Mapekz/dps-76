@@ -61,8 +61,9 @@ its cut-rank-truncation function.
    and why script/VMAD/ATX grants have no record-level reverse refs) is in
    the `esm-cli` skill. dps-76 specifics: check the rescue lists
    (`forceVisible*Ids` in `overrides/corrections.ts`) before assuming junk.
-3. **Shipped ≠ on-record.** P62/"The Drifter" gear looks perfectly obtainable
-   on-record but never released. Confirm against release history or ask the
+3. **Shipped ≠ on-record.** Through the 20260821 dump, P62/"The Drifter" gear
+   looked perfectly obtainable on-record but had not released (it shipped
+   with Hideouts in 20261026). Confirm against release history or ask the
    user before rescuing anything unfamiliar.
 
 ## Effect-graph reachability (before modeling ANY effect arm)

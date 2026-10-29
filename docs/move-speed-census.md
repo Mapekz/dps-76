@@ -25,7 +25,7 @@ A new `SpeedMult` source after `bun run extract` fails CI until dispositioned he
   `inPowerArmor` (WornHasKeyword `ArmorTypePower` mapped at extraction) — needs
   the Conditions-section power-armor toggle.
 - Emergency Protocols (PA Misc torso mod, all 10 chassis): `moveSpeedBonus` +25%, gated
-  `healthBelowPct 20 (strict)` + `inPowerArmor` — the first armor-OMOD source of this bucket.
+  `healthBelowPct 20` (inclusive ≤20% since 20261026) + `inPowerArmor` — the first armor-OMOD source of this bucket.
 - Propelling (4★ PA legendary, +5%/piece): `moveSpeedBonus`, gated `inPowerArmor` — an
   app-supplied override (`overrides/armor-values.ts`): Propelling has no plain-armor sibling
   record, and its granting COBJ is gated on the `Workbench_Crafting_PowerArmor` bench keyword —

@@ -32,7 +32,7 @@ import type { Modifier } from '@/types/modifiers';
 
 // NOTE: Bloodied, Junkie's, and Aristocrat's are NOT overridden — their real
 // value curves extract from the ENCH effects (Curve Table + input Actor
-// Value), e.g. Bloodied is (5% HP → +130) … (100% HP → 0).
+// Value), e.g. Bloodied is (20% HP → +130) … (100% HP → 0).
 
 export const legendaryValueOverrides: Readonly<Record<string, Modifier[]>> = {
   // Crippling (2★): pin to the real +50% limb damage (the extracted ENCH
