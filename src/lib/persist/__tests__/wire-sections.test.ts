@@ -100,6 +100,54 @@ describe('wire-sections', () => {
       );
     });
 
+    // The BoS pistol's receivers became ap_gun_Ammo chambers in the 20261026
+    // dump under the same wire integers, so writing the new id under the old
+    // slot reproduces a pre-20261026 URL's bits.
+    it('re-homes a mod whose attach point moved (old BoS pistol receiver URL)', () => {
+      const player = createDefaultPlayerConfig();
+      player.weapon = {
+        weaponId: 'bospistol',
+        mods: { ap_gun_Receiver: 'mod_BoSPistol_Chamber_Fusion' },
+        legendaryEffects: [],
+      };
+      roundTripBytes(
+        (w) => writeWeapon(w, player.weapon, player),
+        (r) => {
+          const warnings: string[] = [];
+          const decoded = readWeapon(r, mode, warnings);
+          expect(warnings).toEqual([]);
+          expect(decoded.weapon?.mods).toEqual({ ap_gun_Ammo: 'mod_BoSPistol_Chamber_Fusion' });
+        },
+      );
+    });
+
+    it('leaves a moved mod in place when its own slot is taken, in either wire order', () => {
+      const expected = {
+        ap_gun_Receiver: 'mod_BoSPistol_Chamber_Fusion',
+        ap_gun_Ammo: 'mod_BoSPistol_Chamber_Pyro',
+      };
+      const orders = [
+        expected,
+        {
+          ap_gun_Ammo: 'mod_BoSPistol_Chamber_Pyro',
+          ap_gun_Receiver: 'mod_BoSPistol_Chamber_Fusion',
+        },
+      ];
+      for (const mods of orders) {
+        const player = createDefaultPlayerConfig();
+        player.weapon = { weaponId: 'bospistol', mods, legendaryEffects: [] };
+        roundTripBytes(
+          (w) => writeWeapon(w, player.weapon, player),
+          (r) => {
+            const warnings: string[] = [];
+            const decoded = readWeapon(r, mode, warnings);
+            expect(warnings).toEqual([]);
+            expect(decoded.weapon?.mods).toEqual(expected);
+          },
+        );
+      }
+    });
+
     it('drops null mod entries from the wire', () => {
       const player = createDefaultPlayerConfig();
       player.weapon = {

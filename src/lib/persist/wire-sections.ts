@@ -220,13 +220,25 @@ export function readWeapon(r: BitReader, mode: GameMode, warnings: string[]): De
   }
 
   const modCount = r.readBits(MOD_COUNT_BITS);
-  const mods: Record<string, string | null> = {};
+  const decodedMods: Array<{ slot: string; omodId: string; home: string }> = [];
   for (let i = 0; i < modCount; i++) {
     const slot = readDictRef(r, 'attachPoint', WIRE_GROUP_WIDTHS.attachPoint);
     const rawOmodId = readDictRef(r, 'omod', WIRE_GROUP_WIDTHS.omod);
     const omodId = resolveLegacyOmodId(rawOmodId);
-    if (getOmodById(mode, omodId)) mods[slot] = omodId;
+    const omod = getOmodById(mode, omodId);
+    if (omod) decodedMods.push({ slot, omodId, home: omod.attachPointEdid || slot });
     else warnings.push(`unknown weapon mod "${rawOmodId}" — removed`);
+  }
+  // A mod whose attach point moved after the URL was written re-homes to its
+  // current slot when that slot is free (20261026: the BoS pistol receivers
+  // became ap_gun_Ammo chambers under the same FormIDs and wire integers).
+  // If the slot is taken, the mod stays where it was decoded, so decode never
+  // drops one; either way the result doesn't depend on wire order.
+  const mods: Record<string, string | null> = {};
+  for (const m of decodedMods) if (m.home === m.slot) mods[m.slot] = m.omodId;
+  for (const m of decodedMods) {
+    if (m.home === m.slot) continue;
+    mods[mods[m.home] ? m.slot : m.home] = m.omodId;
   }
 
   const legendaryCount = r.readBits(LEGENDARY_COUNT_BITS);
