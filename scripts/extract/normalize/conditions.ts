@@ -330,8 +330,10 @@ function translateSingle(
       if (!onEnemySide && wants && damageScope) {
         return { kind: 'damageTypeScope', types: [damageScope] };
       }
-      if (!onEnemySide && wants && isScopeWeaponKeyword(edid)) {
-        return { kind: 'weaponKeyword', keyword: edid, present: true };
+      // Both polarities: Guns and Bullets 7 (20261026) excludes scoped guns
+      // with HasKeyword(HasScope)=0 AND HasKeyword(HasScopeRecon)=0.
+      if (!onEnemySide && isScopeWeaponKeyword(edid)) {
+        return { kind: 'weaponKeyword', keyword: edid, present: wants };
       }
       // Eye of Ra worn-armor gate — MoM_ClothesMistressOfMysteryEyeOfRa headwear.
       if (edid === 'MoMEyeOfRaItemKeyword' && fn === 'WornHasKeyword') {

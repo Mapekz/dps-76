@@ -4232,6 +4232,40 @@ describe('translateConditions (condition-whitelist round K, 2026-08-28)', () => 
     expect(unresolved).toEqual([]);
   });
 
+  it('maps negated scope keywords to present:false weaponKeyword (Guns and Bullets 7, 20261026)', () => {
+    // Magazine_GunsAndBullets07Perk 0x001EFC29 scope rows as decoded live;
+    // the last row's trailing OR has no following row, so both AND.
+    const rows: RawCondition[] = [
+      {
+        Function: 'HasKeyword',
+        'Parameter 1': '0x0009F425',
+        'Comparison Value': 0,
+        Operator: 'Equal To',
+        'AND/OR': 'AND',
+        'Run On': 'Subject',
+      },
+      {
+        Function: 'HasKeyword',
+        'Parameter 1': '0x00184C55',
+        'Comparison Value': 0,
+        Operator: 'Equal To',
+        'AND/OR': 'OR',
+        'Run On': 'Subject',
+      },
+    ];
+    const { conditions, unresolved } = translateConditions(rows, {
+      edidByFormId: new Map([
+        ['0x0009F425', 'HasScope'],
+        ['0x00184C55', 'HasScopeRecon'],
+      ]),
+    });
+    expect(conditions).toEqual([
+      { kind: 'weaponKeyword', keyword: 'HasScope', present: false },
+      { kind: 'weaponKeyword', keyword: 'HasScopeRecon', present: false },
+    ]);
+    expect(unresolved).toEqual([]);
+  });
+
   it('maps WornHasKeyword(MoMEyeOfRaItemKeyword) to eyeOfRaWorn true/false tiers', () => {
     const base = translateConditions(
       [

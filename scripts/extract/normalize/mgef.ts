@@ -471,8 +471,9 @@ export const FALLBACK_AVIF_ROUTES: Record<
     scale: 0.01,
     conditions: [{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypeBleed' }],
   },
-  // The new 2★ elemental effects (Pyro-Technician's / Cryologist's /
-  // Poisoner's, 2026-07-10 patch): ADD 0.2 on these AVs. User-confirmed
+  // The 2★ elemental effects (Pyro-Technician's / Cryologist's / Poisoner's,
+  // 2026-07-10 patch; HazMat joined on STAT_DmgMultRad 0x0095B54A in the
+  // 20261026 dump): ADD 0.3 on these AVs as of 20261026. User-confirmed
   // semantics (2026-07-12): additive into the general dbm parenthesis but
   // scoped to the matching damage type only (a laser + gamma emitter gains
   // Pyro-Technician's on the fire portion and fire DoT, not the energy
@@ -497,6 +498,11 @@ export const FALLBACK_AVIF_ROUTES: Record<
     bucket: 'dbm',
     scale: 1,
     conditions: [{ kind: 'damageTypeScope', types: ['poison'] }],
+  },
+  STAT_DmgMultRad: {
+    bucket: 'dbm',
+    scale: 1,
+    conditions: [{ kind: 'damageTypeScope', types: ['radiation'] }],
   },
   // Target-distance perks (2026-07-11 review): abPerkFortifyDmgClose /
   // abPerkFortifyDmgFar are Peak Value Modifier MGEFs on these AVIFs with NO
