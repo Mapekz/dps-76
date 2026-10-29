@@ -151,9 +151,11 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
   // fields); BPTDs reuse the fixtures above.
   const records: Record<string, EsmRecord> = {
     ...humanBodyPartRecords(),
-    Burn_BountyTarget_BIG_Death: {
+    // Live edid since 20260918; the curated row resolves it via `lookupEdid`
+    // and keeps the persisted id Burn_BountyTarget_BIG_Death.
+    BountyHunt_HeadHunt_Burn_Boss_Death: {
       header: { signature: 'NPC_', form_id: '0x007CFAA9' },
-      editor_id: 'Burn_BountyTarget_BIG_Death',
+      editor_id: 'BountyHunt_HeadHunt_Burn_Boss_Death',
       fields: { Race: '0x00013746' },
     },
     // Guardian: NPC_ → RACE → BPTD, exercises `conditionPartsOnly` end to end.

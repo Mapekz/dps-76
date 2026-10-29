@@ -154,6 +154,7 @@ export async function extractBodyParts(client: EsmSource): Promise<BodyPartsResu
     8,
     async ({
       edid,
+      lookupEdid,
       label,
       category,
       conditionPartsOnly,
@@ -161,7 +162,7 @@ export async function extractBodyParts(client: EsmSource): Promise<BodyPartsResu
     }): Promise<GeneratedBodyPartRace | null> => {
       let record;
       try {
-        record = await client.get(edid);
+        record = await client.get(lookupEdid ?? edid);
       } catch {
         unresolved.push(`bodyparts: record ${edid} not found`);
         return null;

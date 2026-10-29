@@ -492,7 +492,7 @@ export async function extractNpcs(client: EsmSource): Promise<NpcsResult> {
   for (const target of CURATED_TARGETS) {
     let record: EsmRecord;
     try {
-      record = await client.get(target.edid);
+      record = await client.get(target.lookupEdid ?? target.edid);
     } catch {
       unresolved.push(`npcs: record ${target.edid} not found`);
       continue;

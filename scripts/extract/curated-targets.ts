@@ -10,7 +10,8 @@ import type { BodyPartRaceCategory } from '../../src/types/generated';
  * verified against the 20260702 dump (20260710 for the rows added since).
  *
  * `id` (the picker key, persisted as EnemyConditions.targetRace) is this
- * row's `edid` — do not rename an existing edid without a migration.
+ * row's `edid` — do not rename an existing edid without a migration. When the
+ * game renames a record, keep `edid` and put the new name in `lookupEdid`.
  *
  * Originally lived in extract-bodyparts.ts (which still owns the
  * `conditionPartsOnly`/`crippleImmune` BPTD escape hatches — see that file's
@@ -19,6 +20,8 @@ import type { BodyPartRaceCategory } from '../../src/types/generated';
  */
 export interface CuratedTarget {
   edid: string;
+  /** ESM editor ID to fetch when the game renamed the record after `edid` was persisted. Defaults to `edid`. */
+  lookupEdid?: string;
   label: string;
   category: BodyPartRaceCategory;
   /** Keep only Actor-Value-tracked parts (drop perk-gated phantom weak points). BPTD-only — see extract-bodyparts.ts. */
@@ -124,40 +127,192 @@ export const CURATED_TARGETS: CuratedTarget[] = [
     category: 'infestation',
   },
 
-  // Head Hunt bounty bosses (Burning Springs, Burn_BountyTarget_BIG_*): all
-  // 30 named targets, plus the shipped Slasher-season boss below. The two
-  // _Template rows and remaining zzz*/SDOW_* records are placeholders/
-  // seasonal-test, not listed.
-  { edid: 'Burn_BountyTarget_BIG_Death', label: 'The Pale Horseman', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_War', label: 'The Red Rider', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Pestilence', label: 'The White Horseman', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Famine', label: 'The Black Horseman', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Granny', label: 'Granny Dolores', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Astronaut', label: 'The Space Ranger', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_AntiGhoul', label: 'Cletus Brimstone', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Irradiated', label: 'Irene The Irradiated', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Pilot', label: 'The Ace', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_NukaQueen', label: 'Anna The Nuka-Queen', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_QuackDoctor', label: 'The Malpractitioner', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Patriot', label: 'Corporal Jane', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Foreman', label: 'The Foreman', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Researcher', label: 'The Chief Researcher', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_ScoutLeader', label: 'Scout Leader Karen', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_BarryTone', label: 'Ragtime Randy', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Devil', label: 'The Devil of Defiance', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Rich', label: 'Baron Boris Wazie', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Gambler', label: 'Vito "The Vic" Bronco', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Mechanist', label: 'Tincan Toni', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Fisherman', label: 'Amadi the Piranha', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_RoboBrain', label: 'Chief Engineer Lewis', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Sniper', label: 'Charlie Half-Cocked', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Boxer', label: 'Becca The Heavyweight', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Gunslinger', label: 'Cowgirl Janine', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_BigGun', label: 'Richie Finesse', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Crusher', label: 'Gentle Gary', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Commie', label: 'The Proletariat Punisher', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Abraxo', label: 'The Cleaner', category: 'headhunt' },
-  { edid: 'Burn_BountyTarget_BIG_Hunter', label: 'Colt the Bolt', category: 'headhunt' },
+  // Head Hunt bounty bosses (Burning Springs): all 30 named targets, plus the
+  // shipped Slasher-season boss below. The two _Template rows and remaining
+  // zzz*/SDOW_* records are placeholders/seasonal-test, not listed. The
+  // 20260918 dump renamed Burn_BountyTarget_BIG_* to
+  // BountyHunt_HeadHunt_Burn_Boss_* (same FormIDs), so `edid` keeps the
+  // persisted old name and `lookupEdid` carries the new one.
+  {
+    edid: 'Burn_BountyTarget_BIG_Death',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Death',
+    label: 'The Pale Horseman',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_War',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_War',
+    label: 'The Red Rider',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Pestilence',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Pestilence',
+    label: 'The White Horseman',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Famine',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Famine',
+    label: 'The Black Horseman',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Granny',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Granny',
+    label: 'Granny Dolores',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Astronaut',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Astronaut',
+    label: 'The Space Ranger',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_AntiGhoul',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_AntiGhoul',
+    label: 'Cletus Brimstone',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Irradiated',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Irradiated',
+    label: 'Irene The Irradiated',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Pilot',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Pilot',
+    label: 'The Ace',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_NukaQueen',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_NukaQueen',
+    label: 'Anna The Nuka-Queen',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_QuackDoctor',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_QuackDoctor',
+    label: 'The Malpractitioner',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Patriot',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Patriot',
+    label: 'Corporal Jane',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Foreman',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Foreman',
+    label: 'The Foreman',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Researcher',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Researcher',
+    label: 'The Chief Researcher',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_ScoutLeader',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_ScoutLeader',
+    label: 'Scout Leader Karen',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_BarryTone',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_BarryTone',
+    label: 'Ragtime Randy',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Devil',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Devil',
+    label: 'The Devil of Defiance',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Rich',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Rich',
+    label: 'Baron Boris Wazie',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Gambler',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Gambler',
+    label: 'Vito "The Vic" Bronco',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Mechanist',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Mechanist',
+    label: 'Tincan Toni',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Fisherman',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Fisherman',
+    label: 'Amadi the Piranha',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_RoboBrain',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_RoboBrain',
+    label: 'Chief Engineer Lewis',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Sniper',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Sniper',
+    label: 'Charlie Half-Cocked',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Boxer',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Boxer',
+    label: 'Becca The Heavyweight',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Gunslinger',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Gunslinger',
+    label: 'Cowgirl Janine',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_BigGun',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_BigGun',
+    label: 'Richie Finesse',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Crusher',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Crusher',
+    label: 'Gentle Gary',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Commie',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Commie',
+    label: 'The Proletariat Punisher',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Abraxo',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Abraxo',
+    label: 'The Cleaner',
+    category: 'headhunt',
+  },
+  {
+    edid: 'Burn_BountyTarget_BIG_Hunter',
+    lookupEdid: 'BountyHunt_HeadHunt_Burn_Boss_Hunter',
+    label: 'Colt the Bolt',
+    category: 'headhunt',
+  },
   // Slasher season Head Hunt boss (SDOW_ = seasonal — now shipped, unlike
   // the placeholder/test SDOW_ records excluded above). Resolves to
   // GhoulRace, like the other Head Hunt bounty bosses.
