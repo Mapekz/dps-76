@@ -141,7 +141,7 @@ const EXPECTED_MOVE_SPEED_SOURCES: MoveSpeedCensusEntry[] = [
     name: 'Emergency Protocols',
     value: 0.25,
     conditions: [
-      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'healthBelowPct', pct: 20 },
       { kind: 'inPowerArmor', value: true },
     ],
     disposition: 'modeled',
@@ -152,7 +152,7 @@ const EXPECTED_MOVE_SPEED_SOURCES: MoveSpeedCensusEntry[] = [
     name: 'Emergency Protocols',
     value: 0.25,
     conditions: [
-      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'healthBelowPct', pct: 20 },
       { kind: 'inPowerArmor', value: true },
     ],
     disposition: 'modeled',
@@ -163,7 +163,7 @@ const EXPECTED_MOVE_SPEED_SOURCES: MoveSpeedCensusEntry[] = [
     name: 'Emergency Protocols',
     value: 0.25,
     conditions: [
-      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'healthBelowPct', pct: 20 },
       { kind: 'inPowerArmor', value: true },
     ],
     disposition: 'modeled',
@@ -174,7 +174,7 @@ const EXPECTED_MOVE_SPEED_SOURCES: MoveSpeedCensusEntry[] = [
     name: 'Emergency Protocols',
     value: 0.25,
     conditions: [
-      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'healthBelowPct', pct: 20 },
       { kind: 'inPowerArmor', value: true },
     ],
     disposition: 'modeled',
@@ -185,7 +185,7 @@ const EXPECTED_MOVE_SPEED_SOURCES: MoveSpeedCensusEntry[] = [
     name: 'Emergency Protocols',
     value: 0.25,
     conditions: [
-      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'healthBelowPct', pct: 20 },
       { kind: 'inPowerArmor', value: true },
     ],
     disposition: 'modeled',
@@ -196,7 +196,7 @@ const EXPECTED_MOVE_SPEED_SOURCES: MoveSpeedCensusEntry[] = [
     name: 'Emergency Protocols',
     value: 0.25,
     conditions: [
-      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'healthBelowPct', pct: 20 },
       { kind: 'inPowerArmor', value: true },
     ],
     disposition: 'modeled',
@@ -207,7 +207,7 @@ const EXPECTED_MOVE_SPEED_SOURCES: MoveSpeedCensusEntry[] = [
     name: 'Emergency Protocols',
     value: 0.25,
     conditions: [
-      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'healthBelowPct', pct: 20 },
       { kind: 'inPowerArmor', value: true },
     ],
     disposition: 'modeled',
@@ -218,7 +218,7 @@ const EXPECTED_MOVE_SPEED_SOURCES: MoveSpeedCensusEntry[] = [
     name: 'Emergency Protocols',
     value: 0.25,
     conditions: [
-      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'healthBelowPct', pct: 20 },
       { kind: 'inPowerArmor', value: true },
     ],
     disposition: 'modeled',
@@ -229,7 +229,7 @@ const EXPECTED_MOVE_SPEED_SOURCES: MoveSpeedCensusEntry[] = [
     name: 'Emergency Protocols',
     value: 0.25,
     conditions: [
-      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'healthBelowPct', pct: 20 },
       { kind: 'inPowerArmor', value: true },
     ],
     disposition: 'modeled',
@@ -240,7 +240,7 @@ const EXPECTED_MOVE_SPEED_SOURCES: MoveSpeedCensusEntry[] = [
     name: 'Emergency Protocols',
     value: 0.25,
     conditions: [
-      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'healthBelowPct', pct: 20 },
       { kind: 'inPowerArmor', value: true },
     ],
     disposition: 'modeled',

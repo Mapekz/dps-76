@@ -1,5 +1,5 @@
 {
-  "nextIndex": 34,
+  "nextIndex": 39,
   "ids": {
     "DLC04_ap_PaddleBall": 0,
     "ap_Bot_Mag": 1,
@@ -34,7 +34,12 @@
     "ap_melee_Appearance": 30,
     "ap_melee_Blade": 31,
     "ap_melee_MeleeMod": 32,
-    "ap_melee_Shaft": 33
+    "ap_melee_Shaft": 33,
+    "ap_Legendary5": 34,
+    "ap_StormslasherCustom01": 35,
+    "ap_StormslasherCustom02": 36,
+    "ap_gun_Ammo": 37,
+    "ap_melee_Grip": 38
   },
   "acknowledgedRemovals": []
 }

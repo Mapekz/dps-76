@@ -73,8 +73,8 @@
   "name": "The Action Hero",
   "baseWeaponId": "50CalMachineGun",
   "mods": {
-   "ap_gun_Barrel": "mod_50CalMachineGun_Barrel_Heavy",
-   "ap_gun_Grip": "mod_50CalMachineGun_Grip",
+   "ap_gun_Barrel": "mod_50CalMachineGun_Barrel_Short",
+   "ap_gun_Grip": "mod_50CalMachineGun_Grip_Base",
    "ap_gun_Sight": "mod_50CalMachineGun_Sight",
    "ap_gun_Receiver": "mod_50CalMachineGun_Receiver",
    "ap_customName": "mod_Custom_TheActionHero"
@@ -90,8 +90,8 @@
   "name": "Final Word",
   "baseWeaponId": "50CalMachineGun",
   "mods": {
-   "ap_gun_Barrel": "mod_50CalMachineGun_Barrel_Heavy",
-   "ap_gun_Grip": "mod_50CalMachineGun_Grip",
+   "ap_gun_Barrel": "mod_50CalMachineGun_Barrel_Short",
+   "ap_gun_Grip": "mod_50CalMachineGun_Grip_Base",
    "ap_gun_Sight": "mod_50CalMachineGun_Sight",
    "ap_gun_Receiver": "mod_50CalMachineGun_Receiver",
    "ap_customName": "mod_Custom_FinalWord"
@@ -135,6 +135,24 @@
   },
   "legendaryEffects": [
    "mod_Legendary_Weapon1_Execute",
+   null,
+   null
+  ]
+ },
+ {
+  "id": "HIDE_Mod_Custom_Splinter_CustomName",
+  "name": "Splinter",
+  "baseWeaponId": "10mmSMG",
+  "mods": {
+   "ap_gun_Receiver": "mod_10mmSMG_Receiver_CritDMG-HipAccuracy",
+   "ap_gun_Barrel": "mod_10mmSMG_Barrel_Long_HipAccuracy",
+   "ap_gun_Grip": "mod_10mmSMG_Grip_HipAccuracy",
+   "ap_gun_Mag": "mod_10mmSMG_Magazine_ArmorPen",
+   "ap_gun_Scope": "mod_10mmSMG_SCOPE_Reflex_Base",
+   "ap_customName": "HIDE_Mod_Custom_Splinter_CustomName"
+  },
+  "legendaryEffects": [
+   null,
    null,
    null
   ]
@@ -212,11 +230,27 @@
   ]
  },
  {
+  "id": "HIDE_Mod_Custom_Tempest_CustomName",
+  "name": "Tempest",
+  "baseWeaponId": "DLC01_AssaultronBlade",
+  "mods": {
+   "ap_melee_MeleeMod": "dlc01_mod_melee_assaultronblade_Shock",
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
+   "ap_customName": "HIDE_Mod_Custom_Tempest_CustomName"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   null
+  ]
+ },
+ {
   "id": "mod_Custom_TheGutter",
   "name": "The Gutter",
   "baseWeaponId": "DLC01_AssaultronBlade",
   "mods": {
    "ap_melee_MeleeMod": "dlc01_mod_melee_assaultronblade_Standard",
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "mod_Custom_TheGutter"
   },
   "legendaryEffects": [
@@ -398,6 +432,7 @@
   "baseWeaponId": "ChineseOfficerSword",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_ChineseOfficerSword_Null",
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "mod_Custom_MeteoriteSword"
   },
   "legendaryEffects": [
@@ -412,6 +447,7 @@
   "baseWeaponId": "Knife",
   "mods": {
    "ap_customName": "mod_custom_CryptidJawboneKnife",
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_melee_MeleeMod": "mod_melee_Knife_Null"
   },
   "legendaryEffects": [
@@ -526,6 +562,7 @@
   "name": "Nailer",
   "baseWeaponId": "CultistBlade",
   "mods": {
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "mod_Custom_Nailer"
   },
   "legendaryEffects": [
@@ -540,6 +577,7 @@
   "baseWeaponId": "DeathTambo",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "E08B_mod_Custom_ToneDeath"
   },
   "legendaryEffects": [
@@ -964,17 +1002,35 @@
   "name": "Red Terror",
   "baseWeaponId": "MG42",
   "mods": {
-   "ap_gun_Receiver": "mod_MG42_Receiver_AmmoConv308",
    "ap_gun_Barrel": "mod_MG42_Barrel_Standard",
    "ap_gun_Grip": "mod_MG42_Grip_Stock_Standard",
    "ap_gun_Muzzle": "mod_MG42_Muzzle_Standard",
    "ap_gun_Mag": "mod_MG42_Magazine_Standard",
-   "ap_customName": "mod_custom_RedTerror_customName"
+   "ap_customName": "mod_custom_RedTerror_customName",
+   "ap_gun_Ammo": "mod_MG42_Chamber_308",
+   "ap_gun_Receiver": "mod_MG42_Receiver_Base"
   },
   "legendaryEffects": [
    null,
    null,
    "mod_Legendary_Weapon3_Guns_ReloadSpeed"
+  ]
+ },
+ {
+  "id": "HIDE_Mod_Custom_ChaosEngine_CustomName",
+  "name": "Chaos Engine",
+  "baseWeaponId": "M79",
+  "mods": {
+   "ap_gun_Receiver": "mod_M79_Receiver_Standard",
+   "ap_gun_Barrel": "mod_M79_Barrel_Long",
+   "ap_gun_Grip": "mod_M79_StockFull_Hipaccuracy",
+   "ap_gun_Ammo": "mod_M79_Chamber_Standard",
+   "ap_customName": "HIDE_Mod_Custom_ChaosEngine_CustomName"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   null
   ]
  },
  {
@@ -984,7 +1040,8 @@
   "mods": {
    "ap_gun_Barrel": "mod_M79_Barrel_Short",
    "ap_gun_Receiver": "mod_M79_Receiver_Standard",
-   "ap_gun_Grip": "mod_M79_Stock_Short",
+   "ap_gun_Grip": "mod_M79_Stock_Standard",
+   "ap_gun_Ammo": "mod_M79_Chamber_Standard",
    "ap_customName": "mod_Custom_CrushingBlow"
   },
   "legendaryEffects": [
@@ -1071,6 +1128,7 @@
   "baseWeaponId": "PipeWrench",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_PipeWrench_ExtraHeavyHead",
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "mod_Custom_MechanicsBestFriend"
   },
   "legendaryEffects": [
@@ -1246,6 +1304,7 @@
   "baseWeaponId": "RevolutionarySword",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_RevolutionarySword_Shock",
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "mod_Custom_CommandersCharge"
   },
   "legendaryEffects": [
@@ -1259,6 +1318,7 @@
   "name": "Blue Ridge Branding Iron",
   "baseWeaponId": "Shishkebab",
   "mods": {
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "mod_custom_BlueRidgeBrandingIron_Custom"
   },
   "legendaryEffects": [
@@ -1273,7 +1333,8 @@
   "baseWeaponId": "Shovel",
   "mods": {
    "ap_customName": "SDOW_Mod_Custom_RelicReaper_CapCollector",
-   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod"
+   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
+   "ap_melee_Grip": "mod_Melee_Grip_Default"
   },
   "legendaryEffects": [
    null,
@@ -1295,7 +1356,7 @@
   "baseWeaponId": "SingleActionRevolver",
   "mods": {
    "ap_gun_Receiver": "mod_SingleActionRevolver_Receiver_Standard",
-   "ap_gun_Grip": "mod_SingleActionRevolver_Grip_Better1",
+   "ap_gun_Grip": "mod_SingleActionRevolver_Grip_Recoil-SecondaryDMG",
    "ap_gun_Barrel": "mod_SingleActionRevolver_Barrel_Long",
    "ap_customName": "E09D_mod_custom_GunthersRevolver"
   },
@@ -1311,6 +1372,7 @@
   "baseWeaponId": "SkiSword",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_SkiSword_SkateBlade",
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "mod_Custom_BlackDiamond"
   },
   "legendaryEffects": [
@@ -1324,6 +1386,7 @@
   "name": "Super Stimpike",
   "baseWeaponId": "Spear",
   "mods": {
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "mod_Custom_SuperStimpike"
   },
   "legendaryEffects": [
@@ -1375,6 +1438,7 @@
   "baseWeaponId": "SuperSledge",
   "mods": {
    "ap_melee_MeleeMod": "DLC04_mod_melee_Sledgehammer_ExtraHeavyHead_Rocket",
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "mod_Custom_AllRise"
   },
   "legendaryEffects": [
@@ -1389,6 +1453,7 @@
   "baseWeaponId": "SuperSledge",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_SuperSledge_Null",
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "E08B_mod_Custom_TheDebilitator"
   },
   "legendaryEffects": [
@@ -1403,6 +1468,7 @@
   "baseWeaponId": "SuperSledge",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_SuperSledge_Null",
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "mod_Custom_SuperSledge_TheFarmhand"
   },
   "legendaryEffects": [
@@ -1417,6 +1483,7 @@
   "baseWeaponId": "SuperSledge",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_SuperSledge_Null",
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "E09B_mod_Custom_WhackerSmacker"
   },
   "legendaryEffects": [
@@ -1484,17 +1551,78 @@
   ]
  },
  {
+  "id": "RD01_Mod_Custom_UltraciteTerrorSword_CustomName",
+  "name": "Ultracite Terror Sword",
+  "baseWeaponId": "RD01_UltraciteTerrorSword",
+  "mods": {
+   "ap_customName": "RD01_Mod_Custom_UltraciteTerrorSword_CustomName",
+   "ap_melee_Grip": "mod_Melee_Grip_Default"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   null,
+   "mod_Legendary_Weapon4_Vipers"
+  ]
+ },
+ {
+  "id": "mod_Custom_TarnishedClaw",
+  "name": "Tarnished Claw",
+  "baseWeaponId": "RD01_UltraciteTerrorSword",
+  "mods": {
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
+   "ap_customName": "mod_Custom_TarnishedClaw"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   null
+  ]
+ },
+ {
+  "id": "mod_custom_StormSlasher",
+  "name": "V63-Z Custom",
+  "baseWeaponId": "Stormcutter",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_Stormcutter_Standard",
+   "ap_customName": "mod_custom_StormSlasher",
+   "ap_StormslasherCustom01": "mod_custom_StormSlasher_Empty01",
+   "ap_StormslasherCustom02": "mod_custom_StormSlasher_Empty02"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DamageViaHealth",
+   "mod_Legendary_Weapon2_DmgCrits",
+   null
+  ]
+ },
+ {
   "id": "mod_Custom_Oathbreaker",
   "name": "Oathbreaker",
   "baseWeaponId": "WarGlaive",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_WarGlaive_Null",
+   "ap_melee_Grip": "mod_Melee_Grip_Default",
    "ap_customName": "mod_Custom_Oathbreaker"
   },
   "legendaryEffects": [
    null,
    "mod_Legendary_Weapon2_Melee_DamagePowerAttack",
    null
+  ]
+ },
+ {
+  "id": "Burn_Bounty_mod_custom_FireEffect",
+  "name": "Burn_Bounty_mod_custom_FireEffect",
+  "baseWeaponId": "Bounty_crBlackPowder_Rifle",
+  "mods": {
+   "ap_gun_Muzzle": "mod_Null_Muzzle",
+   "ap_gun_Scope": "mod_BlackPowder_Rifle_Scope_Ironsight",
+   "ap_gun_Receiver": "mod_BlackPowderRifle_Receiver",
+   "ap_Item_Description": "Burn_Bounty_mod_custom_FireEffect"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_DmgLimbs"
   ]
  },
  {

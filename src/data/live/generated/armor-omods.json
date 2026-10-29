@@ -1376,6 +1376,28 @@
   "obtainable": false
  },
  {
+  "id": "ATX_mod_armor_BOSInfantry_JetPack_SizzlingIsoJetpack",
+  "formId": "0x0090AB9A",
+  "name": "Sizzling Isotope Jetpack",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_BOSInfantry_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasMisc_JetPack"
+  ],
+  "hasEnchantments": true,
+  "hasGrantingCobj": true,
+  "notes": [
+   "MGEF ATX_abPlayerJetpack_BoSInfantry_SizzlingIsoJetpack_FX archetype Jetpack — needs override",
+   "MGEF ATX_abPlayerJetpack_BoSInfantry_SizzlingIsoJetpack_Geo archetype Cloak — needs override"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "ATX_mod_armor_ChineseStealthArmor_Material_Paint_Commando",
   "formId": "0x0073DB2F",
   "name": "Commando Paint",
@@ -2592,6 +2614,27 @@
   "hasGrantingCobj": true,
   "notes": [],
   "obtainable": true
+ },
+ {
+  "id": "ATX_mod_armor_Muni_JetPack_SizzlingIsoJetpack",
+  "formId": "0x0095099A",
+  "name": "Sizzling Isotope Jetpack",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "XPD_AC_ma_armor_Muni_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasMisc_JetPack"
+  ],
+  "hasEnchantments": true,
+  "notes": [
+   "MGEF ATX_abPlayerJetpack_Muni_SizzlingIsoJetpack_FX archetype Jetpack — needs override",
+   "MGEF ATX_abPlayerJetpack_Muni_SizzlingIsoJetpack_Geo archetype Cloak — needs override"
+  ],
+  "obtainable": false
  },
  {
   "id": "ATX_mod_armor_Raider_Material_Paint_SkiLanes",
@@ -6152,6 +6195,28 @@
   "obtainable": true
  },
  {
+  "id": "ATX_mod_Player_SecretService_JetPack_SizzlingIsoJetpack",
+  "formId": "0x0090AB9B",
+  "name": "Sizzling Isotope Jetpack",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_SecretService_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasMisc_JetPack"
+  ],
+  "hasEnchantments": true,
+  "hasGrantingCobj": true,
+  "notes": [
+   "MGEF ATX_abPlayerJetpack_SecretService_SizzlingIsoJetpack_FX archetype Jetpack — needs override",
+   "MGEF ATX_abPlayerJetpack_SecretService_SizzlingIsoJetpack_Geo archetype Cloak — needs override"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "ATX_mod_PowerArmor_65PA_Helmet_Headlamp",
   "formId": "0x00862DA2",
   "name": "Headlamp",
@@ -6955,6 +7020,132 @@
   "modifiers": [],
   "addedKeywords": [
    "dn_HasMaterial_PA_ATX_AceFullAssault"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "ATX_mod_PowerArmor_ALL_Material_Paint_ApexPowerArmorPaint_ArmLeft",
+  "formId": "0x008F6AB1",
+  "name": "Apex Power Armor Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8D",
+  "attachPointEdid": "ap_PowerArmor_LArmMod",
+  "targetKeywords": [
+   "ma_PA_ArmLeft",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "ATX_dn_HasMaterial_PA_ApexPowerArmorPaint"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "ATX_mod_PowerArmor_ALL_Material_Paint_ApexPowerArmorPaint_ArmRight",
+  "formId": "0x008F6AB2",
+  "name": "Apex Power Armor Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8E",
+  "attachPointEdid": "ap_PowerArmor_RArmMod",
+  "targetKeywords": [
+   "ma_PA_ArmRight",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "ATX_dn_HasMaterial_PA_ApexPowerArmorPaint"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "ATX_mod_PowerArmor_ALL_Material_Paint_ApexPowerArmorPaint_Helmet",
+  "formId": "0x008F6AB5",
+  "name": "Apex Power Armor Paint",
+  "description": "",
+  "attachPointFormId": "0x0003DAFC",
+  "attachPointEdid": "ap_PowerArmor_HeadMod",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "ATX_dn_HasMaterial_PA_ApexPowerArmorPaint",
+   "PowerArmorHelmetLightOverride"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "ATX_mod_PowerArmor_ALL_Material_Paint_ApexPowerArmorPaint_LegLeft",
+  "formId": "0x008F6AB3",
+  "name": "Apex Power Armor Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F90",
+  "attachPointEdid": "ap_PowerArmor_LLegMod",
+  "targetKeywords": [
+   "ma_PA_LegLeft",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "ATX_dn_HasMaterial_PA_ApexPowerArmorPaint"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "ATX_mod_PowerArmor_ALL_Material_Paint_ApexPowerArmorPaint_LegRight",
+  "formId": "0x008F6AB4",
+  "name": "Apex Power Armor Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8F",
+  "attachPointEdid": "ap_PowerArmor_RLegMod",
+  "targetKeywords": [
+   "ma_PA_LegRight",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "ATX_dn_HasMaterial_PA_ApexPowerArmorPaint"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "ATX_mod_PowerArmor_ALL_Material_Paint_ApexPowerArmorPaint_Torso",
+  "formId": "0x008F6AB6",
+  "name": "Apex Power Armor Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8C",
+  "attachPointEdid": "ap_PowerArmor_BodyMod",
+  "targetKeywords": [
+   "ma_PA_Material",
+   "ma_PA_Torso",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "ATX_dn_HasMaterial_PA_ApexPowerArmorPaint"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
@@ -14820,6 +15011,108 @@
    "MGEF abPowerArmorJetpack_Communist_Red archetype Jetpack — needs override"
   ],
   "obtainable": false
+ },
+ {
+  "id": "ATX_mod_PowerArmor_ApexPowerArmorPaint_Helmet_Headlamp",
+  "formId": "0x008F6ABC",
+  "name": "Apex Power Armor Paint",
+  "description": "Adds headlamp.",
+  "attachPointFormId": "0x008F6AB0",
+  "attachPointEdid": "ATX_ap_PowerArmor_ApexPowerArmorPaint_Headlamp",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "ATX_mod_PowerArmor_ApexPowerArmorPaint_Helmet_Headlamp_Blue",
+  "formId": "0x008F6ABB",
+  "name": "Apex Power Armor Paint",
+  "description": "Adds headlamp.",
+  "attachPointFormId": "0x008F6AB0",
+  "attachPointEdid": "ATX_ap_PowerArmor_ApexPowerArmorPaint_Headlamp",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "ATX_mod_PowerArmor_ApexPowerArmorPaint_Helmet_Headlamp_Bright",
+  "formId": "0x008F6ABA",
+  "name": "Apex Power Armor Paint",
+  "description": "Adds headlamp.",
+  "attachPointFormId": "0x008F6AB0",
+  "attachPointEdid": "ATX_ap_PowerArmor_ApexPowerArmorPaint_Headlamp",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "ATX_mod_PowerArmor_ApexPowerArmorPaint_Helmet_Headlamp_Purple",
+  "formId": "0x008F6AB9",
+  "name": "Apex Power Armor Paint",
+  "description": "",
+  "attachPointFormId": "0x008F6AB0",
+  "attachPointEdid": "ATX_ap_PowerArmor_ApexPowerArmorPaint_Headlamp",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "ATX_mod_PowerArmor_ApexPowerArmorPaint_Helmet_Headlamp_RedTactical",
+  "formId": "0x008F6AB8",
+  "name": "Apex Power Armor Paint",
+  "description": "",
+  "attachPointFormId": "0x008F6AB0",
+  "attachPointEdid": "ATX_ap_PowerArmor_ApexPowerArmorPaint_Headlamp",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "ATX_mod_PowerArmor_ApexPowerArmorPaint_Helmet_Headlamp_VaultBoy",
+  "formId": "0x008F6AB7",
+  "name": "Apex Power Armor Paint",
+  "description": "Adds headlamp.",
+  "attachPointFormId": "0x008F6AB0",
+  "attachPointEdid": "ATX_ap_PowerArmor_ApexPowerArmorPaint_Headlamp",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
  },
  {
   "id": "ATX_mod_PowerArmor_Bear_Helmet_Headlamp",
@@ -52479,142 +52772,6 @@
   "obtainable": false
  },
  {
-  "id": "BoS_mod_SteelReignFlair_CatFlair1",
-  "formId": "0x008B5099",
-  "name": "Cat Leveling Backpack Flair",
-  "description": "Brotherhood of Steel.",
-  "attachPointFormId": "0x00478771",
-  "attachPointEdid": "ap_Backpack_FlairMod1",
-  "targetKeywords": [
-   "ma_armor_BackPack_Art_FlairMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "BoS_mod_SteelReignFlair_CatFlair2",
-  "formId": "0x008B5098",
-  "name": "Cat Leveling Backpack Flair",
-  "description": "Brotherhood of Steel.",
-  "attachPointFormId": "0x004787FA",
-  "attachPointEdid": "ap_Backpack_FlairMod2",
-  "targetKeywords": [
-   "ma_armor_BackPack_Art_FlairMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "BoS_mod_SteelReignFlair_DCFlair1",
-  "formId": "0x008B509E",
-  "name": "Deathclaw Leveling Backpack Flair",
-  "description": "Brotherhood of Steel.",
-  "attachPointFormId": "0x00478771",
-  "attachPointEdid": "ap_Backpack_FlairMod1",
-  "targetKeywords": [
-   "ma_armor_BackPack_Art_FlairMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "BoS_mod_SteelReignFlair_DCFlair2",
-  "formId": "0x008B509D",
-  "name": "Deathclaw Leveling Backpack Flair",
-  "description": "Brotherhood of Steel.",
-  "attachPointFormId": "0x004787FA",
-  "attachPointEdid": "ap_Backpack_FlairMod2",
-  "targetKeywords": [
-   "ma_armor_BackPack_Art_FlairMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "BoS_mod_SteelReignFlair_DogFlair1",
-  "formId": "0x008B509C",
-  "name": "Dog Leveling Backpack Flair",
-  "description": "Brotherhood of Steel.",
-  "attachPointFormId": "0x00478771",
-  "attachPointEdid": "ap_Backpack_FlairMod1",
-  "targetKeywords": [
-   "ma_armor_BackPack_Art_FlairMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "BoS_mod_SteelReignFlair_DogFlair2",
-  "formId": "0x008B509A",
-  "name": "Dog Leveling Backpack Flair",
-  "description": "Brotherhood of Steel.",
-  "attachPointFormId": "0x004787FA",
-  "attachPointEdid": "ap_Backpack_FlairMod2",
-  "targetKeywords": [
-   "ma_armor_BackPack_Art_FlairMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "BoS_mod_SteelReignFlair_RadhogFlair1",
-  "formId": "0x008B509B",
-  "name": "Radhog Leveling Backpack Flair",
-  "description": "Brotherhood of Steel.",
-  "attachPointFormId": "0x00478771",
-  "attachPointEdid": "ap_Backpack_FlairMod1",
-  "targetKeywords": [
-   "ma_armor_BackPack_Art_FlairMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "BoS_mod_SteelReignFlair_RadhogFlair2",
-  "formId": "0x008B5097",
-  "name": "Radhog Leveling Backpack Flair",
-  "description": "Brotherhood of Steel.",
-  "attachPointFormId": "0x004787FA",
-  "attachPointEdid": "ap_Backpack_FlairMod2",
-  "targetKeywords": [
-   "ma_armor_BackPack_Art_FlairMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
   "id": "Burn_mod_BackPack_Incubator_Material_Default",
   "formId": "0x00805A9C",
   "name": "Egg Carrier Backpack",
@@ -55167,6 +55324,186 @@
   "obtainable": true
  },
  {
+  "id": "HIDE_FEVBoss_HatLight_ENCH_OMOD",
+  "formId": "0x00948149",
+  "name": "FEV Boss Hat Light",
+  "description": "Default headlamp.",
+  "attachPointFormId": "0x001B315C",
+  "attachPointEdid": "ap_Head",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": false
+ },
+ {
+  "id": "HIDE_FEVBoss_HatLight_OMOD",
+  "formId": "0x00948148",
+  "name": "FEV Boss Hat Light",
+  "description": "Boss Hat Light",
+  "attachPointFormId": "0x001B315C",
+  "attachPointEdid": "ap_Head",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": true,
+  "notes": [
+   "MGEF HIDE_FEVBoss_HatLight_MGEF archetype Script — needs override"
+  ],
+  "obtainable": false
+ },
+ {
+  "id": "HIDE_Mod_Custom_SecretService_Drifter_Appearance",
+  "formId": "0x007FFF1A",
+  "name": "Secret Settler Paint",
+  "description": "",
+  "attachPointFormId": "0x001CB99B",
+  "attachPointEdid": "ap_armor_Paint",
+  "targetKeywords": [
+   "ma_armor_Generic_Paint",
+   "ma_armor_SecretService",
+   "HIDE_ma_SecretService_Drifter"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "HIDE_Mod_Custom_SecretService_Drifter_CustomName_ArmLeft",
+  "formId": "0x007FFF1E",
+  "name": "Secret Settler Custom Name Arm Left",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed",
+   "HIDE_CustomItemName_SecretService_Drifter_Armor",
+   "HIDE_CustomItemName_SecretService_Drifter_ArmLeft"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "HIDE_Mod_Custom_SecretService_Drifter_CustomName_ArmRight",
+  "formId": "0x007FFF1F",
+  "name": "Secret Settler Custom Name Arm Right",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed",
+   "HIDE_CustomItemName_SecretService_Drifter_Armor",
+   "HIDE_CustomItemName_SecretService_Drifter_ArmRight"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "HIDE_Mod_Custom_SecretService_Drifter_CustomName_Helmet",
+  "formId": "0x007FFF1C",
+  "name": "Secret Settler Custom Name Helmet",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed",
+   "HIDE_CustomItemName_SecretService_Drifter_Armor",
+   "HIDE_CustomItemName_SecretService_Drifter_Helmet"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": false
+ },
+ {
+  "id": "HIDE_Mod_Custom_SecretService_Drifter_CustomName_LegLeft",
+  "formId": "0x007FFF1D",
+  "name": "Secret Settler Custom Name Leg Left",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed",
+   "HIDE_CustomItemName_SecretService_Drifter_Armor",
+   "HIDE_CustomItemName_SecretService_Drifter_LegLeft"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "HIDE_Mod_Custom_SecretService_Drifter_CustomName_LegRight",
+  "formId": "0x007FFF19",
+  "name": "Secret Settler Custom Name Leg Right",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed",
+   "HIDE_CustomItemName_SecretService_Drifter_Armor",
+   "HIDE_CustomItemName_SecretService_Drifter_LegRight"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "HIDE_Mod_Custom_SecretService_Drifter_CustomName_Torso",
+  "formId": "0x007FFF20",
+  "name": "Secret Settler Custom Name Torso",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed",
+   "HIDE_CustomItemName_SecretService_Drifter_Armor",
+   "HIDE_CustomItemName_SecretService_Drifter_Torso"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "HIDE_Mod_Custom_SecretService_Drifter_SpecialEffect",
+  "formId": "0x007FFF1B",
+  "name": "Secret Settler Special Effect",
+  "description": "Return 25% of Damage Received from an Enemy Back Towards Them",
+  "attachPointFormId": "0x001A0021",
+  "attachPointEdid": "ap_armor_misc",
+  "targetKeywords": [
+   "ma_armor_SecretService",
+   "HIDE_ma_SecretService_Drifter"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": false
+ },
+ {
   "id": "MILE_mod_BackPack_Deathclaw_Material_Default",
   "formId": "0x00767AC8",
   "name": "Deathclaw Head Backpack",
@@ -55871,6 +56208,45 @@
   "obtainable": true
  },
  {
+  "id": "mod_armor_BOSInfantry_Lining_Limb_ThrownDamage",
+  "formId": "0x0090F5FC",
+  "name": "Spring Assisted",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_BOSInfantry_Lining_LimbArm"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0090F5FC:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0090F5FC",
+     "edid": "mod_armor_BOSInfantry_Lining_Limb_ThrownDamage",
+     "name": "Spring Assisted"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeThrown",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "dn_HasMisc_Armor_ThrownDamage"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "mod_armor_BOSInfantry_Lining_LimbArm_BetterBlocking",
   "formId": "0x005DD6BB",
   "name": "Braced",
@@ -56330,6 +56706,25 @@
   "notes": [
    "ActorValues on STAT_ChemDuration — unmapped"
   ],
+  "obtainable": true
+ },
+ {
+  "id": "mod_armor_BOSInfantry_Lining_Torso_RadResistanceReduce",
+  "formId": "0x0090E783",
+  "name": "Tattered Lining",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_BOSInfantry_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasLining_RadResistanceReduce"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
   "obtainable": true
  },
  {
@@ -57082,6 +57477,45 @@
   "obtainable": true
  },
  {
+  "id": "mod_armor_Combat_Lining_Limb_ThrownDamage",
+  "formId": "0x0090F5FB",
+  "name": "Spring Assisted",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_Combat_Lining_LimbArm"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0090F5FB:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0090F5FB",
+     "edid": "mod_armor_Combat_Lining_Limb_ThrownDamage",
+     "name": "Spring Assisted"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeThrown",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "dn_HasMisc_Armor_ThrownDamage"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "mod_armor_Combat_Lining_LimbArm_BetterBlocking",
   "formId": "0x0019441B",
   "name": "Braced",
@@ -57541,6 +57975,25 @@
   "notes": [
    "ActorValues on STAT_ChemDuration — unmapped"
   ],
+  "obtainable": true
+ },
+ {
+  "id": "mod_armor_Combat_Lining_Torso_RadResistanceREduce",
+  "formId": "0x0090E782",
+  "name": "Tattered Lining",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_Combat_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasLining_RadResistanceReduce"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
   "obtainable": true
  },
  {
@@ -58153,6 +58606,45 @@
   "obtainable": false
  },
  {
+  "id": "mod_armor_EnclaveScoutUniform_Lining_Limb_ThrownDamage",
+  "formId": "0x0090F5FA",
+  "name": "Spring Assisted",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_Lining_EnclaveScoutUniform_LimbArm"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0090F5FA:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0090F5FA",
+     "edid": "mod_armor_EnclaveScoutUniform_Lining_Limb_ThrownDamage",
+     "name": "Spring Assisted"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeThrown",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "dn_HasMisc_Armor_ThrownDamage"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "mod_armor_EnclaveScoutUniform_Lining_LimbArm_BetterBlocking",
   "formId": "0x0034ED77",
   "name": "Braced",
@@ -58596,6 +59088,25 @@
    "ActorValues on STAT_ChemDuration — unmapped"
   ],
   "obtainable": false
+ },
+ {
+  "id": "mod_armor_EnclaveScoutUniform_Lining_Torso_RadResistanceReduce",
+  "formId": "0x0090E77A",
+  "name": "Tattered Lining",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_Lining_EnclaveScoutUniform_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasLining_RadResistanceReduce"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
  },
  {
   "id": "mod_armor_EnclaveScoutUniform_Lining_Torso_ResistanceRadiation",
@@ -59282,6 +59793,45 @@
   "obtainable": true
  },
  {
+  "id": "mod_armor_Leather_Lining_Limb_ThrownDamage",
+  "formId": "0x0090F5F2",
+  "name": "Spring Assisted",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_Lining_Leather_LimbArm"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0090F5F2:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0090F5F2",
+     "edid": "mod_armor_Leather_Lining_Limb_ThrownDamage",
+     "name": "Spring Assisted"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeThrown",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "dn_HasMisc_Armor_ThrownDamage"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "mod_armor_Leather_Lining_LimbArm_BetterBlocking",
   "formId": "0x0018E56E",
   "name": "Braced",
@@ -59744,6 +60294,25 @@
   "obtainable": true
  },
  {
+  "id": "mod_armor_Leather_Lining_Torso_RadResistanceReduce",
+  "formId": "0x0090E784",
+  "name": "Tattered Lining",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_Leather_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasLining_RadResistanceReduce"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "mod_armor_Leather_Lining_Torso_ResistanceRadiation",
   "formId": "0x0018E576",
   "name": "Lead Lined",
@@ -60069,6 +60638,64 @@
   "hasEnchantments": false,
   "notes": [],
   "obtainable": false
+ },
+ {
+  "id": "mod_armor_Marine_Lining_Limb_ThrownDamage",
+  "formId": "0x0090F5FD",
+  "name": "Spring Assisted",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "DLC03_ma_armor_Marine_Lining_LimbArm"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0090F5FD:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0090F5FD",
+     "edid": "mod_armor_Marine_Lining_Limb_ThrownDamage",
+     "name": "Spring Assisted"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeThrown",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "dn_HasMisc_Armor_ThrownDamage"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "mod_armor_Marine_Lining_Torso_RadResistanceReduce",
+  "formId": "0x0090E77C",
+  "name": "Tattered Lining",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "DLC03_ma_armor_Marine_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasLining_RadResistanceReduce"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
  },
  {
   "id": "mod_Armor_Material_Paint_Null",
@@ -60719,6 +61346,45 @@
   "obtainable": true
  },
  {
+  "id": "mod_armor_Metal_Lining_Limb_ThrownDamage",
+  "formId": "0x0090F5F9",
+  "name": "Spring Assisted",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_Lining_Metal_LimbArm"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0090F5F9:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0090F5F9",
+     "edid": "mod_armor_Metal_Lining_Limb_ThrownDamage",
+     "name": "Spring Assisted"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeThrown",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "dn_HasMisc_Armor_ThrownDamage"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "mod_armor_Metal_Lining_LimbArm_BetterBlocking",
   "formId": "0x00194093",
   "name": "Braced",
@@ -61178,6 +61844,25 @@
   "notes": [
    "ActorValues on STAT_ChemDuration — unmapped"
   ],
+  "obtainable": true
+ },
+ {
+  "id": "mod_armor_Metal_Lining_Torso_RadResistanceReduce",
+  "formId": "0x0090E77F",
+  "name": "Tattered Lining",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_Metal_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasLining_RadResistanceReduce"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
   "obtainable": true
  },
  {
@@ -61871,6 +62556,45 @@
   "obtainable": true
  },
  {
+  "id": "mod_armor_RaiderMod_Lining_Limb_ThrownDamage",
+  "formId": "0x0090F5F8",
+  "name": "Spring Assisted",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_RaiderMod_Lining_LimbArm"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0090F5F8:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0090F5F8",
+     "edid": "mod_armor_RaiderMod_Lining_Limb_ThrownDamage",
+     "name": "Spring Assisted"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeThrown",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "dn_HasMisc_Armor_ThrownDamage"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "mod_armor_RaiderMod_Lining_LimbArm_BetterBlocking",
   "formId": "0x001957E7",
   "name": "Braced",
@@ -62330,6 +63054,25 @@
   "notes": [
    "ActorValues on STAT_ChemDuration — unmapped"
   ],
+  "obtainable": true
+ },
+ {
+  "id": "mod_armor_RaiderMod_Lining_Torso_RadResistanceREduce",
+  "formId": "0x0090E781",
+  "name": "Tattered Lining",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_RaiderMod_Lining_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasLining_RadResistanceReduce"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
   "obtainable": true
  },
  {
@@ -63264,6 +64007,45 @@
   "obtainable": true
  },
  {
+  "id": "mod_armor_Robot_Lining_Limb_ThrownDamage",
+  "formId": "0x0090F5F7",
+  "name": "Spring Assisted",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_Lining_Robot_LimbArm"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0090F5F7:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0090F5F7",
+     "edid": "mod_armor_Robot_Lining_Limb_ThrownDamage",
+     "name": "Spring Assisted"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeThrown",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "dn_HasMisc_Armor_ThrownDamage"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "mod_armor_Robot_Lining_LimbArm_BetterBlocking",
   "formId": "0x0051C6EA",
   "name": "Braced",
@@ -63723,6 +64505,25 @@
   "notes": [
    "ActorValues on STAT_ChemDuration — unmapped"
   ],
+  "obtainable": true
+ },
+ {
+  "id": "mod_armor_Robot_Lining_Torso_RadResistanceReduce",
+  "formId": "0x0090E77D",
+  "name": "Tattered Lining",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_Lining_Robot_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasLining_RadResistanceReduce"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
   "obtainable": true
  },
  {
@@ -64230,6 +65031,45 @@
   "obtainable": true
  },
  {
+  "id": "mod_armor_SecretService_Lining_Limb_ThrownDamage",
+  "formId": "0x0090F5F6",
+  "name": "Spring Assisted",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_SecretService_Lining_LimbArm"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0090F5F6:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0090F5F6",
+     "edid": "mod_armor_SecretService_Lining_Limb_ThrownDamage",
+     "name": "Spring Assisted"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeThrown",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "dn_HasMisc_Armor_ThrownDamage"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "mod_armor_SecretService_Lining_LimbArm_BetterBlocking",
   "formId": "0x005A1554",
   "name": "Braced",
@@ -64689,6 +65529,25 @@
   "notes": [
    "ActorValues on STAT_ChemDuration — unmapped"
   ],
+  "obtainable": true
+ },
+ {
+  "id": "mod_armor_SecretService_Lining_Torso_RadResistanceReduce",
+  "formId": "0x0090E785",
+  "name": "Tattered Lining",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_SecretService_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasLining_RadResistanceReduce"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
   "obtainable": true
  },
  {
@@ -65195,6 +66054,45 @@
   "obtainable": true
  },
  {
+  "id": "mod_armor_Trapper_Lining_Limb_ThrownDamage",
+  "formId": "0x0090F5F5",
+  "name": "Spring Assisted",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_Trapper_Lining_LimbArm"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0090F5F5:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0090F5F5",
+     "edid": "mod_armor_Trapper_Lining_Limb_ThrownDamage",
+     "name": "Spring Assisted"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeThrown",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "dn_HasMisc_Armor_ThrownDamage"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "mod_armor_Trapper_Lining_LimbArm_BetterBlocking",
   "formId": "0x0011087A",
   "name": "Braced",
@@ -65654,6 +66552,25 @@
   "notes": [
    "ActorValues on STAT_ChemDuration — unmapped"
   ],
+  "obtainable": true
+ },
+ {
+  "id": "mod_armor_Trapper_Lining_Torso_RadResistanceReduce",
+  "formId": "0x0090E77B",
+  "name": "Tattered Lining",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_Trapper_Lining_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasLining_RadResistanceReduce"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
   "obtainable": true
  },
  {
@@ -67513,6 +68430,45 @@
   "obtainable": true
  },
  {
+  "id": "mod_armor_XPD_AC_Muni_Lining_Limb_ThrownDamage",
+  "formId": "0x0090F5F4",
+  "name": "Spring Assisted",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "XPD_AC_ma_armor_Muni_Lining_LimbArm"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0090F5F4:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0090F5F4",
+     "edid": "mod_armor_XPD_AC_Muni_Lining_Limb_ThrownDamage",
+     "name": "Spring Assisted"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeThrown",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "dn_HasMisc_Armor_ThrownDamage"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "mod_armor_XPD_AC_Muni_Lining_LimbArm_BetterBlocking",
   "formId": "0x006F4D62",
   "name": "Braced",
@@ -67972,6 +68928,25 @@
   "notes": [
    "ActorValues on STAT_ChemDuration — unmapped"
   ],
+  "obtainable": true
+ },
+ {
+  "id": "mod_armor_XPD_AC_Muni_Lining_Torso_RadResistanceReduce",
+  "formId": "0x0090E780",
+  "name": "Tattered Lining",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "XPD_AC_ma_armor_Muni_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasLining_RadResistanceReduce"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
   "obtainable": true
  },
  {
@@ -71301,7 +72276,7 @@
        "y": -0.09999999999999998
       },
       {
-       "x": 0.15,
+       "x": 0.2,
        "y": -0.09999999999999998
       },
       {
@@ -71352,7 +72327,7 @@
        "y": -0.18999999999999995
       },
       {
-       "x": 0.15,
+       "x": 0.2,
        "y": -0.18999999999999995
       },
       {
@@ -71403,7 +72378,7 @@
        "y": -0.271
       },
       {
-       "x": 0.15,
+       "x": 0.2,
        "y": -0.271
       },
       {
@@ -71454,7 +72429,7 @@
        "y": -0.344
       },
       {
-       "x": 0.15,
+       "x": 0.2,
        "y": -0.344
       },
       {
@@ -71505,7 +72480,7 @@
        "y": -0.41000000000000003
       },
       {
-       "x": 0.15,
+       "x": 0.2,
        "y": -0.41000000000000003
       },
       {
@@ -73045,7 +74020,7 @@
   "notes": [
    "ActorValues on Legendary_Armor_BurningCount — unmapped",
    "MGEF AbLegendary_Burning_Description archetype Script — needs override",
-   "perk Legendary_Armor_BurningPerk: GetRandomPercent()=5",
+   "perk Legendary_Armor_BurningPerk: GetRandomPercent()=30",
    "perk Legendary_Armor_BurningPerk: Legendary_Burning_FireEffect: DoT curve with unmapped input AV 0x0073E432 — needs override",
    "perk Legendary_Armor_BurningPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
@@ -73115,7 +74090,7 @@
   "notes": [
    "ActorValues on Legendary_Armor_ElectrifiedCount — unmapped",
    "MGEF AbLegendary_Electrified_Description archetype Script — needs override",
-   "perk Legendary_Armor_ElectrifiedPerk: GetRandomPercent()=5",
+   "perk Legendary_Armor_ElectrifiedPerk: GetRandomPercent()=30",
    "perk Legendary_Armor_ElectrifiedPerk: Legendary_Electrified_EnergyEffect: DoT curve with unmapped input AV 0x0073E430 — needs override",
    "perk Legendary_Armor_ElectrifiedPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
@@ -73141,7 +74116,7 @@
   "notes": [
    "ActorValues on Legendary_Armor_FrozenCount — unmapped",
    "MGEF AbLegendary_Frozen_Description archetype Script — needs override",
-   "perk Legendary_Armor_FrozenPerk: GetRandomPercent()=5",
+   "perk Legendary_Armor_FrozenPerk: GetRandomPercent()=30",
    "perk Legendary_Armor_FrozenPerk: Legendary_Frozen_FrostEffect: DoT curve with unmapped input AV 0x0073E433 — needs override",
    "perk Legendary_Armor_FrozenPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
@@ -73572,7 +74547,7 @@
   "notes": [
    "ActorValues on Legendary_Armor_ToxicCount — unmapped",
    "MGEF AbLegendary_Toxic_Description archetype Script — needs override",
-   "perk Legendary_Armor_ToxicPerk: GetRandomPercent()=5",
+   "perk Legendary_Armor_ToxicPerk: GetRandomPercent()=30",
    "perk Legendary_Armor_ToxicPerk: Legendary_Toxic_PoisonEffect: DoT curve with unmapped input AV 0x0073E431 — needs override",
    "perk Legendary_Armor_ToxicPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
@@ -75410,7 +76385,7 @@
        "y": -0.09999999999999998
       },
       {
-       "x": 0.15,
+       "x": 0.2,
        "y": -0.09999999999999998
       },
       {
@@ -75461,7 +76436,7 @@
        "y": -0.18999999999999995
       },
       {
-       "x": 0.15,
+       "x": 0.2,
        "y": -0.18999999999999995
       },
       {
@@ -75512,7 +76487,7 @@
        "y": -0.271
       },
       {
-       "x": 0.15,
+       "x": 0.2,
        "y": -0.271
       },
       {
@@ -75563,7 +76538,7 @@
        "y": -0.344
       },
       {
-       "x": 0.15,
+       "x": 0.2,
        "y": -0.344
       },
       {
@@ -75614,7 +76589,7 @@
        "y": -0.41000000000000003
       },
       {
-       "x": 0.15,
+       "x": 0.2,
        "y": -0.41000000000000003
       },
       {
@@ -77155,7 +78130,7 @@
   "notes": [
    "ActorValues on Legendary_Armor_BurningCount — unmapped",
    "MGEF AbLegendary_Burning_Description archetype Script — needs override",
-   "perk Legendary_Armor_BurningPerk: GetRandomPercent()=5",
+   "perk Legendary_Armor_BurningPerk: GetRandomPercent()=30",
    "perk Legendary_Armor_BurningPerk: Legendary_Burning_FireEffect: DoT curve with unmapped input AV 0x0073E432 — needs override",
    "perk Legendary_Armor_BurningPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
@@ -77228,7 +78203,7 @@
   "notes": [
    "ActorValues on Legendary_Armor_ElectrifiedCount — unmapped",
    "MGEF AbLegendary_Electrified_Description archetype Script — needs override",
-   "perk Legendary_Armor_ElectrifiedPerk: GetRandomPercent()=5",
+   "perk Legendary_Armor_ElectrifiedPerk: GetRandomPercent()=30",
    "perk Legendary_Armor_ElectrifiedPerk: Legendary_Electrified_EnergyEffect: DoT curve with unmapped input AV 0x0073E430 — needs override",
    "perk Legendary_Armor_ElectrifiedPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
@@ -77255,7 +78230,7 @@
   "notes": [
    "ActorValues on Legendary_Armor_FrozenCount — unmapped",
    "MGEF AbLegendary_Frozen_Description archetype Script — needs override",
-   "perk Legendary_Armor_FrozenPerk: GetRandomPercent()=5",
+   "perk Legendary_Armor_FrozenPerk: GetRandomPercent()=30",
    "perk Legendary_Armor_FrozenPerk: Legendary_Frozen_FrostEffect: DoT curve with unmapped input AV 0x0073E433 — needs override",
    "perk Legendary_Armor_FrozenPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
@@ -77603,7 +78578,7 @@
   "notes": [
    "ActorValues on Legendary_Armor_ToxicCount — unmapped",
    "MGEF AbLegendary_Toxic_Description archetype Script — needs override",
-   "perk Legendary_Armor_ToxicPerk: GetRandomPercent()=5",
+   "perk Legendary_Armor_ToxicPerk: GetRandomPercent()=30",
    "perk Legendary_Armor_ToxicPerk: Legendary_Toxic_PoisonEffect: DoT curve with unmapped input AV 0x0073E431 — needs override",
    "perk Legendary_Armor_ToxicPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
@@ -79854,8 +80829,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -79877,8 +80851,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -80937,8 +81910,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -80960,8 +81932,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -82259,8 +83230,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -82282,8 +83252,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -84115,8 +85084,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -84138,8 +85106,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -86884,8 +87851,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -86907,8 +87873,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -90173,8 +91138,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -90196,8 +91160,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -91480,8 +92443,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -91503,8 +92465,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -92743,8 +93704,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -92766,8 +93726,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -95220,8 +96179,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -95243,8 +96201,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -95779,654 +96736,6 @@
   "hasGrantingCobj": true,
   "notes": [],
   "obtainable": true
- },
- {
-  "id": "P62_Mod_Custom_SecretServiceDrifter_Appearance",
-  "formId": "0x007FFF1A",
-  "name": "Secret Settler Paint",
-  "description": "",
-  "attachPointFormId": "0x001CB99B",
-  "attachPointEdid": "ap_armor_Paint",
-  "targetKeywords": [
-   "ma_armor_Generic_Paint",
-   "ma_armor_SecretService",
-   "P62_ma_SecretServiceDrifter"
-  ],
-  "modifiers": [],
-  "addedKeywords": [],
-  "hasEnchantments": false,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "P62_Mod_Custom_SecretServiceDrifter_CustomName_ArmLeft",
-  "formId": "0x007FFF1E",
-  "name": "Secret Settler Custom Name Arm Left",
-  "description": "",
-  "attachPointFormId": "0x0047A264",
-  "attachPointEdid": "ap_customName",
-  "targetKeywords": [],
-  "modifiers": [],
-  "addedKeywords": [
-   "ObjectTypeUnique",
-   "CustomItem_SpeciallyNamed",
-   "P62_CustomItemName_SecretServiceDrifter_Armor",
-   "P62_CustomItemName_SecretServiceDrifter_ArmLeft"
-  ],
-  "hasEnchantments": false,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "P62_Mod_Custom_SecretServiceDrifter_CustomName_ArmRight",
-  "formId": "0x007FFF1F",
-  "name": "Secret Settler Custom Name Arm Right",
-  "description": "",
-  "attachPointFormId": "0x0047A264",
-  "attachPointEdid": "ap_customName",
-  "targetKeywords": [],
-  "modifiers": [],
-  "addedKeywords": [
-   "ObjectTypeUnique",
-   "CustomItem_SpeciallyNamed",
-   "P62_CustomItemName_SecretServiceDrifter_Armor",
-   "P62_CustomItemName_SecretServiceDrifter_ArmRight"
-  ],
-  "hasEnchantments": false,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "P62_Mod_Custom_SecretServiceDrifter_CustomName_Helmet",
-  "formId": "0x007FFF1C",
-  "name": "Secret Settler Custom Name Helmet",
-  "description": "",
-  "attachPointFormId": "0x0047A264",
-  "attachPointEdid": "ap_customName",
-  "targetKeywords": [],
-  "modifiers": [],
-  "addedKeywords": [
-   "ObjectTypeUnique",
-   "CustomItem_SpeciallyNamed",
-   "P62_CustomItemName_SecretServiceDrifter_Armor",
-   "P62_CustomItemName_SecretServiceDrifter_Helmet"
-  ],
-  "hasEnchantments": false,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "P62_Mod_Custom_SecretServiceDrifter_CustomName_LegLeft",
-  "formId": "0x007FFF1D",
-  "name": "Secret Settler Custom Name Leg Left",
-  "description": "",
-  "attachPointFormId": "0x0047A264",
-  "attachPointEdid": "ap_customName",
-  "targetKeywords": [],
-  "modifiers": [],
-  "addedKeywords": [
-   "ObjectTypeUnique",
-   "CustomItem_SpeciallyNamed",
-   "P62_CustomItemName_SecretServiceDrifter_Armor",
-   "P62_CustomItemName_SecretServiceDrifter_LegLeft"
-  ],
-  "hasEnchantments": false,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "P62_Mod_Custom_SecretServiceDrifter_CustomName_LegRight",
-  "formId": "0x007FFF19",
-  "name": "Secret Settler Custom Name Leg Right",
-  "description": "",
-  "attachPointFormId": "0x0047A264",
-  "attachPointEdid": "ap_customName",
-  "targetKeywords": [],
-  "modifiers": [],
-  "addedKeywords": [
-   "ObjectTypeUnique",
-   "CustomItem_SpeciallyNamed",
-   "P62_CustomItemName_SecretServiceDrifter_Armor",
-   "P62_CustomItemName_SecretServiceDrifter_LegRight"
-  ],
-  "hasEnchantments": false,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "P62_Mod_Custom_SecretServiceDrifter_CustomName_Torso",
-  "formId": "0x007FFF20",
-  "name": "Secret Settler Custom Name Torso",
-  "description": "",
-  "attachPointFormId": "0x0047A264",
-  "attachPointEdid": "ap_customName",
-  "targetKeywords": [],
-  "modifiers": [],
-  "addedKeywords": [
-   "ObjectTypeUnique",
-   "CustomItem_SpeciallyNamed",
-   "P62_CustomItemName_SecretServiceDrifter_Armor",
-   "P62_CustomItemName_SecretServiceDrifter_Torso"
-  ],
-  "hasEnchantments": false,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "P62_Mod_Custom_SecretServiceDrifter_Keywords",
-  "formId": "0x007FFF18",
-  "name": "Secret Settler Keywords",
-  "description": "",
-  "attachPointFormId": "0x001A8B4B",
-  "attachPointEdid": "ap_Misc",
-  "targetKeywords": [],
-  "modifiers": [],
-  "addedKeywords": [
-   "P62_ma_SecretServiceDrifter",
-   "FeaturedItem",
-   "NonDroppable",
-   "NonPlayerTradable",
-   "UnsellableObject"
-  ],
-  "hasEnchantments": false,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "P62_Mod_Custom_SecretServiceDrifter_SpecialEffect",
-  "formId": "0x007FFF1B",
-  "name": "Secret Settler Special Effect",
-  "description": "Return 25% of Damage Received from an Enemy Back Towards Them",
-  "attachPointFormId": "0x001A0021",
-  "attachPointEdid": "ap_armor_misc",
-  "targetKeywords": [
-   "ma_armor_SecretService",
-   "P62_ma_SecretServiceDrifter"
-  ],
-  "modifiers": [],
-  "addedKeywords": [],
-  "hasEnchantments": false,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "P62_mod_Legendary_Armor4_Crusaders",
-  "formId": "0x0080F855",
-  "name": "Crusaders",
-  "description": "+1 S.P.E.C.I.A.L. Point For Each Equipped Armor Piece (up to +5 on Full Stack)",
-  "attachPointFormId": "0x004E89AA",
-  "attachPointEdid": "ap_Legendary4",
-  "targetKeywords": [
-   "ma_legendarycrafting_armor"
-  ],
-  "modifiers": [
-   {
-    "id": "0x0080F855:ench:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F855",
-     "edid": "P62_mod_Legendary_Armor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialCharisma",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 1,
-      "orMore": true
-     }
-    ]
-   },
-   {
-    "id": "0x0080F855:ench:1",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F855",
-     "edid": "P62_mod_Legendary_Armor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialEndurance",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 2,
-      "orMore": true
-     }
-    ]
-   },
-   {
-    "id": "0x0080F855:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F855",
-     "edid": "P62_mod_Legendary_Armor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialPerception",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 3,
-      "orMore": true
-     }
-    ]
-   },
-   {
-    "id": "0x0080F855:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F855",
-     "edid": "P62_mod_Legendary_Armor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialLuck",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 4,
-      "orMore": true
-     }
-    ]
-   },
-   {
-    "id": "0x0080F855:ench:4",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F855",
-     "edid": "P62_mod_Legendary_Armor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialStrength",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 5,
-      "orMore": true
-     }
-    ]
-   },
-   {
-    "id": "0x0080F855:ench:5",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F855",
-     "edid": "P62_mod_Legendary_Armor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialAgility",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 5,
-      "orMore": true
-     }
-    ]
-   },
-   {
-    "id": "0x0080F855:ench:6",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F855",
-     "edid": "P62_mod_Legendary_Armor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialIntelligence",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 5,
-      "orMore": true
-     }
-    ]
-   }
-  ],
-  "addedKeywords": [
-   "P62_HasLegendary_Armor_Crusaders",
-   "HasLegendary_Mod",
-   "FeaturedItem"
-  ],
-  "hasEnchantments": true,
-  "notes": [],
-  "obtainable": false
- },
- {
-  "id": "P62_mod_Legendary_Armor4_Metabolic",
-  "formId": "0x0080F9C2",
-  "name": "Metabolic",
-  "description": "All Chems, Serums, Bobbleheads & Magazines Buffs Last 5% Longer (up to 25% on Full Stack)",
-  "attachPointFormId": "0x004E89AA",
-  "attachPointEdid": "ap_Legendary4",
-  "targetKeywords": [
-   "ma_legendarycrafting_armor"
-  ],
-  "modifiers": [],
-  "addedKeywords": [
-   "P62_HasLegendary_Armor_Metabolic",
-   "HasLegendary_Mod",
-   "FeaturedItem"
-  ],
-  "hasEnchantments": true,
-  "notes": [
-   "perk P62_Legendary_Armor_MetabolicPerk: MGEF P62_Legendary_Armor_MetabolicApplyChemPerkEffect: no route for AV STAT_ChemDuration — needs mapping",
-   "perk P62_Legendary_Armor_MetabolicPerk: MGEF P62_Legendary_Armor_MetabolicApplyFoodPerkEffect: no route for AV HungerThirstTier — needs mapping",
-   "perk P62_Legendary_Armor_MetabolicPerk: OR-group[EPMagic_SpellHasKeyword(BobbleheadKeyword)=1 | EPMagic_SpellHasKeyword(MagazineKeyword)=1]",
-   "perk P62_Legendary_Armor_MetabolicPerk: entry point Mod Spell Duration — not modeled"
-  ],
-  "obtainable": false
- },
- {
-  "id": "P62_mod_Legendary_Armor4_Rebounders",
-  "formId": "0x0080F7F8",
-  "name": "Rebounders",
-  "description": "Return 10% of Ballistic & Explosive Damage Received From An Enemy Target Back Towards Them (up to 50% on Full Stack)",
-  "attachPointFormId": "0x004E89AA",
-  "attachPointEdid": "ap_Legendary4",
-  "targetKeywords": [
-   "ma_legendarycrafting_armor"
-  ],
-  "modifiers": [],
-  "addedKeywords": [
-   "P62_HasLegendary_Armor_Rebounders",
-   "HasLegendary_Mod",
-   "FeaturedItem"
-  ],
-  "hasEnchantments": true,
-  "notes": [
-   "perk P62_Legendary_Armor_ReboundersPerk: MGEF P62_Legendary_Armor_ReboundersApplyRecievePerkEffect: zero magnitude, no curve — script/scaled, needs override",
-   "perk P62_Legendary_Armor_ReboundersPerk: MGEF P62_Legendary_Armor_ReboundersApplyReflectPerkEffect: no route for AV ReflectDamage — needs mapping",
-   "perk P62_Legendary_Armor_ReboundersPerk: MGEF P62_Legendary_Armor_ReboundersApplyReflectVFXEffect archetype Script — needs override",
-   "perk P62_Legendary_Armor_ReboundersPerk: OR-group[HasKeyword(AmmoTypeBallistic)=1 | HasKeyword(AmmoTypeExplosive)=1 | HasKeyword(WeaponTypeBallistic)=1 | HasKeyword(WeaponTypeExplosive)=1]"
-  ],
-  "obtainable": false
- },
- {
-  "id": "P62_mod_Legendary_PowerArmor4_Crusaders",
-  "formId": "0x0080F856",
-  "name": "Crusaders",
-  "description": "+1 S.P.E.C.I.A.L. Point For Each Equipped Armor Piece (up to +5 on Full Stack)",
-  "attachPointFormId": "0x004E89AA",
-  "attachPointEdid": "ap_Legendary4",
-  "targetKeywords": [
-   "ma_legendarycrafting_powerarmor",
-   "ma_PowerArmorMod"
-  ],
-  "modifiers": [
-   {
-    "id": "0x0080F856:ench:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F856",
-     "edid": "P62_mod_Legendary_PowerArmor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialCharisma",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 1,
-      "orMore": true
-     }
-    ]
-   },
-   {
-    "id": "0x0080F856:ench:1",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F856",
-     "edid": "P62_mod_Legendary_PowerArmor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialEndurance",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 2,
-      "orMore": true
-     }
-    ]
-   },
-   {
-    "id": "0x0080F856:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F856",
-     "edid": "P62_mod_Legendary_PowerArmor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialPerception",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 3,
-      "orMore": true
-     }
-    ]
-   },
-   {
-    "id": "0x0080F856:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F856",
-     "edid": "P62_mod_Legendary_PowerArmor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialLuck",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 4,
-      "orMore": true
-     }
-    ]
-   },
-   {
-    "id": "0x0080F856:ench:4",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F856",
-     "edid": "P62_mod_Legendary_PowerArmor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialStrength",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 5,
-      "orMore": true
-     }
-    ]
-   },
-   {
-    "id": "0x0080F856:ench:5",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F856",
-     "edid": "P62_mod_Legendary_PowerArmor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialAgility",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 5,
-      "orMore": true
-     }
-    ]
-   },
-   {
-    "id": "0x0080F856:ench:6",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0080F856",
-     "edid": "P62_mod_Legendary_PowerArmor4_Crusaders",
-     "name": "Crusaders"
-    },
-    "bucket": "specialIntelligence",
-    "op": "ADD",
-    "value": 1,
-    "conditions": [
-     {
-      "kind": "wornPieceCount",
-      "keyword": "P62_HasLegendary_Armor_Crusaders",
-      "count": 5,
-      "orMore": true
-     }
-    ]
-   }
-  ],
-  "addedKeywords": [
-   "P62_HasLegendary_Armor_Crusaders",
-   "HasLegendary_Mod",
-   "FeaturedItem"
-  ],
-  "hasEnchantments": true,
-  "notes": [],
-  "obtainable": false
- },
- {
-  "id": "P62_mod_Legendary_PowerArmor4_Metabolic",
-  "formId": "0x0080F9C3",
-  "name": "Metabolic",
-  "description": "All Chems, Serums, Bobbleheads & Magazines Buffs Last 5% Longer (up to 25% on Full Stack)",
-  "attachPointFormId": "0x004E89AA",
-  "attachPointEdid": "ap_Legendary4",
-  "targetKeywords": [
-   "ma_legendarycrafting_powerarmor",
-   "ma_PowerArmorMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [
-   "P62_HasLegendary_Armor_Metabolic",
-   "HasLegendary_Mod",
-   "FeaturedItem"
-  ],
-  "hasEnchantments": true,
-  "notes": [
-   "perk P62_Legendary_Armor_MetabolicPerk: MGEF P62_Legendary_Armor_MetabolicApplyChemPerkEffect: no route for AV STAT_ChemDuration — needs mapping",
-   "perk P62_Legendary_Armor_MetabolicPerk: MGEF P62_Legendary_Armor_MetabolicApplyFoodPerkEffect: no route for AV HungerThirstTier — needs mapping",
-   "perk P62_Legendary_Armor_MetabolicPerk: OR-group[EPMagic_SpellHasKeyword(BobbleheadKeyword)=1 | EPMagic_SpellHasKeyword(MagazineKeyword)=1]",
-   "perk P62_Legendary_Armor_MetabolicPerk: entry point Mod Spell Duration — not modeled"
-  ],
-  "obtainable": false
- },
- {
-  "id": "P62_mod_Legendary_PowerArmor4_OverLoaders",
-  "formId": "0x00813222",
-  "name": "Over-Loader's",
-  "description": "10% Chance To Trigger An EMP Pulse When Hit (up to 50% on Full Stack), Dealing 50 Energy Damage To Nearby Enemies For 5 Seconds",
-  "attachPointFormId": "0x004E89AA",
-  "attachPointEdid": "ap_Legendary4",
-  "targetKeywords": [
-   "ma_legendarycrafting_powerarmor",
-   "ma_PowerArmorMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [
-   "P62_HasLegendary_PowerArmor_OverLoaders",
-   "HasLegendary_Mod",
-   "FeaturedItem"
-  ],
-  "hasEnchantments": true,
-  "notes": [
-   "perk P62_Legendary_PowerArmor_OverLoadersPerk: Apply Combat Hit Spell Taken — Function-Type-5 chase produced damage but no proc-trigger classification, dropped",
-   "perk P62_Legendary_PowerArmor_OverLoadersPerk: GetRandomPercent()=10",
-   "perk P62_Legendary_PowerArmor_OverLoadersPerk: GetRandomPercent()=20",
-   "perk P62_Legendary_PowerArmor_OverLoadersPerk: GetRandomPercent()=30",
-   "perk P62_Legendary_PowerArmor_OverLoadersPerk: GetRandomPercent()=40",
-   "perk P62_Legendary_PowerArmor_OverLoadersPerk: GetRandomPercent()=50"
-  ],
-  "obtainable": false
- },
- {
-  "id": "P62_mod_Legendary_PowerArmor4_StaggerProof",
-  "formId": "0x007A74C8",
-  "name": "Stagger-Proof",
-  "description": "15% Chance to Not Stagger from any Damage Types (up to 80% on Full Stack)",
-  "attachPointFormId": "0x004E89AA",
-  "attachPointEdid": "ap_Legendary4",
-  "targetKeywords": [
-   "ma_legendarycrafting_powerarmor",
-   "ma_PowerArmorMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [
-   "P62_HasLegendary_PowerArmor_StaggerProof",
-   "HasLegendary_Mod",
-   "FeaturedItem"
-  ],
-  "hasEnchantments": true,
-  "notes": [
-   "perk P62_Legendary_PowerArmor_StaggerProofPerk: GetRandomPercent()=15",
-   "perk P62_Legendary_PowerArmor_StaggerProofPerk: GetRandomPercent()=30",
-   "perk P62_Legendary_PowerArmor_StaggerProofPerk: GetRandomPercent()=45",
-   "perk P62_Legendary_PowerArmor_StaggerProofPerk: GetRandomPercent()=60",
-   "perk P62_Legendary_PowerArmor_StaggerProofPerk: GetRandomPercent()=75",
-   "perk P62_Legendary_PowerArmor_StaggerProofPerk: entry point Mod Incoming Stagger — not modeled"
-  ],
-  "obtainable": false
- },
- {
-  "id": "P62_mod_Legendary_PowerArmor4_Voltaic",
-  "formId": "0x008154EF",
-  "name": "Voltaic",
-  "description": "Sprinting Builds Up A Charge & Releases An EMP Shockwave When You Stop That Stuns & Deals Energy Damage To Nearby Enemies",
-  "attachPointFormId": "0x004E89AA",
-  "attachPointEdid": "ap_Legendary4",
-  "targetKeywords": [
-   "ma_legendarycrafting_powerarmor",
-   "ma_PowerArmorMod"
-  ],
-  "modifiers": [],
-  "addedKeywords": [
-   "P62_HasLegendary_PowerArmor_Voltaic",
-   "HasLegendary_Mod",
-   "FeaturedItem"
-  ],
-  "hasEnchantments": true,
-  "notes": [
-   "ActorValues on P62_Legendary_Armor_Voltaic_ActorValue — unmapped",
-   "MGEF P62_Legendary_PowerArmor_AddVoltaicScriptEffect archetype Script — needs override"
-  ],
-  "obtainable": false
  },
  {
   "id": "RD01_ATX_mod_PowerArmor_EnclaveVulcan_Torso_Misc_JetPack_AlienInvader",
@@ -98369,8 +98678,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -98392,8 +98700,7 @@
     "conditions": [
      {
       "kind": "healthBelowPct",
-      "pct": 20,
-      "inclusive": false
+      "pct": 20
      },
      {
       "kind": "inPowerArmor",
@@ -119763,6 +120070,943 @@
   "obtainable": true
  },
  {
+  "id": "SCORE_S27_mod_armor_BOSInfantry_JetPack_VaultTecJP",
+  "formId": "0x0093ADDF",
+  "name": "Vault-Tec Jetpack",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_BOSInfantry_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasMisc_JetPack"
+  ],
+  "hasEnchantments": true,
+  "hasGrantingCobj": true,
+  "notes": [
+   "MGEF SCORE_S27_abPlayerJetpack_BoSInfantry_VaultTecJP_FX archetype Jetpack — needs override",
+   "MGEF SCORE_S27_abPlayerJetpack_BoSInfantry_VaultTecJP_Geo archetype Cloak — needs override"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_armor_Muni_JetPack_VaultTecJP",
+  "formId": "0x0093ADE0",
+  "name": "Vault-Tec Jetpack",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "XPD_AC_ma_armor_Muni_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasMisc_JetPack"
+  ],
+  "hasEnchantments": true,
+  "hasGrantingCobj": true,
+  "notes": [
+   "MGEF SCORE_S27_abPlayerJetpack_Muni_VaultTecJP_FX archetype Jetpack — needs override",
+   "MGEF SCORE_S27_abPlayerJetpack_Muni_VaultTecJP_Geo archetype Cloak — needs override"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_armor_SecretService_JetPack_VaultTecJP",
+  "formId": "0x0093ADE1",
+  "name": "Vault-Tec Jetpack",
+  "description": "",
+  "attachPointFormId": "0x00022821",
+  "attachPointEdid": "ap_armor_Lining",
+  "targetKeywords": [
+   "ma_armor_SecretService_Torso"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasMisc_JetPack"
+  ],
+  "hasEnchantments": true,
+  "hasGrantingCobj": true,
+  "notes": [
+   "MGEF SCORE_S27_abPlayerJetpack_SecretService_VaultTecJP_FX archetype Jetpack — needs override",
+   "MGEF SCORE_S27_abPlayerJetpack_SecretService_VaultTecJP_Geo archetype Cloak — needs override"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_BackPack_VTMedal_Bronze_Flair1",
+  "formId": "0x0091ED0B",
+  "name": "Vault-Tec Bronze Medal Backpack Flair",
+  "description": "",
+  "attachPointFormId": "0x00478771",
+  "attachPointEdid": "ap_Backpack_FlairMod1",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_BackPack_VTMedal_Bronze_Flair2",
+  "formId": "0x0091ED0C",
+  "name": "Vault-Tec Bronze Medal Backpack Flair",
+  "description": "",
+  "attachPointFormId": "0x004787FA",
+  "attachPointEdid": "ap_Backpack_FlairMod2",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_BackPack_VTMedal_Gold_Flair1",
+  "formId": "0x0091ED07",
+  "name": "Vault-Tec Gold Medal Backpack Flair",
+  "description": "",
+  "attachPointFormId": "0x00478771",
+  "attachPointEdid": "ap_Backpack_FlairMod1",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_BackPack_VTMedal_Gold_Flair2",
+  "formId": "0x0091ED08",
+  "name": "Vault-Tec Gold Medal Backpack Flair",
+  "description": "",
+  "attachPointFormId": "0x004787FA",
+  "attachPointEdid": "ap_Backpack_FlairMod2",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_BackPack_VTMedal_Silver_Flair1",
+  "formId": "0x0091ED09",
+  "name": "Vault-Tec Silver Medal Backpack Flair",
+  "description": "",
+  "attachPointFormId": "0x00478771",
+  "attachPointEdid": "ap_Backpack_FlairMod1",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_BackPack_VTMedal_Silver_Flair2",
+  "formId": "0x0091ED0A",
+  "name": "Vault-Tec Silver Medal Backpack Flair",
+  "description": "",
+  "attachPointFormId": "0x004787FA",
+  "attachPointEdid": "ap_Backpack_FlairMod2",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Adjudicator_Helmet_Headlamp",
+  "formId": "0x0091ED2B",
+  "name": "Headlamp",
+  "description": "Adds headlamp.",
+  "attachPointFormId": "0x0091ED23",
+  "attachPointEdid": "SCORE_S27_ap_PowerArmor_Adjudicator_Headlamp",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Adjudicator_Helmet_Headlamp_Blue",
+  "formId": "0x0091ED2C",
+  "name": "Blue Headlamp",
+  "description": "Adds headlamp.",
+  "attachPointFormId": "0x0091ED23",
+  "attachPointEdid": "SCORE_S27_ap_PowerArmor_Adjudicator_Headlamp",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Adjudicator_Helmet_Headlamp_Bright",
+  "formId": "0x0091ED2D",
+  "name": "Bright Headlamp",
+  "description": "Adds headlamp.",
+  "attachPointFormId": "0x0091ED23",
+  "attachPointEdid": "SCORE_S27_ap_PowerArmor_Adjudicator_Headlamp",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Adjudicator_Helmet_Headlamp_Purple",
+  "formId": "0x0091ED2E",
+  "name": "Purple Headlamp",
+  "description": "Adds headlamp.",
+  "attachPointFormId": "0x0091ED23",
+  "attachPointEdid": "SCORE_S27_ap_PowerArmor_Adjudicator_Headlamp",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Adjudicator_Helmet_Headlamp_RedTactical",
+  "formId": "0x0091ED2F",
+  "name": "Red Tactical Headlamp",
+  "description": "",
+  "attachPointFormId": "0x0091ED23",
+  "attachPointEdid": "SCORE_S27_ap_PowerArmor_Adjudicator_Headlamp",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Adjudicator_Helmet_Headlamp_VaultBoy",
+  "formId": "0x0091ED30",
+  "name": "Vault Boy Headlamp",
+  "description": "Adds headlamp.",
+  "attachPointFormId": "0x0091ED23",
+  "attachPointEdid": "SCORE_S27_ap_PowerArmor_Adjudicator_Headlamp",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_ALL_Material_Paint_Adjudicator_ArmLeft",
+  "formId": "0x0091ED25",
+  "name": "Overseers Adjudicator Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8D",
+  "attachPointEdid": "ap_PowerArmor_LArmMod",
+  "targetKeywords": [
+   "ma_PA_ArmLeft",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_Adjudicator"
+  ],
+  "hasEnchantments": true,
+  "hasGrantingCobj": true,
+  "notes": [
+   "MGEF abPowerArmorResponder_Adjudicator_LPauldron_VFX archetype Light — needs override"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_ALL_Material_Paint_Adjudicator_ArmRight",
+  "formId": "0x0091ED26",
+  "name": "Overseers Adjudicator Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8E",
+  "attachPointEdid": "ap_PowerArmor_RArmMod",
+  "targetKeywords": [
+   "ma_PA_ArmRight",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_Adjudicator"
+  ],
+  "hasEnchantments": true,
+  "hasGrantingCobj": true,
+  "notes": [
+   "MGEF abPowerArmorResponder_Adjudicator_RPauldron_VFX archetype Light — needs override"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_ALL_Material_Paint_Adjudicator_Helmet",
+  "formId": "0x0091ED27",
+  "name": "Overseers Adjudicator Paint",
+  "description": "",
+  "attachPointFormId": "0x0003DAFC",
+  "attachPointEdid": "ap_PowerArmor_HeadMod",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_Adjudicator"
+  ],
+  "hasEnchantments": true,
+  "hasGrantingCobj": true,
+  "notes": [
+   "MGEF abPowerArmorResponder_Adjudicator_Helmet_VFX archetype Light — needs override"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_ALL_Material_Paint_Adjudicator_LegLeft",
+  "formId": "0x0091ED28",
+  "name": "Overseers Adjudicator Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F90",
+  "attachPointEdid": "ap_PowerArmor_LLegMod",
+  "targetKeywords": [
+   "ma_PA_LegLeft",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_Adjudicator"
+  ],
+  "hasEnchantments": true,
+  "hasGrantingCobj": true,
+  "notes": [
+   "MGEF abPowerArmorResponder_Adjudicator_LLeg_VFX archetype Light — needs override"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_ALL_Material_Paint_Adjudicator_LegRight",
+  "formId": "0x0091ED29",
+  "name": "Overseers Adjudicator Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8F",
+  "attachPointEdid": "ap_PowerArmor_RLegMod",
+  "targetKeywords": [
+   "ma_PA_LegRight",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_Adjudicator"
+  ],
+  "hasEnchantments": true,
+  "hasGrantingCobj": true,
+  "notes": [
+   "MGEF abPowerArmorResponder_Adjudicator_RLeg_VFX archetype Light — needs override"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_ALL_Material_Paint_Adjudicator_Torso",
+  "formId": "0x0091ED2A",
+  "name": "Overseers Adjudicator Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8C",
+  "attachPointEdid": "ap_PowerArmor_BodyMod",
+  "targetKeywords": [
+   "ma_PA_Material",
+   "ma_PA_Torso",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_Adjudicator"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Excavator_Helmet_Material_Paint_VaultTec",
+  "formId": "0x0092802E",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x0003DAFC",
+  "attachPointEdid": "ap_PowerArmor_HeadMod",
+  "targetKeywords": [
+   "ma_PA_Excavator",
+   "ma_PA_Helmet",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec",
+   "PowerArmorHelmetLightOverride"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Excavator_LeftArm_Material_Paint_VaultTec",
+  "formId": "0x0092802F",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8D",
+  "attachPointEdid": "ap_PowerArmor_LArmMod",
+  "targetKeywords": [
+   "ma_PA_ArmLeft",
+   "ma_PA_Excavator",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Excavator_LeftLeg_Material_Paint_VaultTec",
+  "formId": "0x00928030",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F90",
+  "attachPointEdid": "ap_PowerArmor_LLegMod",
+  "targetKeywords": [
+   "ma_PA_Excavator",
+   "ma_PA_LegLeft",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Excavator_RightArm_Material_Paint_VaultTec",
+  "formId": "0x00928031",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8E",
+  "attachPointEdid": "ap_PowerArmor_RArmMod",
+  "targetKeywords": [
+   "ma_PA_ArmRight",
+   "ma_PA_Excavator",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Excavator_RightLeg_Material_Paint_VaultTec",
+  "formId": "0x00928032",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8F",
+  "attachPointEdid": "ap_PowerArmor_RLegMod",
+  "targetKeywords": [
+   "ma_PA_Excavator",
+   "ma_PA_LegRight",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Excavator_Torso_Material_Paint_VaultTec",
+  "formId": "0x00928033",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8C",
+  "attachPointEdid": "ap_PowerArmor_BodyMod",
+  "targetKeywords": [
+   "ma_PA_Excavator",
+   "ma_PA_Material",
+   "ma_PA_Torso",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Hellcat_Helmet_Material_Paint_VaultTec",
+  "formId": "0x00927394",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x0003DAFC",
+  "attachPointEdid": "ap_PowerArmor_HeadMod",
+  "targetKeywords": [
+   "ma_PA_Hellcat",
+   "ma_PA_Helmet",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec",
+   "PowerArmorHelmetLightOverride"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Hellcat_LeftArm_Material_Paint_VaultTec",
+  "formId": "0x00927395",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8D",
+  "attachPointEdid": "ap_PowerArmor_LArmMod",
+  "targetKeywords": [
+   "ma_PA_ArmLeft",
+   "ma_PA_Hellcat",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Hellcat_LeftLeg_Material_Paint_VaultTec",
+  "formId": "0x00927396",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F90",
+  "attachPointEdid": "ap_PowerArmor_LLegMod",
+  "targetKeywords": [
+   "ma_PA_Hellcat",
+   "ma_PA_LegLeft",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Hellcat_RightArm_Material_Paint_VaultTec",
+  "formId": "0x00927397",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8E",
+  "attachPointEdid": "ap_PowerArmor_RArmMod",
+  "targetKeywords": [
+   "ma_PA_ArmRight",
+   "ma_PA_Hellcat",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Hellcat_RightLeg_Material_Paint_VaultTec",
+  "formId": "0x00927398",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8F",
+  "attachPointEdid": "ap_PowerArmor_RLegMod",
+  "targetKeywords": [
+   "ma_PA_Hellcat",
+   "ma_PA_LegRight",
+   "ma_PA_Material",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Hellcat_Torso_Material_Paint_VaultTec",
+  "formId": "0x00927399",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8C",
+  "attachPointEdid": "ap_PowerArmor_BodyMod",
+  "targetKeywords": [
+   "ma_PA_Hellcat",
+   "ma_PA_Material",
+   "ma_PA_Torso",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_T65_Helmet_Material_Paint_VaultTec",
+  "formId": "0x00931429",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x0003DAFC",
+  "attachPointEdid": "ap_PowerArmor_HeadMod",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PA_Material",
+   "ma_PA_T65",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec",
+   "PowerArmorHelmetLightOverride"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_T65_LeftArm_Material_Paint_VaultTec",
+  "formId": "0x0093142A",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8D",
+  "attachPointEdid": "ap_PowerArmor_LArmMod",
+  "targetKeywords": [
+   "ma_PA_ArmLeft",
+   "ma_PA_Material",
+   "ma_PA_T65",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_T65_LeftLeg_Material_Paint_VaultTec",
+  "formId": "0x0093142B",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F90",
+  "attachPointEdid": "ap_PowerArmor_LLegMod",
+  "targetKeywords": [
+   "ma_PA_LegLeft",
+   "ma_PA_Material",
+   "ma_PA_T65",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_T65_RightArm_Material_Paint_VaultTec",
+  "formId": "0x0093142C",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8E",
+  "attachPointEdid": "ap_PowerArmor_RArmMod",
+  "targetKeywords": [
+   "ma_PA_ArmRight",
+   "ma_PA_Material",
+   "ma_PA_T65",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_T65_RightLeg_Material_Paint_VaultTec",
+  "formId": "0x0093142D",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8F",
+  "attachPointEdid": "ap_PowerArmor_RLegMod",
+  "targetKeywords": [
+   "ma_PA_LegRight",
+   "ma_PA_Material",
+   "ma_PA_T65",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_T65_Torso_Material_Paint_VaultTec",
+  "formId": "0x0093142E",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8C",
+  "attachPointEdid": "ap_PowerArmor_BodyMod",
+  "targetKeywords": [
+   "ma_PA_Material",
+   "ma_PA_T65",
+   "ma_PA_Torso",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Union_Helmet_Material_Paint_VaultTec",
+  "formId": "0x00928028",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x0003DAFC",
+  "attachPointEdid": "ap_PowerArmor_HeadMod",
+  "targetKeywords": [
+   "ma_PA_Helmet",
+   "ma_PA_Material",
+   "ma_PA_Union",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec",
+   "PowerArmorHelmetLightOverride"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Union_LeftArm_Material_Paint_VaultTec",
+  "formId": "0x00928029",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8D",
+  "attachPointEdid": "ap_PowerArmor_LArmMod",
+  "targetKeywords": [
+   "ma_PA_ArmLeft",
+   "ma_PA_Material",
+   "ma_PA_Union",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Union_LeftLeg_Material_Paint_VaultTec",
+  "formId": "0x0092802A",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F90",
+  "attachPointEdid": "ap_PowerArmor_LLegMod",
+  "targetKeywords": [
+   "ma_PA_LegLeft",
+   "ma_PA_Material",
+   "ma_PA_Union",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Union_RightArm_Material_Paint_VaultTec",
+  "formId": "0x0092802B",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8E",
+  "attachPointEdid": "ap_PowerArmor_RArmMod",
+  "targetKeywords": [
+   "ma_PA_ArmRight",
+   "ma_PA_Material",
+   "ma_PA_Union",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Union_RightLeg_Material_Paint_VaultTec",
+  "formId": "0x0092802C",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8F",
+  "attachPointEdid": "ap_PowerArmor_RLegMod",
+  "targetKeywords": [
+   "ma_PA_LegRight",
+   "ma_PA_Material",
+   "ma_PA_Union",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_mod_PowerArmor_Union_Torso_Material_Paint_VaultTec",
+  "formId": "0x0092802D",
+  "name": "Vault-Tec Paint",
+  "description": "",
+  "attachPointFormId": "0x00055F8C",
+  "attachPointEdid": "ap_PowerArmor_BodyMod",
+  "targetKeywords": [
+   "ma_PA_Material",
+   "ma_PA_Torso",
+   "ma_PA_Union",
+   "ma_PowerArmorMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "SCORE_S27_dn_HasMaterial_PA_VaultTec"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "SCORE_S3_mod_BackPack_ArmorAce_Helmet_Flair1",
   "formId": "0x005EFF73",
   "name": "Armor Ace Helmet Backpack Flair",
@@ -126888,9 +128132,145 @@
   "obtainable": true
  },
  {
+  "id": "WorldPets_mod_Backpack_CatFlair1",
+  "formId": "0x008B5099",
+  "name": "Adept Cat Backpack Flair",
+  "description": "Adept Cat Medallion",
+  "attachPointFormId": "0x00478771",
+  "attachPointEdid": "ap_Backpack_FlairMod1",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_mod_Backpack_CatFlair2",
+  "formId": "0x008B5098",
+  "name": "Adept Cat Backpack Flair",
+  "description": "Adept Cat Medallion",
+  "attachPointFormId": "0x004787FA",
+  "attachPointEdid": "ap_Backpack_FlairMod2",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_mod_Backpack_DCFlair1",
+  "formId": "0x008B509E",
+  "name": "Adept Deathclaw Backpack Flair",
+  "description": "Adept Deathclaw Medallion",
+  "attachPointFormId": "0x00478771",
+  "attachPointEdid": "ap_Backpack_FlairMod1",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_mod_Backpack_DCFlair2",
+  "formId": "0x008B509D",
+  "name": "Adept Deathclaw Backpack Flair",
+  "description": "Adept Deathclaw Medallion",
+  "attachPointFormId": "0x004787FA",
+  "attachPointEdid": "ap_Backpack_FlairMod2",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_mod_Backpack_DogFlair1",
+  "formId": "0x008B509C",
+  "name": "Adept Dog Backpack Flair",
+  "description": "Adept Dog Medallion",
+  "attachPointFormId": "0x00478771",
+  "attachPointEdid": "ap_Backpack_FlairMod1",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_mod_Backpack_DogFlair2",
+  "formId": "0x008B509A",
+  "name": "Adept Dog Backpack Flair",
+  "description": "Adept Dog Medallion",
+  "attachPointFormId": "0x004787FA",
+  "attachPointEdid": "ap_Backpack_FlairMod2",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_mod_Backpack_RadhogFlair1",
+  "formId": "0x008B509B",
+  "name": "Adept Radhog Backpack Flair",
+  "description": "Adept Radhog Medallion",
+  "attachPointFormId": "0x00478771",
+  "attachPointEdid": "ap_Backpack_FlairMod1",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_mod_Backpack_RadhogFlair2",
+  "formId": "0x008B5097",
+  "name": "Adept Radhog Backpack Flair",
+  "description": "Adept Radhog Medallion",
+  "attachPointFormId": "0x004787FA",
+  "attachPointEdid": "ap_Backpack_FlairMod2",
+  "targetKeywords": [
+   "ma_armor_BackPack_Art_FlairMod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "WorldPets_mod_CatBackPack_Material",
   "formId": "0x008B6A2E",
-  "name": "Cat Leveling Backpack",
+  "name": "Adept Cat Backpack",
   "description": "Free States",
   "attachPointFormId": "0x0047876F",
   "attachPointEdid": "ap_Backpack_MaterialMod",
@@ -126899,7 +128279,7 @@
   ],
   "modifiers": [],
   "addedKeywords": [
-   "dn_BackPack_Standard_Material_FreeStates_Green"
+   "dn_BackPack_Standard_Material_WorldPets_Cat"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
@@ -126909,7 +128289,7 @@
  {
   "id": "WorldPets_mod_DCBackPack_Material",
   "formId": "0x008B6A31",
-  "name": "Deathclaw Leveling Backpack",
+  "name": "Adept Deathclaw Backpack",
   "description": "Free States",
   "attachPointFormId": "0x0047876F",
   "attachPointEdid": "ap_Backpack_MaterialMod",
@@ -126918,7 +128298,7 @@
   ],
   "modifiers": [],
   "addedKeywords": [
-   "dn_BackPack_Standard_Material_FreeStates_Green"
+   "dn_BackPack_Standard_Material_WorldPets_Deathclaw"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
@@ -126928,7 +128308,7 @@
  {
   "id": "WorldPets_mod_DogBackPack_Material",
   "formId": "0x008B6A2F",
-  "name": "Dog Leveling Backpack",
+  "name": "Adept Dog Backpack",
   "description": "Free States",
   "attachPointFormId": "0x0047876F",
   "attachPointEdid": "ap_Backpack_MaterialMod",
@@ -126937,7 +128317,7 @@
   ],
   "modifiers": [],
   "addedKeywords": [
-   "dn_BackPack_Standard_Material_FreeStates_Green"
+   "dn_BackPack_Standard_Material_WorldPets_Dog"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
@@ -126947,7 +128327,7 @@
  {
   "id": "WorldPets_mod_RadhogBackPack_Material",
   "formId": "0x008B6A30",
-  "name": "Radhog Leveling Backpack",
+  "name": "Adept Radhog Backpack",
   "description": "Free States",
   "attachPointFormId": "0x0047876F",
   "attachPointEdid": "ap_Backpack_MaterialMod",
@@ -126956,7 +128336,7 @@
   ],
   "modifiers": [],
   "addedKeywords": [
-   "dn_BackPack_Standard_Material_FreeStates_Green"
+   "dn_BackPack_Standard_Material_WorldPets_Radhog"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,

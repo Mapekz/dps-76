@@ -21,12 +21,16 @@ export const cutUniqueIdentityOmodIds: ReadonlySet<string> = new Set<string>([
   // for this item as of the current ESM dump — re-review when a later ESM dump
   // adds a grant path (LVLI, COBJ recipe, or quest reward).
   'mod_Custom_ThePipe',
-  // P62 "The Drifter" unreleased encounter — same rationale as the three
-  // hidden WEAP records in weapon-corrections.ts (user-confirmed never
-  // shipped). Only the `_CustomName` identity mods belong here — the group's
-  // `_SpecialEffect` / `_Appearance` siblings are picker-only and stay solely
-  // in `hiddenOmodIds`.
-  'P62_Mod_Custom_Splinter_CustomName',
-  'P62_Mod_Custom_Tempest_CustomName',
-  'P62_Mod_Custom_ChaosEngine_CustomName',
+  // P62 "The Drifter" identity mods REMOVED 2026-10-29: shipped as Hideouts
+  // content in the 20261026 dump (grant chain in omod-corrections.ts).
+  // V63-Z Custom (Stormcutter's "Stormslasher" template) slot-family unlock
+  // markers: empty ap_Item_Description OMODs whose COBJs (Learn Method 5,
+  // challenge) only drive the bench's mods-unlocked counter. Not uniques; the
+  // real mods are the _01/_02 slot variants (walked 2026-10-29).
+  'mod_custom_StormSlasher_Burning00',
+  'mod_custom_StormSlasher_Channeler00',
+  'mod_custom_StormSlasher_Crusher00',
+  'mod_custom_StormSlasher_OneShot00',
+  'mod_custom_StormSlasher_Static00',
+  'mod_custom_StormSlasher_Stormwalker00',
 ]);

@@ -1602,32 +1602,32 @@
    {
     "damageType": "physical",
     "flatValue": 0,
-    "curveTier": 20
+    "curveTier": 36
    },
    {
     "damageType": "poison",
     "flatValue": 0,
-    "curveTier": 20
+    "curveTier": 40
    },
    {
     "damageType": "fire",
     "flatValue": 0,
-    "curveTier": 5
+    "curveTier": 28
    },
    {
     "damageType": "cryo",
     "flatValue": 0,
-    "curveTier": 47
+    "curveTier": 48
    },
    {
     "damageType": "radiation",
     "flatValue": 0,
-    "curveTier": 36
+    "curveTier": 50
    },
    {
     "damageType": "energy",
     "flatValue": 0,
-    "curveTier": 20
+    "curveTier": 30
    }
   ],
   "levelMinGlobal": 75,
@@ -2419,36 +2419,36 @@
    {
     "damageType": "physical",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 42
    },
    {
     "damageType": "poison",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "fire",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "cryo",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "radiation",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "energy",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 41
    }
   ],
   "levelMinGlobal": 50,
-  "levelMaxGlobal": 175,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2714,13 +2714,13 @@
   "id": "Burn_BountyTarget_BIG_Patriot",
   "formId": "0x00824449",
   "name": "Corporal Jane",
-  "healthCurveTier": 34,
+  "healthCurveTier": 35,
   "healthFlatValue": 0,
   "resists": [
    {
     "damageType": "physical",
     "flatValue": 0,
-    "curveTier": 43
+    "curveTier": 47
    },
    {
     "damageType": "poison",
@@ -2745,7 +2745,7 @@
    {
     "damageType": "energy",
     "flatValue": 0,
-    "curveTier": 39
+    "curveTier": 44
    }
   ],
   "levelMinGlobal": 50,
@@ -2892,36 +2892,36 @@
    {
     "damageType": "physical",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 42
    },
    {
     "damageType": "poison",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "fire",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "cryo",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "radiation",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "energy",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 41
    }
   ],
   "levelMinGlobal": 50,
-  "levelMaxGlobal": 175,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3021,36 +3021,36 @@
    {
     "damageType": "physical",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 42
    },
    {
     "damageType": "poison",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "fire",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "cryo",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "radiation",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "energy",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 41
    }
   ],
   "levelMinGlobal": 50,
-  "levelMaxGlobal": 175,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3193,36 +3193,36 @@
    {
     "damageType": "physical",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 42
    },
    {
     "damageType": "poison",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "fire",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "cryo",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "radiation",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "energy",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 41
    }
   ],
   "levelMinGlobal": 50,
-  "levelMaxGlobal": 175,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3236,36 +3236,36 @@
    {
     "damageType": "physical",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 42
    },
    {
     "damageType": "poison",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "fire",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "cryo",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "radiation",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "energy",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 41
    }
   ],
   "levelMinGlobal": 50,
-  "levelMaxGlobal": 175,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3279,36 +3279,36 @@
    {
     "damageType": "physical",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 42
    },
    {
     "damageType": "poison",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "fire",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "cryo",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "radiation",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "energy",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 41
    }
   ],
   "levelMinGlobal": 50,
-  "levelMaxGlobal": 175,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3365,36 +3365,36 @@
    {
     "damageType": "physical",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 42
    },
    {
     "damageType": "poison",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "fire",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "cryo",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "radiation",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "energy",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 41
    }
   ],
   "levelMinGlobal": 50,
-  "levelMaxGlobal": 175,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3408,36 +3408,36 @@
    {
     "damageType": "physical",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 42
    },
    {
     "damageType": "poison",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "fire",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "cryo",
     "flatValue": 0,
-    "curveTier": 35
+    "curveTier": 36
    },
    {
     "damageType": "radiation",
     "flatValue": 0,
-    "curveTier": 33
+    "curveTier": 31
    },
    {
     "damageType": "energy",
     "flatValue": 0,
-    "curveTier": 40
+    "curveTier": 41
    }
   ],
   "levelMinGlobal": 50,
-  "levelMaxGlobal": 175,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },

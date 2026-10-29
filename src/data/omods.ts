@@ -221,6 +221,8 @@ const SLOT_LABEL_OVERRIDES: Record<string, string> = {
   ap_melee_MeleeMod: 'Upgrade',
   // KYWD 0x0005D4D7 FULL = "Magazine".
   ap_gun_Mag: 'Magazine',
+  // KYWD 0x0094CE5A FULL = "Chamber" (20261026: LMG/BoS pistol/M79 ammo slot).
+  ap_gun_Ammo: 'Chamber',
   // KYWD 0x00729BD5 FULL is ALSO "Magazine", which would collide with
   // ap_gun_Mag on the Cremator — the only weapon using this attach point,
   // whose options here are all "... Tank" (Napalm/Slow-Burning). Invented.

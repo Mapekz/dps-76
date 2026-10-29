@@ -32,6 +32,10 @@
      "input": "killStreak",
      "points": [
       {
+       "x": 0,
+       "y": 0
+      },
+      {
        "x": 1,
        "y": 6.25
       },
@@ -62,6 +66,10 @@
     "curve": {
      "input": "killStreak",
      "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
       {
        "x": 1,
        "y": 5

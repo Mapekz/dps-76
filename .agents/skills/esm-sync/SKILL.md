@@ -133,12 +133,19 @@ watch the CI run until it is green.
 ## Known deferred piles (check before re-adjudicating)
 
 - #88 retaliation-on-being-hit family (elemental armor, Reflective,
-  Unstable Isotope, Electrically Charged) — pending a hits-taken model.
+  Unstable Isotope, Electrically Charged, Retaliator's since 20261026) —
+  pending a hits-taken model.
 - #89 AP-refund-on-kill (Grim Reaper's Sprint, Combo-Breaker, SlugBuster,
   bulletStormOnKill) — pending enemy TTK.
-- P62 season content: obtainable:false, classified by prefix. TRAP: Ruiner's
-  extracted `wholeDamage ADD 500` with every gate unresolved — a forceVisible
-  rescue without a condition fix ships an unconditional +500.
+- 3★ elemental weapon legendaries (Burning/Frozen/Toxic, 20261026):
+  resolve-pending on a CurveInput for the shared
+  Legendary_Armor_*Count AV (weapon +1, armor pieces +1 each).
+- V63-Z Custom slot families (Stormcutter, 20260914+): resolve-pending on
+  per-hit/crit/VATS proc triggers and cross-slot HasPerk gates.
+- P62 resolved in 20261026: the Drifter content shipped as Hideouts (HIDE_)
+  and the P62 legendaries (Ruiner's & co) were cut to DEL_/zzz_. If a
+  Ruiner's ever reappears, recheck its `wholeDamage ADD 500` gates before
+  any forceVisible rescue.
 - Eye of Ra toggle: DONE (ADR-0024, ab8f507). Lady Killer/Black Widow:
   USER-CONFIRMED cut FO4 holdovers, permanently out of scope (ae9a6ef).
   Grenade roster: deferred post-release with the per-throw-framing design

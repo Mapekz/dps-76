@@ -278,17 +278,19 @@ describe('slot hygiene against live data', () => {
     expect(melee?.options.map((o) => o.id)).toContain('mod_melee_Hatchet_ElectroFusion');
   });
 
-  it('standard-only slots disappear: M79 receiver, Auto Grenade Launcher feeder/grip/sight', () => {
-    expect(slotsOf('M79').map((s) => s.slot)).not.toContain('ap_gun_Receiver');
+  it('standard-only slots disappear: M79 chamber, Auto Grenade Launcher feeder/grip/sight', () => {
+    // The 20261026 shared mod set gave the M79 six receivers (and the .50 cal
+    // seven magazines), so those slots are real choices now; the M79's lone
+    // Standard Chamber is the standard-only case.
+    expect(slotsOf('M79').map((s) => s.slot)).not.toContain('ap_gun_Ammo');
     const aglSlots = slotsOf('AutoGrenadeLauncher').map((s) => s.slot);
     for (const slot of ['ap_gun_FeedThroat', 'ap_gun_Grip', 'ap_gun_Sight']) {
       expect(aglSlots, slot).not.toContain(slot);
     }
   });
 
-  it('single-option stock-part slots disappear even when the part is not a listed default (AGL Bot Mag, .50 cal Mag)', () => {
+  it('single-option stock-part slots disappear even when the part is not a listed default (AGL Bot Mag)', () => {
     expect(slotsOf('AutoGrenadeLauncher').map((s) => s.slot)).not.toContain('ap_Bot_Mag');
-    expect(slotsOf('50CalMachineGun').map((s) => s.slot)).not.toContain('ap_gun_Mag');
   });
 
   it('the Bone Club keeps its melee slot — clearing the default Wounding mod to "No Upgrade" is a real choice', () => {

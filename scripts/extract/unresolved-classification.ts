@@ -26,16 +26,48 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     disposition: 'out-of-scope',
     reason: 'Hostile Takeover public-event NPC support buffs; not player build state',
   },
-  // P62 ("The Drifter" season) content: every P62_ record walked 2026-08-27 is
-  // obtainable:false with zero reverse refs (Ruiner's, StaggerProof, OverLoaders,
-  // Splinter, Voltaic). TRAP on Ruiner's specifically: the extractor emitted
-  // `wholeDamage ADD 500` with all four gates parked kind:'unresolved' — a
-  // forceVisible rescue without an extractor fix would ship an unconditional
-  // +500. Re-adjudicate this whole class when P62 ships.
+  // Head Hunt bounty NPC side (20261026), walked 2026-10-29: perks live only
+  // on BountyHunt_HeadHunt_* NPC_ records; the mods ride Not Playable cr*
+  // WEAP templates (crRevolver, crRailwayRifle, crFatman, crHandMadeGun).
+  // Two do change player damage, but only vs uncurated Skyline bosses:
+  // IncreaseDamageFromVaultTec (×1.5 taken vs Vault-Tec clothing, The
+  // Oversearer 0x008AA4DE) and DamageReductionWhileMoving (×0.05–0.3 taken
+  // while moving, Greasehands Greta 0x008AA4DF) — re-adjudicate if either
+  // boss joins curated-targets.ts. Furious Fragility sits on ap_Legendary1
+  // with no wielder; re-check on the next dump. Listed by name so new
+  // bounty records keep surfacing.
   {
-    match: /^P62_/,
+    match:
+      /^(?:RTSV_Bounty_(?:IncreaseDamageFromVaultTec|IncreaseDamageToVaultTec|DamageReductionWhileMoving|DamageToCrippled|SubjugatorDmgBonus|IncreaseDamageToPoisoned|mod_Custom_Conductor_RadioWaves|mod_Custom_Chainer_StartChain)|RTSV_BountyPerk_(?:SpecsDamage|Conductor)|Burn_Bounty_mod_Custom_FuriousFragility|Burn_BountyEnchantment_DamageToRich):/,
     disposition: 'out-of-scope',
-    reason: 'unreleased P62 season content, obtainable:false with no reverse refs',
+    reason: 'Head Hunt bounty NPC perks and NPC-weapon mods; no player carrier',
+  },
+  // V63-Z Custom (Stormcutter's "Stormslasher" template, 20260914+; quest
+  // RTSV_SQ01_Collectible reward + Cryptid Hunter vendor), walked 2026-10-29.
+  // Two player-chosen slots (ap_StormslasherCustom01/02), six families, each
+  // granting a RTSV_Stormslasher_*Perk. The damage rides triggers the engine
+  // has no ProcTrigger for: every melee hit (Crusher explosion, Static charge
+  // ladder + detonation), melee crit (OneShot), VATS hit (Stormwalker),
+  // scripted block state (Channeler's Harnessed), and cross-slot HasPerk
+  // pairings. Slots are unselectable today (ma_StormSlasher comes from the
+  // identity mod, not the WEAP), so the preset is an accurate no-mod build.
+  {
+    match:
+      /^mod_custom_StormSlasher_(?:Burning|Channeler|Crusher|OneShot|Static|Stormwalker)0[12]: perk RTSV_Stormslasher_(?:Burning|Harnesser|Crusher|OneShot|Static|Stormwalker)Perk: /,
+    disposition: 'resolve-pending',
+    reason:
+      'V63-Z Custom slot-family procs; need per-hit/crit/VATS proc triggers and cross-slot gates',
+  },
+  // Hideouts creature side (20261026), walked 2026-10-29: the Drifter's own
+  // Tempest special effect (player copy cut as zzz_HIDE_), the toxic bloatfly
+  // attack, and two zero-ref orphans (alien-rifle launcher receiver, FEV
+  // boss hat light). Other HIDE_ records are live player content — keep
+  // this list narrow.
+  {
+    match:
+      /^(?:HIDE_Mod_Custom_crTempest_SpecialEffect|HIDE_crWeapBloatfly_Toxic|HIDE_crmod_AlienRifle_Receiver_ExplosiveLauncher|HIDE_FEVBoss_HatLight_OMOD):/,
+    disposition: 'out-of-scope',
+    reason: 'Hideouts NPC/creature weapons and boss visuals; no player carrier',
   },
   // Chameleon mutation: invisibility archetype/audio/UI scripts + camo-break
   // conditions only; ESM-walked 2026-08-27, nothing offensive drops.
@@ -348,6 +380,30 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     issue: '#88',
     reason:
       'retaliation-on-being-hit elemental DoT; deliberately unmodeled pending a hits-taken model',
+  },
+  // Retaliator's (20261026 rework): "When hit by a melee attack, your next
+  // attack within 5 seconds will deal +50% damage." PERK
+  // RTSV_StormRender_Rebuttal 0x008DB74B: the hit-taken spell sets
+  // RTSV_StormRender_RebuttalCheck_EF, which gates the dbm ADD 0.5 (kept,
+  // inert behind its unresolved gate). Same hits-taken class as the elemental
+  // armor family above (walked 2026-10-29).
+  {
+    match: /^mod_Legendary_Weapon4_Melee_Retaliators: perk RTSV_StormRender_Rebuttal:/,
+    disposition: 'deferred-with-issue',
+    issue: '#88',
+    reason: 'next-attack bonus after a melee hit taken; deferred pending a hits-taken model',
+  },
+  // 3★ elemental weapon legendaries (20261026): each OMOD writes +1 to the
+  // armor family's Legendary_Armor_{Burning,Frozen,Toxic}Count AV
+  // (0x0073E432/33/31) and adds a Contact ENCH whose 7s Damage DoT reads that
+  // count through CT_Legendary_Armor_*Dmg (Burning 19→115, Frozen 12→72,
+  // Toxic 12→70 over counts 1→6). Modelable as a dotDamage curve once the
+  // equipped-count AV has a CurveInput (walked 2026-10-29).
+  {
+    match: /^mod_Legendary_Weapon3_(?:Toxic|Burning|Frozen): /,
+    disposition: 'resolve-pending',
+    reason:
+      'on-hit DoT scaled by the equipped elemental-legendary count; needs a count curve input',
   },
   // AP-refund-on-kill family → tracked decision issue.
   {

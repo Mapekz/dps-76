@@ -340,9 +340,8 @@ multiplicative stage on the already-folded reload time/capacity.
   same channel compose as independent probabilities.
 - **Tesla Science 5's 20% `ammoFreeChance` applies to all weapon classes** —
   **USER-CONFIRMED** (2026-08-17): no EP-172 perk in the dump carries a
-  weapon-tab condition; the "Heavy guns" card text is prose only. Same
-  card-text-vs-data pattern as **Magazines & bobbleheads** (Guns and Bullets
-  7). `mgef.ts` EP-172 branch.
+  weapon-tab condition; the "Heavy guns" card text is prose only.
+  `mgef.ts` EP-172 branch.
 
 ### Fast Fighter & the moveSpeedBonus bucket
 - Fast Fighter carries **no effects on-record** — "50% of bonus movement
@@ -399,8 +398,8 @@ player/weapon stat, overriding the flat magnitude. Extracted automatically
 
 | Effect | Input (X) | Curve | Notes |
 |---|---|---|---|
-| Bloodied | current HP fraction | (0.05→+130)…(1.0→0) | linear; clamped below 5% HP |
-| Nerd Rage! | current HP fraction | (0.05→80, 0.2→40, 0.8→1, 1.0→0) | perk had zero base magnitude — curve IS the value |
+| Bloodied | current HP fraction | (0.2→+130)…(1.0→0) | linear; clamped below 20% HP |
+| Nerd Rage! | current HP fraction | (0.2→60, 0.8→1, 1.0→0) | perk had zero base magnitude — curve IS the value |
 | Junkie's | addiction count | (1→10…10→100) | +10%/addiction to +100% at 10; count itself uncapped in-game |
 | Aristocrat's | caps on hand | 0→0…17000→30…29000→50 | up to +50% at 29k caps |
 | Juggernaut's (weapon mod) | ABSOLUTE current HP | (0→0, 1000→100) | +0.1%/HP; see **Max HP (derived)** |
@@ -499,8 +498,8 @@ chem/food/drink/alcohol classification.
   uses.
 - **Bonus text** (`describeBuffModifiers`) is derived from the extracted
   `Modifier[]`, deliberately NOT the ESM's card text — the description can
-  promise a condition the data doesn't carry (Guns and Bullets 7 says
-  "without scopes" but its modifier is unconditional).
+  promise a condition the data doesn't carry (Tesla Science 5's "Heavy
+  guns" text, above).
 - **Stacking**: one magazine and one bobblehead active at a time,
   independent of chem/alcohol/food/drink.
 - **Aim-down-sights toggle** (`isAimingDownSights`, default false) gates
@@ -733,11 +732,6 @@ its module doc-comment), `resolve.ts`'s `effectiveOnslaughtStacks`.
 - **Base max = 0 is an INFERENCE** — no record defines a starting cap. The
   app's slider IS the steady-state input. Sentinel `-1` = follow the
   computed max.
-- **Splinter's/Chaos Engine's/Tempest's P62 family**: fully modeled but
-  never shipped in-game ("The Drifter" encounter never released) — stays
-  hidden regardless of what the record graph implies (`weapon-corrections.ts`
-  hides the WEAPs; `omod-corrections.ts` hides their identity/special-
-  effect/appearance OMODs).
 - **Reverse regen/consumption/averaging** — **ASSUMPTION** (each): +1
   stack/sec never interrupted; consumption = `onslaughtHitEventsPerShot`;
   averaging = faithful mag+reload sawtooth. Forward sustained sim is the

@@ -31,15 +31,10 @@ export const hiddenWeaponIds: ReadonlySet<string> = new Set<string>([
   'crcrossbow', // creature copy of 'crossbow' (same display name)
   'AC_MQ02_Stage_ThrowingKnife_Weapon', // quest-stage prop dup of Throwing_Knife
   'V96_1_SuppressionPipeSyringer', // Vault 96 staged Syringer dup of PipeSyringer
-  // The Drifter's signature gear (P62_crTheDrifter*): the P62 content drop
-  // ("The Drifter" boss encounter) NEVER RELEASED — user-confirmed 2026-07-12.
-  // These were briefly un-hidden during the Onslaught pass (the reverse-ref
-  // pattern looked like a script-driven on-defeat loot grant), but the whole
-  // encounter is unreleased content, so no player can obtain them. Re-hidden.
-  // If P62 ever ships, delete these three lines.
-  'P62_crTheDrifter10mmSMG', // "Splinter"
-  'P62_crTheDrifterM79', // "Chaos Engine"
-  'P62_crTheDrifterAssaultronBlade', // "Tempest"
+  // The Drifter's signature gear shipped with Hideouts: the 20261026 dump
+  // renamed the P62_crTheDrifter* records to HIDE_crDrifter* NPC weapons
+  // (obtainable:false on their own), and players get Splinter / Chaos Engine
+  // / Tempest as base-weapon unique presets instead (omod-corrections.ts).
   // Companion/robot attack records that pass obtainability via COBJ/GMRW
   // chains (2026-07-12 vetting pass): PharmaBot (Mister Handy) spray attacks,
   // display their raw edids as names.

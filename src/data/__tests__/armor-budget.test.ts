@@ -160,11 +160,14 @@ describe('Emergency Protocols: healthBelowPct + inPowerArmor gates', () => {
     expect(effectiveValue(incomingDamage, atLowHpInPa)).toBeCloseTo(-0.5, 10);
   });
 
-  it('exactly at 20% health is inactive (strict "less than", not inclusive)', () => {
+  it('exactly at 20% health is active (inclusive "≤" since the 20261026 dump)', () => {
+    // PA_EmergencyProtocols 0x0008427A: GetValuePercent(Health) "Less Than
+    // Or Equal To 0.2" (was "Less Than 0.2" through 20260821).
     const atExactly20 = ctx({ healthPercent: 20, isInPowerArmor: true });
-    for (const m of modifiers) {
-      expect(effectiveValue(m, atExactly20)).toBeNull();
-    }
+    const moveSpeed = modifiers.find((m) => m.bucket === 'moveSpeedBonus')!;
+    const incomingDamage = modifiers.find((m) => m.bucket === 'incomingDamageMult')!;
+    expect(effectiveValue(moveSpeed, atExactly20)).toBeCloseTo(0.25, 10);
+    expect(effectiveValue(incomingDamage, atExactly20)).toBeCloseTo(-0.5, 10);
   });
 });
 

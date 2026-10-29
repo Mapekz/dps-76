@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'bun:test';
 import { getWeapons } from '@/data';
-import { adaptWeapon } from '@/data/live/weapons';
-import generatedWeapons from '@/data/live/generated/weapons.json';
-import type { GeneratedWeapon } from '@/types/generated';
 import { getBuffModifiers } from '@/data/buffs';
 import type { Modifier } from '@/types/modifiers';
 import { getOmodById } from '@/data/omods';
@@ -41,18 +38,19 @@ const batStock = computeScenarios(base({ weapon: bat })).freeAim.perHit.total;
 describe('legendary weapon effects', () => {
   const bloodied = withOmod('mod_Legendary_Weapon1_DamageInverseHealth');
 
-  it('Bloodied follows its extracted ENCH curve: (5% HP → +130) … (100% HP → 0)', () => {
+  it('Bloodied follows its extracted ENCH curve: (20% HP → +130) … (100% HP → 0)', () => {
     const { weapon, modifiers } = bloodied;
-    // At 20% HP: linear between (0.05, 130) and (1.0, 0) → +109.47% dbm.
-    const at20 = computeScenarios(
+    // 20261026 curve (0.2, 130) → (1.0, 0) (the first point was 0.05 through
+    // 20260821). At 60% HP, halfway along → +65% dbm.
+    const at60 = computeScenarios(
       base({
         weapon,
         modifiers,
-        player: { ...makeResolvedPlayer(), healthPercent: 20 },
+        player: { ...makeResolvedPlayer(), healthPercent: 60 },
       }),
     );
-    const expected = 130 * (1 - (0.2 - 0.05) / 0.95) * 0.01;
-    expect(at20.freeAim.perHit.total / stockTotal).toBeCloseTo(1 + expected, 6);
+    const expected = 130 * (1 - (0.6 - 0.2) / 0.8) * 0.01;
+    expect(at60.freeAim.perHit.total / stockTotal).toBeCloseTo(1 + expected, 6);
   });
 
   it('Bloodied at full HP adds nothing; below the first curve point clamps to +130%', () => {
@@ -560,33 +558,6 @@ describe('Onslaught (2026-07-12, real data)', () => {
     expect(result.freeAim.perHit.total / batStock).toBeCloseTo((1.75 + 1.0) / 1.75, 6);
   });
 
-  it("Splinter's built-in Special Effect grants +10 max stacks and +10%/stack dbm, unconditional (unique weapon)", () => {
-    // ESM: OMOD P62_Mod_Custom_Splinter_SpecialEffect, built into the unique
-    // P62_crTheDrifter10mmSMG ("Splinter"). The P62 Drifter content never
-    // released, so the weapon is hidden app-side (corrections.ts) — this test
-    // adapts the raw generated record directly to keep the Onslaught modeling
-    // pinned for whenever P62 ships. EP190/EP189 carry NO Perk Conditions at
-    // all (unconditional once equipped).
-    // EP189 Float 0.01 × referenced AV P62_Weapon_Splinter_MaxConsecutiveHits
-    // 0x0080219A Default 10.0 = 0.10/stack (corrected 2026-07-15, was 0.01).
-    const splinterRecord = (generatedWeapons as GeneratedWeapon[]).find(
-      (w) => w.id === 'P62_crTheDrifter10mmSMG',
-    );
-    expect(splinterRecord).toBeDefined();
-    const splinter = adaptWeapon(splinterRecord!);
-    const { weapon, modifiers } = withOmod('P62_Mod_Custom_Splinter_SpecialEffect', splinter);
-    const splinterStock = computeScenarios(base({ weapon: splinter })).freeAim.perHit.total;
-    const result = computeScenarios(
-      base({
-        weapon,
-        modifiers,
-        player: { ...makeResolvedPlayer(), onslaughtStacks: 10 },
-      }),
-    );
-    expect(result.onslaughtMaxStacks).toBe(10);
-    expect(result.freeAim.perHit.total / splinterStock).toBeCloseTo(2.0, 6);
-  });
-
   it("Guerrilla Master's ranged+close-range dbm curve now resolves (previously the unresolved 0x00000395 input) and its own +5 max stacks apply", () => {
     const guerrillaMaster = getLoadoutModifiers('live', [
       { perkId: PerkId.GuerrillaMaster, rank: 1 },
@@ -710,7 +681,9 @@ describe('mutations and consumables', () => {
     expect(team.freeAim.perHit.total).toBeCloseTo(stockTotal * 1.625, 6);
   });
 
-  it('Nerd Rage follows its extracted curve: +80% damage at 5% HP, 0 at full HP', () => {
+  it('Nerd Rage follows its extracted curve: +60% damage at or below 20% HP, 0 at full HP', () => {
+    // 20261026 curve (0.2, 60)(0.8, 1)(1, 0); through 20260821 it peaked at
+    // (0.05, 80). 5% HP clamps to the curve's lowest-x point.
     const nerdRage = getLoadoutModifiers('live', [{ perkId: PerkId.NerdRage, rank: 1 }]);
     const at5 = computeScenarios(
       base({
@@ -718,7 +691,7 @@ describe('mutations and consumables', () => {
         player: { ...makeResolvedPlayer(), healthPercent: 5 },
       }),
     );
-    expect(at5.freeAim.perHit.total / stockTotal).toBeCloseTo(1.8, 6);
+    expect(at5.freeAim.perHit.total / stockTotal).toBeCloseTo(1.6, 6);
     const atFull = computeScenarios(base({ modifiers: nerdRage }));
     expect(atFull.freeAim.perHit.total / stockTotal).toBeCloseTo(1.0, 6);
   });

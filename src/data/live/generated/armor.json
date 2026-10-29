@@ -60,6 +60,102 @@
   "obtainable": true
  },
  {
+  "id": "WorldPets_ARMO_Clothes_Headwear_CatTamer",
+  "formId": "0x00900A8A",
+  "name": "Adept Cat Handler Helmet",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_ARMO_Clothes_Outfit_CatTamer",
+  "formId": "0x00900A8B",
+  "name": "Adept Cat Handler Outfit",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_Clothes_Cat_Neckwear_LeatherRed",
+  "formId": "0x008D4738",
+  "name": "Adept Cat Ruby Leather Collar",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_Clothes_Cat_Neckwear_LeatherTan",
+  "formId": "0x008D4737",
+  "name": "Adept Cat Tan Leather Collar",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_Clothes_Deathclaw_Outfit_DCPlating3",
+  "formId": "0x008C910C",
+  "name": "Adept Deathclaw Flame Armor",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_ARMO_Clothes_Headwear_DCTamer",
+  "formId": "0x00900A86",
+  "name": "Adept Deathclaw Handler Helmet",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_ARMO_Clothes_Outfit_DCTamer",
+  "formId": "0x00900A87",
+  "name": "Adept Deathclaw Handler Outfit",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_Clothes_Deathclaw_Outfit_DCPlating4",
+  "formId": "0x008CCFA5",
+  "name": "Adept Deathclaw Rusty Armor",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_ARMO_Clothes_Headwear_DogTamer",
+  "formId": "0x00900A84",
+  "name": "Adept Dog Handler Helmet",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_ARMO_Clothes_Outfit_DogTamer",
+  "formId": "0x00900A85",
+  "name": "Adept Dog Handler Outfit",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_Clothes_Dog_Neckwear_BandanaPlaid",
+  "formId": "0x008D4C4D",
+  "name": "Adept Dog Plaid Bandana",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_Clothes_Dog_Neckwear_BandanaVT",
+  "formId": "0x008D4C4E",
+  "name": "Adept Dog Vault-Tec Bandana",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_Clothes_RadHog_Headwear_NoseRing_Gold",
+  "formId": "0x008D667B",
+  "name": "Adept Radhog Gold Nose Ring",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_ARMO_Clothes_Headwear_RadhogTamer",
+  "formId": "0x00900A88",
+  "name": "Adept Radhog Handler Helmet",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_ARMO_Clothes_Outfit_RadhogTamer",
+  "formId": "0x00900A89",
+  "name": "Adept Radhog Handler Outfit",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_Clothes_RadHog_Headwear_NoseRing_Patina",
+  "formId": "0x008D667C",
+  "name": "Adept Radhog Patina Nose Ring",
+  "obtainable": true
+ },
+ {
   "id": "ATX_F1_Clothes_RangersUniform_Advanced",
   "formId": "0x0055FA02",
   "name": "Advanced Ranger Armor Outfit",
@@ -234,6 +330,18 @@
   "obtainable": true
  },
  {
+  "id": "SCORE_S27_ARMO_Headwear_AshWalker_HoodMask",
+  "formId": "0x0093215C",
+  "name": "Ash Walker Hood Mask",
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_ARMO_Outfit_AshWalker",
+  "formId": "0x0093215D",
+  "name": "Ash Walker Outfit",
+  "obtainable": true
+ },
+ {
   "id": "Headwear_Raider_GreenHoodGasmask",
   "formId": "0x0007239E",
   "name": "Assault Gas Mask",
@@ -366,12 +474,6 @@
   "obtainable": true
  },
  {
-  "id": "ATX_Clothes_CAMPPets_Deathclaw_Outfit_DCPlating3",
-  "formId": "0x008C910C",
-  "name": "Atomic Cats Plating (Deathclaw)",
-  "obtainable": true
- },
- {
   "id": "Headwear_Headwrap",
   "formId": "0x0066C12B",
   "name": "Avas Headwrap",
@@ -396,15 +498,9 @@
   "obtainable": true
  },
  {
-  "id": "WorldPets_Clothes_Dog_Neckwear_BandanaVT",
-  "formId": "0x008D4C4E",
-  "name": "Badge Bandana",
-  "obtainable": true
- },
- {
-  "id": "WorldPets_Clothes_Dog_Neckwear_BandanaPlaid",
-  "formId": "0x008D4C4D",
-  "name": "Bandana Plaid",
+  "id": "WorldPets_Buff_Baits_Finder",
+  "formId": "0x0095F7B1",
+  "name": "Baits Finder",
   "obtainable": true
  },
  {
@@ -718,6 +814,12 @@
   "formId": "0x0059A80D",
   "name": "Blood Eagle Leather Jacket and Jeans",
   "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_CAMPPets_Skin_Radhog_Bloodhog",
+  "formId": "0x00924DCA",
+  "name": "Blood Eagle Radhog",
+  "obtainable": false
  },
  {
   "id": "Armor_Underarmor_RaiderAdvanced_BloodEagle",
@@ -1098,6 +1200,12 @@
   "obtainable": true
  },
  {
+  "id": "WorldPets_Buff_Bounty_Sniffer",
+  "formId": "0x0095F7AB",
+  "name": "Bounty Sniffer",
+  "obtainable": true
+ },
+ {
   "id": "Headwear_Mobsterhat",
   "formId": "0x001BA8DA",
   "name": "Bowler",
@@ -1134,6 +1242,18 @@
   "obtainable": true
  },
  {
+  "id": "ATX_Clothes_CAMPPets_Cat_Neckwear_BraidedCatCollar",
+  "formId": "0x00909927",
+  "name": "Braided Cat Collar",
+  "obtainable": true
+ },
+ {
+  "id": "ATX_Clothes_CAMPPets_Dog_Neckwear_BraidedDogCollar",
+  "formId": "0x00909926",
+  "name": "Braided Dog Collar",
+  "obtainable": true
+ },
+ {
   "id": "ATX_Clothes_Brawler",
   "formId": "0x00663D40",
   "name": "Brawler's Outfit",
@@ -1149,6 +1269,12 @@
   "id": "BS02_MQ03_Clothes_BrotherhoodCivvies",
   "formId": "0x00606C91",
   "name": "Brotherhood Civvies",
+  "obtainable": true
+ },
+ {
+  "id": "ATX_Clothes_ARMO_Outfit_BrotherhoodEldersCoat_BoSElder",
+  "formId": "0x008FADEE",
+  "name": "Brotherhood Elders Coat",
   "obtainable": true
  },
  {
@@ -1539,18 +1665,6 @@
   "id": "ATX_ARMO_Headwear_CatEyeSunglasses",
   "formId": "0x00799F8B",
   "name": "Cat Eye Sunglasses Headwear",
-  "obtainable": true
- },
- {
-  "id": "WorldPets_ARMO_Headwear_CatTamer",
-  "formId": "0x00900A8A",
-  "name": "Cat Tamer Helmet",
-  "obtainable": true
- },
- {
-  "id": "WorldPets_Clothes_ARMO_Outfit_CatTamer",
-  "formId": "0x00900A8B",
-  "name": "Cat Tamer Outfit",
   "obtainable": true
  },
  {
@@ -2298,10 +2412,22 @@
   "obtainable": true
  },
  {
+  "id": "Headwear_CultistIncarnateHelmet_NPCONLY",
+  "formId": "0x008F4E59",
+  "name": "Cultist Incarnate Helmet",
+  "obtainable": false
+ },
+ {
   "id": "Storm_Headwear_CultistMonarch_Mask",
   "formId": "0x00744D03",
   "name": "Cultist Monarch Mask",
   "obtainable": true
+ },
+ {
+  "id": "Storm_Headwear_CultistMonarch_Mask_NPCONLY",
+  "formId": "0x008F4E58",
+  "name": "Cultist Monarch Mask",
+  "obtainable": false
  },
  {
   "id": "Storm_Clothes_CultistMonarch_Outfit",
@@ -2310,10 +2436,22 @@
   "obtainable": true
  },
  {
+  "id": "Storm_Clothes_CultistMonarch_Outfit_NPCONLY",
+  "formId": "0x008F4E5A",
+  "name": "Cultist Monarch Outfit",
+  "obtainable": false
+ },
+ {
   "id": "Headwear_CultistNeophyte_Hood",
   "formId": "0x0062C3A7",
   "name": "Cultist Neophyte Hood",
   "obtainable": true
+ },
+ {
+  "id": "Headwear_CultistNeophyte_Hood_NPCONLY",
+  "formId": "0x008F4E54",
+  "name": "Cultist Neophyte Hood",
+  "obtainable": false
  },
  {
   "id": "Clothes_CultistNeophyte_Robe",
@@ -2388,6 +2526,12 @@
   "obtainable": true
  },
  {
+  "id": "WorldPets_Buff_Dark_Titan",
+  "formId": "0x0095F7B2",
+  "name": "Dark Titan",
+  "obtainable": true
+ },
+ {
   "id": "ATX_Clothes_Highschool_Jacket_DBTech",
   "formId": "0x001641F8",
   "name": "DB Tech Varsity Uniform",
@@ -2424,20 +2568,8 @@
   "obtainable": true
  },
  {
-  "id": "WorldPets_ARMO_Headwear_DCTamer",
-  "formId": "0x00900A86",
-  "name": "Deathclaw Tamer Helmet",
-  "obtainable": true
- },
- {
   "id": "Burn_Armor_Outfit_DeathclawTamer",
   "formId": "0x007F543B",
-  "name": "Deathclaw Tamer Outfit",
-  "obtainable": true
- },
- {
-  "id": "WorldPets_Clothes_ARMO_Outfit_DCTamer",
-  "formId": "0x00900A87",
   "name": "Deathclaw Tamer Outfit",
   "obtainable": true
  },
@@ -2595,18 +2727,6 @@
   "id": "ClothesDog_DogHeadHelmet",
   "formId": "0x001C67B4",
   "name": "Dog Helmet",
-  "obtainable": true
- },
- {
-  "id": "WorldPets_ARMO_Headwear_DogTamer",
-  "formId": "0x00900A84",
-  "name": "Dog Tamer Helmet",
-  "obtainable": true
- },
- {
-  "id": "WorldPets_Clothes_ARMO_Outfit_DogTamer",
-  "formId": "0x00900A85",
-  "name": "Dog Tamer Outfit",
   "obtainable": true
  },
  {
@@ -4140,6 +4260,12 @@
   "obtainable": true
  },
  {
+  "id": "WorldPets_Buff_Fun_Festation",
+  "formId": "0x0095F7AD",
+  "name": "Fun-Festation",
+  "obtainable": true
+ },
+ {
   "id": "Babylon_Apparel_Outfit_FurJacketandJeans_Christmas2019",
   "formId": "0x00597A6E",
   "name": "Fur-Lined Jacket and Jeans",
@@ -4338,12 +4464,6 @@
   "obtainable": true
  },
  {
-  "id": "CAMPPets_Clothes_RadHog_Headwear_NoseRing_Gold",
-  "formId": "0x008D667B",
-  "name": "Gold Nose Ring (Radhog)",
-  "obtainable": true
- },
- {
   "id": "SCORE_S19_Headwear_Enclave_GoldenEnclaveOfficer_Hat",
   "formId": "0x00798132",
   "name": "Golden Enclave Officer Hat",
@@ -4377,6 +4497,12 @@
   "id": "SCORE_S21_ARMO_Headwear_CompanyFishingHat",
   "formId": "0x007DBE04",
   "name": "Gone Fission Hat",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_Buff_Goo_Getter",
+  "formId": "0x0095F7B0",
+  "name": "Goo-Getter",
   "obtainable": true
  },
  {
@@ -4674,6 +4800,12 @@
   "obtainable": true
  },
  {
+  "id": "ATX_CAMPPets_Skin_Radhog_Hampshire",
+  "formId": "0x0090ABC1",
+  "name": "Hampshire Radhog",
+  "obtainable": false
+ },
+ {
   "id": "Headwear_HardHat_Default",
   "formId": "0x000F6D86",
   "name": "Hard Hat",
@@ -4683,6 +4815,12 @@
   "id": "Armor_RaiderMod_Underarmor_Harness",
   "formId": "0x0008158D",
   "name": "Harness",
+  "obtainable": true
+ },
+ {
+  "id": "ATX_ARMO_Headwear_Mask_HarvestMask",
+  "formId": "0x008FAE06",
+  "name": "Harvest Mask",
   "obtainable": true
  },
  {
@@ -4806,6 +4944,12 @@
   "obtainable": false
  },
  {
+  "id": "HIDE_FEVBoss_Hat_ARMO",
+  "formId": "0x00948143",
+  "name": "HIDE_FEVBoss_Hat",
+  "obtainable": false
+ },
+ {
   "id": "ATX_Headwear_PoodleSkirtGlasses",
   "formId": "0x00452A0F",
   "name": "Hip Glasses",
@@ -4912,6 +5056,12 @@
   "formId": "0x00452099",
   "name": "Hunting Cap",
   "obtainable": true
+ },
+ {
+  "id": "ATX_CAMPPets_Skin_Dog_HuntingDog",
+  "formId": "0x008F4E0B",
+  "name": "Hunting Dog",
+  "obtainable": false
  },
  {
   "id": "ATX_Clothes_Icebreaker",
@@ -5610,6 +5760,12 @@
   "obtainable": true
  },
  {
+  "id": "WorldPets_Buff_Mega_Bits",
+  "formId": "0x0095F7AE",
+  "name": "Mega Bits",
+  "obtainable": true
+ },
+ {
   "id": "SCORE_S20_Clothes_Outfit_GreyMerc_Blouse",
   "formId": "0x007CF238",
   "name": "Merc Charmer Blouse Outfit",
@@ -5685,12 +5841,6 @@
   "id": "Armor_Metal_LegRight",
   "formId": "0x000536C3",
   "name": "Metal Right Leg",
-  "obtainable": true
- },
- {
-  "id": "ATX_Clothes_CAMPPets_Deathclaw_Outfit_DCPlating4",
-  "formId": "0x008CCFA5",
-  "name": "Metallic Plating (Deathclaw)",
   "obtainable": true
  },
  {
@@ -6456,12 +6606,6 @@
   "obtainable": false
  },
  {
-  "id": "CAMPPets_Clothes_RadHog_Headwear_NoseRing_Patina",
-  "formId": "0x008D667C",
-  "name": "Patina Nose Ring (Radhog)",
-  "obtainable": true
- },
- {
   "id": "ATX_Headwear_NukashineBeerHat_Flag",
   "formId": "0x004277E8",
   "name": "Patriot Nukashine Beer Hat",
@@ -6804,6 +6948,12 @@
   "obtainable": true
  },
  {
+  "id": "ATX_CAMPPets_Skin_Dog_PlottHound",
+  "formId": "0x0090ABC0",
+  "name": "Plott Hound",
+  "obtainable": false
+ },
+ {
   "id": "Clothes_CopUniform",
   "formId": "0x00122DA5",
   "name": "Police Uniform",
@@ -6825,6 +6975,18 @@
   "id": "ATX_Clothes_PoodleSkirt",
   "formId": "0x00452A0A",
   "name": "Poodle Skirt and Blouse",
+  "obtainable": true
+ },
+ {
+  "id": "ATX_ARMO_Headwear_PoseidonOutfit",
+  "formId": "0x008F677E",
+  "name": "Poseidon Energy Helmet",
+  "obtainable": true
+ },
+ {
+  "id": "ATX_Clothes_ARMO_Outfit_PoseidonOutfit",
+  "formId": "0x008F677D",
+  "name": "Poseidon Energy Uniform",
   "obtainable": true
  },
  {
@@ -7008,15 +7170,9 @@
   "obtainable": true
  },
  {
-  "id": "WorldPets_ARMO_Headwear_RadhogTamer",
-  "formId": "0x00900A88",
-  "name": "Radhog Tamer Helmet",
-  "obtainable": true
- },
- {
-  "id": "WorldPets_Clothes_ARMO_Outfit_RadhogTamer",
-  "formId": "0x00900A89",
-  "name": "Radhog Tamer Outfit",
+  "id": "WorldPets_Buff_Rad_Dration",
+  "formId": "0x0095F7AF",
+  "name": "Rad-Dration",
   "obtainable": true
  },
  {
@@ -7788,12 +7944,6 @@
   "obtainable": true
  },
  {
-  "id": "WorldPets_Clothes_Cat_Neckwear_LeatherRed",
-  "formId": "0x008D4738",
-  "name": "Ruby Leather Collar (Cat)",
-  "obtainable": true
- },
- {
   "id": "SCORE_S15_Valentines_Headwear_HeartGlasses",
   "formId": "0x00744262",
   "name": "Ruby's Heart Glasses",
@@ -8166,6 +8316,12 @@
   "obtainable": true
  },
  {
+  "id": "ATX_CAMPPets_Skin_Cat_Siamese",
+  "formId": "0x0090ABBF",
+  "name": "Siamese Cat",
+  "obtainable": false
+ },
+ {
   "id": "ATX_Clothes_Unstoppables_SilverShroud",
   "formId": "0x0014E58B",
   "name": "Silver Shroud Costume",
@@ -8502,6 +8658,12 @@
   "obtainable": true
  },
  {
+  "id": "ATX_Clothes_CAMPPets_Radhog_Headwear_StarNoseRing",
+  "formId": "0x00909925",
+  "name": "Star Nose Ring (Radhog)",
+  "obtainable": true
+ },
+ {
   "id": "ATX_Headwear_BoaterHat",
   "formId": "0x00654CEA",
   "name": "Starlet Sniper Hat",
@@ -8583,6 +8745,12 @@
   "id": "Clothes_SteelWorkerUniform",
   "formId": "0x002AA619",
   "name": "Steel Worker Uniform",
+  "obtainable": true
+ },
+ {
+  "id": "WorldPets_Buff_Stimpak_Fetcher",
+  "formId": "0x0095F7AC",
+  "name": "Stimpak Fetcher",
   "obtainable": true
  },
  {
@@ -9474,12 +9642,6 @@
   "obtainable": true
  },
  {
-  "id": "WorldPets_Clothes_Cat_Neckwear_LeatherTan",
-  "formId": "0x008D4737",
-  "name": "Tan Leather Collar (Cat)",
-  "obtainable": true
- },
- {
   "id": "ATX_Headwear_Beret_Tan",
   "formId": "0x005B767E",
   "name": "Tan Military Beret",
@@ -9690,6 +9852,18 @@
   "obtainable": true
  },
  {
+  "id": "RTSV_LightningHitOutfit",
+  "formId": "0x008D2731",
+  "name": "Thunderstruck Armor Outfit",
+  "obtainable": true
+ },
+ {
+  "id": "RTSV_LightningHitHelmet",
+  "formId": "0x008D2732",
+  "name": "Thunderstruck Helmet",
+  "obtainable": true
+ },
+ {
   "id": "Headwear_TinFoilHat",
   "formId": "0x00355C68",
   "name": "Tin Foil Hat",
@@ -9717,6 +9891,12 @@
   "id": "ATX_Clothes_TourGuide",
   "formId": "0x004942A5",
   "name": "Tour Guide Outfit",
+  "obtainable": true
+ },
+ {
+  "id": "ATX_Clothes_CAMPPets_Dog_Neckwear_TrackerCollar",
+  "formId": "0x0090F5E0",
+  "name": "Tracking Collar (Dog)",
   "obtainable": true
  },
  {
@@ -10254,6 +10434,18 @@
   "obtainable": true
  },
  {
+  "id": "SCORE_S27_Headwear_Clothes_VaultTecSecurityHelmet_Alt",
+  "formId": "0x00934689",
+  "name": "Vault-Tec Alternative Security Helmet",
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_Clothes_Outfit_VaultTecSecurity_Alt",
+  "formId": "0x0093468D",
+  "name": "Vault-Tec Alternative Security Outfit",
+  "obtainable": true
+ },
+ {
   "id": "ATX_Clothes_VaultTecBomberJacket",
   "formId": "0x00492047",
   "name": "Vault-Tec Bomber Jacket",
@@ -10302,6 +10494,18 @@
   "obtainable": true
  },
  {
+  "id": "SCORE_S27_CAMPPets_Skin_Cat_VT_RoboPaw",
+  "formId": "0x0092803E",
+  "name": "Vault-Tec RoboPaw Steel Cat",
+  "obtainable": false
+ },
+ {
+  "id": "SCORE_S27_CAMPPets_Skin_Dog_VT_RoboPaw",
+  "formId": "0x0092803D",
+  "name": "Vault-Tec RoboPaw Steel Dog",
+  "obtainable": false
+ },
+ {
   "id": "ATX_Headwear_VaultTecSecurityHelmet",
   "formId": "0x000821B6",
   "name": "Vault-Tec Security Helmet",
@@ -10317,6 +10521,12 @@
   "id": "ATX_Clothes_ShortSuit_VaultTec",
   "formId": "0x00471DBA",
   "name": "Vault-Tec Short Suit",
+  "obtainable": true
+ },
+ {
+  "id": "SCORE_S27_Headwear_Clothes_VaultTecSecurityHelmet_Vintage",
+  "formId": "0x0092B20C",
+  "name": "Vault-Tec Vintage Security Helmet",
   "obtainable": true
  },
  {

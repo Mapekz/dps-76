@@ -1,5 +1,5 @@
 {
-  "nextIndex": 164,
+  "nextIndex": 166,
   "ids": {
     "DLC03_mod_armor_Marine_Arm_Material_0": 0,
     "DLC03_mod_armor_Marine_Arm_Material_1": 1,
@@ -164,7 +164,9 @@
     "mod_armor_UnderArmor_style_SecretService": 160,
     "mod_armor_UnderArmor_style_VaultSuit": 161,
     "mod_armor_UnderArmor_style_standard": 162,
-    "mod_armor_Wood_Lining_Shrouded": 163
+    "mod_armor_Wood_Lining_Shrouded": 163,
+    "mod_armor_BOSInfantry_Lining_Limb_ThrownDamage": 164,
+    "mod_armor_BOSInfantry_Lining_Torso_RadResistanceReduce": 165
   },
   "acknowledgedRemovals": []
 }

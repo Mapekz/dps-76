@@ -14,13 +14,11 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   // Combo-Breaker's hide REMOVED 2026-07-15: the earlier "never released" note
   // (2026-07-12) was wrong — user-confirmed it IS a real, craftable melee-only
   // 4★ (hasGrantingCobj:true, ma_legendarycrafting_weaponmelee).
-  // Gauss Pistol "Energy Barrel": cut content that stays obtainable:true only
-  // by riding the Gauss Pistol's template (2026-07-14 weak-evidence sweep,
-  // _meta.reviewFlagged.omodWeakEvidence: weap:GaussPistol +
-  // noGrantCobj:co_mod_GaussPistol_Barrel_Energy — its only recipe learns
-  // from recipe_Dummy_Uncraftable_Item_NOCRAFT). Tester-confirmed not
-  // craftable/obtainable in game (docs/assumptions.md "OMOD eligibility & recipe chains").
-  'mod_GaussPistol_Barrel_Energy',
+  // Gauss Pistol "Energy Barrel" hide REMOVED 2026-10-29: the record is now
+  // mod_GaussPistol_Barrel_Energy_Base, and the 20261026 dump switched
+  // co_mod_GaussPistol_Barrel_Energy from the NOCRAFT dummy recipe
+  // (0x00054A1F) to Learned By Scrapping the Gauss Pistol, like its new
+  // True/Stabilized/Aligned siblings.
   // Legendary-crafting reroll placeholders (ap_Legendary_Reroll): workbench
   // UI machinery, not equippable effects — their FULL names are mojibake
   // star glyphs ("Random �..."). Surfaced by the 2026-07-14 show-all-mods
@@ -66,7 +64,7 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   // User-confirmed (2026-07-15) this is wrong: it is NOT actually craftable
   // in-game — the null Attach Point does break something in the live
   // crafting-bench flow this ESM-only check can't see. Same false-positive
-  // shape as mod_GaussPistol_Barrel_Energy above.
+  // shape as the former Gauss Pistol Energy Barrel hide above.
   // RESOLVED 2026-07-21: the 20260717 dump renamed the record to
   // POST_mod_Legendary_Weapon2_Fire (POST_ staging prefix, alongside
   // Cryologist's POST_mod_Legendary_Weapon2_Cryo and Toxicologist's
@@ -75,28 +73,38 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   // records now drop at the extraction root, so the hide entry became a
   // stale overlay key and was removed; re-adjudicate when a future dump
   // drops the POST_ prefix.
-  // P62 "The Drifter" unreleased encounter — same rationale as the three
-  // hidden WEAP records in weapon-corrections.ts (user-confirmed never
-  // shipped). Hides unique presets (Splinter/Tempest/Chaos Engine) and their
-  // mod-slot noise on 10mmSMG / AssaultronBlade / M79.
-  'P62_Mod_Custom_Splinter_CustomName',
-  'P62_Mod_Custom_Tempest_CustomName',
-  'P62_Mod_Custom_ChaosEngine_CustomName',
-  'P62_Mod_Custom_Splinter_SpecialEffect',
-  'P62_Mod_Custom_Tempest_SpecialEffect',
-  'P62_Mod_Custom_ChaosEngine_SpecialEffect',
-  'P62_Mod_Custom_crTempest_SpecialEffect',
-  'P62_Mod_Custom_crChaosEngine_SpecialEffect',
-  'P62_Mod_Custom_Splinter_Appearance',
-  'P62_Mod_Custom_Tempest_Appearance',
-  'P62_Mod_Custom_ChaosEngine_Appearance',
+  // P62 "The Drifter" hides REMOVED 2026-10-29: the 20261026 dump ships the
+  // encounter as Hideouts content (HIDE_ prefix). Splinter's grant chain:
+  // QUST HIDEHideoutQuest 0x008B2ED0 → NPC_ HIDE_LvlDrifter_Combatant
+  // 0x008CE231 → CONT HIDE_Lootbag_Drifter 0x00802257 → LVLI
+  // HIDE_crLLD_Drifter_Rewards 0x00802158 → … → HIDE_LL_Weapon_Drifter_
+  // Ranged_Splinter 0x0080215B (10mmSMG filtered by HIDE_if_tmp_Splinter);
+  // Tempest and Chaos Engine hang off sibling lists. The player-side
+  // _SpecialEffect mods were cut (zzz_HIDE_ prefix) and drop at extraction.
+  // LMG ammo-conversion receivers retired by the 20261026 Chamber slot (ammo
+  // moved to ap_gun_Ammo's mod_MG42_Chamber_* mods). Their only reverse ref
+  // is FLST ModCrafting_WhiteList 0x00569432, the bench's learned-status list,
+  // which keeps these four obtainable:true; the other three already read false.
+  'DEPRECATED_mod_MG42_Receiver_AmmoConv308_AntiScorchBeast',
+  'DEPRECATED_mod_MG42_Receiver_AmmoConv45',
+  'DEPRECATED_mod_MG42_Receiver_AmmoConv45_AntiScorchBeast',
+  'DEPRECATED_mod_MG42_Receiver_AntiScorchBeast_Base',
+  // V63-Z Custom slot-family unlock markers — see cut-unique-identity-omod-ids.ts.
+  'mod_custom_StormSlasher_Burning00',
+  'mod_custom_StormSlasher_Channeler00',
+  'mod_custom_StormSlasher_Crusher00',
+  'mod_custom_StormSlasher_OneShot00',
+  'mod_custom_StormSlasher_Static00',
+  'mod_custom_StormSlasher_Stormwalker00',
 ]);
 /** Omod counterpart of forceVisibleWeaponIds (rescues obtainable:false records). */
 export const forceVisibleOmodIds: ReadonlySet<string> = new Set<string>([
   // Stock/default parts attached purely by keyword-slot matching — no COBJ,
   // no template include, no reverse reference of any kind (verified against
   // the 2026-07-02 dump). Real in-game default mods on obtainable weapons.
-  'mod_50CalMachineGun_AmmoCan', // .50 Cal "Standard Magazine"
+  // (.50 Cal "Standard Magazine" mod_50CalMachineGun_AmmoCan left this list
+  // 2026-10-29: renamed mod_50CalMachineGun_Magazine_Base in the 20261026
+  // dump and obtainable:true on its own.)
   'mod_Cryolator_Muzzle_Default', // Cryolator "Stock Muzzle"
   'mod_melee_Hatchet_Null', // Hatchet "No Upgrade"
   // Fancy Pump Action Shotgun / Fancy Single Action Revolver stat mods:

@@ -649,17 +649,12 @@
    "0x002FD904",
    "0x0010D8B3",
    "0x002FD90F",
-   "0x00527F84",
-   "0x004F5771",
-   "0x004F5777",
-   "0x0079297F",
+   "0x007904EA",
    "0x00802187",
    "0x00802188",
-   "0x00802189",
    "0x0002D346",
    "0x002FD90E",
    "0x0010DB0D",
-   "0x007904EA",
    "0x005299F9",
    "0x008EC5A9"
   ],
@@ -1417,6 +1412,296 @@
   "obtainable": false
  },
  {
+  "id": "Bounty_crAlienBlaster",
+  "formId": "0x0092BD7F",
+  "name": "Alien Blaster",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "WeaponTypeAlienBlaster",
+   "AnimsGripPistol",
+   "ObjectTypeWeapon",
+   "AnimsAlienBlaster",
+   "s_40_PistolAlienBlaster",
+   "s_IronSightsPistol",
+   "QuickkeyGun",
+   "ma_AlienBlaster",
+   "VATSWeaponLargeProjectile",
+   "WeaponTypeEnergy",
+   "UI_WeaponTypeAlienBlaster",
+   "WeaponTypePistol",
+   "ma_Gun_Appearance",
+   "QuickkeyMelee",
+   "WeaponTypeRanged"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "dtEnergy",
+    "amount": 0,
+    "tier": 28,
+    "curve": [
+     {
+      "x": 1,
+      "y": 27
+     },
+     {
+      "x": 12,
+      "y": 31
+     },
+     {
+      "x": 23,
+      "y": 35
+     },
+     {
+      "x": 34,
+      "y": 40
+     },
+     {
+      "x": 45,
+      "y": 45
+     },
+     {
+      "x": 56,
+      "y": 51
+     },
+     {
+      "x": 67,
+      "y": 58
+     },
+     {
+      "x": 78,
+      "y": 66
+     },
+     {
+      "x": 89,
+      "y": 75
+     },
+     {
+      "x": 100,
+      "y": 86
+     },
+     {
+      "x": 111,
+      "y": 97
+     },
+     {
+      "x": 122,
+      "y": 111
+     },
+     {
+      "x": 133,
+      "y": 126
+     },
+     {
+      "x": 144,
+      "y": 143
+     },
+     {
+      "x": 155,
+      "y": 163
+     },
+     {
+      "x": 166,
+      "y": 185
+     },
+     {
+      "x": 177,
+      "y": 210
+     },
+     {
+      "x": 188,
+      "y": 239
+     },
+     {
+      "x": 199,
+      "y": 271
+     },
+     {
+      "x": 210,
+      "y": 308
+     },
+     {
+      "x": 221,
+      "y": 350
+     },
+     {
+      "x": 232,
+      "y": 398
+     },
+     {
+      "x": 243,
+      "y": 452
+     },
+     {
+      "x": 254,
+      "y": 514
+     },
+     {
+      "x": 265,
+      "y": 584
+     },
+     {
+      "x": 276,
+      "y": 664
+     },
+     {
+      "x": 287,
+      "y": 755
+     },
+     {
+      "x": 298,
+      "y": 858
+     },
+     {
+      "x": 309,
+      "y": 975
+     },
+     {
+      "x": 320,
+      "y": 1108
+     },
+     {
+      "x": 331,
+      "y": 1259
+     },
+     {
+      "x": 342,
+      "y": 1432
+     },
+     {
+      "x": 353,
+      "y": 1627
+     },
+     {
+      "x": 364,
+      "y": 1850
+     },
+     {
+      "x": 375,
+      "y": 2103
+     },
+     {
+      "x": 386,
+      "y": 2390
+     },
+     {
+      "x": 397,
+      "y": 2717
+     },
+     {
+      "x": 408,
+      "y": 3089
+     },
+     {
+      "x": 419,
+      "y": 3511
+     },
+     {
+      "x": 430,
+      "y": 3992
+     },
+     {
+      "x": 441,
+      "y": 4538
+     },
+     {
+      "x": 452,
+      "y": 5158
+     },
+     {
+      "x": 463,
+      "y": 5864
+     },
+     {
+      "x": 474,
+      "y": 6667
+     },
+     {
+      "x": 485,
+      "y": 7579
+     },
+     {
+      "x": 496,
+      "y": 8616
+     },
+     {
+      "x": 507,
+      "y": 9795
+     },
+     {
+      "x": 518,
+      "y": 11135
+     },
+     {
+      "x": 529,
+      "y": 12659
+     },
+     {
+      "x": 540,
+      "y": 14392
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0.1,
+  "animationAttackSec": 0.6666667,
+  "animationFireSec": 0.00001,
+  "reloadSpeed": 1,
+  "animationReloadSec": 3.6666768,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 20,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 10,
+  "damageBonusMult": 1,
+  "minRange": 1058,
+  "maxRange": 2115,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   20,
+   30,
+   40,
+   50
+  ],
+  "templateModFormIds": [
+   "0x00161C29",
+   "0x001C50A5",
+   "0x001888DE",
+   "0x001888DF",
+   "0x0037D0C1",
+   "0x0062EB04",
+   "0x0062EB05",
+   "0x008039AD"
+  ],
+  "defaultModFormIds": [
+   "0x00161C29",
+   "0x001C50A5",
+   "0x001888DE",
+   "0x001888DF",
+   "0x0037D0C1"
+  ],
+  "attachParentSlots": [
+   "0x0002249D",
+   "0x00022499",
+   "0x0002249F",
+   "0x0005D4D7",
+   "0x00114364",
+   "0x0003477E",
+   "0x0047A264"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
   "id": "AlienRifle",
   "formId": "0x0062FE8E",
   "name": "Alien Disintegrator",
@@ -2038,158 +2323,6 @@
   "obtainable": false
  },
  {
-  "id": "MTR06_10mmSMG_ScorchedKiller",
-  "formId": "0x003AAB76",
-  "name": "Anti-Scorched 10mm Submachine Gun",
-  "weaponTypeName": "Gun",
-  "keywords": [
-   "Anims10mmSMG",
-   "s_40_RifleSubmachineGun10mm",
-   "QuickkeyGun",
-   "s_IronSightsPistol",
-   "UI_WeaponTypePistol",
-   "WeaponTypeBallistic",
-   "ma_BallisticGun",
-   "ma_10mmSMG",
-   "ObjectTypeWeapon",
-   "modskill_Guns",
-   "WeaponTypeRanged",
-   "WeaponTypeRifle",
-   "ma_legendarycrafting_weaponranged",
-   "ma_Misc_Legendarycrafting_Weapon_Ranged4",
-   "ma_legendarycrafting_weapon",
-   "ma_legendarycrafting_weaponexplosivebullets"
-  ],
-  "isAutomaticFlag": false,
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 7,
-    "tier": 18,
-    "curve": [
-     {
-      "x": 1,
-      "y": 18
-     },
-     {
-      "x": 5,
-      "y": 20
-     },
-     {
-      "x": 10,
-      "y": 22
-     },
-     {
-      "x": 15,
-      "y": 25
-     },
-     {
-      "x": 20,
-      "y": 29
-     },
-     {
-      "x": 25,
-      "y": 32
-     },
-     {
-      "x": 30,
-      "y": 36
-     },
-     {
-      "x": 35,
-      "y": 41
-     },
-     {
-      "x": 40,
-      "y": 46
-     },
-     {
-      "x": 45,
-      "y": 52
-     },
-     {
-      "x": 50,
-      "y": 59
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 2.25,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2.25,
-  "speed": 0.9,
-  "attackDelaySec": 0.2333,
-  "animationAttackSec": 0.6666667,
-  "animationFireSec": 0.00001,
-  "reloadSpeed": 1,
-  "animationReloadSec": 3.00001,
-  "capacity": 30,
-  "ammoPerShot": 1,
-  "actionPointCost": 28,
-  "projectileCount": 1,
-  "reach": 1,
-  "secondaryDamage": 17,
-  "damageBonusMult": 1,
-  "minRange": 1283,
-  "maxRange": 2565,
-  "outOfRangeDamageMult": 0.5,
-  "fullPowerSeconds": 0,
-  "fullPowerDamageMult": 0,
-  "minimumChargeTime": 0,
-  "eligibleLevels": [
-   10,
-   15,
-   20,
-   25,
-   30,
-   35,
-   40,
-   45,
-   50
-  ],
-  "templateModFormIds": [
-   "0x0010D87B",
-   "0x0010D883",
-   "0x0010D8B7",
-   "0x0010D896",
-   "0x0010DB0E",
-   "0x00040973",
-   "0x00040890",
-   "0x00040950",
-   "0x00040891",
-   "0x0004C852"
-  ],
-  "defaultModFormIds": [
-   "0x0010D87B",
-   "0x0010D883",
-   "0x0010D8B7",
-   "0x0010D896",
-   "0x0010DB0E",
-   "0x00040973"
-  ],
-  "attachParentSlots": [
-   "0x00024004",
-   "0x001E32C8",
-   "0x004E89A8",
-   "0x004E89A9",
-   "0x004E89AA",
-   "0x006214D8",
-   "0x0012ECEC",
-   "0x0004B6E1",
-   "0x0002249D",
-   "0x0005D4D7",
-   "0x0002249F",
-   "0x00022499",
-   "0x00149CA8",
-   "0x0003579B",
-   "0x0007F058",
-   "0x0003579A"
-  ],
-  "modifiers": [],
-  "obtainable": false
- },
- {
   "id": "MTR05_10mm_ScorchedTrainer",
   "formId": "0x004F496F",
   "name": "Anti-Scorched Training Pistol",
@@ -2358,7 +2491,7 @@
   "speed": 1,
   "attackDelaySec": 0,
   "animationAttackSec": 1.8333334,
-  "animationFireSec": 0.7,
+  "animationFireSec": 0.70001,
   "reloadSpeed": 1,
   "animationReloadSec": 2.3333,
   "capacity": 0,
@@ -2912,7 +3045,8 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_1hMelee",
    "ma_legendarycrafting_weapon",
-   "WeaponTypeBleedDamage"
+   "WeaponTypeBleedDamage",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -2998,37 +3132,36 @@
   ],
   "templateModFormIds": [
    "0x0010FB8E",
+   "0x00945D3B",
    "0x005117BF",
    "0x0010F3F3",
-   "0x004F6AA0",
-   "0x001A7BDA",
-   "0x005299FC",
-   "0x007ACB3E",
+   "0x007904EA",
+   "0x007904EB",
+   "0x007904EC",
    "0x0080218A",
    "0x0080218B",
-   "0x0080218C",
    "0x005D982A",
    "0x005D9D1C",
-   "0x00527F84",
-   "0x007904EB",
-   "0x007904EC"
+   "0x00527F84"
   ],
   "defaultModFormIds": [
    "0x0010FB8E",
+   "0x00945D3B",
    "0x005117BF"
   ],
   "attachParentSlots": [
-   "0x0005524C",
+   "0x0047A264",
+   "0x00521926",
    "0x001E32C8",
    "0x004E89A8",
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB",
-   "0x0047A264",
-   "0x001A001E",
    "0x006214D8",
-   "0x00521926",
-   "0x001A8B4B"
+   "0x001A001E",
+   "0x0005524C",
+   "0x001A8B4B",
+   "0x0092B358"
   ],
   "modifiers": [
    {
@@ -4204,6 +4337,261 @@
   "obtainable": false
  },
  {
+  "id": "HIDE_crStormBossLightningGunAuto",
+  "formId": "0x0094CE8E",
+  "name": "Automatic Lightning Gun",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "WeaponTypeRanged",
+   "NoRicochet",
+   "AnimsGripRifleAssault",
+   "BloodbugWeapon",
+   "QuickkeyGun",
+   "s_40_LaserGutsy",
+   "s_40_DLC01RobobrainMezmatron",
+   "WeaponTypeEnergy"
+  ],
+  "isAutomaticFlag": true,
+  "components": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "dtEnergy",
+    "amount": 1,
+    "tier": 18,
+    "curve": [
+     {
+      "x": 1,
+      "y": 9
+     },
+     {
+      "x": 12,
+      "y": 10
+     },
+     {
+      "x": 23,
+      "y": 12
+     },
+     {
+      "x": 34,
+      "y": 14
+     },
+     {
+      "x": 45,
+      "y": 16
+     },
+     {
+      "x": 56,
+      "y": 19
+     },
+     {
+      "x": 67,
+      "y": 22
+     },
+     {
+      "x": 78,
+      "y": 25
+     },
+     {
+      "x": 89,
+      "y": 29
+     },
+     {
+      "x": 100,
+      "y": 33
+     },
+     {
+      "x": 111,
+      "y": 38
+     },
+     {
+      "x": 122,
+      "y": 43
+     },
+     {
+      "x": 133,
+      "y": 50
+     },
+     {
+      "x": 144,
+      "y": 57
+     },
+     {
+      "x": 155,
+      "y": 66
+     },
+     {
+      "x": 166,
+      "y": 76
+     },
+     {
+      "x": 177,
+      "y": 87
+     },
+     {
+      "x": 188,
+      "y": 100
+     },
+     {
+      "x": 199,
+      "y": 115
+     },
+     {
+      "x": 210,
+      "y": 132
+     },
+     {
+      "x": 221,
+      "y": 152
+     },
+     {
+      "x": 232,
+      "y": 175
+     },
+     {
+      "x": 243,
+      "y": 201
+     },
+     {
+      "x": 254,
+      "y": 231
+     },
+     {
+      "x": 265,
+      "y": 265
+     },
+     {
+      "x": 276,
+      "y": 305
+     },
+     {
+      "x": 287,
+      "y": 351
+     },
+     {
+      "x": 298,
+      "y": 403
+     },
+     {
+      "x": 309,
+      "y": 464
+     },
+     {
+      "x": 320,
+      "y": 533
+     },
+     {
+      "x": 331,
+      "y": 614
+     },
+     {
+      "x": 342,
+      "y": 706
+     },
+     {
+      "x": 353,
+      "y": 812
+     },
+     {
+      "x": 364,
+      "y": 934
+     },
+     {
+      "x": 375,
+      "y": 1074
+     },
+     {
+      "x": 386,
+      "y": 1236
+     },
+     {
+      "x": 397,
+      "y": 1422
+     },
+     {
+      "x": 408,
+      "y": 1636
+     },
+     {
+      "x": 419,
+      "y": 1882
+     },
+     {
+      "x": 430,
+      "y": 2165
+     },
+     {
+      "x": 441,
+      "y": 2491
+     },
+     {
+      "x": 452,
+      "y": 2866
+     },
+     {
+      "x": 463,
+      "y": 3298
+     },
+     {
+      "x": 474,
+      "y": 3795
+     },
+     {
+      "x": 485,
+      "y": 4366
+     },
+     {
+      "x": 496,
+      "y": 5024
+     },
+     {
+      "x": 507,
+      "y": 5781
+     },
+     {
+      "x": 518,
+      "y": 6653
+     },
+     {
+      "x": 529,
+      "y": 7655
+     },
+     {
+      "x": 540,
+      "y": 8809
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 50,
+  "animationAttackSec": 1.1666666,
+  "animationFireSec": 0.167,
+  "reloadSpeed": 8,
+  "animationReloadSec": 0,
+  "capacity": 6,
+  "ammoPerShot": 1,
+  "actionPointCost": 30,
+  "projectileCount": 1,
+  "reach": 2,
+  "secondaryDamage": 0,
+  "damageBonusMult": 1,
+  "minRange": 65,
+  "maxRange": 3000,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0.5,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [],
+  "templateModFormIds": [],
+  "defaultModFormIds": [],
+  "attachParentSlots": [],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
   "id": "JoeyBello_SuperSledge_BadaBoom",
   "formId": "0x006CCCA2",
   "name": "Bada-Boom",
@@ -4763,7 +5151,8 @@
    "ma_Melee_Appearance",
    "ma_legendarycrafting_weaponmelee",
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
-   "ma_legendarycrafting_weapon"
+   "ma_legendarycrafting_weapon",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -4851,6 +5240,7 @@
   ],
   "templateModFormIds": [
    "0x000E7C3E",
+   "0x00945D3B",
    "0x002302FE",
    "0x0017BBC5",
    "0x0072DF09",
@@ -4863,7 +5253,8 @@
    "0x008EF10A"
   ],
   "defaultModFormIds": [
-   "0x000E7C3E"
+   "0x000E7C3E",
+   "0x00945D3B"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -4874,7 +5265,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x0047A264",
-   "0x001A001E"
+   "0x001A001E",
+   "0x0092B358"
   ],
   "modifiers": [],
   "obtainable": true
@@ -5435,6 +5827,317 @@
   "obtainable": true
  },
  {
+  "id": "Bounty_crBlackPowder_Rifle",
+  "formId": "0x0092BD80",
+  "name": "Black Powder Rifle",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "WeaponTypeBlackPowder",
+   "WeaponTypeRifle",
+   "AnimsBlackPowderRifle",
+   "WeaponTypeSniper",
+   "s_IronSightsRifle",
+   "WeaponTypeBallistic",
+   "ma_BallisticGun",
+   "ObjectTypeWeapon",
+   "modskill_Guns",
+   "QuickkeyGun",
+   "ma_CanHaveNullMuzzle",
+   "s_40_RifleBlackPowder",
+   "AnimsGripRifleStraight",
+   "WeaponTypeRanged",
+   "ma_blackpowderrifle",
+   "UI_WeaponTypeRifle",
+   "ma_legendarycrafting_weaponranged",
+   "IsSingleShotWeapon",
+   "ma_Gun_Appearance",
+   "ma_Misc_Legendarycrafting_Weapon_Ranged4",
+   "ma_legendarycrafting_weapon",
+   "ma_legendarycrafting_weaponexplosivebullets"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 200,
+    "tier": 35,
+    "curve": [
+     {
+      "x": 1,
+      "y": 56
+     },
+     {
+      "x": 12,
+      "y": 64
+     },
+     {
+      "x": 23,
+      "y": 72
+     },
+     {
+      "x": 34,
+      "y": 81
+     },
+     {
+      "x": 45,
+      "y": 92
+     },
+     {
+      "x": 56,
+      "y": 103
+     },
+     {
+      "x": 67,
+      "y": 117
+     },
+     {
+      "x": 78,
+      "y": 132
+     },
+     {
+      "x": 89,
+      "y": 148
+     },
+     {
+      "x": 100,
+      "y": 167
+     },
+     {
+      "x": 111,
+      "y": 189
+     },
+     {
+      "x": 122,
+      "y": 213
+     },
+     {
+      "x": 133,
+      "y": 240
+     },
+     {
+      "x": 144,
+      "y": 271
+     },
+     {
+      "x": 155,
+      "y": 305
+     },
+     {
+      "x": 166,
+      "y": 344
+     },
+     {
+      "x": 177,
+      "y": 388
+     },
+     {
+      "x": 188,
+      "y": 438
+     },
+     {
+      "x": 199,
+      "y": 494
+     },
+     {
+      "x": 210,
+      "y": 557
+     },
+     {
+      "x": 221,
+      "y": 628
+     },
+     {
+      "x": 232,
+      "y": 709
+     },
+     {
+      "x": 243,
+      "y": 799
+     },
+     {
+      "x": 254,
+      "y": 901
+     },
+     {
+      "x": 265,
+      "y": 1017
+     },
+     {
+      "x": 276,
+      "y": 1147
+     },
+     {
+      "x": 287,
+      "y": 1293
+     },
+     {
+      "x": 298,
+      "y": 1459
+     },
+     {
+      "x": 309,
+      "y": 1645
+     },
+     {
+      "x": 320,
+      "y": 1855
+     },
+     {
+      "x": 331,
+      "y": 2093
+     },
+     {
+      "x": 342,
+      "y": 2360
+     },
+     {
+      "x": 353,
+      "y": 2662
+     },
+     {
+      "x": 364,
+      "y": 3003
+     },
+     {
+      "x": 375,
+      "y": 3387
+     },
+     {
+      "x": 386,
+      "y": 3820
+     },
+     {
+      "x": 397,
+      "y": 4308
+     },
+     {
+      "x": 408,
+      "y": 4859
+     },
+     {
+      "x": 419,
+      "y": 5481
+     },
+     {
+      "x": 430,
+      "y": 6182
+     },
+     {
+      "x": 441,
+      "y": 6973
+     },
+     {
+      "x": 452,
+      "y": 7865
+     },
+     {
+      "x": 463,
+      "y": 8872
+     },
+     {
+      "x": 474,
+      "y": 10007
+     },
+     {
+      "x": 485,
+      "y": 11287
+     },
+     {
+      "x": 496,
+      "y": 12731
+     },
+     {
+      "x": 507,
+      "y": 14360
+     },
+     {
+      "x": 518,
+      "y": 16198
+     },
+     {
+      "x": 529,
+      "y": 18271
+     },
+     {
+      "x": 540,
+      "y": 20609
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0.5,
+  "animationAttackSec": 0.8333333,
+  "animationFireSec": 0.00001,
+  "reloadSpeed": 1,
+  "animationReloadSec": 8.00001,
+  "capacity": 1,
+  "ammoPerShot": 1,
+  "actionPointCost": 28,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 15,
+  "damageBonusMult": 1,
+  "minRange": 2579,
+  "maxRange": 5156,
+  "outOfRangeDamageMult": 0.1,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   15,
+   25,
+   35,
+   45
+  ],
+  "templateModFormIds": [
+   "0x0004F21D",
+   "0x00091B66",
+   "0x00091BAF",
+   "0x0007F15E",
+   "0x0037D0C1",
+   "0x008039AF",
+   "0x004ED02C",
+   "0x008039B2",
+   "0x007CFAAB",
+   "0x008AC6DD",
+   "0x0083DA73",
+   "0x0052414F"
+  ],
+  "defaultModFormIds": [
+   "0x0004F21D",
+   "0x00091B66",
+   "0x00091BAF",
+   "0x0007F15E",
+   "0x0037D0C1"
+  ],
+  "attachParentSlots": [
+   "0x00024004",
+   "0x000498A0",
+   "0x001E32C8",
+   "0x0002249C",
+   "0x0004B6E1",
+   "0x0002249D",
+   "0x0007F058",
+   "0x00022499",
+   "0x0012ECF2",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x00114364",
+   "0x006214D8",
+   "0x00521926",
+   "0x0047A264"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
   "id": "MoM_BladeOfBastet",
   "formId": "0x0039C6C8",
   "name": "Blade of Bastet",
@@ -5741,10 +6444,22 @@
   ],
   "templateModFormIds": [
    "0x000E7C3E",
-   "0x00230301"
+   "0x005117BF",
+   "0x00230301",
+   "0x009646CB",
+   "0x009646CC",
+   "0x009646CD",
+   "0x009646CE",
+   "0x009646CF",
+   "0x009646D0",
+   "0x009646D1",
+   "0x009646D2",
+   "0x009646D3",
+   "0x009646D4"
   ],
   "defaultModFormIds": [
-   "0x000E7C3E"
+   "0x000E7C3E",
+   "0x005117BF"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -5753,7 +6468,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB",
-   "0x006214D8"
+   "0x006214D8",
+   "0x001A001E"
   ],
   "modifiers": [],
   "obtainable": true
@@ -6125,6 +6841,302 @@
    "0x004E89AB",
    "0x0005524C",
    "0x0032CD06"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
+  "id": "HIDE_crRegularBow_Poison",
+  "formId": "0x008F4F12",
+  "name": "Bow",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "WeaponTypeBow",
+   "s_IronSightsBow",
+   "AnimsGripBow",
+   "HasSilencer",
+   "QuickkeyGun",
+   "AlwaysShowCrossHairIn1stPersonADS",
+   "WeaponTypeRanged",
+   "s_40_BowStandard",
+   "ObjectTypeWeapon",
+   "ma_RegularBow",
+   "UI_WeaponTypeRegularBow",
+   "WeaponNotAllowedInPA",
+   "ma_Gun_Appearance",
+   "ma_legendarycrafting_weaponranged",
+   "IsSingleShotWeapon",
+   "ma_All_Bow_MDSP",
+   "ma_legendarycrafting_weapon",
+   "WeaponNoReload"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 7,
+    "tier": 27,
+    "curve": [
+     {
+      "x": 1,
+      "y": 24
+     },
+     {
+      "x": 12,
+      "y": 27
+     },
+     {
+      "x": 23,
+      "y": 31
+     },
+     {
+      "x": 34,
+      "y": 36
+     },
+     {
+      "x": 45,
+      "y": 41
+     },
+     {
+      "x": 56,
+      "y": 46
+     },
+     {
+      "x": 67,
+      "y": 53
+     },
+     {
+      "x": 78,
+      "y": 60
+     },
+     {
+      "x": 89,
+      "y": 68
+     },
+     {
+      "x": 100,
+      "y": 78
+     },
+     {
+      "x": 111,
+      "y": 89
+     },
+     {
+      "x": 122,
+      "y": 101
+     },
+     {
+      "x": 133,
+      "y": 115
+     },
+     {
+      "x": 144,
+      "y": 131
+     },
+     {
+      "x": 155,
+      "y": 149
+     },
+     {
+      "x": 166,
+      "y": 169
+     },
+     {
+      "x": 177,
+      "y": 192
+     },
+     {
+      "x": 188,
+      "y": 219
+     },
+     {
+      "x": 199,
+      "y": 249
+     },
+     {
+      "x": 210,
+      "y": 283
+     },
+     {
+      "x": 221,
+      "y": 322
+     },
+     {
+      "x": 232,
+      "y": 367
+     },
+     {
+      "x": 243,
+      "y": 417
+     },
+     {
+      "x": 254,
+      "y": 475
+     },
+     {
+      "x": 265,
+      "y": 540
+     },
+     {
+      "x": 276,
+      "y": 615
+     },
+     {
+      "x": 287,
+      "y": 699
+     },
+     {
+      "x": 298,
+      "y": 796
+     },
+     {
+      "x": 309,
+      "y": 905
+     },
+     {
+      "x": 320,
+      "y": 1030
+     },
+     {
+      "x": 331,
+      "y": 1172
+     },
+     {
+      "x": 342,
+      "y": 1334
+     },
+     {
+      "x": 353,
+      "y": 1518
+     },
+     {
+      "x": 364,
+      "y": 1728
+     },
+     {
+      "x": 375,
+      "y": 1966
+     },
+     {
+      "x": 386,
+      "y": 2238
+     },
+     {
+      "x": 397,
+      "y": 2547
+     },
+     {
+      "x": 408,
+      "y": 2899
+     },
+     {
+      "x": 419,
+      "y": 3299
+     },
+     {
+      "x": 430,
+      "y": 3755
+     },
+     {
+      "x": 441,
+      "y": 4273
+     },
+     {
+      "x": 452,
+      "y": 4863
+     },
+     {
+      "x": 463,
+      "y": 5535
+     },
+     {
+      "x": 474,
+      "y": 6300
+     },
+     {
+      "x": 485,
+      "y": 7170
+     },
+     {
+      "x": 496,
+      "y": 8161
+     },
+     {
+      "x": 507,
+      "y": 9289
+     },
+     {
+      "x": 518,
+      "y": 10572
+     },
+     {
+      "x": 529,
+      "y": 12033
+     },
+     {
+      "x": 540,
+      "y": 13695
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2.25,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2.75,
+  "speed": 1,
+  "attackDelaySec": 1,
+  "animationAttackSec": 0.8333333,
+  "animationFireSec": 0.06666667,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0.1,
+  "capacity": 1,
+  "ammoPerShot": 0,
+  "actionPointCost": 28,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 17,
+  "damageBonusMult": 1,
+  "minRange": 1500,
+  "maxRange": 5544,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 1,
+  "fullPowerDamageMult": 0.3,
+  "minimumChargeTime": 0.9,
+  "eligibleLevels": [
+   1,
+   5,
+   10,
+   15,
+   20,
+   25,
+   30,
+   35,
+   40,
+   45,
+   50
+  ],
+  "templateModFormIds": [
+   "0x005894B4",
+   "0x0037D0C1",
+   "0x008F4EEA"
+  ],
+  "defaultModFormIds": [
+   "0x005894B4",
+   "0x0037D0C1",
+   "0x008F4EEA"
+  ],
+  "attachParentSlots": [
+   "0x00024004",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x0011103B",
+   "0x00022499",
+   "0x00114364",
+   "0x006214D8"
   ],
   "modifiers": [],
   "obtainable": false
@@ -7430,6 +8442,463 @@
   "obtainable": false
  },
  {
+  "id": "HIDE_crRadScorpionBlazingSting",
+  "formId": "0x0090B9EF",
+  "name": "Burning Sting",
+  "weaponTypeName": "HandToHandMelee",
+  "keywords": [
+   "AnimsUnarmed",
+   "WeaponTypeUnarmed"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 1,
+    "tier": 22,
+    "curve": [
+     {
+      "x": 1,
+      "y": 14
+     },
+     {
+      "x": 12,
+      "y": 16
+     },
+     {
+      "x": 23,
+      "y": 19
+     },
+     {
+      "x": 34,
+      "y": 21
+     },
+     {
+      "x": 45,
+      "y": 25
+     },
+     {
+      "x": 56,
+      "y": 28
+     },
+     {
+      "x": 67,
+      "y": 32
+     },
+     {
+      "x": 78,
+      "y": 37
+     },
+     {
+      "x": 89,
+      "y": 42
+     },
+     {
+      "x": 100,
+      "y": 48
+     },
+     {
+      "x": 111,
+      "y": 55
+     },
+     {
+      "x": 122,
+      "y": 63
+     },
+     {
+      "x": 133,
+      "y": 72
+     },
+     {
+      "x": 144,
+      "y": 83
+     },
+     {
+      "x": 155,
+      "y": 95
+     },
+     {
+      "x": 166,
+      "y": 109
+     },
+     {
+      "x": 177,
+      "y": 124
+     },
+     {
+      "x": 188,
+      "y": 142
+     },
+     {
+      "x": 199,
+      "y": 162
+     },
+     {
+      "x": 210,
+      "y": 186
+     },
+     {
+      "x": 221,
+      "y": 213
+     },
+     {
+      "x": 232,
+      "y": 243
+     },
+     {
+      "x": 243,
+      "y": 279
+     },
+     {
+      "x": 254,
+      "y": 319
+     },
+     {
+      "x": 265,
+      "y": 365
+     },
+     {
+      "x": 276,
+      "y": 417
+     },
+     {
+      "x": 287,
+      "y": 478
+     },
+     {
+      "x": 298,
+      "y": 547
+     },
+     {
+      "x": 309,
+      "y": 626
+     },
+     {
+      "x": 320,
+      "y": 716
+     },
+     {
+      "x": 331,
+      "y": 820
+     },
+     {
+      "x": 342,
+      "y": 939
+     },
+     {
+      "x": 353,
+      "y": 1074
+     },
+     {
+      "x": 364,
+      "y": 1230
+     },
+     {
+      "x": 375,
+      "y": 1408
+     },
+     {
+      "x": 386,
+      "y": 1612
+     },
+     {
+      "x": 397,
+      "y": 1845
+     },
+     {
+      "x": 408,
+      "y": 2113
+     },
+     {
+      "x": 419,
+      "y": 2419
+     },
+     {
+      "x": 430,
+      "y": 2769
+     },
+     {
+      "x": 441,
+      "y": 3171
+     },
+     {
+      "x": 452,
+      "y": 3630
+     },
+     {
+      "x": 463,
+      "y": 4156
+     },
+     {
+      "x": 474,
+      "y": 4758
+     },
+     {
+      "x": 485,
+      "y": 5448
+     },
+     {
+      "x": 496,
+      "y": 6238
+     },
+     {
+      "x": 507,
+      "y": 7142
+     },
+     {
+      "x": 518,
+      "y": 8178
+     },
+     {
+      "x": 529,
+      "y": 9364
+     },
+     {
+      "x": 540,
+      "y": 10722
+     }
+    ]
+   },
+   {
+    "damageType": "fire",
+    "damageTypeEdid": "dtFire",
+    "amount": 0,
+    "tier": 26,
+    "curve": [
+     {
+      "x": 1,
+      "y": 22
+     },
+     {
+      "x": 12,
+      "y": 25
+     },
+     {
+      "x": 23,
+      "y": 28
+     },
+     {
+      "x": 34,
+      "y": 32
+     },
+     {
+      "x": 45,
+      "y": 37
+     },
+     {
+      "x": 56,
+      "y": 42
+     },
+     {
+      "x": 67,
+      "y": 48
+     },
+     {
+      "x": 78,
+      "y": 55
+     },
+     {
+      "x": 89,
+      "y": 62
+     },
+     {
+      "x": 100,
+      "y": 71
+     },
+     {
+      "x": 111,
+      "y": 81
+     },
+     {
+      "x": 122,
+      "y": 92
+     },
+     {
+      "x": 133,
+      "y": 105
+     },
+     {
+      "x": 144,
+      "y": 119
+     },
+     {
+      "x": 155,
+      "y": 136
+     },
+     {
+      "x": 166,
+      "y": 155
+     },
+     {
+      "x": 177,
+      "y": 176
+     },
+     {
+      "x": 188,
+      "y": 201
+     },
+     {
+      "x": 199,
+      "y": 229
+     },
+     {
+      "x": 210,
+      "y": 260
+     },
+     {
+      "x": 221,
+      "y": 297
+     },
+     {
+      "x": 232,
+      "y": 338
+     },
+     {
+      "x": 243,
+      "y": 385
+     },
+     {
+      "x": 254,
+      "y": 438
+     },
+     {
+      "x": 265,
+      "y": 499
+     },
+     {
+      "x": 276,
+      "y": 569
+     },
+     {
+      "x": 287,
+      "y": 648
+     },
+     {
+      "x": 298,
+      "y": 738
+     },
+     {
+      "x": 309,
+      "y": 841
+     },
+     {
+      "x": 320,
+      "y": 958
+     },
+     {
+      "x": 331,
+      "y": 1092
+     },
+     {
+      "x": 342,
+      "y": 1244
+     },
+     {
+      "x": 353,
+      "y": 1417
+     },
+     {
+      "x": 364,
+      "y": 1614
+     },
+     {
+      "x": 375,
+      "y": 1839
+     },
+     {
+      "x": 386,
+      "y": 2096
+     },
+     {
+      "x": 397,
+      "y": 2388
+     },
+     {
+      "x": 408,
+      "y": 2721
+     },
+     {
+      "x": 419,
+      "y": 3100
+     },
+     {
+      "x": 430,
+      "y": 3532
+     },
+     {
+      "x": 441,
+      "y": 4025
+     },
+     {
+      "x": 452,
+      "y": 4586
+     },
+     {
+      "x": 463,
+      "y": 5226
+     },
+     {
+      "x": 474,
+      "y": 5955
+     },
+     {
+      "x": 485,
+      "y": 6785
+     },
+     {
+      "x": 496,
+      "y": 7732
+     },
+     {
+      "x": 507,
+      "y": 8811
+     },
+     {
+      "x": 518,
+      "y": 10040
+     },
+     {
+      "x": 529,
+      "y": 11441
+     },
+     {
+      "x": 540,
+      "y": 13037
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 1.1222221,
+  "animationFireSec": 0,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 20,
+  "projectileCount": 1,
+  "reach": 0.9,
+  "secondaryDamage": 0,
+  "damageBonusMult": 1,
+  "minRange": 500,
+  "maxRange": 2000,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [],
+  "templateModFormIds": [],
+  "defaultModFormIds": [],
+  "attachParentSlots": [],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
   "id": "CamdenWhackerWeapon",
   "formId": "0x002BA1D9",
   "name": "Camden Whacker",
@@ -7814,7 +9283,7 @@
   "obtainable": true
  },
  {
-  "id": "P62_crTheDrifterM79",
+  "id": "HIDE_crDrifterM79",
   "formId": "0x008035C2",
   "name": "Chaos Engine",
   "weaponTypeName": "Gun",
@@ -7844,215 +9313,416 @@
    {
     "damageType": "ballistic",
     "damageTypeEdid": null,
-    "amount": 3,
-    "tier": null,
-    "curve": null
+    "amount": 0,
+    "tier": 1,
+    "curve": [
+     {
+      "x": 1,
+      "y": 1
+     },
+     {
+      "x": 12,
+      "y": 1
+     },
+     {
+      "x": 23,
+      "y": 2
+     },
+     {
+      "x": 34,
+      "y": 2
+     },
+     {
+      "x": 45,
+      "y": 3
+     },
+     {
+      "x": 56,
+      "y": 3
+     },
+     {
+      "x": 67,
+      "y": 4
+     },
+     {
+      "x": 78,
+      "y": 4
+     },
+     {
+      "x": 89,
+      "y": 5
+     },
+     {
+      "x": 100,
+      "y": 6
+     },
+     {
+      "x": 111,
+      "y": 7
+     },
+     {
+      "x": 122,
+      "y": 8
+     },
+     {
+      "x": 133,
+      "y": 10
+     },
+     {
+      "x": 144,
+      "y": 11
+     },
+     {
+      "x": 155,
+      "y": 13
+     },
+     {
+      "x": 166,
+      "y": 15
+     },
+     {
+      "x": 177,
+      "y": 18
+     },
+     {
+      "x": 188,
+      "y": 20
+     },
+     {
+      "x": 199,
+      "y": 24
+     },
+     {
+      "x": 210,
+      "y": 28
+     },
+     {
+      "x": 221,
+      "y": 33
+     },
+     {
+      "x": 232,
+      "y": 38
+     },
+     {
+      "x": 243,
+      "y": 45
+     },
+     {
+      "x": 254,
+      "y": 52
+     },
+     {
+      "x": 265,
+      "y": 61
+     },
+     {
+      "x": 276,
+      "y": 72
+     },
+     {
+      "x": 287,
+      "y": 84
+     },
+     {
+      "x": 298,
+      "y": 99
+     },
+     {
+      "x": 309,
+      "y": 116
+     },
+     {
+      "x": 320,
+      "y": 136
+     },
+     {
+      "x": 331,
+      "y": 160
+     },
+     {
+      "x": 342,
+      "y": 188
+     },
+     {
+      "x": 353,
+      "y": 221
+     },
+     {
+      "x": 364,
+      "y": 259
+     },
+     {
+      "x": 375,
+      "y": 305
+     },
+     {
+      "x": 386,
+      "y": 359
+     },
+     {
+      "x": 397,
+      "y": 422
+     },
+     {
+      "x": 408,
+      "y": 497
+     },
+     {
+      "x": 419,
+      "y": 584
+     },
+     {
+      "x": 430,
+      "y": 688
+     },
+     {
+      "x": 441,
+      "y": 809
+     },
+     {
+      "x": 452,
+      "y": 953
+     },
+     {
+      "x": 463,
+      "y": 1122
+     },
+     {
+      "x": 474,
+      "y": 1320
+     },
+     {
+      "x": 485,
+      "y": 1555
+     },
+     {
+      "x": 496,
+      "y": 1830
+     },
+     {
+      "x": 507,
+      "y": 2155
+     },
+     {
+      "x": 518,
+      "y": 2538
+     },
+     {
+      "x": 529,
+      "y": 2989
+     },
+     {
+      "x": 540,
+      "y": 3520
+     }
+    ]
    },
    {
     "damageType": "explosive",
     "damageTypeEdid": null,
     "amount": 0,
-    "tier": 40,
+    "tier": 25,
     "curve": [
      {
       "x": 1,
-      "y": 96
+      "y": 19
      },
      {
       "x": 12,
-      "y": 108
+      "y": 22
      },
      {
       "x": 23,
-      "y": 121
+      "y": 25
      },
      {
       "x": 34,
-      "y": 136
+      "y": 29
      },
      {
       "x": 45,
-      "y": 153
+      "y": 33
      },
      {
       "x": 56,
-      "y": 171
+      "y": 38
      },
      {
       "x": 67,
-      "y": 192
+      "y": 43
      },
      {
       "x": 78,
-      "y": 216
+      "y": 49
      },
      {
       "x": 89,
-      "y": 242
+      "y": 56
      },
      {
       "x": 100,
-      "y": 272
+      "y": 64
      },
      {
       "x": 111,
-      "y": 305
+      "y": 73
      },
      {
       "x": 122,
-      "y": 342
+      "y": 84
      },
      {
       "x": 133,
-      "y": 384
+      "y": 96
      },
      {
       "x": 144,
-      "y": 430
+      "y": 109
      },
      {
       "x": 155,
-      "y": 483
+      "y": 124
      },
      {
       "x": 166,
-      "y": 542
+      "y": 142
      },
      {
       "x": 177,
-      "y": 608
+      "y": 162
      },
      {
       "x": 188,
-      "y": 682
+      "y": 184
      },
      {
       "x": 199,
-      "y": 765
+      "y": 210
      },
      {
       "x": 210,
-      "y": 858
+      "y": 239
      },
      {
       "x": 221,
-      "y": 963
+      "y": 273
      },
      {
       "x": 232,
-      "y": 1080
+      "y": 311
      },
      {
       "x": 243,
-      "y": 1211
+      "y": 355
      },
      {
       "x": 254,
-      "y": 1359
+      "y": 405
      },
      {
       "x": 265,
-      "y": 1525
+      "y": 462
      },
      {
       "x": 276,
-      "y": 1711
+      "y": 527
      },
      {
       "x": 287,
-      "y": 1919
+      "y": 601
      },
      {
       "x": 298,
-      "y": 2153
+      "y": 685
      },
      {
       "x": 309,
-      "y": 2416
+      "y": 781
      },
      {
       "x": 320,
-      "y": 2710
+      "y": 891
      },
      {
       "x": 331,
-      "y": 3041
+      "y": 1016
      },
      {
       "x": 342,
-      "y": 3411
+      "y": 1159
      },
      {
       "x": 353,
-      "y": 3827
+      "y": 1322
      },
      {
       "x": 364,
-      "y": 4294
+      "y": 1508
      },
      {
       "x": 375,
-      "y": 4818
+      "y": 1721
      },
      {
       "x": 386,
-      "y": 5405
+      "y": 1963
      },
      {
       "x": 397,
-      "y": 6064
+      "y": 2239
      },
      {
       "x": 408,
-      "y": 6804
+      "y": 2554
      },
      {
       "x": 419,
-      "y": 7634
+      "y": 2914
      },
      {
       "x": 430,
-      "y": 8565
+      "y": 3324
      },
      {
       "x": 441,
-      "y": 9609
+      "y": 3792
      },
      {
       "x": 452,
-      "y": 10781
+      "y": 4326
      },
      {
       "x": 463,
-      "y": 12096
+      "y": 4935
      },
      {
       "x": 474,
-      "y": 13572
+      "y": 5630
      },
      {
       "x": 485,
-      "y": 15227
+      "y": 6423
      },
      {
       "x": 496,
-      "y": 17085
+      "y": 7327
      },
      {
       "x": 507,
-      "y": 19169
+      "y": 8359
      },
      {
       "x": 518,
-      "y": 21507
+      "y": 9537
      },
      {
       "x": 529,
-      "y": 24130
+      "y": 10880
      },
      {
       "x": 540,
-      "y": 27074
+      "y": 12412
      }
     ],
     "fromExplosion": true
@@ -8069,13 +9739,13 @@
   "animationReloadSec": 3.00001,
   "capacity": 1,
   "ammoPerShot": 1,
-  "actionPointCost": 16,
+  "actionPointCost": 10,
   "projectileCount": 1,
   "reach": 1,
   "secondaryDamage": 15,
   "damageBonusMult": 1,
-  "minRange": 1719,
-  "maxRange": 3437,
+  "minRange": 1250,
+  "maxRange": 5000,
   "outOfRangeDamageMult": 0.1,
   "fullPowerSeconds": 0,
   "fullPowerDamageMult": 0,
@@ -8123,10 +9793,16 @@
    "0x0004B6E1",
    "0x00022499",
    "0x00179B4C",
-   "0x00050F03"
+   "0x00050F03",
+   "0x0005D4D7",
+   "0x00026A9A",
+   "0x00026A9B",
+   "0x00026A9D",
+   "0x0003477E",
+   "0x00035799"
   ],
   "modifiers": [],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "CharGen_GolfClub_NoName",
@@ -8249,6 +9925,291 @@
   "obtainable": false
  },
  {
+  "id": "Bounty_crChineseOfficerSword",
+  "formId": "0x0092BD85",
+  "name": "Chinese Officer Sword",
+  "weaponTypeName": "OneHandSword",
+  "keywords": [
+   "Anims1hmWeapon",
+   "WeaponTypeMelee1H",
+   "QuickkeyMelee",
+   "ma_ChineseOfficerSword",
+   "ObjectTypeWeapon",
+   "WeaponTypeSword",
+   "WeaponTypeMeleeGeneral",
+   "WeaponTypeBladed",
+   "ma_Melee_Appearance",
+   "ma_legendarycrafting_weaponmelee",
+   "ma_1hMelee",
+   "UI_WeaponTypemelee1HBlade",
+   "ma_Misc_Legendarycrafting_Weapon_Melee4",
+   "ma_legendarycrafting_weapon"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 16,
+    "tier": 37,
+    "curve": [
+     {
+      "x": 1,
+      "y": 70
+     },
+     {
+      "x": 12,
+      "y": 79
+     },
+     {
+      "x": 23,
+      "y": 89
+     },
+     {
+      "x": 34,
+      "y": 100
+     },
+     {
+      "x": 45,
+      "y": 112
+     },
+     {
+      "x": 56,
+      "y": 126
+     },
+     {
+      "x": 67,
+      "y": 142
+     },
+     {
+      "x": 78,
+      "y": 160
+     },
+     {
+      "x": 89,
+      "y": 180
+     },
+     {
+      "x": 100,
+      "y": 203
+     },
+     {
+      "x": 111,
+      "y": 228
+     },
+     {
+      "x": 122,
+      "y": 257
+     },
+     {
+      "x": 133,
+      "y": 289
+     },
+     {
+      "x": 144,
+      "y": 326
+     },
+     {
+      "x": 155,
+      "y": 367
+     },
+     {
+      "x": 166,
+      "y": 412
+     },
+     {
+      "x": 177,
+      "y": 464
+     },
+     {
+      "x": 188,
+      "y": 522
+     },
+     {
+      "x": 199,
+      "y": 588
+     },
+     {
+      "x": 210,
+      "y": 662
+     },
+     {
+      "x": 221,
+      "y": 745
+     },
+     {
+      "x": 232,
+      "y": 838
+     },
+     {
+      "x": 243,
+      "y": 943
+     },
+     {
+      "x": 254,
+      "y": 1061
+     },
+     {
+      "x": 265,
+      "y": 1194
+     },
+     {
+      "x": 276,
+      "y": 1344
+     },
+     {
+      "x": 287,
+      "y": 1513
+     },
+     {
+      "x": 298,
+      "y": 1702
+     },
+     {
+      "x": 309,
+      "y": 1916
+     },
+     {
+      "x": 320,
+      "y": 2156
+     },
+     {
+      "x": 331,
+      "y": 2427
+     },
+     {
+      "x": 342,
+      "y": 2731
+     },
+     {
+      "x": 353,
+      "y": 3074
+     },
+     {
+      "x": 364,
+      "y": 3460
+     },
+     {
+      "x": 375,
+      "y": 3894
+     },
+     {
+      "x": 386,
+      "y": 4383
+     },
+     {
+      "x": 397,
+      "y": 4933
+     },
+     {
+      "x": 408,
+      "y": 5552
+     },
+     {
+      "x": 419,
+      "y": 6248
+     },
+     {
+      "x": 430,
+      "y": 7033
+     },
+     {
+      "x": 441,
+      "y": 7915
+     },
+     {
+      "x": 452,
+      "y": 8909
+     },
+     {
+      "x": 463,
+      "y": 10027
+     },
+     {
+      "x": 474,
+      "y": 11286
+     },
+     {
+      "x": 485,
+      "y": 12702
+     },
+     {
+      "x": 496,
+      "y": 14297
+     },
+     {
+      "x": 507,
+      "y": 16091
+     },
+     {
+      "x": 518,
+      "y": 18111
+     },
+     {
+      "x": 529,
+      "y": 20385
+     },
+     {
+      "x": 540,
+      "y": 22944
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 1.1388938,
+  "animationFireSec": 0,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 35,
+  "projectileCount": 1,
+  "reach": 0.8,
+  "secondaryDamage": 10,
+  "damageBonusMult": 1,
+  "minRange": 0,
+  "maxRange": 10,
+  "outOfRangeDamageMult": -1,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   5,
+   15,
+   25,
+   35,
+   45
+  ],
+  "templateModFormIds": [
+   "0x00176DF8",
+   "0x005117BF",
+   "0x00230303",
+   "0x005281B8",
+   "0x0091989E"
+  ],
+  "defaultModFormIds": [
+   "0x00176DF8",
+   "0x005117BF"
+  ],
+  "attachParentSlots": [
+   "0x0005524C",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x001A001E",
+   "0x006214D8"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
   "id": "ChineseOfficerSword",
   "formId": "0x00147BE4",
   "name": "Chinese Officer Sword",
@@ -8268,7 +10229,8 @@
    "UI_WeaponTypemelee1HBlade",
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon",
-   "WeaponTypeBleedDamage"
+   "WeaponTypeBleedDamage",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -8356,6 +10318,7 @@
   ],
   "templateModFormIds": [
    "0x00176DF8",
+   "0x00945D3B",
    "0x005117BF",
    "0x00230303",
    "0x008F20B7",
@@ -8366,6 +10329,7 @@
   ],
   "defaultModFormIds": [
    "0x00176DF8",
+   "0x00945D3B",
    "0x005117BF"
   ],
   "attachParentSlots": [
@@ -8377,7 +10341,8 @@
    "0x004E89AB",
    "0x001A001E",
    "0x006214D8",
-   "0x0047A264"
+   "0x0047A264",
+   "0x0092B358"
   ],
   "modifiers": [
    {
@@ -8790,7 +10755,8 @@
    "ma_1hMelee",
    "ma_Knife_Blades",
    "ma_CombatKnife",
-   "ma_legendarycrafting_weapon"
+   "ma_legendarycrafting_weapon",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -8880,6 +10846,7 @@
   ],
   "templateModFormIds": [
    "0x0017650C",
+   "0x00945D3B",
    "0x005117BF",
    "0x0023030E",
    "0x00527F84",
@@ -8894,6 +10861,7 @@
   ],
   "defaultModFormIds": [
    "0x0017650C",
+   "0x00945D3B",
    "0x005117BF"
   ],
   "attachParentSlots": [
@@ -8905,7 +10873,8 @@
    "0x004E89AB",
    "0x001A001E",
    "0x00521926",
-   "0x0047A264"
+   "0x0047A264",
+   "0x0092B358"
   ],
   "modifiers": [],
   "obtainable": true
@@ -10643,10 +12612,10 @@
   "sneakAttackMult": 2,
   "speed": 1,
   "attackDelaySec": 0.15,
-  "animationAttackSec": 1,
+  "animationAttackSec": 0.6666667,
   "animationFireSec": 0.00001,
   "reloadSpeed": 1,
-  "animationReloadSec": 2.9666767,
+  "animationReloadSec": 2.8333435,
   "capacity": 1,
   "ammoPerShot": 1,
   "actionPointCost": 28,
@@ -10999,7 +12968,7 @@
  {
   "id": "bospistol",
   "formId": "0x005E6FC0",
-  "name": "Crusader Pistol",
+  "name": "Crusader",
   "weaponTypeName": "Gun",
   "keywords": [
    "AnimsBoSPistol",
@@ -11021,7 +12990,8 @@
    "UI_WeaponTypePistol",
    "WeaponTypeBallistic",
    "WeaponTypePistol",
-   "WeaponTypeRanged"
+   "WeaponTypeRanged",
+   "ap_gun_Ammo"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -11108,38 +13078,41 @@
    50
   ],
   "templateModFormIds": [
+   "0x0094CE81",
    "0x005E6FBE",
-   "0x005E6FBA",
+   "0x0094CE75",
    "0x005E6FBD",
-   "0x005E6FB7",
+   "0x005E6FBA",
    "0x0004F21D",
+   "0x005E6FB7",
    "0x0037D0C1"
   ],
   "defaultModFormIds": [
+   "0x0094CE81",
    "0x005E6FBE",
-   "0x005E6FBA",
+   "0x0094CE75",
    "0x005E6FBD",
-   "0x005E6FB7",
+   "0x005E6FBA",
    "0x0004F21D",
+   "0x005E6FB7",
    "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x00114364",
-   "0x00024004",
    "0x001E32C8",
    "0x004E89A8",
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8",
-   "0x0012ECEC",
-   "0x0004B6E1",
+   "0x0094CE5A",
+   "0x00024004",
+   "0x0002249F",
    "0x0002249D",
    "0x0005D4D7",
-   "0x0002249F",
-   "0x00022499",
-   "0x00149CA8",
+   "0x0004B6E1",
    "0x0002249C",
+   "0x00022499",
    "0x0003579B"
   ],
   "modifiers": [],
@@ -11426,6 +13399,262 @@
    "0x00114364",
    "0x0003477E"
   ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
+  "id": "HIDE_BotWeapRobobrainCryoGrenadeLeft",
+  "formId": "0x0090B9EC",
+  "name": "Cryo Grenade Launcher",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "s_40_Syringer"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 1,
+    "tier": null,
+    "curve": null
+   },
+   {
+    "damageType": "explosive",
+    "damageTypeEdid": null,
+    "amount": 50,
+    "tier": 26,
+    "curve": [
+     {
+      "x": 1,
+      "y": 22
+     },
+     {
+      "x": 12,
+      "y": 25
+     },
+     {
+      "x": 23,
+      "y": 28
+     },
+     {
+      "x": 34,
+      "y": 32
+     },
+     {
+      "x": 45,
+      "y": 37
+     },
+     {
+      "x": 56,
+      "y": 42
+     },
+     {
+      "x": 67,
+      "y": 48
+     },
+     {
+      "x": 78,
+      "y": 55
+     },
+     {
+      "x": 89,
+      "y": 62
+     },
+     {
+      "x": 100,
+      "y": 71
+     },
+     {
+      "x": 111,
+      "y": 81
+     },
+     {
+      "x": 122,
+      "y": 92
+     },
+     {
+      "x": 133,
+      "y": 105
+     },
+     {
+      "x": 144,
+      "y": 119
+     },
+     {
+      "x": 155,
+      "y": 136
+     },
+     {
+      "x": 166,
+      "y": 155
+     },
+     {
+      "x": 177,
+      "y": 176
+     },
+     {
+      "x": 188,
+      "y": 201
+     },
+     {
+      "x": 199,
+      "y": 229
+     },
+     {
+      "x": 210,
+      "y": 260
+     },
+     {
+      "x": 221,
+      "y": 297
+     },
+     {
+      "x": 232,
+      "y": 338
+     },
+     {
+      "x": 243,
+      "y": 385
+     },
+     {
+      "x": 254,
+      "y": 438
+     },
+     {
+      "x": 265,
+      "y": 499
+     },
+     {
+      "x": 276,
+      "y": 569
+     },
+     {
+      "x": 287,
+      "y": 648
+     },
+     {
+      "x": 298,
+      "y": 738
+     },
+     {
+      "x": 309,
+      "y": 841
+     },
+     {
+      "x": 320,
+      "y": 958
+     },
+     {
+      "x": 331,
+      "y": 1092
+     },
+     {
+      "x": 342,
+      "y": 1244
+     },
+     {
+      "x": 353,
+      "y": 1417
+     },
+     {
+      "x": 364,
+      "y": 1614
+     },
+     {
+      "x": 375,
+      "y": 1839
+     },
+     {
+      "x": 386,
+      "y": 2096
+     },
+     {
+      "x": 397,
+      "y": 2388
+     },
+     {
+      "x": 408,
+      "y": 2721
+     },
+     {
+      "x": 419,
+      "y": 3100
+     },
+     {
+      "x": 430,
+      "y": 3532
+     },
+     {
+      "x": 441,
+      "y": 4025
+     },
+     {
+      "x": 452,
+      "y": 4586
+     },
+     {
+      "x": 463,
+      "y": 5226
+     },
+     {
+      "x": 474,
+      "y": 5955
+     },
+     {
+      "x": 485,
+      "y": 6785
+     },
+     {
+      "x": 496,
+      "y": 7732
+     },
+     {
+      "x": 507,
+      "y": 8811
+     },
+     {
+      "x": 518,
+      "y": 10040
+     },
+     {
+      "x": 529,
+      "y": 11441
+     },
+     {
+      "x": 540,
+      "y": 13037
+     }
+    ],
+    "fromExplosion": true
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 3,
+  "animationAttackSec": 1,
+  "animationFireSec": 0.06667667,
+  "reloadSpeed": 1,
+  "animationReloadSec": 2.3333,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 20,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 6,
+  "damageBonusMult": 1,
+  "minRange": 2000,
+  "maxRange": 3000,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [],
+  "templateModFormIds": [],
+  "defaultModFormIds": [],
+  "attachParentSlots": [],
   "modifiers": [],
   "obtainable": false
  },
@@ -12101,7 +14330,8 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_1hMelee",
    "ma_legendarycrafting_weapon",
-   "WeaponTypeBleedDamage"
+   "WeaponTypeBleedDamage",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -12189,6 +14419,7 @@
   ],
   "templateModFormIds": [
    "0x000E7C3E",
+   "0x00945D3B",
    "0x00230311",
    "0x004F6AA0",
    "0x001A7C39",
@@ -12196,7 +14427,8 @@
    "0x008EC62B"
   ],
   "defaultModFormIds": [
-   "0x000E7C3E"
+   "0x000E7C3E",
+   "0x00945D3B"
   ],
   "attachParentSlots": [
    "0x0000283C",
@@ -12208,6 +14440,7 @@
    "0x006214D8",
    "0x001A001E",
    "0x0047A264",
+   "0x0092B358",
    "0x0005524C"
   ],
   "modifiers": [
@@ -12313,7 +14546,8 @@
    "ma_1hMelee",
    "ma_Knife_Blades",
    "ma_Knife",
-   "ma_legendarycrafting_weapon"
+   "ma_legendarycrafting_weapon",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -12400,10 +14634,12 @@
   ],
   "templateModFormIds": [
    "0x0017650C",
+   "0x00945D3B",
    "0x0023030E"
   ],
   "defaultModFormIds": [
-   "0x0017650C"
+   "0x0017650C",
+   "0x00945D3B"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -12413,7 +14649,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8",
-   "0x001A001E"
+   "0x001A001E",
+   "0x0092B358"
   ],
   "modifiers": [],
   "obtainable": true
@@ -12441,7 +14678,8 @@
    "ma_legendarycrafting_weaponmelee",
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon",
-   "WeaponTypeBladed"
+   "WeaponTypeBladed",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -12528,6 +14766,7 @@
   ],
   "templateModFormIds": [
    "0x000E7C3E",
+   "0x00945D3B",
    "0x00460736",
    "0x005281B8",
    "0x007904EB",
@@ -12537,6 +14776,7 @@
   ],
   "defaultModFormIds": [
    "0x000E7C3E",
+   "0x00945D3B",
    "0x00460736"
   ],
   "attachParentSlots": [
@@ -12549,6 +14789,7 @@
    "0x0032CD06",
    "0x006214D8",
    "0x0047A264",
+   "0x0092B358",
    "0x001A001E"
   ],
   "modifiers": [],
@@ -13932,7 +16173,7 @@
   "speed": 1,
   "attackDelaySec": 0,
   "animationAttackSec": 1.8333334,
-  "animationFireSec": 0.7,
+  "animationFireSec": 0.70001,
   "reloadSpeed": 1,
   "animationReloadSec": 2.3333,
   "capacity": 0,
@@ -15318,6 +17559,1086 @@
   "obtainable": true
  },
  {
+  "id": "HIDE_crProtectron02LeftArmFlamer",
+  "formId": "0x0094F8EA",
+  "name": "Flamer",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "WeaponTypeHeavyGun",
+   "AnimsFlamer",
+   "s_IronSightsRifle",
+   "VATSWeaponLongBurst",
+   "WeaponTypeBallistic",
+   "s_40_Flamer",
+   "ObjectTypeWeapon",
+   "QuickkeyGun",
+   "NoRicochet",
+   "WeaponTypeRanged"
+  ],
+  "isAutomaticFlag": true,
+  "components": [
+   {
+    "damageType": "fire",
+    "damageTypeEdid": "dtFire",
+    "amount": 1,
+    "tier": 10,
+    "curve": [
+     {
+      "x": 1,
+      "y": 4
+     },
+     {
+      "x": 12,
+      "y": 4
+     },
+     {
+      "x": 23,
+      "y": 5
+     },
+     {
+      "x": 34,
+      "y": 6
+     },
+     {
+      "x": 45,
+      "y": 7
+     },
+     {
+      "x": 56,
+      "y": 8
+     },
+     {
+      "x": 67,
+      "y": 9
+     },
+     {
+      "x": 78,
+      "y": 11
+     },
+     {
+      "x": 89,
+      "y": 13
+     },
+     {
+      "x": 100,
+      "y": 15
+     },
+     {
+      "x": 111,
+      "y": 17
+     },
+     {
+      "x": 122,
+      "y": 20
+     },
+     {
+      "x": 133,
+      "y": 23
+     },
+     {
+      "x": 144,
+      "y": 27
+     },
+     {
+      "x": 155,
+      "y": 31
+     },
+     {
+      "x": 166,
+      "y": 36
+     },
+     {
+      "x": 177,
+      "y": 41
+     },
+     {
+      "x": 188,
+      "y": 48
+     },
+     {
+      "x": 199,
+      "y": 55
+     },
+     {
+      "x": 210,
+      "y": 64
+     },
+     {
+      "x": 221,
+      "y": 75
+     },
+     {
+      "x": 232,
+      "y": 87
+     },
+     {
+      "x": 243,
+      "y": 100
+     },
+     {
+      "x": 254,
+      "y": 116
+     },
+     {
+      "x": 265,
+      "y": 135
+     },
+     {
+      "x": 276,
+      "y": 157
+     },
+     {
+      "x": 287,
+      "y": 182
+     },
+     {
+      "x": 298,
+      "y": 212
+     },
+     {
+      "x": 309,
+      "y": 246
+     },
+     {
+      "x": 320,
+      "y": 285
+     },
+     {
+      "x": 331,
+      "y": 331
+     },
+     {
+      "x": 342,
+      "y": 385
+     },
+     {
+      "x": 353,
+      "y": 447
+     },
+     {
+      "x": 364,
+      "y": 520
+     },
+     {
+      "x": 375,
+      "y": 604
+     },
+     {
+      "x": 386,
+      "y": 702
+     },
+     {
+      "x": 397,
+      "y": 816
+     },
+     {
+      "x": 408,
+      "y": 949
+     },
+     {
+      "x": 419,
+      "y": 1103
+     },
+     {
+      "x": 430,
+      "y": 1282
+     },
+     {
+      "x": 441,
+      "y": 1490
+     },
+     {
+      "x": 452,
+      "y": 1733
+     },
+     {
+      "x": 463,
+      "y": 2015
+     },
+     {
+      "x": 474,
+      "y": 2342
+     },
+     {
+      "x": 485,
+      "y": 2723
+     },
+     {
+      "x": 496,
+      "y": 3167
+     },
+     {
+      "x": 507,
+      "y": 3682
+     },
+     {
+      "x": 518,
+      "y": 4281
+     },
+     {
+      "x": 529,
+      "y": 4978
+     },
+     {
+      "x": 540,
+      "y": 5789
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 2.2,
+  "animationFireSec": 0.00001,
+  "reloadSpeed": 1,
+  "animationReloadSec": 4.0333,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 20,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 6,
+  "damageBonusMult": 1,
+  "minRange": 1830,
+  "maxRange": 2740,
+  "outOfRangeDamageMult": 0.7,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [],
+  "templateModFormIds": [
+   "0x00147AFD",
+   "0x007A6D94",
+   "0x00147AF9"
+  ],
+  "defaultModFormIds": [
+   "0x00147AFD",
+   "0x007A6D94",
+   "0x00147AF9"
+  ],
+  "attachParentSlots": [
+   "0x00024004",
+   "0x0002249C",
+   "0x0004B6E1",
+   "0x0002249D"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
+  "id": "HIDE_crProtectron02RightArmFlamer",
+  "formId": "0x0094F8EB",
+  "name": "Flamer",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "WeaponTypeHeavyGun",
+   "AnimsFlamer",
+   "s_IronSightsRifle",
+   "VATSWeaponLongBurst",
+   "WeaponTypeBallistic",
+   "s_40_Flamer",
+   "ObjectTypeWeapon",
+   "QuickkeyGun",
+   "NoRicochet",
+   "WeaponTypeRanged"
+  ],
+  "isAutomaticFlag": true,
+  "components": [
+   {
+    "damageType": "fire",
+    "damageTypeEdid": "dtFire",
+    "amount": 1,
+    "tier": 10,
+    "curve": [
+     {
+      "x": 1,
+      "y": 4
+     },
+     {
+      "x": 12,
+      "y": 4
+     },
+     {
+      "x": 23,
+      "y": 5
+     },
+     {
+      "x": 34,
+      "y": 6
+     },
+     {
+      "x": 45,
+      "y": 7
+     },
+     {
+      "x": 56,
+      "y": 8
+     },
+     {
+      "x": 67,
+      "y": 9
+     },
+     {
+      "x": 78,
+      "y": 11
+     },
+     {
+      "x": 89,
+      "y": 13
+     },
+     {
+      "x": 100,
+      "y": 15
+     },
+     {
+      "x": 111,
+      "y": 17
+     },
+     {
+      "x": 122,
+      "y": 20
+     },
+     {
+      "x": 133,
+      "y": 23
+     },
+     {
+      "x": 144,
+      "y": 27
+     },
+     {
+      "x": 155,
+      "y": 31
+     },
+     {
+      "x": 166,
+      "y": 36
+     },
+     {
+      "x": 177,
+      "y": 41
+     },
+     {
+      "x": 188,
+      "y": 48
+     },
+     {
+      "x": 199,
+      "y": 55
+     },
+     {
+      "x": 210,
+      "y": 64
+     },
+     {
+      "x": 221,
+      "y": 75
+     },
+     {
+      "x": 232,
+      "y": 87
+     },
+     {
+      "x": 243,
+      "y": 100
+     },
+     {
+      "x": 254,
+      "y": 116
+     },
+     {
+      "x": 265,
+      "y": 135
+     },
+     {
+      "x": 276,
+      "y": 157
+     },
+     {
+      "x": 287,
+      "y": 182
+     },
+     {
+      "x": 298,
+      "y": 212
+     },
+     {
+      "x": 309,
+      "y": 246
+     },
+     {
+      "x": 320,
+      "y": 285
+     },
+     {
+      "x": 331,
+      "y": 331
+     },
+     {
+      "x": 342,
+      "y": 385
+     },
+     {
+      "x": 353,
+      "y": 447
+     },
+     {
+      "x": 364,
+      "y": 520
+     },
+     {
+      "x": 375,
+      "y": 604
+     },
+     {
+      "x": 386,
+      "y": 702
+     },
+     {
+      "x": 397,
+      "y": 816
+     },
+     {
+      "x": 408,
+      "y": 949
+     },
+     {
+      "x": 419,
+      "y": 1103
+     },
+     {
+      "x": 430,
+      "y": 1282
+     },
+     {
+      "x": 441,
+      "y": 1490
+     },
+     {
+      "x": 452,
+      "y": 1733
+     },
+     {
+      "x": 463,
+      "y": 2015
+     },
+     {
+      "x": 474,
+      "y": 2342
+     },
+     {
+      "x": 485,
+      "y": 2723
+     },
+     {
+      "x": 496,
+      "y": 3167
+     },
+     {
+      "x": 507,
+      "y": 3682
+     },
+     {
+      "x": 518,
+      "y": 4281
+     },
+     {
+      "x": 529,
+      "y": 4978
+     },
+     {
+      "x": 540,
+      "y": 5789
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 2.2,
+  "animationFireSec": 0.00001,
+  "reloadSpeed": 1,
+  "animationReloadSec": 4.0333,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 20,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 6,
+  "damageBonusMult": 1,
+  "minRange": 1830,
+  "maxRange": 2740,
+  "outOfRangeDamageMult": 0.7,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [],
+  "templateModFormIds": [
+   "0x00147AFD",
+   "0x007A6D94",
+   "0x00147AF9"
+  ],
+  "defaultModFormIds": [
+   "0x00147AFD",
+   "0x007A6D94",
+   "0x00147AF9"
+  ],
+  "attachParentSlots": [
+   "0x00024004",
+   "0x0002249C",
+   "0x0004B6E1",
+   "0x0002249D"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
+  "id": "HIDE_crProtectronLeftArmPoisonSpray",
+  "formId": "0x008F66E5",
+  "name": "Flamer",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "WeaponTypeHeavyGun",
+   "AnimsFlamer",
+   "s_IronSightsRifle",
+   "VATSWeaponLongBurst",
+   "WeaponTypeBallistic",
+   "s_40_Flamer",
+   "ObjectTypeWeapon",
+   "QuickkeyGun",
+   "NoRicochet",
+   "WeaponTypeRanged"
+  ],
+  "isAutomaticFlag": true,
+  "components": [
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "dtPoison",
+    "amount": 1,
+    "tier": 5,
+    "curve": [
+     {
+      "x": 1,
+      "y": 2
+     },
+     {
+      "x": 12,
+      "y": 2
+     },
+     {
+      "x": 23,
+      "y": 3
+     },
+     {
+      "x": 34,
+      "y": 3
+     },
+     {
+      "x": 45,
+      "y": 4
+     },
+     {
+      "x": 56,
+      "y": 5
+     },
+     {
+      "x": 67,
+      "y": 6
+     },
+     {
+      "x": 78,
+      "y": 6
+     },
+     {
+      "x": 89,
+      "y": 8
+     },
+     {
+      "x": 100,
+      "y": 9
+     },
+     {
+      "x": 111,
+      "y": 10
+     },
+     {
+      "x": 122,
+      "y": 12
+     },
+     {
+      "x": 133,
+      "y": 14
+     },
+     {
+      "x": 144,
+      "y": 16
+     },
+     {
+      "x": 155,
+      "y": 19
+     },
+     {
+      "x": 166,
+      "y": 22
+     },
+     {
+      "x": 177,
+      "y": 25
+     },
+     {
+      "x": 188,
+      "y": 29
+     },
+     {
+      "x": 199,
+      "y": 34
+     },
+     {
+      "x": 210,
+      "y": 40
+     },
+     {
+      "x": 221,
+      "y": 47
+     },
+     {
+      "x": 232,
+      "y": 54
+     },
+     {
+      "x": 243,
+      "y": 63
+     },
+     {
+      "x": 254,
+      "y": 74
+     },
+     {
+      "x": 265,
+      "y": 86
+     },
+     {
+      "x": 276,
+      "y": 101
+     },
+     {
+      "x": 287,
+      "y": 117
+     },
+     {
+      "x": 298,
+      "y": 137
+     },
+     {
+      "x": 309,
+      "y": 160
+     },
+     {
+      "x": 320,
+      "y": 187
+     },
+     {
+      "x": 331,
+      "y": 219
+     },
+     {
+      "x": 342,
+      "y": 256
+     },
+     {
+      "x": 353,
+      "y": 299
+     },
+     {
+      "x": 364,
+      "y": 350
+     },
+     {
+      "x": 375,
+      "y": 409
+     },
+     {
+      "x": 386,
+      "y": 479
+     },
+     {
+      "x": 397,
+      "y": 560
+     },
+     {
+      "x": 408,
+      "y": 655
+     },
+     {
+      "x": 419,
+      "y": 767
+     },
+     {
+      "x": 430,
+      "y": 898
+     },
+     {
+      "x": 441,
+      "y": 1051
+     },
+     {
+      "x": 452,
+      "y": 1230
+     },
+     {
+      "x": 463,
+      "y": 1440
+     },
+     {
+      "x": 474,
+      "y": 1685
+     },
+     {
+      "x": 485,
+      "y": 1973
+     },
+     {
+      "x": 496,
+      "y": 2310
+     },
+     {
+      "x": 507,
+      "y": 2705
+     },
+     {
+      "x": 518,
+      "y": 3167
+     },
+     {
+      "x": 529,
+      "y": 3708
+     },
+     {
+      "x": 540,
+      "y": 4341
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 2.2,
+  "animationFireSec": 0.033343334,
+  "reloadSpeed": 1,
+  "animationReloadSec": 4.0333,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 20,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 6,
+  "damageBonusMult": 1,
+  "minRange": 660,
+  "maxRange": 1319,
+  "outOfRangeDamageMult": 0.7,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [],
+  "templateModFormIds": [
+   "0x00147AFD",
+   "0x007A6D94",
+   "0x00147AF9"
+  ],
+  "defaultModFormIds": [
+   "0x00147AFD",
+   "0x007A6D94",
+   "0x00147AF9"
+  ],
+  "attachParentSlots": [
+   "0x00024004",
+   "0x0002249C",
+   "0x0004B6E1",
+   "0x0002249D"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
+  "id": "HIDE_crProtectronRightArmPoisonSpray",
+  "formId": "0x008F66E8",
+  "name": "Flamer",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "WeaponTypeHeavyGun",
+   "AnimsFlamer",
+   "s_IronSightsRifle",
+   "VATSWeaponLongBurst",
+   "WeaponTypeBallistic",
+   "s_40_Flamer",
+   "ObjectTypeWeapon",
+   "QuickkeyGun",
+   "NoRicochet",
+   "WeaponTypeRanged"
+  ],
+  "isAutomaticFlag": true,
+  "components": [
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "dtPoison",
+    "amount": 1,
+    "tier": 5,
+    "curve": [
+     {
+      "x": 1,
+      "y": 2
+     },
+     {
+      "x": 12,
+      "y": 2
+     },
+     {
+      "x": 23,
+      "y": 3
+     },
+     {
+      "x": 34,
+      "y": 3
+     },
+     {
+      "x": 45,
+      "y": 4
+     },
+     {
+      "x": 56,
+      "y": 5
+     },
+     {
+      "x": 67,
+      "y": 6
+     },
+     {
+      "x": 78,
+      "y": 6
+     },
+     {
+      "x": 89,
+      "y": 8
+     },
+     {
+      "x": 100,
+      "y": 9
+     },
+     {
+      "x": 111,
+      "y": 10
+     },
+     {
+      "x": 122,
+      "y": 12
+     },
+     {
+      "x": 133,
+      "y": 14
+     },
+     {
+      "x": 144,
+      "y": 16
+     },
+     {
+      "x": 155,
+      "y": 19
+     },
+     {
+      "x": 166,
+      "y": 22
+     },
+     {
+      "x": 177,
+      "y": 25
+     },
+     {
+      "x": 188,
+      "y": 29
+     },
+     {
+      "x": 199,
+      "y": 34
+     },
+     {
+      "x": 210,
+      "y": 40
+     },
+     {
+      "x": 221,
+      "y": 47
+     },
+     {
+      "x": 232,
+      "y": 54
+     },
+     {
+      "x": 243,
+      "y": 63
+     },
+     {
+      "x": 254,
+      "y": 74
+     },
+     {
+      "x": 265,
+      "y": 86
+     },
+     {
+      "x": 276,
+      "y": 101
+     },
+     {
+      "x": 287,
+      "y": 117
+     },
+     {
+      "x": 298,
+      "y": 137
+     },
+     {
+      "x": 309,
+      "y": 160
+     },
+     {
+      "x": 320,
+      "y": 187
+     },
+     {
+      "x": 331,
+      "y": 219
+     },
+     {
+      "x": 342,
+      "y": 256
+     },
+     {
+      "x": 353,
+      "y": 299
+     },
+     {
+      "x": 364,
+      "y": 350
+     },
+     {
+      "x": 375,
+      "y": 409
+     },
+     {
+      "x": 386,
+      "y": 479
+     },
+     {
+      "x": 397,
+      "y": 560
+     },
+     {
+      "x": 408,
+      "y": 655
+     },
+     {
+      "x": 419,
+      "y": 767
+     },
+     {
+      "x": 430,
+      "y": 898
+     },
+     {
+      "x": 441,
+      "y": 1051
+     },
+     {
+      "x": 452,
+      "y": 1230
+     },
+     {
+      "x": 463,
+      "y": 1440
+     },
+     {
+      "x": 474,
+      "y": 1685
+     },
+     {
+      "x": 485,
+      "y": 1973
+     },
+     {
+      "x": 496,
+      "y": 2310
+     },
+     {
+      "x": 507,
+      "y": 2705
+     },
+     {
+      "x": 518,
+      "y": 3167
+     },
+     {
+      "x": 529,
+      "y": 3708
+     },
+     {
+      "x": 540,
+      "y": 4341
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 2.2,
+  "animationFireSec": 0.033343334,
+  "reloadSpeed": 1,
+  "animationReloadSec": 4.0333,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 20,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 6,
+  "damageBonusMult": 1,
+  "minRange": 660,
+  "maxRange": 1319,
+  "outOfRangeDamageMult": 0.7,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [],
+  "templateModFormIds": [
+   "0x00147AFD",
+   "0x007A6D94",
+   "0x00147AF9"
+  ],
+  "defaultModFormIds": [
+   "0x00147AFD",
+   "0x007A6D94",
+   "0x00147AF9"
+  ],
+  "attachParentSlots": [
+   "0x00024004",
+   "0x0002249C",
+   "0x0004B6E1",
+   "0x0002249D"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
   "id": "WorkshopTrapFlamethrowerWeap01",
   "formId": "0x0020413E",
   "name": "Flamer",
@@ -15716,6 +19037,922 @@
   "attachParentSlots": [],
   "modifiers": [],
   "obtainable": true
+ },
+ {
+  "id": "HIDE_crFloaterEmitterBeam",
+  "formId": "0x008FF694",
+  "name": "Floater Emitter Beam",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "AnimsGripRifleAssault",
+   "BloodbugWeapon",
+   "s_40_BloodbugSack",
+   "QuickkeyGun",
+   "WeaponTypeRanged"
+  ],
+  "isAutomaticFlag": true,
+  "components": [
+   {
+    "damageType": "radiation",
+    "damageTypeEdid": "dtRadiationExposure",
+    "amount": 9,
+    "tier": 2,
+    "curve": [
+     {
+      "x": 1,
+      "y": 1
+     },
+     {
+      "x": 12,
+      "y": 2
+     },
+     {
+      "x": 23,
+      "y": 2
+     },
+     {
+      "x": 34,
+      "y": 2
+     },
+     {
+      "x": 45,
+      "y": 3
+     },
+     {
+      "x": 56,
+      "y": 3
+     },
+     {
+      "x": 67,
+      "y": 4
+     },
+     {
+      "x": 78,
+      "y": 5
+     },
+     {
+      "x": 89,
+      "y": 6
+     },
+     {
+      "x": 100,
+      "y": 7
+     },
+     {
+      "x": 111,
+      "y": 8
+     },
+     {
+      "x": 122,
+      "y": 9
+     },
+     {
+      "x": 133,
+      "y": 10
+     },
+     {
+      "x": 144,
+      "y": 12
+     },
+     {
+      "x": 155,
+      "y": 14
+     },
+     {
+      "x": 166,
+      "y": 16
+     },
+     {
+      "x": 177,
+      "y": 19
+     },
+     {
+      "x": 188,
+      "y": 22
+     },
+     {
+      "x": 199,
+      "y": 26
+     },
+     {
+      "x": 210,
+      "y": 30
+     },
+     {
+      "x": 221,
+      "y": 35
+     },
+     {
+      "x": 232,
+      "y": 41
+     },
+     {
+      "x": 243,
+      "y": 48
+     },
+     {
+      "x": 254,
+      "y": 57
+     },
+     {
+      "x": 265,
+      "y": 66
+     },
+     {
+      "x": 276,
+      "y": 78
+     },
+     {
+      "x": 287,
+      "y": 91
+     },
+     {
+      "x": 298,
+      "y": 107
+     },
+     {
+      "x": 309,
+      "y": 125
+     },
+     {
+      "x": 320,
+      "y": 146
+     },
+     {
+      "x": 331,
+      "y": 172
+     },
+     {
+      "x": 342,
+      "y": 202
+     },
+     {
+      "x": 353,
+      "y": 237
+     },
+     {
+      "x": 364,
+      "y": 278
+     },
+     {
+      "x": 375,
+      "y": 326
+     },
+     {
+      "x": 386,
+      "y": 383
+     },
+     {
+      "x": 397,
+      "y": 450
+     },
+     {
+      "x": 408,
+      "y": 529
+     },
+     {
+      "x": 419,
+      "y": 622
+     },
+     {
+      "x": 430,
+      "y": 731
+     },
+     {
+      "x": 441,
+      "y": 859
+     },
+     {
+      "x": 452,
+      "y": 1009
+     },
+     {
+      "x": 463,
+      "y": 1187
+     },
+     {
+      "x": 474,
+      "y": 1395
+     },
+     {
+      "x": 485,
+      "y": 1640
+     },
+     {
+      "x": 496,
+      "y": 1928
+     },
+     {
+      "x": 507,
+      "y": 2267
+     },
+     {
+      "x": 518,
+      "y": 2666
+     },
+     {
+      "x": 529,
+      "y": 3135
+     },
+     {
+      "x": 540,
+      "y": 3687
+     }
+    ]
+   },
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "dtEnergy",
+    "amount": 0,
+    "tier": 2,
+    "curve": [
+     {
+      "x": 1,
+      "y": 1
+     },
+     {
+      "x": 12,
+      "y": 2
+     },
+     {
+      "x": 23,
+      "y": 2
+     },
+     {
+      "x": 34,
+      "y": 2
+     },
+     {
+      "x": 45,
+      "y": 3
+     },
+     {
+      "x": 56,
+      "y": 3
+     },
+     {
+      "x": 67,
+      "y": 4
+     },
+     {
+      "x": 78,
+      "y": 5
+     },
+     {
+      "x": 89,
+      "y": 6
+     },
+     {
+      "x": 100,
+      "y": 7
+     },
+     {
+      "x": 111,
+      "y": 8
+     },
+     {
+      "x": 122,
+      "y": 9
+     },
+     {
+      "x": 133,
+      "y": 10
+     },
+     {
+      "x": 144,
+      "y": 12
+     },
+     {
+      "x": 155,
+      "y": 14
+     },
+     {
+      "x": 166,
+      "y": 16
+     },
+     {
+      "x": 177,
+      "y": 19
+     },
+     {
+      "x": 188,
+      "y": 22
+     },
+     {
+      "x": 199,
+      "y": 26
+     },
+     {
+      "x": 210,
+      "y": 30
+     },
+     {
+      "x": 221,
+      "y": 35
+     },
+     {
+      "x": 232,
+      "y": 41
+     },
+     {
+      "x": 243,
+      "y": 48
+     },
+     {
+      "x": 254,
+      "y": 57
+     },
+     {
+      "x": 265,
+      "y": 66
+     },
+     {
+      "x": 276,
+      "y": 78
+     },
+     {
+      "x": 287,
+      "y": 91
+     },
+     {
+      "x": 298,
+      "y": 107
+     },
+     {
+      "x": 309,
+      "y": 125
+     },
+     {
+      "x": 320,
+      "y": 146
+     },
+     {
+      "x": 331,
+      "y": 172
+     },
+     {
+      "x": 342,
+      "y": 202
+     },
+     {
+      "x": 353,
+      "y": 237
+     },
+     {
+      "x": 364,
+      "y": 278
+     },
+     {
+      "x": 375,
+      "y": 326
+     },
+     {
+      "x": 386,
+      "y": 383
+     },
+     {
+      "x": 397,
+      "y": 450
+     },
+     {
+      "x": 408,
+      "y": 529
+     },
+     {
+      "x": 419,
+      "y": 622
+     },
+     {
+      "x": 430,
+      "y": 731
+     },
+     {
+      "x": 441,
+      "y": 859
+     },
+     {
+      "x": 452,
+      "y": 1009
+     },
+     {
+      "x": 463,
+      "y": 1187
+     },
+     {
+      "x": 474,
+      "y": 1395
+     },
+     {
+      "x": 485,
+      "y": 1640
+     },
+     {
+      "x": 496,
+      "y": 1928
+     },
+     {
+      "x": 507,
+      "y": 2267
+     },
+     {
+      "x": 518,
+      "y": 2666
+     },
+     {
+      "x": 529,
+      "y": 3135
+     },
+     {
+      "x": 540,
+      "y": 3687
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 8,
+  "animationAttackSec": 2,
+  "animationFireSec": 2,
+  "reloadSpeed": 8,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 20,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 0,
+  "damageBonusMult": 1,
+  "minRange": 128,
+  "maxRange": 768,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [],
+  "templateModFormIds": [],
+  "defaultModFormIds": [],
+  "attachParentSlots": [],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
+  "id": "HIDE_crFloaterEmitterBlast",
+  "formId": "0x008FF695",
+  "name": "Floater Emitter Blast",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "QuickkeyGun"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "radiation",
+    "damageTypeEdid": "dtRadiationExposure",
+    "amount": 9,
+    "tier": 29,
+    "curve": [
+     {
+      "x": 1,
+      "y": 30
+     },
+     {
+      "x": 12,
+      "y": 34
+     },
+     {
+      "x": 23,
+      "y": 39
+     },
+     {
+      "x": 34,
+      "y": 44
+     },
+     {
+      "x": 45,
+      "y": 50
+     },
+     {
+      "x": 56,
+      "y": 57
+     },
+     {
+      "x": 67,
+      "y": 64
+     },
+     {
+      "x": 78,
+      "y": 73
+     },
+     {
+      "x": 89,
+      "y": 83
+     },
+     {
+      "x": 100,
+      "y": 94
+     },
+     {
+      "x": 111,
+      "y": 107
+     },
+     {
+      "x": 122,
+      "y": 122
+     },
+     {
+      "x": 133,
+      "y": 138
+     },
+     {
+      "x": 144,
+      "y": 157
+     },
+     {
+      "x": 155,
+      "y": 178
+     },
+     {
+      "x": 166,
+      "y": 202
+     },
+     {
+      "x": 177,
+      "y": 229
+     },
+     {
+      "x": 188,
+      "y": 260
+     },
+     {
+      "x": 199,
+      "y": 295
+     },
+     {
+      "x": 210,
+      "y": 335
+     },
+     {
+      "x": 221,
+      "y": 380
+     },
+     {
+      "x": 232,
+      "y": 432
+     },
+     {
+      "x": 243,
+      "y": 490
+     },
+     {
+      "x": 254,
+      "y": 557
+     },
+     {
+      "x": 265,
+      "y": 632
+     },
+     {
+      "x": 276,
+      "y": 717
+     },
+     {
+      "x": 287,
+      "y": 814
+     },
+     {
+      "x": 298,
+      "y": 925
+     },
+     {
+      "x": 309,
+      "y": 1050
+     },
+     {
+      "x": 320,
+      "y": 1192
+     },
+     {
+      "x": 331,
+      "y": 1353
+     },
+     {
+      "x": 342,
+      "y": 1536
+     },
+     {
+      "x": 353,
+      "y": 1744
+     },
+     {
+      "x": 364,
+      "y": 1981
+     },
+     {
+      "x": 375,
+      "y": 2249
+     },
+     {
+      "x": 386,
+      "y": 2553
+     },
+     {
+      "x": 397,
+      "y": 2899
+     },
+     {
+      "x": 408,
+      "y": 3292
+     },
+     {
+      "x": 419,
+      "y": 3738
+     },
+     {
+      "x": 430,
+      "y": 4245
+     },
+     {
+      "x": 441,
+      "y": 4820
+     },
+     {
+      "x": 452,
+      "y": 5473
+     },
+     {
+      "x": 463,
+      "y": 6214
+     },
+     {
+      "x": 474,
+      "y": 7057
+     },
+     {
+      "x": 485,
+      "y": 8013
+     },
+     {
+      "x": 496,
+      "y": 9099
+     },
+     {
+      "x": 507,
+      "y": 10332
+     },
+     {
+      "x": 518,
+      "y": 11733
+     },
+     {
+      "x": 529,
+      "y": 13323
+     },
+     {
+      "x": 540,
+      "y": 15129
+     }
+    ]
+   },
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "dtEnergy",
+    "amount": 0,
+    "tier": 29,
+    "curve": [
+     {
+      "x": 1,
+      "y": 30
+     },
+     {
+      "x": 12,
+      "y": 34
+     },
+     {
+      "x": 23,
+      "y": 39
+     },
+     {
+      "x": 34,
+      "y": 44
+     },
+     {
+      "x": 45,
+      "y": 50
+     },
+     {
+      "x": 56,
+      "y": 57
+     },
+     {
+      "x": 67,
+      "y": 64
+     },
+     {
+      "x": 78,
+      "y": 73
+     },
+     {
+      "x": 89,
+      "y": 83
+     },
+     {
+      "x": 100,
+      "y": 94
+     },
+     {
+      "x": 111,
+      "y": 107
+     },
+     {
+      "x": 122,
+      "y": 122
+     },
+     {
+      "x": 133,
+      "y": 138
+     },
+     {
+      "x": 144,
+      "y": 157
+     },
+     {
+      "x": 155,
+      "y": 178
+     },
+     {
+      "x": 166,
+      "y": 202
+     },
+     {
+      "x": 177,
+      "y": 229
+     },
+     {
+      "x": 188,
+      "y": 260
+     },
+     {
+      "x": 199,
+      "y": 295
+     },
+     {
+      "x": 210,
+      "y": 335
+     },
+     {
+      "x": 221,
+      "y": 380
+     },
+     {
+      "x": 232,
+      "y": 432
+     },
+     {
+      "x": 243,
+      "y": 490
+     },
+     {
+      "x": 254,
+      "y": 557
+     },
+     {
+      "x": 265,
+      "y": 632
+     },
+     {
+      "x": 276,
+      "y": 717
+     },
+     {
+      "x": 287,
+      "y": 814
+     },
+     {
+      "x": 298,
+      "y": 925
+     },
+     {
+      "x": 309,
+      "y": 1050
+     },
+     {
+      "x": 320,
+      "y": 1192
+     },
+     {
+      "x": 331,
+      "y": 1353
+     },
+     {
+      "x": 342,
+      "y": 1536
+     },
+     {
+      "x": 353,
+      "y": 1744
+     },
+     {
+      "x": 364,
+      "y": 1981
+     },
+     {
+      "x": 375,
+      "y": 2249
+     },
+     {
+      "x": 386,
+      "y": 2553
+     },
+     {
+      "x": 397,
+      "y": 2899
+     },
+     {
+      "x": 408,
+      "y": 3292
+     },
+     {
+      "x": 419,
+      "y": 3738
+     },
+     {
+      "x": 430,
+      "y": 4245
+     },
+     {
+      "x": 441,
+      "y": 4820
+     },
+     {
+      "x": 452,
+      "y": 5473
+     },
+     {
+      "x": 463,
+      "y": 6214
+     },
+     {
+      "x": 474,
+      "y": 7057
+     },
+     {
+      "x": 485,
+      "y": 8013
+     },
+     {
+      "x": 496,
+      "y": 9099
+     },
+     {
+      "x": 507,
+      "y": 10332
+     },
+     {
+      "x": 518,
+      "y": 11733
+     },
+     {
+      "x": 529,
+      "y": 13323
+     },
+     {
+      "x": 540,
+      "y": 15129
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 8,
+  "animationAttackSec": 1.5,
+  "animationFireSec": 0.5,
+  "reloadSpeed": 8,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 20,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 0,
+  "damageBonusMult": 1,
+  "minRange": 256,
+  "maxRange": 1024,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [],
+  "templateModFormIds": [],
+  "defaultModFormIds": [],
+  "attachParentSlots": [],
+  "modifiers": [],
+  "obtainable": false
  },
  {
   "id": "E08B_Minigun_FoundationsVengeance",
@@ -16883,6 +21120,315 @@
   "obtainable": true
  },
  {
+  "id": "Bounty_crGatlingLaser",
+  "formId": "0x0092BD84",
+  "name": "Gatling Laser",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "ObjectTypeWeapon",
+   "AnimsGatlingLaser",
+   "WeaponTypeHeavyGun",
+   "VATSWeaponLongBurst",
+   "dn_weap_EnergyGun",
+   "VATSWeaponLaserBeam",
+   "s_40_RifleLaserGatling",
+   "QuickkeyGun",
+   "ma_GatlingLaser",
+   "PhotomodeGripHeavy",
+   "ma_CanHaveNullMuzzle",
+   "WeaponTypeGatlingLaser",
+   "WeaponTypeRanged",
+   "WeaponTypeEnergy",
+   "UI_WeaponTypeGatlingLaser",
+   "WeaponTypeAutomatic",
+   "ma_legendarycrafting_weaponranged",
+   "ma_Gun_Appearance",
+   "ma_Misc_Legendarycrafting_Weapon_Ranged4",
+   "ma_legendarycrafting_weapon"
+  ],
+  "isAutomaticFlag": true,
+  "components": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "dtEnergy",
+    "amount": 14,
+    "tier": 26,
+    "curve": [
+     {
+      "x": 1,
+      "y": 22
+     },
+     {
+      "x": 12,
+      "y": 25
+     },
+     {
+      "x": 23,
+      "y": 28
+     },
+     {
+      "x": 34,
+      "y": 32
+     },
+     {
+      "x": 45,
+      "y": 37
+     },
+     {
+      "x": 56,
+      "y": 42
+     },
+     {
+      "x": 67,
+      "y": 48
+     },
+     {
+      "x": 78,
+      "y": 55
+     },
+     {
+      "x": 89,
+      "y": 62
+     },
+     {
+      "x": 100,
+      "y": 71
+     },
+     {
+      "x": 111,
+      "y": 81
+     },
+     {
+      "x": 122,
+      "y": 92
+     },
+     {
+      "x": 133,
+      "y": 105
+     },
+     {
+      "x": 144,
+      "y": 119
+     },
+     {
+      "x": 155,
+      "y": 136
+     },
+     {
+      "x": 166,
+      "y": 155
+     },
+     {
+      "x": 177,
+      "y": 176
+     },
+     {
+      "x": 188,
+      "y": 201
+     },
+     {
+      "x": 199,
+      "y": 229
+     },
+     {
+      "x": 210,
+      "y": 260
+     },
+     {
+      "x": 221,
+      "y": 297
+     },
+     {
+      "x": 232,
+      "y": 338
+     },
+     {
+      "x": 243,
+      "y": 385
+     },
+     {
+      "x": 254,
+      "y": 438
+     },
+     {
+      "x": 265,
+      "y": 499
+     },
+     {
+      "x": 276,
+      "y": 569
+     },
+     {
+      "x": 287,
+      "y": 648
+     },
+     {
+      "x": 298,
+      "y": 738
+     },
+     {
+      "x": 309,
+      "y": 841
+     },
+     {
+      "x": 320,
+      "y": 958
+     },
+     {
+      "x": 331,
+      "y": 1092
+     },
+     {
+      "x": 342,
+      "y": 1244
+     },
+     {
+      "x": 353,
+      "y": 1417
+     },
+     {
+      "x": 364,
+      "y": 1614
+     },
+     {
+      "x": 375,
+      "y": 1839
+     },
+     {
+      "x": 386,
+      "y": 2096
+     },
+     {
+      "x": 397,
+      "y": 2388
+     },
+     {
+      "x": 408,
+      "y": 2721
+     },
+     {
+      "x": 419,
+      "y": 3100
+     },
+     {
+      "x": 430,
+      "y": 3532
+     },
+     {
+      "x": 441,
+      "y": 4025
+     },
+     {
+      "x": 452,
+      "y": 4586
+     },
+     {
+      "x": 463,
+      "y": 5226
+     },
+     {
+      "x": 474,
+      "y": 5955
+     },
+     {
+      "x": 485,
+      "y": 6785
+     },
+     {
+      "x": 496,
+      "y": 7732
+     },
+     {
+      "x": 507,
+      "y": 8811
+     },
+     {
+      "x": 518,
+      "y": 10040
+     },
+     {
+      "x": 529,
+      "y": 11441
+     },
+     {
+      "x": 540,
+      "y": 13037
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 2,
+  "attackDelaySec": 0.15,
+  "animationAttackSec": 2.2,
+  "animationFireSec": 1,
+  "reloadSpeed": 1,
+  "animationReloadSec": 4.866677,
+  "capacity": 500,
+  "ammoPerShot": 1,
+  "actionPointCost": 30,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 15,
+  "damageBonusMult": 1,
+  "minRange": 1413,
+  "maxRange": 2827,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   25,
+   35,
+   45
+  ],
+  "templateModFormIds": [
+   "0x00312AD9",
+   "0x00312AFD",
+   "0x00312B0B",
+   "0x0004F21D",
+   "0x001B0266",
+   "0x001B0268",
+   "0x001B0265",
+   "0x001B0267",
+   "0x00312B0C",
+   "0x00312B01",
+   "0x00312ADF",
+   "0x00312B15",
+   "0x0072DF08",
+   "0x005281B4",
+   "0x0052414E",
+   "0x00524152",
+   "0x0075C3BB"
+  ],
+  "defaultModFormIds": [
+   "0x00312AD9",
+   "0x00312AFD",
+   "0x00312B0B",
+   "0x0004F21D"
+  ],
+  "attachParentSlots": [
+   "0x00024004",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x00114364",
+   "0x006214D8",
+   "0x0047A264",
+   "0x0002249D",
+   "0x0004B6E1",
+   "0x00022499",
+   "0x0002249F",
+   "0x0002249C"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
   "id": "GatlingLaser",
   "formId": "0x000E27BC",
   "name": "Gatling Laser",
@@ -17532,7 +22078,6 @@
    "ma_Gun_Appearance",
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponranged",
-   "NonPlayerTradable",
    "ObjectTypeWeapon",
    "QuickkeyGun",
    "s_40_PistolGauss",
@@ -17635,8 +22180,9 @@
    "0x0058BCFC",
    "0x0054A173",
    "0x0054A175",
-   "0x0037D0C1",
    "0x0054A17B",
+   "0x0094F804",
+   "0x0037D0C1",
    "0x0054A176",
    "0x0054A178",
    "0x0054A170",
@@ -17646,8 +22192,9 @@
    "0x0058BCFC",
    "0x0054A173",
    "0x0054A175",
-   "0x0037D0C1",
-   "0x0054A17B"
+   "0x0054A17B",
+   "0x0094F804",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x00114364",
@@ -17669,6 +22216,327 @@
   "modifiers": [],
   "explosionBaseWeaponDamageMult": 0.15,
   "obtainable": true
+ },
+ {
+  "id": "Bounty_crGaussRifle",
+  "formId": "0x0092BD81",
+  "name": "Gauss Rifle",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "AnimsGaussRifle",
+   "WeaponTypeBallistic",
+   "UI_WeaponTypeGaussRifle",
+   "s_40_RifleGauss",
+   "s_IronSightsRifle",
+   "ObjectTypeWeapon",
+   "QuickkeyGun",
+   "ma_GaussRifle",
+   "ma_CanHaveNullMuzzle",
+   "WeaponTypeGaussRifle",
+   "VATSWeaponLargeProjectile",
+   "WeaponTypeRanged",
+   "WeaponTypeEnergy",
+   "WeaponTypeRifle",
+   "ma_Gun_Appearance",
+   "ma_legendarycrafting_weaponranged",
+   "ma_Misc_Legendarycrafting_Weapon_Ranged4",
+   "ma_legendarycrafting_weapon"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 5,
+    "tier": 30,
+    "curve": [
+     {
+      "x": 1,
+      "y": 33
+     },
+     {
+      "x": 12,
+      "y": 38
+     },
+     {
+      "x": 23,
+      "y": 43
+     },
+     {
+      "x": 34,
+      "y": 49
+     },
+     {
+      "x": 45,
+      "y": 55
+     },
+     {
+      "x": 56,
+      "y": 63
+     },
+     {
+      "x": 67,
+      "y": 71
+     },
+     {
+      "x": 78,
+      "y": 81
+     },
+     {
+      "x": 89,
+      "y": 91
+     },
+     {
+      "x": 100,
+      "y": 104
+     },
+     {
+      "x": 111,
+      "y": 118
+     },
+     {
+      "x": 122,
+      "y": 133
+     },
+     {
+      "x": 133,
+      "y": 151
+     },
+     {
+      "x": 144,
+      "y": 172
+     },
+     {
+      "x": 155,
+      "y": 194
+     },
+     {
+      "x": 166,
+      "y": 221
+     },
+     {
+      "x": 177,
+      "y": 250
+     },
+     {
+      "x": 188,
+      "y": 284
+     },
+     {
+      "x": 199,
+      "y": 322
+     },
+     {
+      "x": 210,
+      "y": 365
+     },
+     {
+      "x": 221,
+      "y": 413
+     },
+     {
+      "x": 232,
+      "y": 469
+     },
+     {
+      "x": 243,
+      "y": 532
+     },
+     {
+      "x": 254,
+      "y": 603
+     },
+     {
+      "x": 265,
+      "y": 684
+     },
+     {
+      "x": 276,
+      "y": 775
+     },
+     {
+      "x": 287,
+      "y": 879
+     },
+     {
+      "x": 298,
+      "y": 997
+     },
+     {
+      "x": 309,
+      "y": 1131
+     },
+     {
+      "x": 320,
+      "y": 1282
+     },
+     {
+      "x": 331,
+      "y": 1454
+     },
+     {
+      "x": 342,
+      "y": 1649
+     },
+     {
+      "x": 353,
+      "y": 1870
+     },
+     {
+      "x": 364,
+      "y": 2121
+     },
+     {
+      "x": 375,
+      "y": 2406
+     },
+     {
+      "x": 386,
+      "y": 2728
+     },
+     {
+      "x": 397,
+      "y": 3094
+     },
+     {
+      "x": 408,
+      "y": 3510
+     },
+     {
+      "x": 419,
+      "y": 3981
+     },
+     {
+      "x": 430,
+      "y": 4515
+     },
+     {
+      "x": 441,
+      "y": 5121
+     },
+     {
+      "x": 452,
+      "y": 5808
+     },
+     {
+      "x": 463,
+      "y": 6588
+     },
+     {
+      "x": 474,
+      "y": 7472
+     },
+     {
+      "x": 485,
+      "y": 8475
+     },
+     {
+      "x": 496,
+      "y": 9612
+     },
+     {
+      "x": 507,
+      "y": 10903
+     },
+     {
+      "x": 518,
+      "y": 12366
+     },
+     {
+      "x": 529,
+      "y": 14027
+     },
+     {
+      "x": 540,
+      "y": 15910
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0.15,
+  "animationAttackSec": 0.8333333,
+  "animationFireSec": 0.00001,
+  "reloadSpeed": 1,
+  "animationReloadSec": 4.2000103,
+  "capacity": 5,
+  "ammoPerShot": 1,
+  "actionPointCost": 30,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 15,
+  "damageBonusMult": 1,
+  "minRange": 2750,
+  "maxRange": 5500,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 1,
+  "fullPowerDamageMult": 0.5,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   35,
+   45
+  ],
+  "templateModFormIds": [
+   "0x00133A7C",
+   "0x00313919",
+   "0x00313924",
+   "0x00313978",
+   "0x0004F21D",
+   "0x002DEDB6",
+   "0x001C34F8",
+   "0x001C34FA",
+   "0x001C34F9",
+   "0x001C34FC",
+   "0x001C34FB",
+   "0x00313963",
+   "0x0023AC1D",
+   "0x00313907",
+   "0x0031392B",
+   "0x00313922",
+   "0x00313973",
+   "0x0031393A",
+   "0x00793511",
+   "0x00793512",
+   "0x00793513",
+   "0x004F5770",
+   "0x00524153",
+   "0x004ED02E",
+   "0x007ACB0B",
+   "0x004F6AA5",
+   "0x004F5771",
+   "0x00824455"
+  ],
+  "defaultModFormIds": [
+   "0x00133A7C",
+   "0x00313919",
+   "0x00313924",
+   "0x00313978",
+   "0x0004F21D"
+  ],
+  "attachParentSlots": [
+   "0x0002249D",
+   "0x00022499",
+   "0x0002249F",
+   "0x0005D4D7",
+   "0x0002249C",
+   "0x00179B4C",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x006214D8",
+   "0x00114364",
+   "0x0047A264",
+   "0x001A8B4B",
+   "0x0004B6E1"
+  ],
+  "modifiers": [],
+  "explosionBaseWeaponDamageMult": 0.15,
+  "obtainable": false
  },
  {
   "id": "GaussRifle",
@@ -17832,6 +22700,327 @@
   "obtainable": true
  },
  {
+  "id": "HIDE_crGaussRifle",
+  "formId": "0x0094BFB8",
+  "name": "Gauss Rifle",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "AnimsGaussRifle",
+   "WeaponTypeBallistic",
+   "UI_WeaponTypeGaussRifle",
+   "s_40_RifleGauss",
+   "s_IronSightsRifle",
+   "ObjectTypeWeapon",
+   "QuickkeyGun",
+   "ma_GaussRifle",
+   "ma_CanHaveNullMuzzle",
+   "WeaponTypeGaussRifle",
+   "VATSWeaponLargeProjectile",
+   "WeaponTypeRanged",
+   "WeaponTypeEnergy",
+   "WeaponTypeRifle",
+   "ma_Gun_Appearance",
+   "ma_legendarycrafting_weaponranged",
+   "ma_Misc_Legendarycrafting_Weapon_Ranged4",
+   "ma_legendarycrafting_weapon"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 5,
+    "tier": 32,
+    "curve": [
+     {
+      "x": 1,
+      "y": 41
+     },
+     {
+      "x": 12,
+      "y": 46
+     },
+     {
+      "x": 23,
+      "y": 53
+     },
+     {
+      "x": 34,
+      "y": 60
+     },
+     {
+      "x": 45,
+      "y": 68
+     },
+     {
+      "x": 56,
+      "y": 76
+     },
+     {
+      "x": 67,
+      "y": 87
+     },
+     {
+      "x": 78,
+      "y": 98
+     },
+     {
+      "x": 89,
+      "y": 111
+     },
+     {
+      "x": 100,
+      "y": 126
+     },
+     {
+      "x": 111,
+      "y": 142
+     },
+     {
+      "x": 122,
+      "y": 161
+     },
+     {
+      "x": 133,
+      "y": 182
+     },
+     {
+      "x": 144,
+      "y": 206
+     },
+     {
+      "x": 155,
+      "y": 233
+     },
+     {
+      "x": 166,
+      "y": 263
+     },
+     {
+      "x": 177,
+      "y": 298
+     },
+     {
+      "x": 188,
+      "y": 337
+     },
+     {
+      "x": 199,
+      "y": 382
+     },
+     {
+      "x": 210,
+      "y": 432
+     },
+     {
+      "x": 221,
+      "y": 488
+     },
+     {
+      "x": 232,
+      "y": 553
+     },
+     {
+      "x": 243,
+      "y": 625
+     },
+     {
+      "x": 254,
+      "y": 708
+     },
+     {
+      "x": 265,
+      "y": 801
+     },
+     {
+      "x": 276,
+      "y": 906
+     },
+     {
+      "x": 287,
+      "y": 1025
+     },
+     {
+      "x": 298,
+      "y": 1160
+     },
+     {
+      "x": 309,
+      "y": 1312
+     },
+     {
+      "x": 320,
+      "y": 1485
+     },
+     {
+      "x": 331,
+      "y": 1680
+     },
+     {
+      "x": 342,
+      "y": 1901
+     },
+     {
+      "x": 353,
+      "y": 2152
+     },
+     {
+      "x": 364,
+      "y": 2435
+     },
+     {
+      "x": 375,
+      "y": 2755
+     },
+     {
+      "x": 386,
+      "y": 3118
+     },
+     {
+      "x": 397,
+      "y": 3528
+     },
+     {
+      "x": 408,
+      "y": 3993
+     },
+     {
+      "x": 419,
+      "y": 4519
+     },
+     {
+      "x": 430,
+      "y": 5113
+     },
+     {
+      "x": 441,
+      "y": 5787
+     },
+     {
+      "x": 452,
+      "y": 6549
+     },
+     {
+      "x": 463,
+      "y": 7411
+     },
+     {
+      "x": 474,
+      "y": 8387
+     },
+     {
+      "x": 485,
+      "y": 9491
+     },
+     {
+      "x": 496,
+      "y": 10741
+     },
+     {
+      "x": 507,
+      "y": 12155
+     },
+     {
+      "x": 518,
+      "y": 13756
+     },
+     {
+      "x": 529,
+      "y": 15568
+     },
+     {
+      "x": 540,
+      "y": 17618
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0.15,
+  "animationAttackSec": 0.8333333,
+  "animationFireSec": 0.00001,
+  "reloadSpeed": 1,
+  "animationReloadSec": 4.2000103,
+  "capacity": 5,
+  "ammoPerShot": 1,
+  "actionPointCost": 30,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 15,
+  "damageBonusMult": 1,
+  "minRange": 2750,
+  "maxRange": 5500,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 1,
+  "fullPowerDamageMult": 0.5,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   35,
+   45
+  ],
+  "templateModFormIds": [
+   "0x00133A7C",
+   "0x00313919",
+   "0x00313924",
+   "0x00313978",
+   "0x0004F21D",
+   "0x002DEDB6",
+   "0x001C34F8",
+   "0x001C34FA",
+   "0x001C34F9",
+   "0x001C34FC",
+   "0x001C34FB",
+   "0x00313963",
+   "0x0023AC1D",
+   "0x00313907",
+   "0x0031392B",
+   "0x00313922",
+   "0x00313973",
+   "0x0031393A",
+   "0x00793511",
+   "0x00793512",
+   "0x00793513",
+   "0x004F5770",
+   "0x00524153",
+   "0x004ED02E",
+   "0x007ACB0B",
+   "0x004F6AA5",
+   "0x004F5771",
+   "0x00824455"
+  ],
+  "defaultModFormIds": [
+   "0x00133A7C",
+   "0x00313919",
+   "0x00313924",
+   "0x00313978",
+   "0x0004F21D"
+  ],
+  "attachParentSlots": [
+   "0x0002249D",
+   "0x00022499",
+   "0x0002249F",
+   "0x0005D4D7",
+   "0x0002249C",
+   "0x00179B4C",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x006214D8",
+   "0x00114364",
+   "0x0047A264",
+   "0x001A8B4B",
+   "0x0004B6E1"
+  ],
+  "modifiers": [],
+  "explosionBaseWeaponDamageMult": 0.15,
+  "obtainable": false
+ },
+ {
   "id": "gaussshotgun",
   "formId": "0x0055C150",
   "name": "Gauss Shotgun",
@@ -17845,7 +23034,6 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponranged",
    "ma_Misc_Legendarycrafting_Weapon_Ranged4",
-   "NonPlayerTradable",
    "ObjectTypeWeapon",
    "QuickkeyGun",
    "s_40_ShotgunGauss",
@@ -19299,7 +24487,7 @@
   "speed": 1,
   "attackDelaySec": 0,
   "animationAttackSec": 1.8333334,
-  "animationFireSec": 0.7,
+  "animationFireSec": 0.70001,
   "reloadSpeed": 1,
   "animationReloadSec": 2.3333,
   "capacity": 0,
@@ -19321,6 +24509,345 @@
   "attachParentSlots": [],
   "modifiers": [],
   "obtainable": true
+ },
+ {
+  "id": "Bounty_crHandMadeGun",
+  "formId": "0x0092BD86",
+  "name": "Handmade Rifle",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "WeaponTypeAssaultRifle",
+   "DLC04_ma_HandmadeAssaultRifle",
+   "ma_CanHaveNullMuzzle",
+   "s_IronSightsRifle",
+   "WeaponTypeBallistic",
+   "ObjectTypeWeapon",
+   "QuickkeyGun",
+   "AnimsHandmadeAssaultRifle",
+   "s_40_DLC04_RifleHandmadeAssault",
+   "WeaponTypeRanged",
+   "UI_WeaponTypeAssaultRifle",
+   "WeaponTypeRifle",
+   "ma_Gun_Appearance",
+   "ma_legendarycrafting_weaponranged",
+   "ma_legendarycrafting_weapon",
+   "ma_legendarycrafting_weaponexplosivebullets"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 32,
+    "tier": 26,
+    "curve": [
+     {
+      "x": 1,
+      "y": 22
+     },
+     {
+      "x": 12,
+      "y": 25
+     },
+     {
+      "x": 23,
+      "y": 28
+     },
+     {
+      "x": 34,
+      "y": 32
+     },
+     {
+      "x": 45,
+      "y": 37
+     },
+     {
+      "x": 56,
+      "y": 42
+     },
+     {
+      "x": 67,
+      "y": 48
+     },
+     {
+      "x": 78,
+      "y": 55
+     },
+     {
+      "x": 89,
+      "y": 62
+     },
+     {
+      "x": 100,
+      "y": 71
+     },
+     {
+      "x": 111,
+      "y": 81
+     },
+     {
+      "x": 122,
+      "y": 92
+     },
+     {
+      "x": 133,
+      "y": 105
+     },
+     {
+      "x": 144,
+      "y": 119
+     },
+     {
+      "x": 155,
+      "y": 136
+     },
+     {
+      "x": 166,
+      "y": 155
+     },
+     {
+      "x": 177,
+      "y": 176
+     },
+     {
+      "x": 188,
+      "y": 201
+     },
+     {
+      "x": 199,
+      "y": 229
+     },
+     {
+      "x": 210,
+      "y": 260
+     },
+     {
+      "x": 221,
+      "y": 297
+     },
+     {
+      "x": 232,
+      "y": 338
+     },
+     {
+      "x": 243,
+      "y": 385
+     },
+     {
+      "x": 254,
+      "y": 438
+     },
+     {
+      "x": 265,
+      "y": 499
+     },
+     {
+      "x": 276,
+      "y": 569
+     },
+     {
+      "x": 287,
+      "y": 648
+     },
+     {
+      "x": 298,
+      "y": 738
+     },
+     {
+      "x": 309,
+      "y": 841
+     },
+     {
+      "x": 320,
+      "y": 958
+     },
+     {
+      "x": 331,
+      "y": 1092
+     },
+     {
+      "x": 342,
+      "y": 1244
+     },
+     {
+      "x": 353,
+      "y": 1417
+     },
+     {
+      "x": 364,
+      "y": 1614
+     },
+     {
+      "x": 375,
+      "y": 1839
+     },
+     {
+      "x": 386,
+      "y": 2096
+     },
+     {
+      "x": 397,
+      "y": 2388
+     },
+     {
+      "x": 408,
+      "y": 2721
+     },
+     {
+      "x": 419,
+      "y": 3100
+     },
+     {
+      "x": 430,
+      "y": 3532
+     },
+     {
+      "x": 441,
+      "y": 4025
+     },
+     {
+      "x": 452,
+      "y": 4586
+     },
+     {
+      "x": 463,
+      "y": 5226
+     },
+     {
+      "x": 474,
+      "y": 5955
+     },
+     {
+      "x": 485,
+      "y": 6785
+     },
+     {
+      "x": 496,
+      "y": 7732
+     },
+     {
+      "x": 507,
+      "y": 8811
+     },
+     {
+      "x": 518,
+      "y": 10040
+     },
+     {
+      "x": 529,
+      "y": 11441
+     },
+     {
+      "x": 540,
+      "y": 13037
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0.25,
+  "animationAttackSec": 0.6666667,
+  "animationFireSec": 0.00001,
+  "reloadSpeed": 1,
+  "animationReloadSec": 3.0333433,
+  "capacity": 20,
+  "ammoPerShot": 1,
+  "actionPointCost": 32,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 15,
+  "damageBonusMult": 1,
+  "minRange": 1586,
+  "maxRange": 3173,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   15,
+   25,
+   35,
+   45
+  ],
+  "templateModFormIds": [
+   "0x0004F21D",
+   "0x0031B193",
+   "0x0031B199",
+   "0x0031B1A9",
+   "0x0031B1D5",
+   "0x0031B1E3",
+   "0x0037D0C1",
+   "0x00114376",
+   "0x00113989",
+   "0x0011398E",
+   "0x00113991",
+   "0x0011398D",
+   "0x00113986",
+   "0x0011398A",
+   "0x00113987",
+   "0x0011398F",
+   "0x0031B18C",
+   "0x00113990",
+   "0x0031B1D4",
+   "0x00113988",
+   "0x0011398C",
+   "0x0031B1E7",
+   "0x00113984",
+   "0x0072AEC8",
+   "0x0031B190",
+   "0x0031B1A5",
+   "0x0031B1D8",
+   "0x0031B1F5",
+   "0x004F6AAB",
+   "0x004F5771",
+   "0x00524152",
+   "0x00759B4B",
+   "0x0031B1A2",
+   "0x0040446B",
+   "0x004F5770",
+   "0x004ED02C",
+   "0x005D7A76",
+   "0x0083AEA1",
+   "0x00524150",
+   "0x0079298C",
+   "0x008039B0"
+  ],
+  "defaultModFormIds": [
+   "0x0004F21D",
+   "0x0031B193",
+   "0x0031B199",
+   "0x0031B1A9",
+   "0x0031B1D5",
+   "0x0031B1E3",
+   "0x0037D0C1"
+  ],
+  "attachParentSlots": [
+   "0x0047A264",
+   "0x00114364",
+   "0x005867A7",
+   "0x00024004",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x006214D8",
+   "0x0002249C",
+   "0x0002249D",
+   "0x0004B6E1",
+   "0x0012ECF2",
+   "0x0002249F",
+   "0x0005D4D7",
+   "0x0012ECEC",
+   "0x00022499",
+   "0x00149CA8",
+   "0x0003579B"
+  ],
+  "modifiers": [],
+  "obtainable": false
  },
  {
   "id": "DLC04_HandMadeGun",
@@ -19464,7 +24991,11 @@
    "0x0031B19E",
    "0x0031B1AA",
    "0x00113869",
-   "0x00606B73"
+   "0x00606B73",
+   "0x0031B1DD",
+   "0x0031B1AC",
+   "0x0031B1CA",
+   "0x0031B19A"
   ],
   "defaultModFormIds": [
    "0x0004F21D",
@@ -19476,16 +25007,16 @@
    "0x0037D0C1"
   ],
   "attachParentSlots": [
+   "0x0047A264",
+   "0x00114364",
+   "0x005867A7",
    "0x00024004",
    "0x001E32C8",
-   "0x00114364",
    "0x004E89A8",
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB",
-   "0x005867A7",
    "0x006214D8",
-   "0x0047A264",
    "0x0002249C",
    "0x0002249D",
    "0x0004B6E1",
@@ -19719,6 +25250,299 @@
    }
   ],
   "obtainable": true
+ },
+ {
+  "id": "HIDE_crDLC03_HarpoonGun",
+  "formId": "0x0094BF7A",
+  "name": "Harpoon Gun",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "ObjectTypeWeapon",
+   "WeaponTypeHeavyGun",
+   "s_IronSightsRifle",
+   "QuickkeyGun",
+   "WeaponTypeBallistic",
+   "DLC03_ma_HarpoonGun",
+   "ma_CanHaveNullMuzzle",
+   "VATSWeaponLargeProjectile",
+   "AnimsHarpoonGun",
+   "s_40_DLC03RifleHarpoon",
+   "PhotomodeGripHeavy",
+   "WeaponTypeRanged",
+   "UI_WeaponTypeDLC01HarpoonGun",
+   "IsSingleShotWeapon",
+   "ma_legendarycrafting_weaponranged",
+   "ma_legendarycrafting_weapon",
+   "AlwaysShowCrossHairIn1stPersonADS"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 254,
+    "tier": 27,
+    "curve": [
+     {
+      "x": 1,
+      "y": 24
+     },
+     {
+      "x": 12,
+      "y": 27
+     },
+     {
+      "x": 23,
+      "y": 31
+     },
+     {
+      "x": 34,
+      "y": 36
+     },
+     {
+      "x": 45,
+      "y": 41
+     },
+     {
+      "x": 56,
+      "y": 46
+     },
+     {
+      "x": 67,
+      "y": 53
+     },
+     {
+      "x": 78,
+      "y": 60
+     },
+     {
+      "x": 89,
+      "y": 68
+     },
+     {
+      "x": 100,
+      "y": 78
+     },
+     {
+      "x": 111,
+      "y": 89
+     },
+     {
+      "x": 122,
+      "y": 101
+     },
+     {
+      "x": 133,
+      "y": 115
+     },
+     {
+      "x": 144,
+      "y": 131
+     },
+     {
+      "x": 155,
+      "y": 149
+     },
+     {
+      "x": 166,
+      "y": 169
+     },
+     {
+      "x": 177,
+      "y": 192
+     },
+     {
+      "x": 188,
+      "y": 219
+     },
+     {
+      "x": 199,
+      "y": 249
+     },
+     {
+      "x": 210,
+      "y": 283
+     },
+     {
+      "x": 221,
+      "y": 322
+     },
+     {
+      "x": 232,
+      "y": 367
+     },
+     {
+      "x": 243,
+      "y": 417
+     },
+     {
+      "x": 254,
+      "y": 475
+     },
+     {
+      "x": 265,
+      "y": 540
+     },
+     {
+      "x": 276,
+      "y": 615
+     },
+     {
+      "x": 287,
+      "y": 699
+     },
+     {
+      "x": 298,
+      "y": 796
+     },
+     {
+      "x": 309,
+      "y": 905
+     },
+     {
+      "x": 320,
+      "y": 1030
+     },
+     {
+      "x": 331,
+      "y": 1172
+     },
+     {
+      "x": 342,
+      "y": 1334
+     },
+     {
+      "x": 353,
+      "y": 1518
+     },
+     {
+      "x": 364,
+      "y": 1728
+     },
+     {
+      "x": 375,
+      "y": 1966
+     },
+     {
+      "x": 386,
+      "y": 2238
+     },
+     {
+      "x": 397,
+      "y": 2547
+     },
+     {
+      "x": 408,
+      "y": 2899
+     },
+     {
+      "x": 419,
+      "y": 3299
+     },
+     {
+      "x": 430,
+      "y": 3755
+     },
+     {
+      "x": 441,
+      "y": 4273
+     },
+     {
+      "x": 452,
+      "y": 4863
+     },
+     {
+      "x": 463,
+      "y": 5535
+     },
+     {
+      "x": 474,
+      "y": 6300
+     },
+     {
+      "x": 485,
+      "y": 7170
+     },
+     {
+      "x": 496,
+      "y": 8161
+     },
+     {
+      "x": 507,
+      "y": 9289
+     },
+     {
+      "x": 518,
+      "y": 10572
+     },
+     {
+      "x": 529,
+      "y": 12033
+     },
+     {
+      "x": 540,
+      "y": 13695
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2.5,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2.25,
+  "speed": 1,
+  "attackDelaySec": 1.25,
+  "animationAttackSec": 1,
+  "animationFireSec": 0.00001,
+  "reloadSpeed": 1.1,
+  "animationReloadSec": 4.10001,
+  "capacity": 3,
+  "ammoPerShot": 1,
+  "actionPointCost": 18,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 15,
+  "damageBonusMult": 1,
+  "minRange": 2530,
+  "maxRange": 5060,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   30,
+   40,
+   50
+  ],
+  "templateModFormIds": [
+   "0x00111068",
+   "0x00111590",
+   "0x005A70C2",
+   "0x00524152",
+   "0x004F6AA1",
+   "0x005299F9",
+   "0x00111063",
+   "0x007FA40F"
+  ],
+  "defaultModFormIds": [
+   "0x00111068",
+   "0x00111590"
+  ],
+  "attachParentSlots": [
+   "0x001E32C8",
+   "0x00022499",
+   "0x0005D4D7",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x00521926",
+   "0x006214D8",
+   "0x00114364",
+   "0x0047A264",
+   "0x009302C8"
+  ],
+  "modifiers": [],
+  "obtainable": false
  },
  {
   "id": "Hatchet",
@@ -20069,7 +25893,8 @@
    "ma_legendarycrafting_weaponmelee",
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon",
-   "ma_HogSplitter"
+   "ma_HogSplitter",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -20155,10 +25980,12 @@
   ],
   "templateModFormIds": [
    "0x008B3A1E",
+   "0x00945D3B",
    "0x005117BF"
   ],
   "defaultModFormIds": [
    "0x008B3A1E",
+   "0x00945D3B",
    "0x005117BF"
   ],
   "attachParentSlots": [
@@ -20171,7 +25998,8 @@
    "0x006214D8",
    "0x0005524C",
    "0x0047A264",
-   "0x001A8B4B"
+   "0x001A8B4B",
+   "0x0092B358"
   ],
   "modifiers": [
    {
@@ -20709,6 +26537,596 @@
   ],
   "modifiers": [],
   "obtainable": true
+ },
+ {
+  "id": "HIDE_crWeapBloatfly_Toxic",
+  "formId": "0x008FF69F",
+  "name": "Larva Spit",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "BloatflyWeapon",
+   "s_40_BloatflyDart",
+   "QuickkeyGun",
+   "crWeaponRanged",
+   "NoRicochet",
+   "WeaponTypeRanged"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "dtPoison",
+    "amount": 0,
+    "tier": 18,
+    "curve": [
+     {
+      "x": 1,
+      "y": 9
+     },
+     {
+      "x": 12,
+      "y": 10
+     },
+     {
+      "x": 23,
+      "y": 12
+     },
+     {
+      "x": 34,
+      "y": 14
+     },
+     {
+      "x": 45,
+      "y": 16
+     },
+     {
+      "x": 56,
+      "y": 19
+     },
+     {
+      "x": 67,
+      "y": 22
+     },
+     {
+      "x": 78,
+      "y": 25
+     },
+     {
+      "x": 89,
+      "y": 29
+     },
+     {
+      "x": 100,
+      "y": 33
+     },
+     {
+      "x": 111,
+      "y": 38
+     },
+     {
+      "x": 122,
+      "y": 43
+     },
+     {
+      "x": 133,
+      "y": 50
+     },
+     {
+      "x": 144,
+      "y": 57
+     },
+     {
+      "x": 155,
+      "y": 66
+     },
+     {
+      "x": 166,
+      "y": 76
+     },
+     {
+      "x": 177,
+      "y": 87
+     },
+     {
+      "x": 188,
+      "y": 100
+     },
+     {
+      "x": 199,
+      "y": 115
+     },
+     {
+      "x": 210,
+      "y": 132
+     },
+     {
+      "x": 221,
+      "y": 152
+     },
+     {
+      "x": 232,
+      "y": 175
+     },
+     {
+      "x": 243,
+      "y": 201
+     },
+     {
+      "x": 254,
+      "y": 231
+     },
+     {
+      "x": 265,
+      "y": 265
+     },
+     {
+      "x": 276,
+      "y": 305
+     },
+     {
+      "x": 287,
+      "y": 351
+     },
+     {
+      "x": 298,
+      "y": 403
+     },
+     {
+      "x": 309,
+      "y": 464
+     },
+     {
+      "x": 320,
+      "y": 533
+     },
+     {
+      "x": 331,
+      "y": 614
+     },
+     {
+      "x": 342,
+      "y": 706
+     },
+     {
+      "x": 353,
+      "y": 812
+     },
+     {
+      "x": 364,
+      "y": 934
+     },
+     {
+      "x": 375,
+      "y": 1074
+     },
+     {
+      "x": 386,
+      "y": 1236
+     },
+     {
+      "x": 397,
+      "y": 1422
+     },
+     {
+      "x": 408,
+      "y": 1636
+     },
+     {
+      "x": 419,
+      "y": 1882
+     },
+     {
+      "x": 430,
+      "y": 2165
+     },
+     {
+      "x": 441,
+      "y": 2491
+     },
+     {
+      "x": 452,
+      "y": 2866
+     },
+     {
+      "x": 463,
+      "y": 3298
+     },
+     {
+      "x": 474,
+      "y": 3795
+     },
+     {
+      "x": 485,
+      "y": 4366
+     },
+     {
+      "x": 496,
+      "y": 5024
+     },
+     {
+      "x": 507,
+      "y": 5781
+     },
+     {
+      "x": 518,
+      "y": 6653
+     },
+     {
+      "x": 529,
+      "y": 7655
+     },
+     {
+      "x": 540,
+      "y": 8809
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 2,
+  "animationAttackSec": 0.6666667,
+  "animationFireSec": 0.33334336,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 20,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 0,
+  "damageBonusMult": 1,
+  "minRange": 300,
+  "maxRange": 900,
+  "outOfRangeDamageMult": 0,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [],
+  "templateModFormIds": [],
+  "defaultModFormIds": [],
+  "attachParentSlots": [],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
+  "id": "Bounty_crLaserGun",
+  "formId": "0x0092BD83",
+  "name": "Laser",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "WeaponTypeLaser",
+   "s_IronSightsRifle",
+   "dn_weap_EnergyGun",
+   "ma_LaserGun",
+   "modskill_EnergyGuns",
+   "s_40_Laser",
+   "ObjectTypeWeapon",
+   "VATSWeaponLaserBeam",
+   "ma_CanHaveNullMuzzle",
+   "QuickkeyGun",
+   "WeaponRequiresMods",
+   "WeaponTypeEnergy",
+   "WeaponTypeRanged",
+   "ma_Gun_Appearance",
+   "ma_legendarycrafting_weaponranged",
+   "ma_Misc_Legendarycrafting_Weapon_Ranged4",
+   "ma_legendarycrafting_weapon"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "dtEnergy",
+    "amount": 24,
+    "tier": 32,
+    "curve": [
+     {
+      "x": 1,
+      "y": 41
+     },
+     {
+      "x": 12,
+      "y": 46
+     },
+     {
+      "x": 23,
+      "y": 53
+     },
+     {
+      "x": 34,
+      "y": 60
+     },
+     {
+      "x": 45,
+      "y": 68
+     },
+     {
+      "x": 56,
+      "y": 76
+     },
+     {
+      "x": 67,
+      "y": 87
+     },
+     {
+      "x": 78,
+      "y": 98
+     },
+     {
+      "x": 89,
+      "y": 111
+     },
+     {
+      "x": 100,
+      "y": 126
+     },
+     {
+      "x": 111,
+      "y": 142
+     },
+     {
+      "x": 122,
+      "y": 161
+     },
+     {
+      "x": 133,
+      "y": 182
+     },
+     {
+      "x": 144,
+      "y": 206
+     },
+     {
+      "x": 155,
+      "y": 233
+     },
+     {
+      "x": 166,
+      "y": 263
+     },
+     {
+      "x": 177,
+      "y": 298
+     },
+     {
+      "x": 188,
+      "y": 337
+     },
+     {
+      "x": 199,
+      "y": 382
+     },
+     {
+      "x": 210,
+      "y": 432
+     },
+     {
+      "x": 221,
+      "y": 488
+     },
+     {
+      "x": 232,
+      "y": 553
+     },
+     {
+      "x": 243,
+      "y": 625
+     },
+     {
+      "x": 254,
+      "y": 708
+     },
+     {
+      "x": 265,
+      "y": 801
+     },
+     {
+      "x": 276,
+      "y": 906
+     },
+     {
+      "x": 287,
+      "y": 1025
+     },
+     {
+      "x": 298,
+      "y": 1160
+     },
+     {
+      "x": 309,
+      "y": 1312
+     },
+     {
+      "x": 320,
+      "y": 1485
+     },
+     {
+      "x": 331,
+      "y": 1680
+     },
+     {
+      "x": 342,
+      "y": 1901
+     },
+     {
+      "x": 353,
+      "y": 2152
+     },
+     {
+      "x": 364,
+      "y": 2435
+     },
+     {
+      "x": 375,
+      "y": 2755
+     },
+     {
+      "x": 386,
+      "y": 3118
+     },
+     {
+      "x": 397,
+      "y": 3528
+     },
+     {
+      "x": 408,
+      "y": 3993
+     },
+     {
+      "x": 419,
+      "y": 4519
+     },
+     {
+      "x": 430,
+      "y": 5113
+     },
+     {
+      "x": 441,
+      "y": 5787
+     },
+     {
+      "x": 452,
+      "y": 6549
+     },
+     {
+      "x": 463,
+      "y": 7411
+     },
+     {
+      "x": 474,
+      "y": 8387
+     },
+     {
+      "x": 485,
+      "y": 9491
+     },
+     {
+      "x": 496,
+      "y": 10741
+     },
+     {
+      "x": 507,
+      "y": 12155
+     },
+     {
+      "x": 518,
+      "y": 13756
+     },
+     {
+      "x": 529,
+      "y": 15568
+     },
+     {
+      "x": 540,
+      "y": 17618
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0.25,
+  "animationAttackSec": 0,
+  "animationFireSec": 0,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 30,
+  "ammoPerShot": 1,
+  "actionPointCost": 25,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 15,
+  "damageBonusMult": 1,
+  "minRange": 1175,
+  "maxRange": 2350,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   5,
+   15,
+   25,
+   35,
+   45
+  ],
+  "templateModFormIds": [
+   "0x003129C6",
+   "0x0031297E",
+   "0x0031299A",
+   "0x00312A2B",
+   "0x0004F21D",
+   "0x0037D0C1",
+   "0x00312971",
+   "0x003129A3",
+   "0x001879D6",
+   "0x001879CF",
+   "0x001879D2",
+   "0x001879D7",
+   "0x001879D5",
+   "0x0031298C",
+   "0x003129FF",
+   "0x001879DE",
+   "0x001879D3",
+   "0x001879DA",
+   "0x001879E2",
+   "0x001879D4",
+   "0x001879D1",
+   "0x001879E1",
+   "0x001879D0",
+   "0x001879D9",
+   "0x00312A41",
+   "0x001879E0",
+   "0x005117BD",
+   "0x00312992",
+   "0x00312A22",
+   "0x003129D0",
+   "0x00312A3A",
+   "0x0072DF06",
+   "0x005281B4",
+   "0x0052414E",
+   "0x00524150",
+   "0x0075C3BA",
+   "0x008039B0"
+  ],
+  "defaultModFormIds": [
+   "0x003129C6",
+   "0x0031297E",
+   "0x0031299A",
+   "0x00312A2B",
+   "0x0004F21D",
+   "0x0037D0C1"
+  ],
+  "attachParentSlots": [
+   "0x00024004",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x00114364",
+   "0x006214D8",
+   "0x0047A264",
+   "0x00022499",
+   "0x0002249D",
+   "0x0002249F",
+   "0x0012ECEF",
+   "0x0012ECEE",
+   "0x0002249C",
+   "0x0012ECF2",
+   "0x00050F03",
+   "0x00035784",
+   "0x0003579B",
+   "0x0004B6E1",
+   "0x0003477E"
+  ],
+  "modifiers": [],
+  "obtainable": false
  },
  {
   "id": "LaserGun",
@@ -21599,19 +28017,21 @@
    "0x0007C793",
    "0x0007BE00",
    "0x0084CCA1",
-   "0x0007AD6E",
+   "0x00947F85",
    "0x0072AEC9",
    "0x007904EA",
    "0x007904EB",
    "0x00524150",
-   "0x0075C3B8"
+   "0x0075C3B8",
+   "0x00947F7E"
   ],
   "defaultModFormIds": [
    "0x0007C200",
    "0x0007C20C",
    "0x0007C793",
    "0x0007BE00",
-   "0x0084CCA1"
+   "0x0084CCA1",
+   "0x00947F85"
   ],
   "attachParentSlots": [
    "0x00024004",
@@ -21623,6 +28043,7 @@
    "0x00114364",
    "0x0047A264",
    "0x006214D8",
+   "0x0094CE5A",
    "0x0002249D",
    "0x0004B6E1",
    "0x0002249C",
@@ -21941,7 +28362,13 @@
    "0x00179B4C",
    "0x0002249F",
    "0x00147AFE",
-   "0x00050F03"
+   "0x00050F03",
+   "0x0005D4D7",
+   "0x00026A9A",
+   "0x00026A9B",
+   "0x00026A9D",
+   "0x0003477E",
+   "0x00035799"
   ],
   "modifiers": [],
   "obtainable": false
@@ -22085,7 +28512,13 @@
    "0x00179B4C",
    "0x0002249F",
    "0x00147AFE",
-   "0x00050F03"
+   "0x00050F03",
+   "0x0005D4D7",
+   "0x00026A9A",
+   "0x00026A9B",
+   "0x00026A9D",
+   "0x0003477E",
+   "0x00035799"
   ],
   "modifiers": [],
   "obtainable": false
@@ -22211,39 +28644,39 @@
    "0x0008F5A1",
    "0x0008F0FB",
    "0x0008F5A2",
+   "0x0094F18F",
    "0x00019FC7",
    "0x00067C20",
    "0x00067F45",
    "0x0008F173",
    "0x0008F10A",
-   "0x004F6D76",
-   "0x004ED02C",
-   "0x00524150",
-   "0x0079297C",
+   "0x007904EA",
+   "0x007904EB",
+   "0x007904EC",
    "0x00802184",
    "0x00802185",
-   "0x00802186",
-   "0x007904EA",
-   "0x007904EC",
+   "0x004ED02C",
    "0x008EF0F7"
   ],
   "defaultModFormIds": [
    "0x0008F5A1",
    "0x0008F0FB",
-   "0x0008F5A2"
+   "0x0008F5A2",
+   "0x0094F18F"
   ],
   "attachParentSlots": [
+   "0x0047A264",
+   "0x00114364",
    "0x00024004",
+   "0x00521926",
+   "0x001E32C8",
    "0x004E89A8",
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB",
-   "0x001E32C8",
    "0x006214D8",
-   "0x0047A264",
-   "0x00114364",
-   "0x00521926",
    "0x001A8B4B",
+   "0x0094CE5A",
    "0x0002249D",
    "0x0002249C",
    "0x0004B6E1",
@@ -22251,7 +28684,13 @@
    "0x00179B4C",
    "0x0002249F",
    "0x00147AFE",
-   "0x00050F03"
+   "0x00050F03",
+   "0x0005D4D7",
+   "0x00026A9A",
+   "0x00026A9B",
+   "0x00026A9D",
+   "0x0003477E",
+   "0x00035799"
   ],
   "modifiers": [],
   "obtainable": true
@@ -22279,7 +28718,8 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_1hMelee",
    "ma_legendarycrafting_weapon",
-   "WeaponTypeBleedDamage"
+   "WeaponTypeBleedDamage",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -22369,12 +28809,14 @@
   ],
   "templateModFormIds": [
    "0x00174E18",
+   "0x00945D3B",
    "0x005117BF",
    "0x001CF2A0",
    "0x00230312"
   ],
   "defaultModFormIds": [
    "0x00174E18",
+   "0x00945D3B",
    "0x005117BF"
   ],
   "attachParentSlots": [
@@ -22386,7 +28828,8 @@
    "0x004E89AB",
    "0x001A001E",
    "0x006214D8",
-   "0x0032CD06"
+   "0x0032CD06",
+   "0x0092B358"
   ],
   "modifiers": [
    {
@@ -22541,7 +28984,7 @@
   "speed": 1,
   "attackDelaySec": 0,
   "animationAttackSec": 1.8333334,
-  "animationFireSec": 0.7,
+  "animationFireSec": 0.70001,
   "reloadSpeed": 1,
   "animationReloadSec": 0,
   "capacity": 0,
@@ -23384,6 +29827,312 @@
    "0x0002249D",
    "0x0003477E",
    "0x0002249C",
+   "0x0003579B"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
+  "id": "Bounty_crMinigun",
+  "formId": "0x0092BD7D",
+  "name": "Minigun",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "AnimsMinigun",
+   "s_40_Minigun",
+   "ma_CanHaveNullMuzzle",
+   "VATSWeaponLongBurst",
+   "WeaponTypeBallistic",
+   "WeaponTypeHeavyGun",
+   "ObjectTypeWeapon",
+   "QuickkeyGun",
+   "ma_Minigun",
+   "WeaponTypeGun",
+   "s_IronSightsRifleLarge",
+   "WeaponTypeMinigun",
+   "WeaponTypeRanged",
+   "ma_Gun_Appearance",
+   "PhotomodeGripHeavy",
+   "UI_WeaponTypeMinigun",
+   "WeaponTypeAutomatic",
+   "AlwaysShowCrossHairIn1stPersonADS",
+   "ma_legendarycrafting_weaponranged",
+   "ma_legendarycrafting_weapon",
+   "ma_legendarycrafting_weaponexplosivebullets"
+  ],
+  "isAutomaticFlag": true,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 8,
+    "tier": 16,
+    "curve": [
+     {
+      "x": 1,
+      "y": 7
+     },
+     {
+      "x": 12,
+      "y": 8
+     },
+     {
+      "x": 23,
+      "y": 10
+     },
+     {
+      "x": 34,
+      "y": 11
+     },
+     {
+      "x": 45,
+      "y": 13
+     },
+     {
+      "x": 56,
+      "y": 15
+     },
+     {
+      "x": 67,
+      "y": 18
+     },
+     {
+      "x": 78,
+      "y": 20
+     },
+     {
+      "x": 89,
+      "y": 23
+     },
+     {
+      "x": 100,
+      "y": 27
+     },
+     {
+      "x": 111,
+      "y": 31
+     },
+     {
+      "x": 122,
+      "y": 36
+     },
+     {
+      "x": 133,
+      "y": 41
+     },
+     {
+      "x": 144,
+      "y": 48
+     },
+     {
+      "x": 155,
+      "y": 55
+     },
+     {
+      "x": 166,
+      "y": 63
+     },
+     {
+      "x": 177,
+      "y": 73
+     },
+     {
+      "x": 188,
+      "y": 84
+     },
+     {
+      "x": 199,
+      "y": 96
+     },
+     {
+      "x": 210,
+      "y": 111
+     },
+     {
+      "x": 221,
+      "y": 128
+     },
+     {
+      "x": 232,
+      "y": 147
+     },
+     {
+      "x": 243,
+      "y": 170
+     },
+     {
+      "x": 254,
+      "y": 196
+     },
+     {
+      "x": 265,
+      "y": 225
+     },
+     {
+      "x": 276,
+      "y": 260
+     },
+     {
+      "x": 287,
+      "y": 299
+     },
+     {
+      "x": 298,
+      "y": 345
+     },
+     {
+      "x": 309,
+      "y": 398
+     },
+     {
+      "x": 320,
+      "y": 459
+     },
+     {
+      "x": 331,
+      "y": 529
+     },
+     {
+      "x": 342,
+      "y": 610
+     },
+     {
+      "x": 353,
+      "y": 703
+     },
+     {
+      "x": 364,
+      "y": 811
+     },
+     {
+      "x": 375,
+      "y": 935
+     },
+     {
+      "x": 386,
+      "y": 1079
+     },
+     {
+      "x": 397,
+      "y": 1244
+     },
+     {
+      "x": 408,
+      "y": 1435
+     },
+     {
+      "x": 419,
+      "y": 1655
+     },
+     {
+      "x": 430,
+      "y": 1909
+     },
+     {
+      "x": 441,
+      "y": 2202
+     },
+     {
+      "x": 452,
+      "y": 2540
+     },
+     {
+      "x": 463,
+      "y": 2930
+     },
+     {
+      "x": 474,
+      "y": 3380
+     },
+     {
+      "x": 485,
+      "y": 3899
+     },
+     {
+      "x": 496,
+      "y": 4498
+     },
+     {
+      "x": 507,
+      "y": 5189
+     },
+     {
+      "x": 518,
+      "y": 5986
+     },
+     {
+      "x": 529,
+      "y": 6906
+     },
+     {
+      "x": 540,
+      "y": 7967
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 2,
+  "attackDelaySec": 0,
+  "animationAttackSec": 2.2,
+  "animationFireSec": 1,
+  "reloadSpeed": 1,
+  "animationReloadSec": 3.3666768,
+  "capacity": 500,
+  "ammoPerShot": 1,
+  "actionPointCost": 30,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 15,
+  "damageBonusMult": 1,
+  "minRange": 2574,
+  "maxRange": 5147,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   35,
+   45
+  ],
+  "templateModFormIds": [
+   "0x00121D53",
+   "0x00188A05",
+   "0x0004F21D",
+   "0x0037D0C1",
+   "0x001C6BC5",
+   "0x001C6BC7",
+   "0x001C6BC6",
+   "0x0037D0C4",
+   "0x005281B4",
+   "0x00839C13",
+   "0x004F5771",
+   "0x00121D54"
+  ],
+  "defaultModFormIds": [
+   "0x00121D53",
+   "0x00188A05",
+   "0x0004F21D",
+   "0x0037D0C1"
+  ],
+  "attachParentSlots": [
+   "0x00114364",
+   "0x0002249D",
+   "0x00149CA8",
+   "0x001E9904",
+   "0x001E9905",
+   "0x001E9906",
+   "0x00022499",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x006214D8",
+   "0x0002249C",
+   "0x0047A264",
    "0x0003579B"
   ],
   "modifiers": [],
@@ -28933,7 +35682,8 @@
    "ma_legendarycrafting_weaponmelee",
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "WeaponTypeAutomaticMelee",
-   "ma_legendarycrafting_weapon"
+   "ma_legendarycrafting_weapon",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": true,
   "components": [
@@ -29019,10 +35769,12 @@
    45
   ],
   "templateModFormIds": [
-   "0x0010FB91"
+   "0x0010FB91",
+   "0x00945D3B"
   ],
   "defaultModFormIds": [
-   "0x0010FB91"
+   "0x0010FB91",
+   "0x00945D3B"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -29031,7 +35783,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB",
-   "0x006214D8"
+   "0x006214D8",
+   "0x0092B358"
   ],
   "modifiers": [],
   "obtainable": true
@@ -31811,155 +38564,6 @@
   "obtainable": false
  },
  {
-  "id": "W05_MQS_203P_10mmSMG",
-  "formId": "0x0059A82F",
-  "name": "Old Guard's 10mm SMG",
-  "weaponTypeName": "Gun",
-  "keywords": [
-   "Anims10mmSMG",
-   "s_40_RifleSubmachineGun10mm",
-   "QuickkeyGun",
-   "s_IronSightsPistol",
-   "UI_WeaponTypeMachineGun",
-   "WeaponTypeBallistic",
-   "ma_BallisticGun",
-   "ma_10mmSMG",
-   "ObjectTypeWeapon",
-   "modskill_Guns",
-   "WeaponTypeRanged",
-   "WeaponTypeAutomatic",
-   "s_30_Auto",
-   "WeaponTypeRifle",
-   "ma_Gun_Appearance",
-   "FeaturedItem"
-  ],
-  "isAutomaticFlag": true,
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 7,
-    "tier": 18,
-    "curve": [
-     {
-      "x": 1,
-      "y": 18
-     },
-     {
-      "x": 5,
-      "y": 20
-     },
-     {
-      "x": 10,
-      "y": 22
-     },
-     {
-      "x": 15,
-      "y": 25
-     },
-     {
-      "x": 20,
-      "y": 29
-     },
-     {
-      "x": 25,
-      "y": 32
-     },
-     {
-      "x": 30,
-      "y": 36
-     },
-     {
-      "x": 35,
-      "y": 41
-     },
-     {
-      "x": 40,
-      "y": 46
-     },
-     {
-      "x": 45,
-      "y": 52
-     },
-     {
-      "x": 50,
-      "y": 59
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 2.25,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2.25,
-  "speed": 0.99,
-  "attackDelaySec": 0.2333,
-  "animationAttackSec": 2.2,
-  "animationFireSec": 0.00001,
-  "reloadSpeed": 1,
-  "animationReloadSec": 3.00001,
-  "capacity": 30,
-  "ammoPerShot": 1,
-  "actionPointCost": 28,
-  "projectileCount": 1,
-  "reach": 1,
-  "secondaryDamage": 17,
-  "damageBonusMult": 1,
-  "minRange": 1283,
-  "maxRange": 2565,
-  "outOfRangeDamageMult": 0.5,
-  "fullPowerSeconds": 0,
-  "fullPowerDamageMult": 0,
-  "minimumChargeTime": 0,
-  "eligibleLevels": [
-   10,
-   20,
-   30,
-   40,
-   50
-  ],
-  "templateModFormIds": [
-   "0x0002D346",
-   "0x002FD8FE",
-   "0x002FD8FA",
-   "0x002FD90E",
-   "0x0010DB0E",
-   "0x0010DB0D",
-   "0x005281B4"
-  ],
-  "defaultModFormIds": [
-   "0x0002D346",
-   "0x002FD8FE",
-   "0x002FD8FA",
-   "0x002FD90E",
-   "0x0010DB0E",
-   "0x0010DB0D",
-   "0x005281B4"
-  ],
-  "attachParentSlots": [
-   "0x00024004",
-   "0x001E32C8",
-   "0x004E89A8",
-   "0x004E89A9",
-   "0x004E89AA",
-   "0x004E89AB",
-   "0x0047A264",
-   "0x00114364",
-   "0x0012ECEC",
-   "0x0004B6E1",
-   "0x0002249D",
-   "0x0005D4D7",
-   "0x0002249F",
-   "0x00022499",
-   "0x00149CA8",
-   "0x0003579B",
-   "0x0012ECF2",
-   "0x0007F058",
-   "0x0003579A"
-  ],
-  "modifiers": [],
-  "obtainable": false
- },
- {
   "id": "EN02_ScanGrenade",
   "formId": "0x00052213",
   "name": "Orbital Scan Beacon",
@@ -31988,7 +38592,7 @@
   "speed": 1,
   "attackDelaySec": 0,
   "animationAttackSec": 1.8333334,
-  "animationFireSec": 0.7,
+  "animationFireSec": 0.70001,
   "reloadSpeed": 1,
   "animationReloadSec": 2.3333,
   "capacity": 0,
@@ -32314,7 +38918,7 @@
   "speed": 1,
   "attackDelaySec": 0,
   "animationAttackSec": 1.8333334,
-  "animationFireSec": 0.7,
+  "animationFireSec": 0.70001,
   "reloadSpeed": 1,
   "animationReloadSec": 2.3333,
   "capacity": 0,
@@ -33586,7 +40190,8 @@
    "WeaponTypeArchaic",
    "WeaponTypeAxe",
    "WeaponTypeMelee2H",
-   "WeaponTypeMeleeGeneral"
+   "WeaponTypeMeleeGeneral",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -33675,6 +40280,7 @@
   "templateModFormIds": [
    "0x0000283D",
    "0x005117BF",
+   "0x00945D3B",
    "0x0006A249",
    "0x005A70C1",
    "0x004F6AA0",
@@ -33689,7 +40295,8 @@
   ],
   "defaultModFormIds": [
    "0x0000283D",
-   "0x005117BF"
+   "0x005117BF",
+   "0x00945D3B"
   ],
   "attachParentSlots": [
    "0x00521926",
@@ -33702,7 +40309,8 @@
    "0x001A001E",
    "0x0005524C",
    "0x0047A264",
-   "0x009302C8"
+   "0x009302C8",
+   "0x0092B358"
   ],
   "modifiers": [],
   "obtainable": true
@@ -34240,7 +40848,8 @@
    "ma_legendarycrafting_weaponmelee",
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_1hMelee",
-   "ma_legendarycrafting_weapon"
+   "ma_legendarycrafting_weapon",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -34330,6 +40939,7 @@
   ],
   "templateModFormIds": [
    "0x001843E3",
+   "0x00945D3B",
    "0x005117BF",
    "0x00230304",
    "0x005FB446",
@@ -34342,6 +40952,7 @@
   ],
   "defaultModFormIds": [
    "0x001843E3",
+   "0x00945D3B",
    "0x005117BF"
   ],
   "attachParentSlots": [
@@ -34353,7 +40964,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x001A001E",
-   "0x0047A264"
+   "0x0047A264",
+   "0x0092B358"
   ],
   "modifiers": [],
   "obtainable": true
@@ -34854,6 +41466,521 @@
   "obtainable": true
  },
  {
+  "id": "Bounty_crPlasmaCaster",
+  "formId": "0x0092BD82",
+  "name": "Plasma Caster",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "AlwaysShowCrossHairIn1stPersonADS",
+   "WeaponTypeHeavyGun",
+   "ma_PlasmaCaster",
+   "VATSWeaponLongBurst",
+   "UI_WeaponTypeAutoGrenadeLauncher",
+   "PhotomodeGripHeavy",
+   "ObjectTypeWeapon",
+   "QuickkeyGun",
+   "s_40_PlasmaCaster",
+   "DogmeatNoVisualsOnRetrieve",
+   "s_IronSightsRifleLarge",
+   "AnimsGatlingPlasma",
+   "WeaponTypeRanged",
+   "AnimsPlasmaCaster",
+   "ma_Gun_Appearance",
+   "NonPlayerTradable",
+   "WeaponTypeEnergy",
+   "WeaponTypePlasma",
+   "AnimsStabWeapon",
+   "ma_legendarycrafting_weaponranged",
+   "ma_Misc_Legendarycrafting_Weapon_Ranged4",
+   "ma_legendarycrafting_weapon",
+   "ma_legendarycrafting_weaponexplosivebullets"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 0,
+    "tier": 28,
+    "curve": [
+     {
+      "x": 1,
+      "y": 27
+     },
+     {
+      "x": 12,
+      "y": 31
+     },
+     {
+      "x": 23,
+      "y": 35
+     },
+     {
+      "x": 34,
+      "y": 40
+     },
+     {
+      "x": 45,
+      "y": 45
+     },
+     {
+      "x": 56,
+      "y": 51
+     },
+     {
+      "x": 67,
+      "y": 58
+     },
+     {
+      "x": 78,
+      "y": 66
+     },
+     {
+      "x": 89,
+      "y": 75
+     },
+     {
+      "x": 100,
+      "y": 86
+     },
+     {
+      "x": 111,
+      "y": 97
+     },
+     {
+      "x": 122,
+      "y": 111
+     },
+     {
+      "x": 133,
+      "y": 126
+     },
+     {
+      "x": 144,
+      "y": 143
+     },
+     {
+      "x": 155,
+      "y": 163
+     },
+     {
+      "x": 166,
+      "y": 185
+     },
+     {
+      "x": 177,
+      "y": 210
+     },
+     {
+      "x": 188,
+      "y": 239
+     },
+     {
+      "x": 199,
+      "y": 271
+     },
+     {
+      "x": 210,
+      "y": 308
+     },
+     {
+      "x": 221,
+      "y": 350
+     },
+     {
+      "x": 232,
+      "y": 398
+     },
+     {
+      "x": 243,
+      "y": 452
+     },
+     {
+      "x": 254,
+      "y": 514
+     },
+     {
+      "x": 265,
+      "y": 584
+     },
+     {
+      "x": 276,
+      "y": 664
+     },
+     {
+      "x": 287,
+      "y": 755
+     },
+     {
+      "x": 298,
+      "y": 858
+     },
+     {
+      "x": 309,
+      "y": 975
+     },
+     {
+      "x": 320,
+      "y": 1108
+     },
+     {
+      "x": 331,
+      "y": 1259
+     },
+     {
+      "x": 342,
+      "y": 1432
+     },
+     {
+      "x": 353,
+      "y": 1627
+     },
+     {
+      "x": 364,
+      "y": 1850
+     },
+     {
+      "x": 375,
+      "y": 2103
+     },
+     {
+      "x": 386,
+      "y": 2390
+     },
+     {
+      "x": 397,
+      "y": 2717
+     },
+     {
+      "x": 408,
+      "y": 3089
+     },
+     {
+      "x": 419,
+      "y": 3511
+     },
+     {
+      "x": 430,
+      "y": 3992
+     },
+     {
+      "x": 441,
+      "y": 4538
+     },
+     {
+      "x": 452,
+      "y": 5158
+     },
+     {
+      "x": 463,
+      "y": 5864
+     },
+     {
+      "x": 474,
+      "y": 6667
+     },
+     {
+      "x": 485,
+      "y": 7579
+     },
+     {
+      "x": 496,
+      "y": 8616
+     },
+     {
+      "x": 507,
+      "y": 9795
+     },
+     {
+      "x": 518,
+      "y": 11135
+     },
+     {
+      "x": 529,
+      "y": 12659
+     },
+     {
+      "x": 540,
+      "y": 14392
+     }
+    ]
+   },
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "dtEnergy",
+    "amount": 0,
+    "tier": 28,
+    "curve": [
+     {
+      "x": 1,
+      "y": 27
+     },
+     {
+      "x": 12,
+      "y": 31
+     },
+     {
+      "x": 23,
+      "y": 35
+     },
+     {
+      "x": 34,
+      "y": 40
+     },
+     {
+      "x": 45,
+      "y": 45
+     },
+     {
+      "x": 56,
+      "y": 51
+     },
+     {
+      "x": 67,
+      "y": 58
+     },
+     {
+      "x": 78,
+      "y": 66
+     },
+     {
+      "x": 89,
+      "y": 75
+     },
+     {
+      "x": 100,
+      "y": 86
+     },
+     {
+      "x": 111,
+      "y": 97
+     },
+     {
+      "x": 122,
+      "y": 111
+     },
+     {
+      "x": 133,
+      "y": 126
+     },
+     {
+      "x": 144,
+      "y": 143
+     },
+     {
+      "x": 155,
+      "y": 163
+     },
+     {
+      "x": 166,
+      "y": 185
+     },
+     {
+      "x": 177,
+      "y": 210
+     },
+     {
+      "x": 188,
+      "y": 239
+     },
+     {
+      "x": 199,
+      "y": 271
+     },
+     {
+      "x": 210,
+      "y": 308
+     },
+     {
+      "x": 221,
+      "y": 350
+     },
+     {
+      "x": 232,
+      "y": 398
+     },
+     {
+      "x": 243,
+      "y": 452
+     },
+     {
+      "x": 254,
+      "y": 514
+     },
+     {
+      "x": 265,
+      "y": 584
+     },
+     {
+      "x": 276,
+      "y": 664
+     },
+     {
+      "x": 287,
+      "y": 755
+     },
+     {
+      "x": 298,
+      "y": 858
+     },
+     {
+      "x": 309,
+      "y": 975
+     },
+     {
+      "x": 320,
+      "y": 1108
+     },
+     {
+      "x": 331,
+      "y": 1259
+     },
+     {
+      "x": 342,
+      "y": 1432
+     },
+     {
+      "x": 353,
+      "y": 1627
+     },
+     {
+      "x": 364,
+      "y": 1850
+     },
+     {
+      "x": 375,
+      "y": 2103
+     },
+     {
+      "x": 386,
+      "y": 2390
+     },
+     {
+      "x": 397,
+      "y": 2717
+     },
+     {
+      "x": 408,
+      "y": 3089
+     },
+     {
+      "x": 419,
+      "y": 3511
+     },
+     {
+      "x": 430,
+      "y": 3992
+     },
+     {
+      "x": 441,
+      "y": 4538
+     },
+     {
+      "x": 452,
+      "y": 5158
+     },
+     {
+      "x": 463,
+      "y": 5864
+     },
+     {
+      "x": 474,
+      "y": 6667
+     },
+     {
+      "x": 485,
+      "y": 7579
+     },
+     {
+      "x": 496,
+      "y": 8616
+     },
+     {
+      "x": 507,
+      "y": 9795
+     },
+     {
+      "x": 518,
+      "y": 11135
+     },
+     {
+      "x": 529,
+      "y": 12659
+     },
+     {
+      "x": 540,
+      "y": 14392
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0.5,
+  "animationAttackSec": 0.8333333,
+  "animationFireSec": 0.00001,
+  "reloadSpeed": 1,
+  "animationReloadSec": 5.3333335,
+  "capacity": 20,
+  "ammoPerShot": 1,
+  "actionPointCost": 18,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 15,
+  "damageBonusMult": 1,
+  "minRange": 256,
+  "maxRange": 256,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   40,
+   45,
+   50
+  ],
+  "templateModFormIds": [
+   "0x00575E81",
+   "0x00584FB8",
+   "0x00584FB9",
+   "0x0037D0C1",
+   "0x008039B0",
+   "0x008039AE",
+   "0x004F6AA0",
+   "0x004ED02C"
+  ],
+  "defaultModFormIds": [
+   "0x00575E81",
+   "0x00584FB8",
+   "0x00584FB9",
+   "0x0037D0C1",
+   "0x008039B0",
+   "0x008039AE"
+  ],
+  "attachParentSlots": [
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x00024004",
+   "0x00114364",
+   "0x006214D8",
+   "0x0012ECEC",
+   "0x0004B6E1",
+   "0x0002249D",
+   "0x0005D4D7",
+   "0x0002249F",
+   "0x00022499",
+   "0x00149CA8",
+   "0x0047A264"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
   "id": "PlasmaCaster",
   "formId": "0x0055C166",
   "name": "Plasma Caster",
@@ -35069,7 +42196,8 @@
    "ma_legendarycrafting_weaponmelee",
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_1hMelee",
-   "ma_legendarycrafting_weapon"
+   "ma_legendarycrafting_weapon",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -35155,10 +42283,12 @@
   ],
   "templateModFormIds": [
    "0x005E959A",
+   "0x00945D3B",
    "0x005117BF"
   ],
   "defaultModFormIds": [
    "0x005E959A",
+   "0x00945D3B",
    "0x005117BF"
   ],
   "attachParentSlots": [
@@ -35170,7 +42300,8 @@
    "0x004E89AB",
    "0x0032CD06",
    "0x001A001E",
-   "0x006214D8"
+   "0x006214D8",
+   "0x0092B358"
   ],
   "modifiers": [],
   "obtainable": true
@@ -35687,6 +42818,290 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB",
+   "0x00114364",
+   "0x0003477E"
+  ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
+  "id": "HIDE_crAlienBlaster_Poison_Sniper",
+  "formId": "0x008FF691",
+  "name": "Poison Alien Blaster",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "WeaponTypeAlienBlaster",
+   "AnimsGripPistol",
+   "ObjectTypeWeapon",
+   "AnimsAlienBlaster",
+   "s_40_PistolAlienBlaster",
+   "s_IronSightsPistol",
+   "QuickkeyGun",
+   "ma_AlienBlaster",
+   "VATSWeaponLargeProjectile",
+   "WeaponTypeEnergy",
+   "UI_WeaponTypeAlienBlaster",
+   "WeaponTypePistol",
+   "ma_Gun_Appearance",
+   "QuickkeyMelee",
+   "WeaponTypeRanged"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "poison",
+    "damageTypeEdid": "dtPoison",
+    "amount": 0,
+    "tier": 26,
+    "curve": [
+     {
+      "x": 1,
+      "y": 22
+     },
+     {
+      "x": 12,
+      "y": 25
+     },
+     {
+      "x": 23,
+      "y": 28
+     },
+     {
+      "x": 34,
+      "y": 32
+     },
+     {
+      "x": 45,
+      "y": 37
+     },
+     {
+      "x": 56,
+      "y": 42
+     },
+     {
+      "x": 67,
+      "y": 48
+     },
+     {
+      "x": 78,
+      "y": 55
+     },
+     {
+      "x": 89,
+      "y": 62
+     },
+     {
+      "x": 100,
+      "y": 71
+     },
+     {
+      "x": 111,
+      "y": 81
+     },
+     {
+      "x": 122,
+      "y": 92
+     },
+     {
+      "x": 133,
+      "y": 105
+     },
+     {
+      "x": 144,
+      "y": 119
+     },
+     {
+      "x": 155,
+      "y": 136
+     },
+     {
+      "x": 166,
+      "y": 155
+     },
+     {
+      "x": 177,
+      "y": 176
+     },
+     {
+      "x": 188,
+      "y": 201
+     },
+     {
+      "x": 199,
+      "y": 229
+     },
+     {
+      "x": 210,
+      "y": 260
+     },
+     {
+      "x": 221,
+      "y": 297
+     },
+     {
+      "x": 232,
+      "y": 338
+     },
+     {
+      "x": 243,
+      "y": 385
+     },
+     {
+      "x": 254,
+      "y": 438
+     },
+     {
+      "x": 265,
+      "y": 499
+     },
+     {
+      "x": 276,
+      "y": 569
+     },
+     {
+      "x": 287,
+      "y": 648
+     },
+     {
+      "x": 298,
+      "y": 738
+     },
+     {
+      "x": 309,
+      "y": 841
+     },
+     {
+      "x": 320,
+      "y": 958
+     },
+     {
+      "x": 331,
+      "y": 1092
+     },
+     {
+      "x": 342,
+      "y": 1244
+     },
+     {
+      "x": 353,
+      "y": 1417
+     },
+     {
+      "x": 364,
+      "y": 1614
+     },
+     {
+      "x": 375,
+      "y": 1839
+     },
+     {
+      "x": 386,
+      "y": 2096
+     },
+     {
+      "x": 397,
+      "y": 2388
+     },
+     {
+      "x": 408,
+      "y": 2721
+     },
+     {
+      "x": 419,
+      "y": 3100
+     },
+     {
+      "x": 430,
+      "y": 3532
+     },
+     {
+      "x": 441,
+      "y": 4025
+     },
+     {
+      "x": 452,
+      "y": 4586
+     },
+     {
+      "x": 463,
+      "y": 5226
+     },
+     {
+      "x": 474,
+      "y": 5955
+     },
+     {
+      "x": 485,
+      "y": 6785
+     },
+     {
+      "x": 496,
+      "y": 7732
+     },
+     {
+      "x": 507,
+      "y": 8811
+     },
+     {
+      "x": 518,
+      "y": 10040
+     },
+     {
+      "x": 529,
+      "y": 11441
+     },
+     {
+      "x": 540,
+      "y": 13037
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0.8,
+  "animationAttackSec": 1,
+  "animationFireSec": 0.033,
+  "reloadSpeed": 1,
+  "animationReloadSec": 2.8667,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 20,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 10,
+  "damageBonusMult": 1,
+  "minRange": 1600,
+  "maxRange": 3400,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   20,
+   30,
+   40,
+   50
+  ],
+  "templateModFormIds": [
+   "0x0055AEF6",
+   "0x00161C2A",
+   "0x00161C29",
+   "0x001888DE"
+  ],
+  "defaultModFormIds": [
+   "0x0055AEF6",
+   "0x00161C2A",
+   "0x00161C29",
+   "0x001888DE"
+  ],
+  "attachParentSlots": [
+   "0x0002249D",
+   "0x00022499",
+   "0x0002249F",
+   "0x0005D4D7",
    "0x00114364",
    "0x0003477E"
   ],
@@ -38656,7 +46071,8 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon",
    "UI_WeaponTypemelee2HBlade",
-   "WeaponTypeBleedDamage"
+   "WeaponTypeBleedDamage",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -38745,6 +46161,7 @@
   "templateModFormIds": [
    "0x00178EAF",
    "0x000E7C3E",
+   "0x00945D3B",
    "0x00230307",
    "0x0013B01F",
    "0x004F577D",
@@ -38754,7 +46171,8 @@
   ],
   "defaultModFormIds": [
    "0x00178EAF",
-   "0x000E7C3E"
+   "0x000E7C3E",
+   "0x00945D3B"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -38765,7 +46183,8 @@
    "0x004E89AB",
    "0x001A001E",
    "0x006214D8",
-   "0x0047A264"
+   "0x0047A264",
+   "0x0092B358"
   ],
   "modifiers": [
    {
@@ -39499,7 +46918,7 @@
   "speed": 1,
   "attackDelaySec": 0,
   "animationAttackSec": 1.8333334,
-  "animationFireSec": 0.7,
+  "animationFireSec": 0.70001,
   "reloadSpeed": 1,
   "animationReloadSec": 0,
   "capacity": 0,
@@ -39876,7 +47295,8 @@
    "ma_legendarycrafting_weaponmelee",
    "ma_1hMelee",
    "ma_legendarycrafting_weapon",
-   "WeaponTypeBleedDamage"
+   "WeaponTypeBleedDamage",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -40013,6 +47433,7 @@
   ],
   "templateModFormIds": [
    "0x000E7C3E",
+   "0x00945D3B",
    "0x0014EC64",
    "0x007904EA",
    "0x001A7BDA",
@@ -40021,7 +47442,8 @@
    "0x007AA31C"
   ],
   "defaultModFormIds": [
-   "0x000E7C3E"
+   "0x000E7C3E",
+   "0x00945D3B"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -40033,7 +47455,8 @@
    "0x006214D8",
    "0x001A001E",
    "0x00521926",
-   "0x0047A264"
+   "0x0047A264",
+   "0x0092B358"
   ],
   "modifiers": [
    {
@@ -40206,7 +47629,8 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "WeaponTypeBlunt",
    "ma_legendarycrafting_weapon",
-   "WeaponTypeShovel"
+   "WeaponTypeShovel",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -40296,6 +47720,7 @@
   ],
   "templateModFormIds": [
    "0x000E7C3E",
+   "0x00945D3B",
    "0x005A70C0",
    "0x004F6AA1",
    "0x001A7BDA",
@@ -40312,7 +47737,8 @@
    "0x0090ED05"
   ],
   "defaultModFormIds": [
-   "0x000E7C3E"
+   "0x000E7C3E",
+   "0x00945D3B"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -40326,7 +47752,8 @@
    "0x006214D8",
    "0x0032CD06",
    "0x0047A264",
-   "0x009302C8"
+   "0x009302C8",
+   "0x0092B358"
   ],
   "modifiers": [],
   "obtainable": true
@@ -40716,7 +48143,8 @@
    "ma_1hMelee",
    "ma_Melee_Appearance",
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
-   "ma_legendarycrafting_weapon"
+   "ma_legendarycrafting_weapon",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -40803,6 +48231,7 @@
   ],
   "templateModFormIds": [
    "0x000E7C3E",
+   "0x00945D3B",
    "0x0059F2E3",
    "0x000360CD",
    "0x007904EA",
@@ -40811,7 +48240,8 @@
    "0x0047187F"
   ],
   "defaultModFormIds": [
-   "0x000E7C3E"
+   "0x000E7C3E",
+   "0x00945D3B"
   ],
   "attachParentSlots": [
    "0x004E89A8",
@@ -40822,7 +48252,8 @@
    "0x0005524C",
    "0x0047A264",
    "0x001A001E",
-   "0x006214D8"
+   "0x006214D8",
+   "0x0092B358"
   ],
   "modifiers": [],
   "obtainable": true
@@ -41419,7 +48850,8 @@
    "WeaponTypeMelee2H",
    "ma_legendarycrafting_weaponmelee",
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
-   "ma_legendarycrafting_weapon"
+   "ma_legendarycrafting_weapon",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -41507,6 +48939,7 @@
   ],
   "templateModFormIds": [
    "0x00185CF9",
+   "0x00945D3B",
    "0x004ECBA4",
    "0x0023030A",
    "0x004F6AA0",
@@ -41514,6 +48947,7 @@
   ],
   "defaultModFormIds": [
    "0x00185CF9",
+   "0x00945D3B",
    "0x004ECBA4"
   ],
   "attachParentSlots": [
@@ -41524,7 +48958,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x0032CD06",
-   "0x006214D8"
+   "0x006214D8",
+   "0x0092B358"
   ],
   "modifiers": [],
   "obtainable": true
@@ -41913,7 +49348,8 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_Melee_Appearance",
    "ma_Spear",
-   "ma_legendarycrafting_weapon"
+   "ma_legendarycrafting_weapon",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -41999,13 +49435,16 @@
    45
   ],
   "templateModFormIds": [
+   "0x00945D3B",
    "0x0075EAC6",
    "0x007904EB",
    "0x007904EC",
    "0x008F20E4",
    "0x008F20E5"
   ],
-  "defaultModFormIds": [],
+  "defaultModFormIds": [
+   "0x00945D3B"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -42016,13 +49455,14 @@
    "0x004E89AB",
    "0x006214D8",
    "0x001A001E",
-   "0x0047A264"
+   "0x0047A264",
+   "0x0092B358"
   ],
   "modifiers": [],
   "obtainable": true
  },
  {
-  "id": "P62_crTheDrifter10mmSMG",
+  "id": "HIDE_crDrifter10mmSMG",
   "formId": "0x008035C1",
   "name": "Splinter",
   "weaponTypeName": "Gun",
@@ -42053,207 +49493,207 @@
     "damageType": "ballistic",
     "damageTypeEdid": null,
     "amount": 7,
-    "tier": 25,
+    "tier": 15,
     "curve": [
      {
       "x": 1,
-      "y": 19
+      "y": 6
      },
      {
       "x": 12,
-      "y": 22
+      "y": 8
      },
      {
       "x": 23,
-      "y": 25
+      "y": 9
      },
      {
       "x": 34,
-      "y": 29
+      "y": 10
      },
      {
       "x": 45,
-      "y": 33
+      "y": 12
      },
      {
       "x": 56,
-      "y": 38
+      "y": 14
      },
      {
       "x": 67,
-      "y": 43
+      "y": 16
      },
      {
       "x": 78,
-      "y": 49
+      "y": 18
      },
      {
       "x": 89,
-      "y": 56
+      "y": 21
      },
      {
       "x": 100,
-      "y": 64
+      "y": 24
      },
      {
       "x": 111,
-      "y": 73
+      "y": 28
      },
      {
       "x": 122,
-      "y": 84
+      "y": 32
      },
      {
       "x": 133,
-      "y": 96
+      "y": 37
      },
      {
       "x": 144,
-      "y": 109
+      "y": 43
      },
      {
       "x": 155,
-      "y": 124
+      "y": 50
      },
      {
       "x": 166,
-      "y": 142
+      "y": 57
      },
      {
       "x": 177,
-      "y": 162
+      "y": 66
      },
      {
       "x": 188,
-      "y": 184
+      "y": 76
      },
      {
       "x": 199,
-      "y": 210
+      "y": 88
      },
      {
       "x": 210,
-      "y": 239
+      "y": 102
      },
      {
       "x": 221,
-      "y": 273
+      "y": 117
      },
      {
       "x": 232,
-      "y": 311
+      "y": 135
      },
      {
       "x": 243,
-      "y": 355
+      "y": 156
      },
      {
       "x": 254,
-      "y": 405
+      "y": 180
      },
      {
       "x": 265,
-      "y": 462
+      "y": 207
      },
      {
       "x": 276,
-      "y": 527
+      "y": 239
      },
      {
       "x": 287,
-      "y": 601
+      "y": 276
      },
      {
       "x": 298,
-      "y": 685
+      "y": 319
      },
      {
       "x": 309,
-      "y": 781
+      "y": 368
      },
      {
       "x": 320,
-      "y": 891
+      "y": 425
      },
      {
       "x": 331,
-      "y": 1016
+      "y": 491
      },
      {
       "x": 342,
-      "y": 1159
+      "y": 566
      },
      {
       "x": 353,
-      "y": 1322
+      "y": 654
      },
      {
       "x": 364,
-      "y": 1508
+      "y": 755
      },
      {
       "x": 375,
-      "y": 1721
+      "y": 872
      },
      {
       "x": 386,
-      "y": 1963
+      "y": 1007
      },
      {
       "x": 397,
-      "y": 2239
+      "y": 1163
      },
      {
       "x": 408,
-      "y": 2554
+      "y": 1343
      },
      {
       "x": 419,
-      "y": 2914
+      "y": 1550
      },
      {
       "x": 430,
-      "y": 3324
+      "y": 1791
      },
      {
       "x": 441,
-      "y": 3792
+      "y": 2068
      },
      {
       "x": 452,
-      "y": 4326
+      "y": 2389
      },
      {
       "x": 463,
-      "y": 4935
+      "y": 2759
      },
      {
       "x": 474,
-      "y": 5630
+      "y": 3187
      },
      {
       "x": 485,
-      "y": 6423
+      "y": 3681
      },
      {
       "x": 496,
-      "y": 7327
+      "y": 4252
      },
      {
       "x": 507,
-      "y": 8359
+      "y": 4911
      },
      {
       "x": 518,
-      "y": 9537
+      "y": 5673
      },
      {
       "x": 529,
-      "y": 10880
+      "y": 6553
      },
      {
       "x": 540,
-      "y": 12412
+      "y": 7570
      }
     ]
    }
@@ -42262,20 +49702,20 @@
   "critChargeBonus": 1,
   "sneakAttackMult": 2,
   "speed": 1,
-  "attackDelaySec": 0.2333,
+  "attackDelaySec": 0.2,
   "animationAttackSec": 2.2,
   "animationFireSec": 0.00001,
   "reloadSpeed": 1,
   "animationReloadSec": 3.00001,
-  "capacity": 40,
+  "capacity": 250,
   "ammoPerShot": 1,
-  "actionPointCost": 13,
+  "actionPointCost": 10,
   "projectileCount": 1,
   "reach": 1,
   "secondaryDamage": 10,
   "damageBonusMult": 1,
-  "minRange": 1018,
-  "maxRange": 2036,
+  "minRange": 256,
+  "maxRange": 1250,
   "outOfRangeDamageMult": 0.5,
   "fullPowerSeconds": 0,
   "fullPowerDamageMult": 0,
@@ -42333,7 +49773,285 @@
    "0x0003579A"
   ],
   "modifiers": [],
-  "obtainable": true
+  "obtainable": false
+ },
+ {
+  "id": "Bounty_crStormcutter_Lost",
+  "formId": "0x0092BD7E",
+  "name": "Storm Cutter",
+  "weaponTypeName": "TwoHandSword",
+  "keywords": [
+   "Anims2hmWideWeapon",
+   "WeaponTypeMelee2H",
+   "QuickkeyMelee",
+   "ObjectTypeWeapon",
+   "WeaponTypeMeleeGeneral",
+   "ma_Melee_Appearance",
+   "ma_Stormcutter",
+   "WeaponTypeBladed",
+   "WeaponTypeSword",
+   "s_40_RifleLightning",
+   "UI_WeaponTypemelee2HBlade"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 40,
+    "tier": 40,
+    "curve": [
+     {
+      "x": 1,
+      "y": 96
+     },
+     {
+      "x": 12,
+      "y": 108
+     },
+     {
+      "x": 23,
+      "y": 121
+     },
+     {
+      "x": 34,
+      "y": 136
+     },
+     {
+      "x": 45,
+      "y": 153
+     },
+     {
+      "x": 56,
+      "y": 171
+     },
+     {
+      "x": 67,
+      "y": 192
+     },
+     {
+      "x": 78,
+      "y": 216
+     },
+     {
+      "x": 89,
+      "y": 242
+     },
+     {
+      "x": 100,
+      "y": 272
+     },
+     {
+      "x": 111,
+      "y": 305
+     },
+     {
+      "x": 122,
+      "y": 342
+     },
+     {
+      "x": 133,
+      "y": 384
+     },
+     {
+      "x": 144,
+      "y": 430
+     },
+     {
+      "x": 155,
+      "y": 483
+     },
+     {
+      "x": 166,
+      "y": 542
+     },
+     {
+      "x": 177,
+      "y": 608
+     },
+     {
+      "x": 188,
+      "y": 682
+     },
+     {
+      "x": 199,
+      "y": 765
+     },
+     {
+      "x": 210,
+      "y": 858
+     },
+     {
+      "x": 221,
+      "y": 963
+     },
+     {
+      "x": 232,
+      "y": 1080
+     },
+     {
+      "x": 243,
+      "y": 1211
+     },
+     {
+      "x": 254,
+      "y": 1359
+     },
+     {
+      "x": 265,
+      "y": 1525
+     },
+     {
+      "x": 276,
+      "y": 1711
+     },
+     {
+      "x": 287,
+      "y": 1919
+     },
+     {
+      "x": 298,
+      "y": 2153
+     },
+     {
+      "x": 309,
+      "y": 2416
+     },
+     {
+      "x": 320,
+      "y": 2710
+     },
+     {
+      "x": 331,
+      "y": 3041
+     },
+     {
+      "x": 342,
+      "y": 3411
+     },
+     {
+      "x": 353,
+      "y": 3827
+     },
+     {
+      "x": 364,
+      "y": 4294
+     },
+     {
+      "x": 375,
+      "y": 4818
+     },
+     {
+      "x": 386,
+      "y": 5405
+     },
+     {
+      "x": 397,
+      "y": 6064
+     },
+     {
+      "x": 408,
+      "y": 6804
+     },
+     {
+      "x": 419,
+      "y": 7634
+     },
+     {
+      "x": 430,
+      "y": 8565
+     },
+     {
+      "x": 441,
+      "y": 9609
+     },
+     {
+      "x": 452,
+      "y": 10781
+     },
+     {
+      "x": 463,
+      "y": 12096
+     },
+     {
+      "x": 474,
+      "y": 13572
+     },
+     {
+      "x": 485,
+      "y": 15227
+     },
+     {
+      "x": 496,
+      "y": 17085
+     },
+     {
+      "x": 507,
+      "y": 19169
+     },
+     {
+      "x": 518,
+      "y": 21507
+     },
+     {
+      "x": 529,
+      "y": 24130
+     },
+     {
+      "x": 540,
+      "y": 27074
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 2.0370426,
+  "animationFireSec": 0,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 45,
+  "projectileCount": 1,
+  "reach": 0.8,
+  "secondaryDamage": 0,
+  "damageBonusMult": 1,
+  "minRange": 0,
+  "maxRange": 10,
+  "outOfRangeDamageMult": -1,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   30,
+   40,
+   50
+  ],
+  "templateModFormIds": [
+   "0x0072DF07",
+   "0x00527F84",
+   "0x00606C8D",
+   "0x005299FC"
+  ],
+  "defaultModFormIds": [
+   "0x0072DF07"
+  ],
+  "attachParentSlots": [
+   "0x0005524C",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x0047A264",
+   "0x001A001E"
+  ],
+  "modifiers": [],
+  "obtainable": false
  },
  {
   "id": "SubmachineGun",
@@ -42520,7 +50238,8 @@
    "UI_WeaponTypeSupersledge",
    "ma_Melee_Appearance",
    "ma_legendarycrafting_weaponmelee",
-   "ma_legendarycrafting_weapon"
+   "ma_legendarycrafting_weapon",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -42606,6 +50325,7 @@
   ],
   "templateModFormIds": [
    "0x000690B1",
+   "0x00945D3B",
    "0x005117BF",
    "0x0023030B",
    "0x00113D56",
@@ -42631,6 +50351,7 @@
   ],
   "defaultModFormIds": [
    "0x000690B1",
+   "0x00945D3B",
    "0x005117BF"
   ],
   "attachParentSlots": [
@@ -42641,7 +50362,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x0047A264",
-   "0x001A001E"
+   "0x001A001E",
+   "0x0092B358"
   ],
   "modifiers": [],
   "obtainable": true
@@ -43163,7 +50885,7 @@
   "obtainable": true
  },
  {
-  "id": "P62_crTheDrifterAssaultronBlade",
+  "id": "HIDE_crDrifterAssaultronBlade",
   "formId": "0x008035C3",
   "name": "Tempest",
   "weaponTypeName": "OneHandSword",
@@ -43189,207 +50911,207 @@
     "damageType": "ballistic",
     "damageTypeEdid": null,
     "amount": 17,
-    "tier": 40,
+    "tier": 25,
     "curve": [
      {
       "x": 1,
-      "y": 96
+      "y": 19
      },
      {
       "x": 12,
-      "y": 108
+      "y": 22
      },
      {
       "x": 23,
-      "y": 121
+      "y": 25
      },
      {
       "x": 34,
-      "y": 136
+      "y": 29
      },
      {
       "x": 45,
-      "y": 153
+      "y": 33
      },
      {
       "x": 56,
-      "y": 171
+      "y": 38
      },
      {
       "x": 67,
-      "y": 192
+      "y": 43
      },
      {
       "x": 78,
-      "y": 216
+      "y": 49
      },
      {
       "x": 89,
-      "y": 242
+      "y": 56
      },
      {
       "x": 100,
-      "y": 272
+      "y": 64
      },
      {
       "x": 111,
-      "y": 305
+      "y": 73
      },
      {
       "x": 122,
-      "y": 342
+      "y": 84
      },
      {
       "x": 133,
-      "y": 384
+      "y": 96
      },
      {
       "x": 144,
-      "y": 430
+      "y": 109
      },
      {
       "x": 155,
-      "y": 483
+      "y": 124
      },
      {
       "x": 166,
-      "y": 542
+      "y": 142
      },
      {
       "x": 177,
-      "y": 608
+      "y": 162
      },
      {
       "x": 188,
-      "y": 682
+      "y": 184
      },
      {
       "x": 199,
-      "y": 765
+      "y": 210
      },
      {
       "x": 210,
-      "y": 858
+      "y": 239
      },
      {
       "x": 221,
-      "y": 963
+      "y": 273
      },
      {
       "x": 232,
-      "y": 1080
+      "y": 311
      },
      {
       "x": 243,
-      "y": 1211
+      "y": 355
      },
      {
       "x": 254,
-      "y": 1359
+      "y": 405
      },
      {
       "x": 265,
-      "y": 1525
+      "y": 462
      },
      {
       "x": 276,
-      "y": 1711
+      "y": 527
      },
      {
       "x": 287,
-      "y": 1919
+      "y": 601
      },
      {
       "x": 298,
-      "y": 2153
+      "y": 685
      },
      {
       "x": 309,
-      "y": 2416
+      "y": 781
      },
      {
       "x": 320,
-      "y": 2710
+      "y": 891
      },
      {
       "x": 331,
-      "y": 3041
+      "y": 1016
      },
      {
       "x": 342,
-      "y": 3411
+      "y": 1159
      },
      {
       "x": 353,
-      "y": 3827
+      "y": 1322
      },
      {
       "x": 364,
-      "y": 4294
+      "y": 1508
      },
      {
       "x": 375,
-      "y": 4818
+      "y": 1721
      },
      {
       "x": 386,
-      "y": 5405
+      "y": 1963
      },
      {
       "x": 397,
-      "y": 6064
+      "y": 2239
      },
      {
       "x": 408,
-      "y": 6804
+      "y": 2554
      },
      {
       "x": 419,
-      "y": 7634
+      "y": 2914
      },
      {
       "x": 430,
-      "y": 8565
+      "y": 3324
      },
      {
       "x": 441,
-      "y": 9609
+      "y": 3792
      },
      {
       "x": 452,
-      "y": 10781
+      "y": 4326
      },
      {
       "x": 463,
-      "y": 12096
+      "y": 4935
      },
      {
       "x": 474,
-      "y": 13572
+      "y": 5630
      },
      {
       "x": 485,
-      "y": 15227
+      "y": 6423
      },
      {
       "x": 496,
-      "y": 17085
+      "y": 7327
      },
      {
       "x": 507,
-      "y": 19169
+      "y": 8359
      },
      {
       "x": 518,
-      "y": 21507
+      "y": 9537
      },
      {
       "x": 529,
-      "y": 24130
+      "y": 10880
      },
      {
       "x": 540,
-      "y": 27074
+      "y": 12412
      }
     ]
    }
@@ -43405,13 +51127,13 @@
   "animationReloadSec": 0,
   "capacity": 0,
   "ammoPerShot": 1,
-  "actionPointCost": 35,
+  "actionPointCost": 10,
   "projectileCount": 1,
   "reach": 0.8,
   "secondaryDamage": 10,
   "damageBonusMult": 1,
-  "minRange": 0,
-  "maxRange": 10,
+  "minRange": 64,
+  "maxRange": 256,
   "outOfRangeDamageMult": -1,
   "fullPowerSeconds": 0,
   "fullPowerDamageMult": 0,
@@ -43447,7 +51169,7 @@
    "0x001A8B4B"
   ],
   "modifiers": [],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "MeatTenderizer",
@@ -45578,211 +53300,6 @@
   "obtainable": true
  },
  {
-  "id": "DLC01_AssaultronBlade_TheGutter",
-  "formId": "0x005E6F9E",
-  "name": "The Gutter",
-  "weaponTypeName": "OneHandSword",
-  "keywords": [
-   "Anims1hmWeapon",
-   "WeaponTypeMelee1H",
-   "QuickkeyMelee",
-   "ObjectTypeWeapon",
-   "ma_AssaultronBlade",
-   "WeaponTypeMeleeGeneral",
-   "WeaponTypeBladed",
-   "WeaponTypeSword",
-   "UI_WeaponTypemelee2HBlade",
-   "ma_Melee_Appearance",
-   "WeaponTypeBleedDamage"
-  ],
-  "isAutomaticFlag": false,
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 17,
-    "tier": 27,
-    "curve": [
-     {
-      "x": 1,
-      "y": 39
-     },
-     {
-      "x": 5,
-      "y": 44
-     },
-     {
-      "x": 10,
-      "y": 49
-     },
-     {
-      "x": 15,
-      "y": 56
-     },
-     {
-      "x": 20,
-      "y": 63
-     },
-     {
-      "x": 25,
-      "y": 71
-     },
-     {
-      "x": 30,
-      "y": 80
-     },
-     {
-      "x": 35,
-      "y": 90
-     },
-     {
-      "x": 40,
-      "y": 102
-     },
-     {
-      "x": 45,
-      "y": 115
-     },
-     {
-      "x": 50,
-      "y": 130
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 3.5,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2.5,
-  "speed": 1,
-  "attackDelaySec": 0,
-  "animationAttackSec": 1.1388938,
-  "animationFireSec": 0,
-  "reloadSpeed": 1,
-  "animationReloadSec": 0,
-  "capacity": 0,
-  "ammoPerShot": 1,
-  "actionPointCost": 26,
-  "projectileCount": 1,
-  "reach": 0.8,
-  "secondaryDamage": 10,
-  "damageBonusMult": 1,
-  "minRange": 0,
-  "maxRange": 10,
-  "outOfRangeDamageMult": -1,
-  "fullPowerSeconds": 0,
-  "fullPowerDamageMult": 0,
-  "minimumChargeTime": 0,
-  "eligibleLevels": [
-   25,
-   35,
-   45
-  ],
-  "templateModFormIds": [
-   "0x0010FB8E",
-   "0x005D982A",
-   "0x005D9D1C",
-   "0x00527F84",
-   "0x00606B72",
-   "0x00609E4F"
-  ],
-  "defaultModFormIds": [
-   "0x0010FB8E",
-   "0x005D982A",
-   "0x005D9D1C",
-   "0x00527F84",
-   "0x00606B72",
-   "0x00609E4F"
-  ],
-  "attachParentSlots": [
-   "0x0005524C",
-   "0x001E32C8",
-   "0x004E89A8",
-   "0x004E89A9",
-   "0x004E89AA",
-   "0x004E89AB",
-   "0x0047A264",
-   "0x001A001E"
-  ],
-  "modifiers": [
-   {
-    "id": "0x005E6F9E:weaponEnch:0",
-    "source": {
-     "kind": "weapon",
-     "formId": "0x005E6F9E",
-     "edid": "DLC01_AssaultronBlade_TheGutter",
-     "name": "The Gutter"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 3
-      },
-      {
-       "x": 5,
-       "y": 4
-      },
-      {
-       "x": 10,
-       "y": 4
-      },
-      {
-       "x": 15,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 6
-      },
-      {
-       "x": 25,
-       "y": 6
-      },
-      {
-       "x": 30,
-       "y": 7
-      },
-      {
-       "x": 35,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 9
-      },
-      {
-       "x": 45,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 12
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "weaponKeyword",
-      "keyword": "HasLegendary_Weapon_HealAllies",
-      "present": false
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "ballistic"
-      ]
-     }
-    ],
-    "durationSec": 10
-   }
-  ],
-  "obtainable": false
- },
- {
   "id": "atx_alienprobe",
   "formId": "0x00559C99",
   "name": "The Invader",
@@ -46248,7 +53765,7 @@
   "speed": 1,
   "attackDelaySec": 0,
   "animationAttackSec": 1.8333334,
-  "animationFireSec": 0.7,
+  "animationFireSec": 0.70001,
   "reloadSpeed": 1,
   "animationReloadSec": 0,
   "capacity": 0,
@@ -46536,7 +54053,7 @@
   "speed": 1,
   "attackDelaySec": 0,
   "animationAttackSec": 1.8333334,
-  "animationFireSec": 0.7,
+  "animationFireSec": 0.70001,
   "reloadSpeed": 1,
   "animationReloadSec": 0,
   "capacity": 0,
@@ -46668,7 +54185,7 @@
   "speed": 1,
   "attackDelaySec": 0,
   "animationAttackSec": 1.8333334,
-  "animationFireSec": 0.7,
+  "animationFireSec": 0.70001,
   "reloadSpeed": 1,
   "animationReloadSec": 0,
   "capacity": 0,
@@ -46928,7 +54445,7 @@
   "speed": 1,
   "attackDelaySec": 0,
   "animationAttackSec": 1.8333334,
-  "animationFireSec": 0.7,
+  "animationFireSec": 0.70001,
   "reloadSpeed": 1,
   "animationReloadSec": 0,
   "capacity": 0,
@@ -48118,7 +55635,8 @@
    "Anims2hmWeapon",
    "UI_WeaponTypemelee2HBlade",
    "WeaponTypeMelee2H",
-   "WeaponTypeBleedDamage"
+   "WeaponTypeBleedDamage",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -48203,18 +55721,17 @@
   "templateModFormIds": [
    "0x005117BF",
    "0x00796644",
+   "0x00945D3B",
    "0x007904EA",
    "0x007904EB",
    "0x007904EC",
-   "0x0079297A"
+   "0x0079297A",
+   "0x00959089",
+   "0x0094E889"
   ],
   "defaultModFormIds": [
    "0x005117BF",
-   "0x00796644",
-   "0x007904EA",
-   "0x007904EB",
-   "0x007904EC",
-   "0x0079297A"
+   "0x00945D3B"
   ],
   "attachParentSlots": [
    "0x001E32C8",
@@ -48224,9 +55741,9 @@
    "0x004E89AB",
    "0x006214D8",
    "0x0005524C",
-   "0x00114364",
    "0x0047A264",
    "0x001A8B4B",
+   "0x0092B358",
    "0x001A001E"
   ],
   "modifiers": [
@@ -48307,6 +55824,267 @@
    }
   ],
   "obtainable": true
+ },
+ {
+  "id": "DLC04_crUnarmedBloodworm",
+  "formId": "0x00868B70",
+  "name": "Unarmed Bloodworm",
+  "weaponTypeName": "HandToHandMelee",
+  "keywords": [
+   "AnimsUnarmed",
+   "WeaponTypeUnarmed"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 1,
+    "tier": 26,
+    "curve": [
+     {
+      "x": 1,
+      "y": 22
+     },
+     {
+      "x": 12,
+      "y": 25
+     },
+     {
+      "x": 23,
+      "y": 28
+     },
+     {
+      "x": 34,
+      "y": 32
+     },
+     {
+      "x": 45,
+      "y": 37
+     },
+     {
+      "x": 56,
+      "y": 42
+     },
+     {
+      "x": 67,
+      "y": 48
+     },
+     {
+      "x": 78,
+      "y": 55
+     },
+     {
+      "x": 89,
+      "y": 62
+     },
+     {
+      "x": 100,
+      "y": 71
+     },
+     {
+      "x": 111,
+      "y": 81
+     },
+     {
+      "x": 122,
+      "y": 92
+     },
+     {
+      "x": 133,
+      "y": 105
+     },
+     {
+      "x": 144,
+      "y": 119
+     },
+     {
+      "x": 155,
+      "y": 136
+     },
+     {
+      "x": 166,
+      "y": 155
+     },
+     {
+      "x": 177,
+      "y": 176
+     },
+     {
+      "x": 188,
+      "y": 201
+     },
+     {
+      "x": 199,
+      "y": 229
+     },
+     {
+      "x": 210,
+      "y": 260
+     },
+     {
+      "x": 221,
+      "y": 297
+     },
+     {
+      "x": 232,
+      "y": 338
+     },
+     {
+      "x": 243,
+      "y": 385
+     },
+     {
+      "x": 254,
+      "y": 438
+     },
+     {
+      "x": 265,
+      "y": 499
+     },
+     {
+      "x": 276,
+      "y": 569
+     },
+     {
+      "x": 287,
+      "y": 648
+     },
+     {
+      "x": 298,
+      "y": 738
+     },
+     {
+      "x": 309,
+      "y": 841
+     },
+     {
+      "x": 320,
+      "y": 958
+     },
+     {
+      "x": 331,
+      "y": 1092
+     },
+     {
+      "x": 342,
+      "y": 1244
+     },
+     {
+      "x": 353,
+      "y": 1417
+     },
+     {
+      "x": 364,
+      "y": 1614
+     },
+     {
+      "x": 375,
+      "y": 1839
+     },
+     {
+      "x": 386,
+      "y": 2096
+     },
+     {
+      "x": 397,
+      "y": 2388
+     },
+     {
+      "x": 408,
+      "y": 2721
+     },
+     {
+      "x": 419,
+      "y": 3100
+     },
+     {
+      "x": 430,
+      "y": 3532
+     },
+     {
+      "x": 441,
+      "y": 4025
+     },
+     {
+      "x": 452,
+      "y": 4586
+     },
+     {
+      "x": 463,
+      "y": 5226
+     },
+     {
+      "x": 474,
+      "y": 5955
+     },
+     {
+      "x": 485,
+      "y": 6785
+     },
+     {
+      "x": 496,
+      "y": 7732
+     },
+     {
+      "x": 507,
+      "y": 8811
+     },
+     {
+      "x": 518,
+      "y": 10040
+     },
+     {
+      "x": 529,
+      "y": 11441
+     },
+     {
+      "x": 540,
+      "y": 13037
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 10,
+  "animationAttackSec": 1.1428572,
+  "animationFireSec": 0,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 20,
+  "projectileCount": 1,
+  "reach": 0.68,
+  "secondaryDamage": 0,
+  "damageBonusMult": 1,
+  "minRange": 500,
+  "maxRange": 2000,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [
+   1,
+   5,
+   10,
+   15,
+   20,
+   25,
+   30,
+   35,
+   40,
+   45,
+   50
+  ],
+  "templateModFormIds": [],
+  "defaultModFormIds": [],
+  "attachParentSlots": [],
+  "modifiers": [],
+  "obtainable": false
  },
  {
   "id": "UnarmedHuman",
@@ -48808,6 +56586,485 @@
   "obtainable": true
  },
  {
+  "id": "HIDE_crUnarmedRadScorpion_Blazing",
+  "formId": "0x0090B9F0",
+  "name": "Unarmed Rad Scorpion",
+  "weaponTypeName": "HandToHandMelee",
+  "keywords": [
+   "AnimsUnarmed",
+   "WeaponTypeUnarmed"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 1,
+    "tier": 28,
+    "curve": [
+     {
+      "x": 1,
+      "y": 27
+     },
+     {
+      "x": 12,
+      "y": 31
+     },
+     {
+      "x": 23,
+      "y": 35
+     },
+     {
+      "x": 34,
+      "y": 40
+     },
+     {
+      "x": 45,
+      "y": 45
+     },
+     {
+      "x": 56,
+      "y": 51
+     },
+     {
+      "x": 67,
+      "y": 58
+     },
+     {
+      "x": 78,
+      "y": 66
+     },
+     {
+      "x": 89,
+      "y": 75
+     },
+     {
+      "x": 100,
+      "y": 86
+     },
+     {
+      "x": 111,
+      "y": 97
+     },
+     {
+      "x": 122,
+      "y": 111
+     },
+     {
+      "x": 133,
+      "y": 126
+     },
+     {
+      "x": 144,
+      "y": 143
+     },
+     {
+      "x": 155,
+      "y": 163
+     },
+     {
+      "x": 166,
+      "y": 185
+     },
+     {
+      "x": 177,
+      "y": 210
+     },
+     {
+      "x": 188,
+      "y": 239
+     },
+     {
+      "x": 199,
+      "y": 271
+     },
+     {
+      "x": 210,
+      "y": 308
+     },
+     {
+      "x": 221,
+      "y": 350
+     },
+     {
+      "x": 232,
+      "y": 398
+     },
+     {
+      "x": 243,
+      "y": 452
+     },
+     {
+      "x": 254,
+      "y": 514
+     },
+     {
+      "x": 265,
+      "y": 584
+     },
+     {
+      "x": 276,
+      "y": 664
+     },
+     {
+      "x": 287,
+      "y": 755
+     },
+     {
+      "x": 298,
+      "y": 858
+     },
+     {
+      "x": 309,
+      "y": 975
+     },
+     {
+      "x": 320,
+      "y": 1108
+     },
+     {
+      "x": 331,
+      "y": 1259
+     },
+     {
+      "x": 342,
+      "y": 1432
+     },
+     {
+      "x": 353,
+      "y": 1627
+     },
+     {
+      "x": 364,
+      "y": 1850
+     },
+     {
+      "x": 375,
+      "y": 2103
+     },
+     {
+      "x": 386,
+      "y": 2390
+     },
+     {
+      "x": 397,
+      "y": 2717
+     },
+     {
+      "x": 408,
+      "y": 3089
+     },
+     {
+      "x": 419,
+      "y": 3511
+     },
+     {
+      "x": 430,
+      "y": 3992
+     },
+     {
+      "x": 441,
+      "y": 4538
+     },
+     {
+      "x": 452,
+      "y": 5158
+     },
+     {
+      "x": 463,
+      "y": 5864
+     },
+     {
+      "x": 474,
+      "y": 6667
+     },
+     {
+      "x": 485,
+      "y": 7579
+     },
+     {
+      "x": 496,
+      "y": 8616
+     },
+     {
+      "x": 507,
+      "y": 9795
+     },
+     {
+      "x": 518,
+      "y": 11135
+     },
+     {
+      "x": 529,
+      "y": 12659
+     },
+     {
+      "x": 540,
+      "y": 14392
+     }
+    ]
+   },
+   {
+    "damageType": "fire",
+    "damageTypeEdid": "dtFire",
+    "amount": 0,
+    "tier": 28,
+    "curve": [
+     {
+      "x": 1,
+      "y": 27
+     },
+     {
+      "x": 12,
+      "y": 31
+     },
+     {
+      "x": 23,
+      "y": 35
+     },
+     {
+      "x": 34,
+      "y": 40
+     },
+     {
+      "x": 45,
+      "y": 45
+     },
+     {
+      "x": 56,
+      "y": 51
+     },
+     {
+      "x": 67,
+      "y": 58
+     },
+     {
+      "x": 78,
+      "y": 66
+     },
+     {
+      "x": 89,
+      "y": 75
+     },
+     {
+      "x": 100,
+      "y": 86
+     },
+     {
+      "x": 111,
+      "y": 97
+     },
+     {
+      "x": 122,
+      "y": 111
+     },
+     {
+      "x": 133,
+      "y": 126
+     },
+     {
+      "x": 144,
+      "y": 143
+     },
+     {
+      "x": 155,
+      "y": 163
+     },
+     {
+      "x": 166,
+      "y": 185
+     },
+     {
+      "x": 177,
+      "y": 210
+     },
+     {
+      "x": 188,
+      "y": 239
+     },
+     {
+      "x": 199,
+      "y": 271
+     },
+     {
+      "x": 210,
+      "y": 308
+     },
+     {
+      "x": 221,
+      "y": 350
+     },
+     {
+      "x": 232,
+      "y": 398
+     },
+     {
+      "x": 243,
+      "y": 452
+     },
+     {
+      "x": 254,
+      "y": 514
+     },
+     {
+      "x": 265,
+      "y": 584
+     },
+     {
+      "x": 276,
+      "y": 664
+     },
+     {
+      "x": 287,
+      "y": 755
+     },
+     {
+      "x": 298,
+      "y": 858
+     },
+     {
+      "x": 309,
+      "y": 975
+     },
+     {
+      "x": 320,
+      "y": 1108
+     },
+     {
+      "x": 331,
+      "y": 1259
+     },
+     {
+      "x": 342,
+      "y": 1432
+     },
+     {
+      "x": 353,
+      "y": 1627
+     },
+     {
+      "x": 364,
+      "y": 1850
+     },
+     {
+      "x": 375,
+      "y": 2103
+     },
+     {
+      "x": 386,
+      "y": 2390
+     },
+     {
+      "x": 397,
+      "y": 2717
+     },
+     {
+      "x": 408,
+      "y": 3089
+     },
+     {
+      "x": 419,
+      "y": 3511
+     },
+     {
+      "x": 430,
+      "y": 3992
+     },
+     {
+      "x": 441,
+      "y": 4538
+     },
+     {
+      "x": 452,
+      "y": 5158
+     },
+     {
+      "x": 463,
+      "y": 5864
+     },
+     {
+      "x": 474,
+      "y": 6667
+     },
+     {
+      "x": 485,
+      "y": 7579
+     },
+     {
+      "x": 496,
+      "y": 8616
+     },
+     {
+      "x": 507,
+      "y": 9795
+     },
+     {
+      "x": 518,
+      "y": 11135
+     },
+     {
+      "x": 529,
+      "y": 12659
+     },
+     {
+      "x": 540,
+      "y": 14392
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 1.1222221,
+  "animationFireSec": 0,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 20,
+  "projectileCount": 1,
+  "reach": 0.9,
+  "secondaryDamage": 0,
+  "damageBonusMult": 1,
+  "minRange": 500,
+  "maxRange": 2000,
+  "outOfRangeDamageMult": 0.5,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [],
+  "templateModFormIds": [],
+  "defaultModFormIds": [],
+  "attachParentSlots": [],
+  "modifiers": [
+   {
+    "id": "0x0090B9F0:weaponEnch:0",
+    "source": {
+     "kind": "weapon",
+     "formId": "0x0090B9F0",
+     "edid": "HIDE_crUnarmedRadScorpion_Blazing",
+     "name": "Unarmed Rad Scorpion"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "radiation"
+      ]
+     }
+    ],
+    "durationSec": 0
+   }
+  ],
+  "obtainable": false
+ },
+ {
   "id": "DeathclawGauntlet_UnstoppableMonster",
   "formId": "0x005FCE8C",
   "name": "Unstoppable Monster",
@@ -49184,7 +57441,14 @@
    50
   ],
   "templateModFormIds": [
-   "0x00914C8A"
+   "0x00914C8A",
+   "0x008B0902",
+   "0x00606B73",
+   "0x0052414B",
+   "0x007904EC",
+   "0x008C0D79",
+   "0x008C0D78",
+   "0x008EC317"
   ],
   "defaultModFormIds": [
    "0x00914C8A"
@@ -49197,7 +57461,10 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x0047A264",
-   "0x001A001E"
+   "0x001A001E",
+   "0x008B08D6",
+   "0x008B08DB",
+   "0x00521926"
   ],
   "modifiers": [],
   "obtainable": true
@@ -49228,7 +57495,7 @@
   "speed": 1,
   "attackDelaySec": 0,
   "animationAttackSec": 1.8333334,
-  "animationFireSec": 0.7,
+  "animationFireSec": 0.70001,
   "reloadSpeed": 1,
   "animationReloadSec": 2.3333,
   "capacity": 0,
@@ -50072,7 +58339,8 @@
    "ma_legendarycrafting_weaponmelee",
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon",
-   "WeaponTypeBleedDamage"
+   "WeaponTypeBleedDamage",
+   "ma_MeleeGrip"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -50159,6 +58427,7 @@
   "templateModFormIds": [
    "0x005D7F2C",
    "0x005117BF",
+   "0x00945D3B",
    "0x007904EA",
    "0x001A7BE2",
    "0x007904EC",
@@ -50166,7 +58435,8 @@
   ],
   "defaultModFormIds": [
    "0x005D7F2C",
-   "0x005117BF"
+   "0x005117BF",
+   "0x00945D3B"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -50178,7 +58448,8 @@
    "0x0032CD06",
    "0x001A001E",
    "0x006214D8",
-   "0x0047A264"
+   "0x0047A264",
+   "0x0092B358"
   ],
   "modifiers": [
    {
@@ -50928,159 +59199,6 @@
   "obtainable": false
  },
  {
-  "id": "AssaultRifle_WhistleInTheDark",
-  "formId": "0x005E51E6",
-  "name": "Whistle In The Dark",
-  "weaponTypeName": "Gun",
-  "keywords": [
-   "AnimsGripRifleAssault",
-   "s_40_RifleIstvan",
-   "ma_CanHaveNullMuzzle",
-   "s_IronSightsRifle",
-   "WeaponTypeBallistic",
-   "ObjectTypeWeapon",
-   "QuickkeyGun",
-   "ma_AssaultRifle",
-   "WeaponTypeAssaultRifle",
-   "WeaponTypeRanged",
-   "UI_WeaponTypeAssaultRifle",
-   "ma_Gun_Appearance",
-   "WeaponTypeRifle"
-  ],
-  "isAutomaticFlag": false,
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 30,
-    "tier": 25,
-    "curve": [
-     {
-      "x": 1,
-      "y": 34
-     },
-     {
-      "x": 5,
-      "y": 38
-     },
-     {
-      "x": 10,
-      "y": 42
-     },
-     {
-      "x": 15,
-      "y": 48
-     },
-     {
-      "x": 20,
-      "y": 54
-     },
-     {
-      "x": 25,
-      "y": 61
-     },
-     {
-      "x": 30,
-      "y": 69
-     },
-     {
-      "x": 35,
-      "y": 78
-     },
-     {
-      "x": 40,
-      "y": 88
-     },
-     {
-      "x": 45,
-      "y": 99
-     },
-     {
-      "x": 50,
-      "y": 112
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 2.25,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2.25,
-  "speed": 0.8332,
-  "attackDelaySec": 0.3,
-  "animationAttackSec": 0.6666667,
-  "animationFireSec": 0.00001,
-  "reloadSpeed": 0.6897,
-  "animationReloadSec": 1.9333434,
-  "capacity": 20,
-  "ammoPerShot": 1,
-  "actionPointCost": 17,
-  "projectileCount": 1,
-  "reach": 1,
-  "secondaryDamage": 23,
-  "damageBonusMult": 1,
-  "minRange": 1904,
-  "maxRange": 3808,
-  "outOfRangeDamageMult": 0.5,
-  "fullPowerSeconds": 0,
-  "fullPowerDamageMult": 0,
-  "minimumChargeTime": 0,
-  "eligibleLevels": [
-   30,
-   40,
-   50
-  ],
-  "templateModFormIds": [
-   "0x003128C7",
-   "0x0030EB38",
-   "0x003128D9",
-   "0x00312922",
-   "0x003128EE",
-   "0x004F6AAE",
-   "0x00524153",
-   "0x005299FA",
-   "0x005D8D86",
-   "0x005D2BA3",
-   "0x0052501F"
-  ],
-  "defaultModFormIds": [
-   "0x003128C7",
-   "0x0030EB38",
-   "0x003128D9",
-   "0x00312922",
-   "0x003128EE",
-   "0x004F6AAE",
-   "0x00524153",
-   "0x005299FA",
-   "0x005D8D86",
-   "0x005D2BA3",
-   "0x0052501F"
-  ],
-  "attachParentSlots": [
-   "0x00024004",
-   "0x001E32C8",
-   "0x004E89A8",
-   "0x004E89A9",
-   "0x004E89AA",
-   "0x004E89AB",
-   "0x00114364",
-   "0x0047A264",
-   "0x0002249F",
-   "0x0002249D",
-   "0x0004B6E1",
-   "0x0002249C",
-   "0x0005D4D7",
-   "0x0003579A",
-   "0x00022499",
-   "0x0003579B",
-   "0x00035798",
-   "0x00035799",
-   "0x0012ECEC",
-   "0x00149CA8"
-  ],
-  "modifiers": [],
-  "obtainable": false
- },
- {
   "id": "SCORE_S7_GammaGun_Xerxos",
   "formId": "0x006353D0",
   "name": "Xerxo's Gamma Ray Gun",
@@ -51462,6 +59580,256 @@
    "0x004E89A9",
    "0x0003477E"
   ],
+  "modifiers": [],
+  "obtainable": false
+ },
+ {
+  "id": "HIDE_crWeapZetanDrone_sniper",
+  "formId": "0x008FF6A0",
+  "name": "Zetan Drone Laser",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "WeaponTypeLaser",
+   "WeaponTypeRanged",
+   "s_40_EyebotLaser"
+  ],
+  "isAutomaticFlag": false,
+  "components": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "dtEnergy",
+    "amount": 0,
+    "tier": 29,
+    "curve": [
+     {
+      "x": 1,
+      "y": 30
+     },
+     {
+      "x": 12,
+      "y": 34
+     },
+     {
+      "x": 23,
+      "y": 39
+     },
+     {
+      "x": 34,
+      "y": 44
+     },
+     {
+      "x": 45,
+      "y": 50
+     },
+     {
+      "x": 56,
+      "y": 57
+     },
+     {
+      "x": 67,
+      "y": 64
+     },
+     {
+      "x": 78,
+      "y": 73
+     },
+     {
+      "x": 89,
+      "y": 83
+     },
+     {
+      "x": 100,
+      "y": 94
+     },
+     {
+      "x": 111,
+      "y": 107
+     },
+     {
+      "x": 122,
+      "y": 122
+     },
+     {
+      "x": 133,
+      "y": 138
+     },
+     {
+      "x": 144,
+      "y": 157
+     },
+     {
+      "x": 155,
+      "y": 178
+     },
+     {
+      "x": 166,
+      "y": 202
+     },
+     {
+      "x": 177,
+      "y": 229
+     },
+     {
+      "x": 188,
+      "y": 260
+     },
+     {
+      "x": 199,
+      "y": 295
+     },
+     {
+      "x": 210,
+      "y": 335
+     },
+     {
+      "x": 221,
+      "y": 380
+     },
+     {
+      "x": 232,
+      "y": 432
+     },
+     {
+      "x": 243,
+      "y": 490
+     },
+     {
+      "x": 254,
+      "y": 557
+     },
+     {
+      "x": 265,
+      "y": 632
+     },
+     {
+      "x": 276,
+      "y": 717
+     },
+     {
+      "x": 287,
+      "y": 814
+     },
+     {
+      "x": 298,
+      "y": 925
+     },
+     {
+      "x": 309,
+      "y": 1050
+     },
+     {
+      "x": 320,
+      "y": 1192
+     },
+     {
+      "x": 331,
+      "y": 1353
+     },
+     {
+      "x": 342,
+      "y": 1536
+     },
+     {
+      "x": 353,
+      "y": 1744
+     },
+     {
+      "x": 364,
+      "y": 1981
+     },
+     {
+      "x": 375,
+      "y": 2249
+     },
+     {
+      "x": 386,
+      "y": 2553
+     },
+     {
+      "x": 397,
+      "y": 2899
+     },
+     {
+      "x": 408,
+      "y": 3292
+     },
+     {
+      "x": 419,
+      "y": 3738
+     },
+     {
+      "x": 430,
+      "y": 4245
+     },
+     {
+      "x": 441,
+      "y": 4820
+     },
+     {
+      "x": 452,
+      "y": 5473
+     },
+     {
+      "x": 463,
+      "y": 6214
+     },
+     {
+      "x": 474,
+      "y": 7057
+     },
+     {
+      "x": 485,
+      "y": 8013
+     },
+     {
+      "x": 496,
+      "y": 9099
+     },
+     {
+      "x": 507,
+      "y": 10332
+     },
+     {
+      "x": 518,
+      "y": 11733
+     },
+     {
+      "x": 529,
+      "y": 13323
+     },
+     {
+      "x": 540,
+      "y": 15129
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 1.35,
+  "animationAttackSec": 0.16666667,
+  "animationFireSec": 0.033343334,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 0,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 0,
+  "damageBonusMult": 1,
+  "minRange": 1800,
+  "maxRange": 3600,
+  "outOfRangeDamageMult": 0,
+  "fullPowerSeconds": 0,
+  "fullPowerDamageMult": 0,
+  "minimumChargeTime": 0,
+  "eligibleLevels": [],
+  "templateModFormIds": [],
+  "defaultModFormIds": [],
+  "attachParentSlots": [],
   "modifiers": [],
   "obtainable": false
  }

@@ -243,7 +243,7 @@
       "enemyConditions": {},
       "scenario": "vats",
       "measure": "perHit",
-      "expected": 1742.3999999999999,
+      "expected": 1812.6,
       "tolerancePct": 0.01,
       "source": "engine-snapshot"
     },
@@ -270,7 +270,7 @@
       "enemyConditions": {},
       "scenario": "freeAim",
       "measure": "sustainedDps",
-      "expected": 1042.4077312157938,
+      "expected": 1108.350799370564,
       "tolerancePct": 0.01,
       "source": "engine-snapshot"
     },

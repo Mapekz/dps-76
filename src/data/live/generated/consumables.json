@@ -5279,7 +5279,8 @@
   ],
   "category": "chem",
   "dispelKeys": [
-   "ChemDispelRadX|ChemEffect"
+   "ChemDispelRadX|ChemEffect",
+   "ChemDispelRadX|ChemEffect|FoodDispelEffect_RegenRads"
   ],
   "ingredientKeywords": [],
   "description": "+8 HP/s; +75 Rad Resist; +75 Rad Resist against radiation from food and drink",
@@ -6827,7 +6828,28 @@
     "bucket": "dbm",
     "op": "ADD",
     "value": 0.1,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeGrenade",
+      "present": false
+     },
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeRanged",
+      "present": true
+     },
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasScope",
+      "present": false
+     },
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasScopeRecon",
+      "present": false
+     }
+    ]
    }
   ],
   "notes": [],
@@ -7370,7 +7392,8 @@
   ],
   "category": "chem",
   "dispelKeys": [
-   "ChemDispelRadX|ChemEffect"
+   "ChemDispelRadX|ChemEffect",
+   "ChemDispelRadX|ChemEffect|FoodDispelEffect_RegenRads"
   ],
   "ingredientKeywords": [],
   "description": "+8 HP/s; +75 Rad Resist; +75 Rad Resist against radiation from food and drink",
@@ -8186,7 +8209,7 @@
   ],
   "category": "drink",
   "dispelKeys": [
-   "ATX_Stack_TeaWizard_LuckyLeaf_Luck|ChemDispelEffects|ChemEffect"
+   "ATX_Stack_TeaWizard_LuckyLeaf_Luck"
   ],
   "ingredientKeywords": [
    "IngredientTypeHerb",
@@ -10756,7 +10779,8 @@
   ],
   "category": "chem",
   "dispelKeys": [
-   "ChemDispelRadX|ChemEffect"
+   "ChemDispelRadX|ChemEffect",
+   "ChemDispelRadX|ChemEffect|FoodDispelEffect_RegenRads"
   ],
   "ingredientKeywords": [],
   "description": "+300 Rad Resist, Mutations Suppressed; +75 Rad Resist against radiation from food and drink",
@@ -10777,7 +10801,8 @@
   ],
   "category": "chem",
   "dispelKeys": [
-   "ChemDispelRadX|ChemEffect"
+   "ChemDispelRadX|ChemEffect",
+   "ChemDispelRadX|ChemEffect|FoodDispelEffect_RegenRads"
   ],
   "ingredientKeywords": [],
   "description": "+125 Rad Resist; +37.5 Rad Resist against radiation from food and drink",
@@ -11024,7 +11049,8 @@
   ],
   "category": "chem",
   "dispelKeys": [
-   "ChemDispelRadX|ChemEffect"
+   "ChemDispelRadX|ChemEffect",
+   "ChemDispelRadX|ChemEffect|FoodDispelEffect_RegenRads"
   ],
   "ingredientKeywords": [],
   "description": "+600 Rad Resist; +600 Rad Resist against radiation from food and drink",
@@ -15494,7 +15520,8 @@
   ],
   "category": "chem",
   "dispelKeys": [
-   "ChemDispelRadX|ChemEffect"
+   "ChemDispelRadX|ChemEffect",
+   "ChemDispelRadX|ChemEffect|FoodDispelEffect_RegenRads"
   ],
   "ingredientKeywords": [],
   "description": "+200 Rad Resist; +75 Rad Resist against radiation from food and drink",

@@ -160,6 +160,7 @@ export const WEAPON_KEYWORD_LABELS: Record<string, string> = {
   HasSilencer: 'suppressed weapons',
   HasLegendary_Weapon_Bully: 'Bully legendary weapons',
   HasLegendary_Weapon_HealAllies: 'Heal Allies legendary weapons',
+  HasLegendary_Weapon_Medic: "Medic's legendary weapons",
   HasLegendary_Weapon_Polished: 'Polished legendary weapons',
   HasLegendary_Weapon_Pounders: "Pounder's legendary weapons",
   CustomItemName_FoundationsVengeance: "Foundation's Vengeance",
