@@ -38,7 +38,7 @@ A shell opened before the snapshot landed still has the old `FO76_ESM_PATH`.
 | `_meta.json` | `esmDate` == new snapshot; `counts` deltas explained; `unresolved` **set-diff vs baseline** (see below) |
 | `bun run extract:diff` | weapons/omods roster+visibility churn all explained (covers ONLY those two files — `git diff --stat src/data/live/generated/` for the rest) |
 | `bun run vet:weapons` | exit 0, else adjudicate via the **weapon-vetting** skill |
-| `bun run wire-dict:build -- --dry-run` | no RENAMED/MISSING, else decide; removals: delete the id key AND add to `acknowledgedRemovals` (test requires both) |
+| `bun run wire-dict:build -- --dry-run` | no RENAMED/MISSING, else decide; removals: delete the id key AND add to `acknowledgedRemovals` (test requires both). MISSING also hides same-FormID edid renames (the builder resolves FormIDs from current data only): map each via HEAD's generated `formId` → `esm get` → new edid, and rename the key in place. A rename that also moves `attachPointEdid` is re-homed at decode (`readWeapon`) |
 | `bun run audit:records` | tier-1/2 clean; tier-3 findings adjudicated (see §4) |
 | `bun run audit:inert --mode live` diff | badge-count moves explained |
 
