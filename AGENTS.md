@@ -102,6 +102,18 @@ normalized display name in `src/data/perk-modifiers.ts`. Misses get patched in
 Only one ESM is extracted today. `pts` re-exports `live`, and the Header's mode toggle
 stays disabled until a PTS dump lands.
 
+## Share links during alpha
+
+dps-76 is in alpha. Until the Stable release (no date yet), old share links and saved
+builds (URL hash and localStorage) don't have to survive a data sync or a codec change.
+Don't add decode-time migrations, id aliases, or legacy shims to keep an old link
+working, and renaming a persisted id such as a `CuratedTarget.edid` needs no migration.
+
+The append-only rules for the wire dictionary (`src/data/wire-dictionary/types.ts`) and
+knob-registry ordinals (`src/types/knob-registry.ts`) still apply. They cost nothing,
+stop an old link from silently decoding to a different record, and are what Stable will
+build on.
+
 ## Testing
 
 `bun run test` is the sole runner and CI runs it. `bun:test`'s `describe`, `it`, `expect`,

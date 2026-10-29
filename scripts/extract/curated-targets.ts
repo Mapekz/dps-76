@@ -10,8 +10,9 @@ import type { BodyPartRaceCategory } from '../../src/types/generated';
  * verified against the 20260702 dump (20260710 for the rows added since).
  *
  * `id` (the picker key, persisted as EnemyConditions.targetRace) is this
- * row's `edid` — do not rename an existing edid without a migration. When the
- * game renames a record, keep `edid` and put the new name in `lookupEdid`.
+ * row's `edid`. When the game renames a record, keep `edid` and put the new
+ * name in `lookupEdid` so saved targets keep resolving (not required during
+ * alpha; see AGENTS.md "Share links during alpha").
  *
  * Originally lived in extract-bodyparts.ts (which still owns the
  * `conditionPartsOnly`/`crippleImmune` BPTD escape hatches — see that file's
