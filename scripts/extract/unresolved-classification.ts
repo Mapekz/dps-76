@@ -54,7 +54,8 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
   {
     match:
       /^mod_custom_StormSlasher_(?:Burning|Channeler|Crusher|OneShot|Static|Stormwalker)0[12]: perk RTSV_Stormslasher_(?:Burning|Harnesser|Crusher|OneShot|Static|Stormwalker)Perk: /,
-    disposition: 'resolve-pending',
+    disposition: 'deferred-with-issue',
+    issue: '#98',
     reason:
       'V63-Z Custom slot-family procs; need per-hit/crit/VATS proc triggers and cross-slot gates',
   },

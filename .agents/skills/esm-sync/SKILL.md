@@ -140,7 +140,7 @@ watch the CI run until it is green.
 - 3★ elemental weapon legendaries (Burning/Frozen/Toxic, 20261026):
   resolve-pending on a CurveInput for the shared
   Legendary_Armor_*Count AV (weapon +1, armor pieces +1 each).
-- V63-Z Custom slot families (Stormcutter, 20260914+): resolve-pending on
+- #98 V63-Z Custom slot families (Stormcutter, 20260914+) — pending
   per-hit/crit/VATS proc triggers and cross-slot HasPerk gates.
 - P62 resolved in 20261026: the Drifter content shipped as Hideouts (HIDE_)
   and the P62 legendaries (Ruiner's & co) were cut to DEL_/zzz_. If a
