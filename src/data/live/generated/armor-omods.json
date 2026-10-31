@@ -74010,7 +74010,21 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00608371:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00608371",
+     "edid": "mod_Legendary_Armor3_Burning",
+     "name": "Burning"
+    },
+    "bucket": "burningLegendaryCount",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_Burning"
@@ -74018,10 +74032,9 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Legendary_Armor_BurningCount — unmapped",
    "MGEF AbLegendary_Burning_Description archetype Script — needs override",
+   "perk Legendary_Armor_BurningPerk: Apply Combat Hit Spell Taken — retaliation DoT dropped (#88)",
    "perk Legendary_Armor_BurningPerk: GetRandomPercent()=30",
-   "perk Legendary_Armor_BurningPerk: Legendary_Burning_FireEffect: DoT curve with unmapped input AV 0x0073E432 — needs override",
    "perk Legendary_Armor_BurningPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
@@ -74106,7 +74119,21 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00608372:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00608372",
+     "edid": "mod_Legendary_Armor3_Frozen",
+     "name": "Frozen"
+    },
+    "bucket": "frozenLegendaryCount",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_Frozen"
@@ -74114,10 +74141,9 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Legendary_Armor_FrozenCount — unmapped",
    "MGEF AbLegendary_Frozen_Description archetype Script — needs override",
+   "perk Legendary_Armor_FrozenPerk: Apply Combat Hit Spell Taken — retaliation DoT dropped (#88)",
    "perk Legendary_Armor_FrozenPerk: GetRandomPercent()=30",
-   "perk Legendary_Armor_FrozenPerk: Legendary_Frozen_FrostEffect: DoT curve with unmapped input AV 0x0073E433 — needs override",
    "perk Legendary_Armor_FrozenPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
@@ -74537,7 +74563,21 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00608370:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00608370",
+     "edid": "mod_Legendary_Armor3_Toxic",
+     "name": "Toxic"
+    },
+    "bucket": "toxicLegendaryCount",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_Toxic"
@@ -74545,10 +74585,9 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Legendary_Armor_ToxicCount — unmapped",
    "MGEF AbLegendary_Toxic_Description archetype Script — needs override",
+   "perk Legendary_Armor_ToxicPerk: Apply Combat Hit Spell Taken — retaliation DoT dropped (#88)",
    "perk Legendary_Armor_ToxicPerk: GetRandomPercent()=30",
-   "perk Legendary_Armor_ToxicPerk: Legendary_Toxic_PoisonEffect: DoT curve with unmapped input AV 0x0073E431 — needs override",
    "perk Legendary_Armor_ToxicPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
@@ -78120,7 +78159,21 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00608376:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00608376",
+     "edid": "mod_Legendary_PowerArmor3_Burning",
+     "name": "Burning"
+    },
+    "bucket": "burningLegendaryCount",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_Burning"
@@ -78128,10 +78181,9 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Legendary_Armor_BurningCount — unmapped",
    "MGEF AbLegendary_Burning_Description archetype Script — needs override",
+   "perk Legendary_Armor_BurningPerk: Apply Combat Hit Spell Taken — retaliation DoT dropped (#88)",
    "perk Legendary_Armor_BurningPerk: GetRandomPercent()=30",
-   "perk Legendary_Armor_BurningPerk: Legendary_Burning_FireEffect: DoT curve with unmapped input AV 0x0073E432 — needs override",
    "perk Legendary_Armor_BurningPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
@@ -78220,7 +78272,21 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00608377:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00608377",
+     "edid": "mod_Legendary_PowerArmor3_Frozen",
+     "name": "Frozen"
+    },
+    "bucket": "frozenLegendaryCount",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_Frozen"
@@ -78228,10 +78294,9 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Legendary_Armor_FrozenCount — unmapped",
    "MGEF AbLegendary_Frozen_Description archetype Script — needs override",
+   "perk Legendary_Armor_FrozenPerk: Apply Combat Hit Spell Taken — retaliation DoT dropped (#88)",
    "perk Legendary_Armor_FrozenPerk: GetRandomPercent()=30",
-   "perk Legendary_Armor_FrozenPerk: Legendary_Frozen_FrostEffect: DoT curve with unmapped input AV 0x0073E433 — needs override",
    "perk Legendary_Armor_FrozenPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
@@ -78568,7 +78633,21 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00608375:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00608375",
+     "edid": "mod_Legendary_PowerArmor3_Toxic",
+     "name": "Toxic"
+    },
+    "bucket": "toxicLegendaryCount",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_Toxic"
@@ -78576,10 +78655,9 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Legendary_Armor_ToxicCount — unmapped",
    "MGEF AbLegendary_Toxic_Description archetype Script — needs override",
+   "perk Legendary_Armor_ToxicPerk: Apply Combat Hit Spell Taken — retaliation DoT dropped (#88)",
    "perk Legendary_Armor_ToxicPerk: GetRandomPercent()=30",
-   "perk Legendary_Armor_ToxicPerk: Legendary_Toxic_PoisonEffect: DoT curve with unmapped input AV 0x0073E431 — needs override",
    "perk Legendary_Armor_ToxicPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
@@ -98850,41 +98928,7 @@
    "ma_PowerArmorMod",
    "RD01_ma_PA_EnclaveVulcan"
   ],
-  "modifiers": [
-   {
-    "id": "0x00793E59:ench:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00793E59",
-     "edid": "RD01_Mod_PowerArmor_EnclaveVulcan_Torso_Misc_Reflection",
-     "name": "Reflection Assembly"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "value": 30,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "HasKeyword(IsAlly)=0"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "OR-group[HasKeyword(WeaponTypeHandToHand)=1 | HasKeyword(WeaponTypeMelee1H)=1 | HasKeyword(WeaponTypeMelee2H)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | HasKeyword(WeaponTypeUnarmed)=1 | HasActiveMagicEffect(RD01_PowerArmor_ReflectionOnHitTakenEffect)=0]"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "ballistic"
-      ]
-     },
-     {
-      "kind": "inPowerArmor",
-      "value": true
-     }
-    ],
-    "durationSec": 5
-   }
-  ],
+  "modifiers": [],
   "addedKeywords": [
    "dn_HasMisc_Reflection"
   ],
@@ -98892,6 +98936,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "condition: HasKeyword(IsAlly)=0",
+   "perk RD01_PowerArmor_Reflection: Apply Combat Hit Spell Taken — retaliation DoT dropped (#88)",
    "perk RD01_PowerArmor_Reflection: OR-group[HasKeyword(WeaponTypeHandToHand)=1 | HasKeyword(WeaponTypeMelee1H)=1 | HasKeyword(WeaponTypeMelee2H)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | HasKeyword(WeaponTypeUnarmed)=1 | HasActiveMagicEffect(RD01_PowerArmor_ReflectionOnHitTakenEffect)=0]"
   ],
   "obtainable": true

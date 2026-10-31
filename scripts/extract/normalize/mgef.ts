@@ -378,6 +378,12 @@ export const FALLBACK_AVIF_ROUTES: Record<
   // reads this as a curve input yet — wired for drop-in, matching
   // lockpickSkill's shape exactly (STAT_HackingTier is its direct peer).
   STAT_HackingTier: { bucket: 'hackingSkill', scale: 1 },
+  // Elemental 3★ legendary counters: each Burning/Frozen/Toxic weapon OMOD and
+  // armor piece ADDs 1 (20261026). Integer counts, scale 1; the weapon DoT's
+  // CT_Legendary_Armor_*Dmg curve reads them (CURVE_INPUT_AVS below).
+  Legendary_Armor_BurningCount: { bucket: 'burningLegendaryCount', scale: 1 },
+  Legendary_Armor_FrozenCount: { bucket: 'frozenLegendaryCount', scale: 1 },
+  Legendary_Armor_ToxicCount: { bucket: 'toxicLegendaryCount', scale: 1 },
   // Stimpak Healing (STAT_HealMultStimpak, percent-point AV, base 0):
   // granted by First Aid perk (Intelligence-keyed curve) and the Medicine
   // Bobblehead (flat +30). Scale 1: the AV's magnitudes ARE percent points
@@ -872,6 +878,9 @@ export const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   '0x001EB998': 'addictionCount', // Junkie's
   '0x0032CB37': 'lockpickSkill', // STAT_LockpickingTier — Pirate Punch's "+5% Damage per Lockpick Skill" curve (PiratePunchBonus: (0,0),(1,5),(20,100))
   '0x00356A14': 'hackingSkill', // STAT_HackingTier — no curve consumer yet; wired for drop-in (peer of lockpickSkill)
+  '0x0073E432': 'burningLegendaryCount', // Legendary_Armor_BurningCount — ench_Legendary_Burning's DoT curve
+  '0x0073E433': 'frozenLegendaryCount', // Legendary_Armor_FrozenCount — ench_Legendary_Frozen's DoT curve
+  '0x0073E431': 'toxicLegendaryCount', // Legendary_Armor_ToxicCount — ench_Legendary_Toxic's DoT curve
   '0x00206F31': 'stimpakHealMult', // STAT_HealMultStimpak — Medical Malpractice's dbm scale (via scaledBy, not a curve)
   '0x000002D4': 'healthCurrent', // Health (absolute) — Juggernaut's (x 0→1000, y 0→100)
   // DamageResist — Berserker's ("DamageUnarmored"): the WIELDER's own DR, not
@@ -2303,7 +2312,15 @@ export async function translateGrantedPerk(
           result.deliveryTargetType,
           sub.deliveryTargetType,
         );
-        result.modifiers.push(...sub.modifiers);
+        // A hit-TAKEN spell's DoT lands on the attacker only when the wearer is
+        // struck: no hits-taken model exists (#88), so it isn't outgoing DoT.
+        const isHitTaken = name === 'Apply Combat Hit Spell Taken';
+        if (isHitTaken && sub.modifiers.some((m) => m.bucket === 'dotDamage')) {
+          result.notes.push(`perk ${perkEdid}: ${name} — retaliation DoT dropped (#88)`);
+        }
+        result.modifiers.push(
+          ...sub.modifiers.filter((m) => !(isHitTaken && m.bucket === 'dotDamage')),
+        );
         if (sub.procComponents && sub.procComponents.length > 0) {
           const isOnCripple = name === 'Apply Spell On Actor When Limb Crippled';
           const isLastRoundHit =

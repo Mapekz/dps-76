@@ -512,6 +512,16 @@ export type Bucket =
    */
   | 'hackingSkill'
   /**
+   * Elemental 3★ legendary counters (`Legendary_Armor_{Burning,Frozen,Toxic}Count`,
+   * integer, base 0). Folded in player-stats.ts derivePlayerStats exactly like
+   * lockpickSkill: the weapon OMOD ADDs 1 and each armor piece ADDs 1 (scaled
+   * by the Armor checklist count). Read by the same-named CurveInputs, which
+   * size the weapon legendary's on-hit DoT.
+   */
+  | 'burningLegendaryCount'
+  | 'frozenLegendaryCount'
+  | 'toxicLegendaryCount'
+  /**
    * Stimpak Healing (`STAT_HealMultStimpak` 0x00206F31, percent-point AV,
    * base 0). Folded in player-stats.ts derivePlayerStats — First Aid perk
    * (Intelligence-keyed curve) and Medicine Bobblehead (flat +30) — and
@@ -1096,6 +1106,27 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     foldedBy:
       'player-stats.ts derivePlayerStats; no consumer yet — wired for drop-in (STAT_HackingTier peer of lockpickSkill)',
   },
+  burningLegendaryCount: {
+    foldBase: 0,
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'player-stats.ts derivePlayerStats; feeds the burningLegendaryCount CurveInput (3★ weapon DoT)',
+  },
+  frozenLegendaryCount: {
+    foldBase: 0,
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'player-stats.ts derivePlayerStats; feeds the frozenLegendaryCount CurveInput (3★ weapon DoT)',
+  },
+  toxicLegendaryCount: {
+    foldBase: 0,
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'player-stats.ts derivePlayerStats; feeds the toxicLegendaryCount CurveInput (3★ weapon DoT)',
+  },
   stimpakHealMult: {
     foldBase: 0,
     regime: 'playerStat',
@@ -1223,6 +1254,9 @@ export const CONSTANT_BASE_BUCKETS = [
   'vatsHitChanceMult',
   'lockpickSkill',
   'hackingSkill',
+  'burningLegendaryCount',
+  'frozenLegendaryCount',
+  'toxicLegendaryCount',
   'stimpakHealMult',
 ] as const;
 
@@ -1346,9 +1380,10 @@ function conditionRulesOutLoadout(c: Condition, ctx: StaticLoadoutContext): bool
 /**
  * A modifier is possibly relevant to THIS build: engine-effective, no
  * condition already proves it can never fire for the equipped weapon/
- * armor-type/race, and — for the two "pool" buckets whose only consumer is
- * an opt-in curve reference elsewhere (lockpickSkill: Pirate Punch on the
- * Blackpowder Pistol; hackingSkill: no consumer yet) — that curve is
+ * armor-type/race, and — for the "pool" buckets whose only consumer is an
+ * opt-in curve reference elsewhere (lockpickSkill: Pirate Punch on the
+ * Blackpowder Pistol; hackingSkill: no consumer yet; the elemental counters:
+ * a 3★ Burning/Frozen/Toxic weapon's DoT) — that curve is
  * actually present on the current weapon. `player-stats.ts` folds these
  * buckets into a number unconditionally, so `modifierHasEngineEffect` alone
  * can't tell "nothing reads this today" apart from a normally-read bucket.
@@ -1358,6 +1393,14 @@ export function modifierCouldApplyToLoadout(m: Modifier, ctx: StaticLoadoutConte
   if (m.conditions.some((c) => conditionRulesOutLoadout(c, ctx))) return false;
   if (m.bucket === 'lockpickSkill' && !ctx.consumedCurveInputs.has('lockpickSkill')) return false;
   if (m.bucket === 'hackingSkill' && !ctx.consumedCurveInputs.has('hackingSkill')) return false;
+  if (
+    (m.bucket === 'burningLegendaryCount' ||
+      m.bucket === 'frozenLegendaryCount' ||
+      m.bucket === 'toxicLegendaryCount') &&
+    !ctx.consumedCurveInputs.has(m.bucket)
+  ) {
+    return false;
+  }
   return true;
 }
 
@@ -1778,6 +1821,9 @@ export type CurveInput =
   | 'weaponCondition'
   | 'lockpickSkill' // STAT_LockpickingTier 0x0032CB37 — Pirate Punch's "+5% Damage per Lockpick Skill" curve
   | 'hackingSkill' // STAT_HackingTier 0x00356A14 — wired for drop-in (peer of lockpickSkill; no curve consumer yet)
+  | 'burningLegendaryCount' // Legendary_Armor_BurningCount 0x0073E432 — Burning 3★ weapon DoT
+  | 'frozenLegendaryCount' // Legendary_Armor_FrozenCount 0x0073E433 — Frozen 3★ weapon DoT
+  | 'toxicLegendaryCount' // Legendary_Armor_ToxicCount 0x0073E431 — Toxic 3★ weapon DoT
   | 'stimpakHealMult' // STAT_HealMultStimpak 0x00206F31 — Medical Malpractice's dbm scale (via scaledBy, not a curve)
   | 'stimpakHealMagMult' // stimpakHealMagMult bucket product-fold — for a future Stimpak-healing-scaled unique (scaledBy)
   | 'stimpakHealDurationMult'; // stimpakHealDurationMult bucket product-fold — same, duration axis

@@ -201,6 +201,13 @@ describe('translate (flat AV routes → one modifier)', () => {
       modifiers: [addMod('lockpickSkill', 1)],
     },
     {
+      name: 'routes Legendary_Armor_BurningCount to its counter bucket (scale 1 — integer count, 20261026)',
+      avEdid: 'Legendary_Armor_BurningCount',
+      mgef: { archetype: 'Peak Value Modifier' },
+      effect: { magnitude: 1 },
+      modifiers: [addMod('burningLegendaryCount', 1)],
+    },
+    {
       name: 'routes a flat Peak Value Modifier on STAT_HackingTier to the hackingSkill bucket via FALLBACK_AVIF_ROUTES (scale 1 — integer skill points)',
       avEdid: 'STAT_HackingTier',
       mgef: { archetype: 'Peak Value Modifier' },

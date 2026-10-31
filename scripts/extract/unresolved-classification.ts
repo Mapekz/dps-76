@@ -394,18 +394,6 @@ export const unresolvedClassifications: UnresolvedClassification[] = [
     issue: '#88',
     reason: 'next-attack bonus after a melee hit taken; deferred pending a hits-taken model',
   },
-  // 3★ elemental weapon legendaries (20261026): each OMOD writes +1 to the
-  // armor family's Legendary_Armor_{Burning,Frozen,Toxic}Count AV
-  // (0x0073E432/33/31) and adds a Contact ENCH whose 7s Damage DoT reads that
-  // count through CT_Legendary_Armor_*Dmg (Burning 19→115, Frozen 12→72,
-  // Toxic 12→70 over counts 1→6). Modelable as a dotDamage curve once the
-  // equipped-count AV has a CurveInput (walked 2026-10-29).
-  {
-    match: /^mod_Legendary_Weapon3_(?:Toxic|Burning|Frozen): /,
-    disposition: 'resolve-pending',
-    reason:
-      'on-hit DoT scaled by the equipped elemental-legendary count; needs a count curve input',
-  },
   // AP-refund-on-kill family → tracked decision issue.
   {
     match:

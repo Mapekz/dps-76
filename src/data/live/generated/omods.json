@@ -80791,16 +80791,77 @@
   "targetKeywords": [
    "ma_legendarycrafting_weapon"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0095F75B:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0095F75B",
+     "edid": "mod_Legendary_Weapon3_Burning",
+     "name": "Burning"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "burningLegendaryCount",
+     "points": [
+      {
+       "x": 1,
+       "y": 19
+      },
+      {
+       "x": 2,
+       "y": 38
+      },
+      {
+       "x": 3,
+       "y": 56
+      },
+      {
+       "x": 4,
+       "y": 77
+      },
+      {
+       "x": 5,
+       "y": 96
+      },
+      {
+       "x": 6,
+       "y": 115
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ],
+    "durationSec": 7
+   },
+   {
+    "id": "0x0095F75B:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0095F75B",
+     "edid": "mod_Legendary_Weapon3_Burning",
+     "name": "Burning"
+    },
+    "bucket": "burningLegendaryCount",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on Legendary_Armor_BurningCount — unmapped",
-   "Legendary_Burning_FireEffect: DoT curve with unmapped input AV 0x0073E432 — needs override"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -80870,16 +80931,77 @@
   "targetKeywords": [
    "ma_legendarycrafting_weapon"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0095F75C:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0095F75C",
+     "edid": "mod_Legendary_Weapon3_Frozen",
+     "name": "Frozen"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "frozenLegendaryCount",
+     "points": [
+      {
+       "x": 1,
+       "y": 12
+      },
+      {
+       "x": 2,
+       "y": 24
+      },
+      {
+       "x": 3,
+       "y": 36
+      },
+      {
+       "x": 4,
+       "y": 48
+      },
+      {
+       "x": 5,
+       "y": 60
+      },
+      {
+       "x": 6,
+       "y": 72
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "cryo"
+      ]
+     }
+    ],
+    "durationSec": 7
+   },
+   {
+    "id": "0x0095F75C:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0095F75C",
+     "edid": "mod_Legendary_Weapon3_Frozen",
+     "name": "Frozen"
+    },
+    "bucket": "frozenLegendaryCount",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on Legendary_Armor_FrozenCount — unmapped",
-   "Legendary_Frozen_FrostEffect: DoT curve with unmapped input AV 0x0073E433 — needs override"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -81429,16 +81551,77 @@
   "targetKeywords": [
    "ma_legendarycrafting_weapon"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0095F75A:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0095F75A",
+     "edid": "mod_Legendary_Weapon3_Toxic",
+     "name": "Toxic"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "toxicLegendaryCount",
+     "points": [
+      {
+       "x": 1,
+       "y": 12
+      },
+      {
+       "x": 2,
+       "y": 23
+      },
+      {
+       "x": 3,
+       "y": 35
+      },
+      {
+       "x": 4,
+       "y": 47
+      },
+      {
+       "x": 5,
+       "y": 58
+      },
+      {
+       "x": 6,
+       "y": 70
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "poison"
+      ]
+     }
+    ],
+    "durationSec": 7
+   },
+   {
+    "id": "0x0095F75A:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0095F75A",
+     "edid": "mod_Legendary_Weapon3_Toxic",
+     "name": "Toxic"
+    },
+    "bucket": "toxicLegendaryCount",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on Legendary_Armor_ToxicCount — unmapped",
-   "Legendary_Toxic_PoisonEffect: DoT curve with unmapped input AV 0x0073E431 — needs override"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

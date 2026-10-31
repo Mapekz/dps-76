@@ -2,6 +2,7 @@ import { describe, it, expect } from 'bun:test';
 import { getWeapons } from '@/data';
 import { getBuffModifiers } from '@/data/buffs';
 import type { Modifier } from '@/types/modifiers';
+import { getArmorEffectById } from '@/data/armor-modifiers';
 import { getOmodById } from '@/data/omods';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { PerkId } from '@/data/perk-ids';
@@ -659,6 +660,46 @@ describe('Onslaught (2026-07-12, real data)', () => {
       base({ weapon, modifiers: [...omodModifiers, ...guerrillaExpert] }),
     );
     expect(result.onslaughtMaxStacks).toBe(12);
+  });
+});
+
+describe('3★ elemental weapon legendaries', () => {
+  const BURNING = 'mod_Legendary_Weapon3_Burning';
+  const ARMOR_BURNING = 'mod_Legendary_Armor3_Burning';
+
+  function dps(legendaryEffects: string[], burningArmor = 0) {
+    const config: PlayerConfig = {
+      ...createDefaultPlayerConfig(),
+      weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects },
+      armorEffects: burningArmor ? { [ARMOR_BURNING]: burningArmor } : {},
+    };
+    return computeScenarios(resolveLoadout(config, createDefaultEnemyConfig(), 'live')!).freeAim;
+  }
+
+  it.each([
+    [BURNING, 19],
+    ['mod_Legendary_Weapon3_Frozen', 12],
+    ['mod_Legendary_Weapon3_Toxic', 12],
+  ] as const)('%s counts itself: DoT reads its curve at x=1 (%d/s)', (id, expected) => {
+    expect(dps([id]).dotDps).toBeCloseTo(expected, 6);
+  });
+
+  it('each worn matching armor piece raises the count: 19/s alone, 115/s with five pieces', () => {
+    expect(dps([BURNING], 2).dotDps).toBeCloseTo(56, 6); // count 3
+    expect(dps([BURNING], 5).dotDps).toBeCloseTo(115, 6); // count 6
+  });
+
+  it('matching armor without the weapon legendary adds no DoT (its own proc stays #88)', () => {
+    expect(dps([], 5).dotDps).toBe(0);
+    const armor = getArmorEffectById('live', ARMOR_BURNING)!;
+    expect(armor.modifiers.map((m) => m.bucket)).toEqual(['burningLegendaryCount']);
+  });
+
+  it('a faster fire rate adds no DoT damage: refreshing never ticks early (max one tick/s)', () => {
+    // Rapid raises fire rate; the DoT still ticks its curve value once a second.
+    const faster = dps(['', 'mod_Legendary_Weapon2_Guns_RoF', BURNING].filter(Boolean));
+    expect(faster.fireRate).toBeGreaterThan(dps([BURNING]).fireRate);
+    expect(faster.dotDps).toBeCloseTo(19, 6);
   });
 });
 

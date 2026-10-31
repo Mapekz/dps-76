@@ -437,7 +437,7 @@ picker badge.
 | **Feral meter** names | 8/6–7/4–5/2–3/0–1 banding of 5 tier names over 9 values (display-only) | INFERENCE | tier names are ESM-sourced; the banding over 9 values is ours |
 | Two Shot | ×1.75 confirmed (Fixer@50: 103→180.25); extra projectile feeds no damage term yet | USER-CONFIRMED | ESM property; multiplier confirmed in-game |
 | Anti-Armor family | −50% target armor via `armorPen`, live (`mitigation.ts`) | ESM-PROVEN | — |
-| Bleed/burn/shock mod DoTs | `dotDamage`, refresh-only model (re-applying resets the timer). Exempt from sneak/crit/body-part | INFERENCE | ESM proves total-over-duration; reading it as dmg/sec is ours, not record-proven |
+| Bleed/burn/shock mod DoTs | `dotDamage`, refresh-only model: re-applying only extends the duration and never ticks early, and a DoT ticks at most once per second, so steady-state DPS is its magnitude at any fire rate. Exempt from sneak/crit/body-part | USER-CONFIRMED | Tick cadence confirmed 2026-10-30; `computeDotDps` |
 | Adrenal Reaction (mutation) | +5%/stack (+6.25% SiN); 0 stacks = 0 (explicit (0,0) point since 20261026) | ESM-PROVEN | curve-driven |
 | **Tenderizer** | +0.1% dbm/stack, manual 0–1000 (cap +100%), target-side, applied UNCONDITIONALLY | ASSUMPTION | ESM per-stack value; the 0–1000 manual cap (+100%) is not ESM-derived |
 | Follow Through / Taking One for the Team | Both `wholeDamage` ×(1+value) target-side debuffs (10/20/30/40%/rank), manual toggle default 0, composing multiplicatively. Both grant a PERK to the struck actor via a spell chain carrying "Mod Incoming Weapon Damage" | ESM-PROVEN | esm-walk-confirmed spell chain |

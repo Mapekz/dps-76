@@ -137,9 +137,9 @@ watch the CI run until it is green.
   pending a hits-taken model.
 - #89 AP-refund-on-kill (Grim Reaper's Sprint, Combo-Breaker, SlugBuster,
   bulletStormOnKill) — pending enemy TTK.
-- 3★ elemental weapon legendaries (Burning/Frozen/Toxic, 20261026):
-  resolve-pending on a CurveInput for the shared
-  Legendary_Armor_*Count AV (weapon +1, armor pieces +1 each).
+- Crusader SCOPE slot: kept on purpose. In 20261026 no record opens
+  `ap_gun_Scope` (its template still lists Iron Sights), and the user expects
+  Bethesda to restore it. Re-check on the next dump.
 - #98 V63-Z Custom slot families (Stormcutter, 20260914+) — pending
   per-hit/crit/VATS proc triggers and cross-slot HasPerk gates.
 - P62 resolved in 20261026: the Drifter content shipped as Hideouts (HIDE_)

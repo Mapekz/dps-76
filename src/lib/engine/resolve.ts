@@ -251,6 +251,11 @@ const PLAYER_STATE_READERS: Record<
   // Master Infiltrator, Safecracker's 3★ armor).
   lockpickSkill: (p) => p.lockpickSkill ?? 0,
   hackingSkill: (p) => p.hackingSkill ?? 0,
+  // 3★ Burning/Frozen/Toxic DoT curve X — folded counters (the weapon's own +1
+  // plus each matching armor piece).
+  burningLegendaryCount: (p) => p.burningLegendaryCount ?? 0,
+  frozenLegendaryCount: (p) => p.frozenLegendaryCount ?? 0,
+  toxicLegendaryCount: (p) => p.toxicLegendaryCount ?? 0,
   stimpakHealMult: (p) => p.stimpakHealMult ?? 0,
   // stimpakHealMagMult/DurationMult bucket product-folds (player-stats.ts) —
   // wired for a future Stimpak-healing-scaled unique via `scaledBy`, no

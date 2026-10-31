@@ -721,6 +721,33 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     label: 'Eye of Ra equipped',
     activeBadge: 'conditions',
   },
+  burningLegendaryCount: {
+    key: 'burningLegendaryCount',
+    wire: 64,
+    owner: 'player',
+    origin: 'derived',
+    section: 'none',
+    default: PLAYER_DEFAULTS.burningLegendaryCount ?? 0,
+    label: 'Burning legendary count',
+  },
+  frozenLegendaryCount: {
+    key: 'frozenLegendaryCount',
+    wire: 65,
+    owner: 'player',
+    origin: 'derived',
+    section: 'none',
+    default: PLAYER_DEFAULTS.frozenLegendaryCount ?? 0,
+    label: 'Frozen legendary count',
+  },
+  toxicLegendaryCount: {
+    key: 'toxicLegendaryCount',
+    wire: 66,
+    owner: 'player',
+    origin: 'derived',
+    section: 'none',
+    default: PLAYER_DEFAULTS.toxicLegendaryCount ?? 0,
+    label: 'Toxic legendary count',
+  },
 };
 
 // retired wire ordinals: (none yet)

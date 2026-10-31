@@ -137,6 +137,9 @@ export interface ResolvedPlayer extends PlayerConditionContext {
   maxHealth: number;
   lockpickSkill: number;
   hackingSkill: number;
+  burningLegendaryCount: number;
+  frozenLegendaryCount: number;
+  toxicLegendaryCount: number;
   stimpakHealMult: number;
   stimpakHealMagMult: number;
   stimpakHealDurationMult: number;
@@ -178,6 +181,9 @@ export type DerivedPlayerFields = Pick<
   | 'maxHealth'
   | 'lockpickSkill'
   | 'hackingSkill'
+  | 'burningLegendaryCount'
+  | 'frozenLegendaryCount'
+  | 'toxicLegendaryCount'
   | 'stimpakHealMult'
   | 'stimpakHealMagMult'
   | 'stimpakHealDurationMult'
@@ -287,6 +293,9 @@ export function createDefaultResolvedPlayer(): ResolvedPlayer {
     maxHealth: 300,
     lockpickSkill: 0,
     hackingSkill: 0,
+    burningLegendaryCount: 0,
+    frozenLegendaryCount: 0,
+    toxicLegendaryCount: 0,
     stimpakHealMult: 0,
     stimpakHealMagMult: 1,
     stimpakHealDurationMult: 1,

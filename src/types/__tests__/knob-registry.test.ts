@@ -31,6 +31,9 @@ describe('KNOB_REGISTRY', () => {
   it('DERIVED_PLAYER_CONDITION_KEYS stays aligned with the legacy codec set', () => {
     const legacyCodecDerived: (keyof ResolvedPlayer)[] = [
       'addictionCount',
+      'burningLegendaryCount',
+      'frozenLegendaryCount',
+      'toxicLegendaryCount',
       'hackingSkill',
       'hungerThirstTier',
       'lockpickSkill',
@@ -120,6 +123,9 @@ describe('KNOB_REGISTRY', () => {
       { key: 'standingStill', wire: 61 },
       { key: 'vatsTargetIndex', wire: 62 },
       { key: 'eyeOfRaWorn', wire: 63 },
+      { key: 'burningLegendaryCount', wire: 64 },
+      { key: 'frozenLegendaryCount', wire: 65 },
+      { key: 'toxicLegendaryCount', wire: 66 },
     ];
     const fromRegistry = (Object.keys(PLAYER_KNOB_REGISTRY) as Array<keyof ResolvedPlayer>).map(
       (key) => ({ key, wire: PLAYER_KNOB_REGISTRY[key]!.wire }),

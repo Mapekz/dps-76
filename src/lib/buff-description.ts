@@ -88,6 +88,9 @@ const FLAT_POINT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
   energyResistGain: 'Energy Resist',
   lockpickSkill: 'Lockpick Skill',
   hackingSkill: 'Hacking Skill',
+  burningLegendaryCount: 'Burning legendary count',
+  frozenLegendaryCount: 'Frozen legendary count',
+  toxicLegendaryCount: 'Toxic legendary count',
   stimpakHealMult: 'Stimpak Healing',
   // Flat points of enemy Damage Resist ignored (contrast the ADD-fraction
   // `armorPen` above).
@@ -100,6 +103,9 @@ const CURVE_AXIS_LABELS: Partial<Record<CurveInput, string>> = {
   healthFraction: 'missing health',
   lockpickSkill: 'lockpick skill',
   hackingSkill: 'hacking skill',
+  burningLegendaryCount: 'equipped Burning legendaries',
+  frozenLegendaryCount: 'equipped Frozen legendaries',
+  toxicLegendaryCount: 'equipped Toxic legendaries',
   stimpakHealMult: 'Stimpak healing',
   itemLevel: 'weapon level',
   playerLevel: 'player level',

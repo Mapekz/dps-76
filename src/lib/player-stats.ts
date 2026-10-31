@@ -267,6 +267,10 @@ export interface DerivedPlayerStats {
   lockpickSkill: number;
   /** Folded hackingSkill bucket (Hacker ranks, Master Infiltrator, Safecracker's) — base 0, no formula term; no consumer yet. */
   hackingSkill: number;
+  /** Folded elemental 3★ counters (weapon +1, armor +1/piece) — base 0; size the 3★ weapon DoT. */
+  burningLegendaryCount: number;
+  frozenLegendaryCount: number;
+  toxicLegendaryCount: number;
   /** Folded damageResistGain bucket (Barbarian STR→DR) — base is the manual playerDamageResist knob, not 0; feeds Iron Fist's curve input. */
   damageResistGain: number;
   /** Folded stimpakHealMult bucket (First Aid, Medicine Bobblehead) — base 0, percent points; feeds Medical Malpractice scaledBy. */
@@ -328,6 +332,9 @@ export function derivePlayerStats(
   );
   const lockpickSkill = foldRegisteredBucket(modifiers, 'lockpickSkill', ctx);
   const hackingSkill = foldRegisteredBucket(modifiers, 'hackingSkill', ctx);
+  const burningLegendaryCount = foldRegisteredBucket(modifiers, 'burningLegendaryCount', ctx);
+  const frozenLegendaryCount = foldRegisteredBucket(modifiers, 'frozenLegendaryCount', ctx);
+  const toxicLegendaryCount = foldRegisteredBucket(modifiers, 'toxicLegendaryCount', ctx);
   const damageResistGain = foldBucket(
     modifiers,
     'damageResistGain',
@@ -343,6 +350,9 @@ export function derivePlayerStats(
     maxHealth,
     lockpickSkill,
     hackingSkill,
+    burningLegendaryCount,
+    frozenLegendaryCount,
+    toxicLegendaryCount,
     damageResistGain,
     stimpakHealMult,
     stimpakHealMagMult,
