@@ -19,6 +19,7 @@ import {
 } from '@/data';
 import {
   classifyOmodDisplay,
+  countEquippedMods,
   effectiveWeaponName,
   getDefaultOmodId,
   getOmodById,
@@ -169,16 +170,15 @@ export function WeaponSection() {
       .burstDps;
   }, [player, enemy, mode, charging]);
 
-  // A slot showing its standard part isn't a "mod" — count only deviations.
   const defaultOmodIds = new Map(
     selectedWeapon
       ? omodSlots.map((slot) => [slot.slot, getDefaultOmodId(mode, selectedWeapon, slot.slot)])
       : [],
   );
   const equippedModCount =
-    Object.entries(player.weapon?.mods ?? {}).filter(
-      ([slot, id]) => id && id !== defaultOmodIds.get(slot),
-    ).length + (player.weapon?.legendaryEffects.length ?? 0);
+    selectedWeapon && player.weapon
+      ? countEquippedMods(mode, selectedWeapon, player.weapon, omodSlots)
+      : 0;
   const summary = selectedWeapon
     ? `${effectiveWeaponName(mode, selectedWeapon, player.weapon?.mods ?? {})}${equippedModCount > 0 ? ` · ${equippedModCount} mods` : ''}`
     : 'none equipped';

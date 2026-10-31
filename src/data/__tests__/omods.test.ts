@@ -3,6 +3,7 @@ import type { Weapon } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import { getWeapons } from '@/data';
 import {
+  countEquippedMods,
   effectiveWeaponName,
   getLegendaryOmodSlots,
   getOmodById,
@@ -269,6 +270,43 @@ describe('show-all-mods display policy against live data', () => {
 // 2026-07-14 slot hygiene (docs/assumptions.md "OMOD eligibility & recipe chains"): dedupe
 // same-name/same-payload options; hide slots that offer no decision.
 // ap_customName and legendary slots are exempt from both rules.
+
+describe('countEquippedMods', () => {
+  const v63 = getWeapons('live')['Stormcutter'];
+  const shown = getOmodSlots('live', v63);
+  // Mods as the V63-Z Custom preset sets them. Only the Unique slot is shown;
+  // the blade and the two "No Mod" placeholders sit in hidden slots.
+  const mods = {
+    ap_melee_MeleeMod: 'mod_melee_Stormcutter_Standard',
+    ap_customName: 'mod_custom_StormSlasher',
+    ap_StormslasherCustom01: 'mod_custom_StormSlasher_Empty01',
+    ap_StormslasherCustom02: 'mod_custom_StormSlasher_Empty02',
+  };
+  const stars = ['mod_Legendary_Weapon1_DamageViaHealth', 'mod_Legendary_Weapon2_DmgCrits'];
+
+  it('counts the same for a preset (padded stars) and its reloaded link (trimmed stars)', () => {
+    const preset = { mods, legendaryEffects: [...stars, null] };
+    const reloaded = { mods, legendaryEffects: stars };
+    expect(countEquippedMods('live', v63, preset, shown)).toBe(3);
+    expect(countEquippedMods('live', v63, reloaded, shown)).toBe(3);
+  });
+
+  it("doesn't count a shown slot holding its standard part", () => {
+    const hatchet = getWeapons('live')['Hatchet'];
+    const slots = getOmodSlots('live', hatchet);
+    const slot = slots.find((s) => s.slot === 'ap_melee_MeleeMod')!;
+    const real = slot.options.find((o) => o.id === 'mod_melee_Hatchet_ElectroFusion')!;
+    expect(
+      countEquippedMods(
+        'live',
+        hatchet,
+        { mods: { [slot.slot]: real.id }, legendaryEffects: [] },
+        slots,
+      ),
+    ).toBe(1);
+    expect(countEquippedMods('live', hatchet, { mods: {}, legendaryEffects: [] }, slots)).toBe(0);
+  });
+});
 
 describe('slot hygiene against live data', () => {
   it('the Hatchet\'s melee slot keeps exactly one "No Upgrade" (template-preferred) alongside its real upgrades', () => {

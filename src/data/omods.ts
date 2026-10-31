@@ -60,6 +60,25 @@ export function getDefaultOmodId(mode: GameMode, weapon: Weapon, slot: string): 
 }
 
 /**
+ * The weapon header's mod count: filled legendary stars plus shown slots
+ * holding something other than their standard part. Hidden slots stay out
+ * (a stock part or an unselectable placeholder is no choice), and so do empty
+ * stars (presets pad them, decoded links trim them).
+ */
+export function countEquippedMods(
+  mode: GameMode,
+  weapon: Weapon,
+  config: { mods: Record<string, string | null>; legendaryEffects: (string | null)[] },
+  shownSlots: readonly { slot: string }[],
+): number {
+  const changedSlots = shownSlots.filter(({ slot }) => {
+    const id = config.mods[slot];
+    return id && id !== getDefaultOmodId(mode, weapon, slot);
+  });
+  return changedSlots.length + config.legendaryEffects.filter(Boolean).length;
+}
+
+/**
  * Default omods to fold into the effective weapon for slots the player hasn't
  * decided on — no real weapon instance has an empty slot, so an untouched (or
  * explicitly cleared) slot means its standard part. Only a *string* value in
