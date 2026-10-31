@@ -405,6 +405,39 @@ describe('computeScenarios — ScenarioInput.enemyDefenses (synthetic enemy)', (
     expect(s.freeAim.effective!.ttk).toBeLessThan(1000 / s.freeAim.effective!.sustainedDps);
   });
 
+  it('DoTs take reduced enemy resist (armorPenFlat) and DBM, but not armor pen', () => {
+    const enemyDefenses = { hp: 1000, resists: { physical: 300 } };
+    const source = { kind: 'omod', formId: '0x0', edid: 'Test', name: 'Test' } as const;
+    const mod = (
+      id: string,
+      bucket: 'dotDamage' | 'armorPen' | 'armorPenFlat' | 'dbm',
+      value: number,
+    ) =>
+      ({
+        id,
+        source,
+        bucket,
+        op: 'ADD',
+        value,
+        conditions: [],
+      }) as ScenarioInput['modifiers'][number];
+    const dot = mod('dot', 'dotDamage', 10);
+    const dotPart = (extra: ScenarioInput['modifiers'] = []) => {
+      const { effective } = computeScenarios({
+        ...baseInput,
+        modifiers: [dot, ...extra],
+        enemyDefenses,
+      }).freeAim;
+      return effective!.totalDps - effective!.sustainedDps;
+    };
+    const curve = (damage: number, resist: number) =>
+      damage * Math.pow((damage * 0.15) / resist, 0.365);
+    expect(dotPart()).toBeCloseTo(curve(10, 300), 6);
+    expect(dotPart([mod('pen', 'armorPen', 0.5)])).toBeCloseTo(curve(10, 300), 6);
+    expect(dotPart([mod('flat', 'armorPenFlat', 100)])).toBeCloseTo(curve(10, 200), 6);
+    expect(dotPart([mod('dbm', 'dbm', 0.5)])).toBeCloseTo(curve(15, 300), 6);
+  });
+
   it('unresisted: true bypasses mitigation in effective.totalDps while typed components mitigate', () => {
     const enemyDefenses = { hp: 1000, resists: { physical: 300, fire: 300 } };
     const weapon = makeWeapon({

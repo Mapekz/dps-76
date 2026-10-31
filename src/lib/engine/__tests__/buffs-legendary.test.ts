@@ -695,9 +695,54 @@ describe('3★ elemental weapon legendaries', () => {
     expect(armor.modifiers.map((m) => m.bucket)).toEqual(['burningLegendaryCount']);
   });
 
+  it('general and element-matching DBM scale the DoT; another element and the hit-only terms do not', () => {
+    const pyro = 'mod_Legendary_Weapon2_Fire';
+    const cryo = 'mod_Legendary_Weapon2_Cryo';
+    // Pyro-Technician's +0.3 is fire-scoped: 19 × 1.3. Cryologist's misses fire.
+    expect(dps([pyro, BURNING]).dotDps).toBeCloseTo(19 * 1.3, 6);
+    expect(dps([cryo, BURNING]).dotDps).toBeCloseTo(19, 6);
+    const scaled = (mods: Modifier[], enemy = createDefaultEnemyConditions(), critRate = 0) => {
+      const { weapon, modifiers } = withOmod(BURNING);
+      return computeScenarios(
+        base({ weapon, modifiers: [...modifiers, ...mods], critRate, enemy }),
+      );
+    };
+    const generalDbm: Modifier = {
+      id: 'test:dbm',
+      source: { kind: 'perk', formId: '0x0', edid: 'test', name: 'test', rank: 1 },
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
+      conditions: [],
+    };
+    expect(scaled([generalDbm]).freeAim.dotDps / scaled([]).freeAim.dotDps).toBeCloseTo(1.5, 6);
+    // A guaranteed crit moves the hit but not the DoT.
+    expect(scaled([], undefined, 1).vats.dotDps).toBeCloseTo(scaled([]).vats.dotDps, 6);
+  });
+
+  it('Tenderizer scales the DoT; a strong-point hit does not reduce it', () => {
+    const run = (conditions: Partial<PlayerConfig['conditions']>, weakpointMult = 1.5) =>
+      computeScenarios(
+        resolveLoadout(
+          {
+            ...createDefaultPlayerConfig(),
+            weakpointMult,
+            weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [BURNING] },
+            conditions: { ...createDefaultPlayerConfig().conditions, ...conditions },
+          },
+          createDefaultEnemyConfig(),
+          'live',
+        )!,
+      ).freeAim;
+    expect(run({ tenderizerStacks: 500 }).dotDps).toBeCloseTo(19 * 1.5, 6);
+    const strong = run({ isAimingAtWeakpoint: true }, 0.5);
+    expect(strong.perHit.total).toBeLessThan(run({}).perHit.total);
+    expect(strong.dotDps).toBeCloseTo(19, 6);
+  });
+
   it('a faster fire rate adds no DoT damage: refreshing never ticks early (max one tick/s)', () => {
     // Rapid raises fire rate; the DoT still ticks its curve value once a second.
-    const faster = dps(['', 'mod_Legendary_Weapon2_Guns_RoF', BURNING].filter(Boolean));
+    const faster = dps(['mod_Legendary_Weapon2_Guns_RoF', BURNING]);
     expect(faster.fireRate).toBeGreaterThan(dps([BURNING]).fireRate);
     expect(faster.dotDps).toBeCloseTo(19, 6);
   });

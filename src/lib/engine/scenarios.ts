@@ -728,12 +728,16 @@ function critWeighted(nonCrit: HitBreakdown, crit: HitBreakdown, critRate: numbe
   };
 }
 
+/**
+ * Per-source DoT mitigation. Reduced enemy resist (`armorPenFlat`) applies;
+ * armor penetration (`armorPen`) doesn't reach DoTs (user-confirmed
+ * 2026-10-30), so its fraction is passed as 0.
+ */
 function mitigatedDotDps(
   modifiers: Modifier[],
   weapon: ScenarioInput['weapon'],
   ctx: ResolveContext,
   defenses: EnemyDefenses,
-  armorPenTotal: number,
   armorPenFlatTotal: number,
   constants: MitigationConstants | undefined,
 ): number {
@@ -745,7 +749,7 @@ function mitigatedDotDps(
         s.damageType,
         s.unresisted,
         defenses,
-        armorPenTotal,
+        0,
         armorPenFlatTotal,
         constants,
       ),
@@ -1075,8 +1079,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     sustainedDps: vatsSustainRaw.sustainedDps * vatsHitRateFraction * (1 - vatsBashDowntime),
   };
 
-  // DoT is a separate steady-state add (refresh-only, not crit/vats-scaled by
-  // any extracted data today) — evaluated with each scenario's own non-crit
+  // DoT is a separate steady-state add (refresh-only, scaled by dbm but not
+  // crit/sneak/body part) — evaluated with each scenario's own non-crit
   // context so a future sneaking/powerAttack-gated DoT mod still resolves correctly.
   const freeCtx = scenarioCtx(input, freeFlags, onslaught, bulletStorm);
   const freeDotDps = computeDotDps(input.modifiers, input.weapon, freeCtx);
@@ -1211,7 +1215,6 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
         input.weapon,
         freeCtx,
         defenses,
-        armorPenTotal,
         armorPenFlatTotal,
         input.mitigationConstants,
       )
@@ -1222,7 +1225,6 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
         input.weapon,
         vatsCtx,
         defenses,
-        armorPenTotal,
         armorPenFlatTotal,
         input.mitigationConstants,
       )

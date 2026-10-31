@@ -393,11 +393,22 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
 }
 
 /**
+ * The multiplier on a DoT tick of one damage type (user-confirmed
+ * 2026-10-30): the same `dbm` fold a hit uses, so general bonuses, bonuses
+ * scoped to the DoT's element, and Tenderizer all apply. The crit, sneak,
+ * power-attack, STR and body-part/weakpoint terms sit outside `dbm`, so they
+ * don't reach DoTs, and neither do strong points.
+ */
+function dotDbmFold(modifiers: Modifier[], weapon: Weapon, typeCtx: ResolveContext): number {
+  return foldBucket(modifiers, 'dbm', weapon.damageBonusMult ?? 1.0, typeCtx);
+}
+
+/**
  * Steady-state DoT contribution (Stage A2, user-confirmed refresh-only
- * semantics): re-applying a bleed/burn/shock DoT resets its timer rather
- * than stacking, so while continuously attacking the sustained add is just
- * the sum of active `dotDamage` magnitudes — interpreted as damage/sec (NOT
- * ESM-proven; docs/assumptions.md). Folded per weapon-component damage type
+ * semantics): re-applying a bleed/burn/shock DoT only extends its duration
+ * and a DoT ticks at most once per second, so while continuously attacking
+ * the sustained add is the sum of active `dotDamage` magnitudes, as
+ * damage/sec, times `dotDbmFold`. Folded per weapon-component damage type
  * so `damageTypeScope`-gated DoT mods (every extracted bleed/burn/shock OMOD)
  * only count when the weapon actually deals that type; an unscoped DoT
  * modifier on a multi-damage-type weapon would double-count across types —
@@ -428,7 +439,8 @@ export function computeDotDps(modifiers: Modifier[], weapon: Weapon, ctx: Resolv
   for (const type of componentTypes) {
     const typeCtx = { ...ctx, componentType: type };
     const intrinsicBase = foldBucket(intrinsic, 'dotDamage', 0, typeCtx);
-    total += foldBucket(rest, 'dotDamage', intrinsicBase, typeCtx);
+    const magnitude = foldBucket(rest, 'dotDamage', intrinsicBase, typeCtx);
+    total += magnitude * dotDbmFold(modifiers, weapon, typeCtx);
   }
   return total;
 }
@@ -469,9 +481,10 @@ export function collectDotStreams(
     const lastSet = [...liveRest].filter((m) => m.op === 'SET').at(-1);
     const baseSources = lastSet ? [lastSet] : liveIntrinsic;
 
+    const dbm = dotDbmFold(modifiers, weapon, typeCtx);
     const push = (m: Modifier, damage: number) => {
       streams.push({
-        damage,
+        damage: damage * dbm,
         damageType: type,
         ...(m.unresisted ? { unresisted: true as const } : {}),
       });
