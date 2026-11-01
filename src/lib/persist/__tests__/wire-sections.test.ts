@@ -100,10 +100,9 @@ describe('wire-sections', () => {
       );
     });
 
-    // The BoS pistol's receivers became ap_gun_Ammo chambers in the 20261026
-    // dump under the same wire integers, so writing the new id under the old
-    // slot reproduces a pre-20261026 URL's bits.
-    it('re-homes a mod whose attach point moved (old BoS pistol receiver URL)', () => {
+    // Alpha links don't survive data moves (AGENTS.md): a mod under a slot it no
+    // longer belongs to is removed, so it can't stack with the slot's real pick.
+    it('removes a mod whose attach point no longer matches its slot', () => {
       const player = createDefaultPlayerConfig();
       player.weapon = {
         weaponId: 'bospistol',
@@ -115,37 +114,12 @@ describe('wire-sections', () => {
         (r) => {
           const warnings: string[] = [];
           const decoded = readWeapon(r, mode, warnings);
-          expect(warnings).toEqual([]);
-          expect(decoded.weapon?.mods).toEqual({ ap_gun_Ammo: 'mod_BoSPistol_Chamber_Fusion' });
+          expect(warnings).toEqual([
+            'weapon mod "mod_BoSPistol_Chamber_Fusion" no longer fits slot "ap_gun_Receiver" — removed',
+          ]);
+          expect(decoded.weapon?.mods).toEqual({});
         },
       );
-    });
-
-    it('leaves a moved mod in place when its own slot is taken, in either wire order', () => {
-      const expected = {
-        ap_gun_Receiver: 'mod_BoSPistol_Chamber_Fusion',
-        ap_gun_Ammo: 'mod_BoSPistol_Chamber_Pyro',
-      };
-      const orders = [
-        expected,
-        {
-          ap_gun_Ammo: 'mod_BoSPistol_Chamber_Pyro',
-          ap_gun_Receiver: 'mod_BoSPistol_Chamber_Fusion',
-        },
-      ];
-      for (const mods of orders) {
-        const player = createDefaultPlayerConfig();
-        player.weapon = { weaponId: 'bospistol', mods, legendaryEffects: [] };
-        roundTripBytes(
-          (w) => writeWeapon(w, player.weapon, player),
-          (r) => {
-            const warnings: string[] = [];
-            const decoded = readWeapon(r, mode, warnings);
-            expect(warnings).toEqual([]);
-            expect(decoded.weapon?.mods).toEqual(expected);
-          },
-        );
-      }
     });
 
     it('drops null mod entries from the wire', () => {
@@ -481,9 +455,9 @@ describe('wire-sections', () => {
             ap_gun_Barrel: 'mod_CombatRifle_Barrel_Long_Recoil',
             ap_gun_Mag: 'mod_CombatRifle_Magazine_Reload',
             ap_gun_Grip: 'mod_CombatRifle_Grip_Recoil',
-            ap_gun_Receiver2: 'mod_CombatRifle_Receiver_HipAccuracy',
-            ap_gun_Barrel2: 'mod_CombatRifle_Barrel_Short_Recoil',
-            ap_gun_Mag2: 'mod_CombatRifle_Magazine_ArmorPen',
+            ap_gun_Muzzle: 'mod_CombatRifle_muzzle_Brake_Base',
+            ap_gun_Scope: 'mod_CombatRifle_SCOPE_Ironsights_Base',
+            ap_gun_Appearance: 'mod_CombatRifle_Weapon_Paint_TheFixer',
           },
           legendaryEffects: [
             'mod_Legendary_Weapon1_DamageFirstBlood',

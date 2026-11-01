@@ -197,9 +197,9 @@ function buildHeavyBuild(): BuildState {
       ap_gun_Barrel: 'mod_CombatRifle_Barrel_Long_Recoil',
       ap_gun_Mag: 'mod_CombatRifle_Magazine_Reload',
       ap_gun_Grip: 'mod_CombatRifle_Grip_Recoil',
-      ap_gun_Receiver2: 'mod_CombatRifle_Receiver_HipAccuracy',
-      ap_gun_Barrel2: 'mod_CombatRifle_Barrel_Short_Recoil',
-      ap_gun_Mag2: 'mod_CombatRifle_Magazine_ArmorPen',
+      ap_gun_Muzzle: 'mod_CombatRifle_muzzle_Brake_Base',
+      ap_gun_Scope: 'mod_CombatRifle_SCOPE_Ironsights_Base',
+      ap_gun_Appearance: 'mod_CombatRifle_Weapon_Paint_TheFixer',
     },
     legendaryEffects: [
       'mod_Legendary_Weapon1_DamageFirstBlood',
