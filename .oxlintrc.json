@@ -134,6 +134,50 @@
       }
     },
     {
+      "files": ["src/{components,hooks,lib,state,workers}/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/data/live/**", "@/data/pts/**"],
+                "message": "Snapshot data is mode-specific: use a mode-keyed accessor."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/lib/engine/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/data", "@/data/**"],
+                "message": "ADR-0001: pass game data into the engine through its inputs."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/**/__tests__/**"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    },
+    {
+      "files": ["src/lib/curve-tables.ts", "src/lib/creature-curves.ts"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    },
+    {
       "files": ["scripts/**/*.ts", "vite.config.ts"],
       "env": {
         "node": true
