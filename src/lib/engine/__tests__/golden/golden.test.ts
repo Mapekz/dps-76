@@ -14,8 +14,9 @@ import goldenData from './cases.json';
 import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 /**
- * Golden cases: in-game measured numbers (docs/assumptions.md). Cases with
- * expected: null are pending measurement and skipped.
+ * Golden cases pin the engine to numbers whose provenance is each case's
+ * `source` (cases.json `_readme`). Cases with expected: null are pending
+ * measurement and skipped.
  */
 
 interface GoldenCase {
@@ -68,7 +69,7 @@ interface GoldenCase {
 // to Record<string, string>.
 const cases = (goldenData as unknown as { cases: GoldenCase[] }).cases;
 
-describe('golden cases (in-game measurements)', () => {
+describe('golden cases', () => {
   for (const c of cases) {
     const run = c.expected === null ? it.skip : it;
     run(`${c.name} [${c.source}]`, () => {

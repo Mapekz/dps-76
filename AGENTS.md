@@ -137,8 +137,10 @@ tooling.
   `src/lib/__tests__/loadout-ordering.test.ts`.
 - Engine unit tests use synthetic weapons and modifiers with hand-computed expectations.
   Extraction fixture tests pin normalization against checked-in real `esm` output. Golden
-  cases in `src/lib/engine/__tests__/golden/cases.json` hold in-game measured numbers, and
-  `expected: null` cases stay skipped until someone measures them.
+  cases in `src/lib/engine/__tests__/golden/cases.json` record each number's provenance in
+  `source`: measured, user-confirmed, and hand-computed cases are correctness anchors, an
+  `engine-snapshot` proves stability alone, and `expected: null` cases stay skipped until
+  someone measures them.
 
 ## Where the conventions live
 
