@@ -778,8 +778,8 @@ Rules (**USER-CONFIRMED**):
 
 - **Base allocation is user-defined**: 1–15/stat, pool of 7 base + 49
   level-ups = **56**. Pool size **ESM-PROVEN** — curve-derived, extracted
-  not hand-copied; full derivation and the `PLAYER_LEVEL = 300` modeling
-  choice at `player-stats.ts`.
+  not hand-copied; full derivation at `perk-budget.ts`, and the
+  `PLAYER_LEVEL = 300` modeling choice at `player-stats.ts`.
 - **Legendary perk slots are curve-derived** — 6 at `PLAYER_LEVEL`;
   `perk-budget.ts`'s `legendarySlotsAtLevel`.
 - **Legendary SPECIAL cards** add ON TOP of base (may exceed 15) AND grant
