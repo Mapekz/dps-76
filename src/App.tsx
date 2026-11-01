@@ -33,7 +33,7 @@ function App() {
   // `bun run extract --mode pts` and genuinely diverges from live data.
   return (
     <ThemeProvider>
-      <GameModeProvider defaultMode="live">
+      <GameModeProvider defaultMode="pts">
         <BuildProvider>
           <PersistenceGate>
             <AppShell />

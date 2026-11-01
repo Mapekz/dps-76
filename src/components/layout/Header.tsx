@@ -44,10 +44,8 @@ export function Header() {
               id="game-mode-toggle"
               checked={isLive}
               onCheckedChange={toggleMode}
-              // Stays locked to Live until a genuinely new PTS dump is
-              // extracted (see docs/agents/issue-tracker.md #40) — the
-              // handler is wired now so re-enabling later is a one-line
-              // change (drop this prop), not a new implementation.
+              // Locked to PTS, the only extracted dataset. Once a Live dump is
+              // extracted, re-enabling this is a one-line change (drop this prop).
               disabled
               aria-label="Toggle between Live and PTS"
             />

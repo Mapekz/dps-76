@@ -16,7 +16,7 @@ interface GameModeProviderProps {
   defaultMode?: GameMode;
 }
 
-export function GameModeProvider({ children, defaultMode = 'live' }: GameModeProviderProps) {
+export function GameModeProvider({ children, defaultMode = 'pts' }: GameModeProviderProps) {
   const [mode, setMode] = React.useState<GameMode>(defaultMode);
   const toggleMode = React.useCallback(() => {
     setMode((prev) => (prev === 'live' ? 'pts' : 'live'));
