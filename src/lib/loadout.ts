@@ -179,19 +179,7 @@ export function resolveLoadout(
 
   const auras = loadoutAurasFor(scope, mode, playerConfig.armorEffects, playerConfig.mutations);
 
-  const {
-    special,
-    maxHealth,
-    lockpickSkill,
-    hackingSkill,
-    burningLegendaryCount,
-    frozenLegendaryCount,
-    toxicLegendaryCount,
-    damageResistGain,
-    stimpakHealMult,
-    stimpakHealMagMult,
-    stimpakHealDurationMult,
-  } = derivedPlayerStatsFor(
+  const derivedStats = derivedPlayerStatsFor(
     scope,
     mode,
     modifiers,
@@ -215,17 +203,7 @@ export function resolveLoadout(
   const player = playerAgg(
     scope,
     conditions,
-    special,
-    maxHealth,
-    lockpickSkill,
-    hackingSkill,
-    burningLegendaryCount,
-    frozenLegendaryCount,
-    toxicLegendaryCount,
-    damageResistGain,
-    stimpakHealMult,
-    stimpakHealMagMult,
-    stimpakHealDurationMult,
+    derivedStats,
     playerConfig.mutations,
     playerConfig.conditions,
     addictionCount,

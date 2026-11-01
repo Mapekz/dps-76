@@ -524,9 +524,8 @@ export const derivedPlayerStatsFor = scoped(
  * precise (no missing-key hazard: a scalar can't be "partially" read) and
  * strictly narrower than keying on both upstream slices would be.
  *
- * Whenever `conditions`, the derived special/maxHealth/skills (bundled
- * together — all miss or all hit as one unit, see `derivedPlayerStatsFor`),
- * `mutations`, and `addictionCount` are all unchanged, this collapses to the
+ * Whenever `conditions`, the `derivedPlayerStatsFor` result (keyed by
+ * reference: it hits or misses as one object), `mutations`, and `addictionCount` are all unchanged, this collapses to the
  * SAME `player` reference — which, combined with `modifiers`/`weapon` also
  * being stable (see `assemble()`), lets `evaluateSuggestions` skip
  * `computeScenarios` entirely for a candidate with no real damage effect.
@@ -534,17 +533,7 @@ export const derivedPlayerStatsFor = scoped(
 export const playerAgg = scoped(
   (
     conditions: PlayerConditionContext,
-    special: Record<SpecialKey, number>,
-    maxHealth: number,
-    lockpickSkill: number,
-    hackingSkill: number,
-    burningLegendaryCount: number,
-    frozenLegendaryCount: number,
-    toxicLegendaryCount: number,
-    damageResistGain: number,
-    stimpakHealMult: number,
-    stimpakHealMagMult: number,
-    stimpakHealDurationMult: number,
+    { special, damageResistGain, ...derivedStats }: DerivedPlayerStats,
     mutations: string[],
     rawConditions: PlayerInput,
     addictionCount: number,
@@ -553,21 +542,13 @@ export const playerAgg = scoped(
     // classFreakRank — see assemble()).
     ...conditions,
     ...special,
-    maxHealth,
-    lockpickSkill,
-    hackingSkill,
-    burningLegendaryCount,
-    frozenLegendaryCount,
-    toxicLegendaryCount,
+    ...derivedStats,
     playerDamageResist: damageResistGain,
-    stimpakHealMult,
-    stimpakHealMagMult,
-    stimpakHealDurationMult,
     // Mutant's curve input: the selected mutation list IS the mutation count.
     mutationCount: mutations.length,
     // Ghoul Glow meter: clamp to the derived max HP (max Glow = max HP) so a
     // stored value from a since-shrunk build never reads above the cap.
-    glow: Math.min(rawConditions.glow ?? 0, maxHealth),
+    glow: Math.min(rawConditions.glow ?? 0, derivedStats.maxHealth),
     // Gourmand's curve input: the two meter tiers sum to the HungerThirstTier AV.
     hungerThirstTier: deriveHungerThirstTier(rawConditions),
     addictionCount,
