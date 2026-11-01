@@ -3,7 +3,7 @@
 The damage engine (`src/lib/engine/*`) imports only `@/types` and pure helpers
 (`curve-tables`) — never the data adapters (`@/data/*`). This is what lets the
 engine be unit-tested with synthetic weapons and hand-fed Modifier IR, with no
-game data loaded.
+game data loaded. An oxlint `no-restricted-imports` rule enforces this.
 
 Consequently, code that bridges game data to the engine — resolving a
 `PlayerConfig` into the engine's `ScenarioInput` — lives one layer up in

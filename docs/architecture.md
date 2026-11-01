@@ -5,8 +5,8 @@ is the map `AGENTS.md` and `DESIGN.md` point to instead of restating; see
 `docs/agents/domain.md` for how the rest of the doc set relates to this one.
 
 No `file:line` anchors here on purpose — line numbers go stale the moment a file is edited.
-Every claim below is checked by `doc-citations.test.ts` against the real module tree, so a
-path that goes stale fails CI instead of silently rotting. A point-in-time version with
+`doc-citations.test.ts` checks this doc's paths and backticked identifiers against the real
+module tree, so a stale reference fails CI. It does not check prose or counts. A point-in-time version with
 precise line anchors is published as a companion Artifact; treat that one as a snapshot, this
 one as current truth.
 
@@ -194,7 +194,7 @@ Real game mechanics that must not be "simplified" away:
 - **The three-branch explosive-twin mechanism** in `paper-damage.ts` — the game itself
   implements three distinct explosion formulas (Curve-Table, Projectile-Scaling,
   chain/stream-suppressed); the branch mirrors three real mechanics.
-- **The ~39-kind `Condition` union** — each variant maps to a real Bethesda condition-function
+- **The `Condition` union** — each variant maps to a real Bethesda condition-function
   shape (`GetIsRace`, `HasKeyword`, `WornApparelHasKeywordCount`, …).
 - **`mgef.ts`'s size** — a necessary 1:1 routing table from ~150+ distinct MGEF/AVIF/entry-point
   identifiers to formula buckets.
@@ -219,8 +219,3 @@ Real game mechanics that must not be "simplified" away:
   "genuine seam" carve-out: it renders in the Encounter card (not inside
   `ConditionsSection`) and shares no local state with the remaining groups beyond the
   trivially re-derived `isGhoul` flag and the two-line `set()` dispatch wrapper.
-
-Accidental complexity — structural, not mechanical, and the target of the simplification
-pass this doc accompanies: the trace-collection boilerplate repeated at each fold call site,
-memoization wrappers interleaved with domain composition in `loadout.ts`, and a small number
-of duplicated component/dialog patterns in `src/components/build/*`.

@@ -290,10 +290,9 @@ export function deriveConditionsFor(
 }
 
 /**
- * The aggregation step of `loadoutModifiersFor` — order matters (`foldOps`,
- * src/lib/engine/resolve.ts, folds SET → ×Π(1+MUL_ADD) → +ΣADD and "last SET
- * wins" is array-order-dependent), so the parameter order below IS the fold
- * order. Keyed on the 9 (already-memoized) piece references — so when every
+ * The aggregation step of `loadoutModifiersFor` — order matters ("last SET
+ * wins" in `foldOps`, src/lib/engine/resolve.ts, which owns the fold
+ * arithmetic), so the parameter order below IS the fold order. Keyed on the 9 (already-memoized) piece references — so when every
  * piece is a cache hit (e.g. every 'mod'/'legendary' sweep candidate, which
  * touches only the weapon), this returns the SAME array reference as last
  * time, letting `buildEffectiveWeapon`'s own memoization (below) key on it

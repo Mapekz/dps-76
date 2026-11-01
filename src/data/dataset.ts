@@ -93,10 +93,11 @@ import generatedHealingItemsLive from './live/generated/healing-items.json';
  *   (`adaptWeapon`, `live/weapons.ts`) per ADR-0001 — that's the sanctioned
  *   `GeneratedWeapon → Weapon` transform, not this chokepoint's job.
  *
- * This is the one place the live/pts split is decided. Only a single ESM is
- * extracted today, so both modes resolve to the same live-backed dataset; when
- * a PTS dump lands (`bun run extract --mode pts`), build a pts dataset here and
- * this is the only edit.
+ * This is the one place the dataset's live/pts split is decided. Only a single
+ * ESM is extracted today, so both modes resolve to the same live-backed records;
+ * when a PTS dump lands (`bun run extract --mode pts`), build a pts dataset here.
+ * Curve tables resolve separately by mode in `curve-tables.ts` and
+ * `creature-curves.ts`.
  */
 
 /** Replace an item's `.modifiers` when an override is keyed by its id (omods, buffs). */
