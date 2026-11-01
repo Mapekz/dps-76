@@ -76,8 +76,3 @@ export function collectAuraStreams(
   }
   return streams;
 }
-
-/** True when any equipped aura has a pending (unmeasured) magnitude. */
-export function hasPendingAuras(auras: readonly AuraSource[]): boolean {
-  return auras.some((a) => a.magnitudePending);
-}

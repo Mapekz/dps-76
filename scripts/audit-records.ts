@@ -300,21 +300,6 @@ export function deriveOmodExpectedName(
   return omodDisplayName(record);
 }
 
-/** Unique preset name — mirrors extract-uniques.ts container/identity naming. */
-export function deriveUniqueExpectedName(
-  unique: Pick<GeneratedUnique, 'variantIds'>,
-  identityOmod: GeneratedOmod,
-  containerRecord: EsmRecord | null,
-  comboName: string,
-): string {
-  if (unique.variantIds && identityOmod.variantOf && containerRecord) {
-    return omodDisplayName(containerRecord);
-  }
-  const fromOmod = identityOmod.name.replace(IDENTITY_OMOD_NAME_SUFFIX_RE, '').trim();
-  if (fromOmod) return fromOmod;
-  return comboName;
-}
-
 export function auditDerivedName(
   recordId: string,
   expected: string,

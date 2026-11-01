@@ -37,11 +37,6 @@ export function formatPercent(fraction: number): string {
   return `${pct > 0 ? '+' : ''}${magnitude}%`;
 }
 
-/** Percentage with rounded integer — "75%". */
-export function formatRetainedPct(value: number): string {
-  return `${Math.round(value)}%`;
-}
-
 /** Time-to-kill: seconds under a minute (1 decimal), "Xm Ys" (whole seconds, no "0s") at or past it, or infinity symbol. */
 export function formatTtk(ttkSec: number): string {
   if (!Number.isFinite(ttkSec)) return '∞';

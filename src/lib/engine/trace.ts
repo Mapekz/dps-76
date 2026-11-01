@@ -124,12 +124,6 @@ export function lastTrace(collect: BucketTrace[]): BucketTrace {
   return t;
 }
 
-/** Like `lastTrace`, but also asserts the sink itself was collected (tracing was on). */
-export function requireTrace(collect: BucketTrace[] | undefined): BucketTrace {
-  if (!collect) throw new Error('requireTrace: tracing was not enabled');
-  return lastTrace(collect);
-}
-
 /**
  * Wraps a single traced fold call: builds the collect sink, runs `fn` with
  * it, and reads back the trace — the `tracing ? [] : undefined` → fold →

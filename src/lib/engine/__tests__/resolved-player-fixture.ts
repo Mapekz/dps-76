@@ -1,4 +1,3 @@
-import { createDefaultEnemyConditions } from '@/types';
 import { createDefaultResolvedPlayer, type ResolvedPlayer } from '@/types/player';
 import { SPECIAL_KEYS, type SpecialKey } from '@/lib/player-stats';
 
@@ -9,11 +8,6 @@ import { SPECIAL_KEYS, type SpecialKey } from '@/lib/player-stats';
  */
 export function makeResolvedPlayer(overrides?: Partial<ResolvedPlayer>): ResolvedPlayer {
   return { ...createDefaultResolvedPlayer(), ...overrides };
-}
-
-/** Pair with `makeResolvedPlayer` when a test needs explicit enemy defaults. */
-export function makeDefaultEnemy() {
-  return createDefaultEnemyConditions();
 }
 
 /** Every SPECIAL at 1, with `overrides` spread over it. */

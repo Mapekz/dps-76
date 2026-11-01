@@ -474,7 +474,3 @@ export function isValidNukesDragonsUrl(url: string): boolean {
     return false;
   }
 }
-
-export function getPerkId(key: string): PerkId | undefined {
-  return nukesDragonsPerks[key];
-}

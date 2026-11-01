@@ -5,7 +5,6 @@ import { DEFAULT_DISTANCE_UNITS } from '@/lib/distance';
 import type { PlayerInput } from '@/types/player';
 export type { Special } from '@/data/special';
 export type { PerkId } from '@/data/perk-ids';
-export type { Stat, StatModification } from '@/data/stats';
 export type {
   ArmorWorn,
   PlayerConditionContext,
@@ -91,14 +90,6 @@ export interface ParsedPerk {
   key: string;
   name: string;
   rank: number;
-}
-
-// Weapon types
-export interface WeaponMod {
-  id: string;
-  name: string;
-  slot: 'receiver' | 'barrel' | 'grip' | 'magazine' | 'sights' | 'muzzle';
-  statModifiers: Record<string, number>;
 }
 
 /**
@@ -359,23 +350,6 @@ export interface WeaponConfig {
   mods: Record<string, string | null>;
   /** Equipped legendary-effect OMOD ids by star index (ap_Legendary1 → 0); null = empty slot. */
   legendaryEffects: (string | null)[];
-}
-
-// Armor types
-export interface ArmorPiece {
-  id: string;
-  name: string;
-  slot: 'head' | 'chest' | 'leftArm' | 'rightArm' | 'leftLeg' | 'rightLeg';
-  damageResist: number;
-  energyResist: number;
-  radiationResist: number;
-}
-
-export interface ArmorMod {
-  id: string;
-  name: string;
-  modSlot: 1 | 2 | 3 | 4;
-  statModifiers: Record<string, number>;
 }
 
 export interface EnemyConfig {

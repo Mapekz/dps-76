@@ -32,26 +32,3 @@ export function getSpecialClamp(mode: GameMode): { min: number; max: number } {
 export function getDistanceConstants(mode: GameMode): { closeThresholdUnits: number } {
   return getDataset(mode).constants.distance;
 }
-
-export function getPerkById(mode: GameMode, perkId: PerkId): Perk | undefined {
-  return getPerks(mode)[perkId];
-}
-
-/** Project an id/name-keyed record into combobox `{ value, label }` options. */
-function toOptions(
-  record: Record<string, { id: string; name: string }>,
-): Array<{ value: string; label: string }> {
-  return Object.values(record).map((x) => ({ value: x.id, label: x.name }));
-}
-
-export function getWeaponOptions(mode: GameMode) {
-  return toOptions(getWeapons(mode));
-}
-
-export function getBodyArmorOptions(mode: GameMode) {
-  return toOptions(getDataset(mode).bodyArmor);
-}
-
-export function getPowerArmorOptions(mode: GameMode) {
-  return toOptions(getDataset(mode).powerArmor);
-}
