@@ -25,7 +25,7 @@ import { translateConditions } from './normalize/conditions';
 import { DAMAGE_TYPE_EDID_MAP } from './normalize/explosion';
 import { ObtainabilityClassifier } from './obtainability';
 import { emptyCobjIndex, isNonGrantingCobj, type CobjIndex } from './cobj-index';
-import { collectProperties, omodData } from './omod-properties';
+import { collectProperties, omodData, type RawProperty } from './omod-properties';
 import {
   enchantmentModifiers,
   overrideProjectileModifiers,
@@ -562,44 +562,47 @@ export interface ExtractOmodsOptions {
   obtainableArmorFormIds?: ReadonlySet<string>;
 }
 
-export async function extractOmods(options: ExtractOmodsOptions): Promise<ExtractOmodsResult> {
-  const {
-    client,
-    obtainableWeaponFormIds,
-    cobjIndex = emptyCobjIndex(),
-    defaultModFormIds = new Set(),
-    templateModFormIds = new Set(),
-    crossFamilyRank,
-    obtainableArmorFormIds = new Set(),
-  } = options;
-  const rows = await client.list('OMOD');
-  const records = await mapPool(rows, 8, (r) => client.get(r.form_id));
-  const byFormId = new Map(records.map((r) => [r.header.form_id, r]));
+// ESM authoring gap (2026-07-15 audit, uniques-effect sweep): the July-10
+// patch repurposed formID 0x00849316 — Editor ID/Name/Description/
+// Data.Properties all rewritten from a bounty-exclusive melee legendary
+// (zzz_BOUNTY_mod_Legendary_Weapon2_Melee_Pulsating) into the new
+// "Pyro-Technician's" weapon 2★ (+20% fire dbm, STAT_DmgMultFire — same
+// shape as sibling Cryologist's/Poisoner's). Attach Point was left null on
+// the old bounty record and never touched by the patch (confirmed via
+// diff.json field_changes — Attach Point absent from the changed-fields
+// list), so the record fails classifyOmodRecordExclusion's live checks yet
+// silently drops out at the `if (!attachPoint)` gate in emitOmod.
+// User-confirmed (2026-07-15): this legendary is NOT actually craftable
+// in-game right now, despite a real, correctly-formed COBJ recipe existing
+// (co_mod_Legendary_Weapon2_Fire, 0x00849303, `Created Object` →
+// 0x00849316) and legendary crafting attaching via a scripted mechanism
+// (COBJ_Legendary_Attach_Scrip) that doesn't read Attach Point directly —
+// the null Attach Point evidently still breaks something in the live
+// crafting flow this ESM-only check can't see. So this rescue exists ONLY
+// to keep the record + its real modifiers in the generated dataset (for
+// reference/future re-evaluation, e.g. if Bethesda ever backfills the
+// field) — it's hidden from the player-facing picker via
+// `hiddenOmodIds` (src/data/overrides/corrections.ts).
+const ATTACH_POINT_OVERRIDES: Record<string, string> = {
+  '0x00849316': '0x004E89A8', // mod_Legendary_Weapon2_Fire ("Pyro-Technician's") → ap_Legendary2
+};
 
-  const unknownProperties = new Set<string>();
-  const notes = new Set<string>();
+interface SelectedOmodJobs {
+  emitJobs: OmodEmitJob[];
+  junkEdids: string[];
+  unnamedTemplateMembers: ExcludedRecordDetail[];
+}
 
-  // Legendary effects carry their stats via ADD Enchantments → ENCH → MGEF.
-  const routePool = new Set<string>();
-  const avifRoutes: Map<string, AvifRoute[]> = await buildAvifRoutes(client, routePool);
-  const edidByFormId = new Map<string, string>();
-  for (const id of routePool) edidByFormId.set(id, await client.resolveEdid(id));
-
-  const mgefDeps: MgefTranslationDeps = {
-    client,
-    routes: avifRoutes,
-    edidByFormId,
-    timedIsActive: true,
-    noteUnroutedAvs: true,
-    // Cross-family HasPerk gates on unique-mod chains (Mechanic's Best
-    // Friend's granted perk on MakeshiftWarrior0N) resolve to runtime
-    // perkFamilyRank conditions via every path sharing these deps.
-    crossFamilyRank,
-  };
-
-  const projectileChaseDeps: ProjectileChaseDeps = { client, mgefDeps };
-
-  const excluded: Record<string, string[]> = { omodJunkEdid: [] };
+/**
+ * Picks the records to emit: every eligible named record, then each variant
+ * container's children under the container's display name.
+ */
+function selectOmodEmitJobs(
+  records: EsmRecord[],
+  byFormId: ReadonlyMap<string, EsmRecord>,
+  templateModFormIds: ReadonlySet<string>,
+): SelectedOmodJobs {
+  const junkEdids: string[] = [];
   // Unnamed IDENTITY records a weapon template ships with real properties
   // (Holy Fire's effect mod 0x006E06A3 on the Flamer, the Cultist Piercer /
   // Elder's Mark / Ogua Gauntlet effects, Voice of Set's description mod)
@@ -611,32 +614,7 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
   // authoring noise, not player choices. EVERY unnamed template member with
   // properties lands in _meta.json reviewFlagged.omodUnnamedTemplateMember
   // (rescued or skipped) so future gaps can't vanish silently again.
-  // ESM authoring gap (2026-07-15 audit, uniques-effect sweep): the July-10
-  // patch repurposed formID 0x00849316 — Editor ID/Name/Description/
-  // Data.Properties all rewritten from a bounty-exclusive melee legendary
-  // (zzz_BOUNTY_mod_Legendary_Weapon2_Melee_Pulsating) into the new
-  // "Pyro-Technician's" weapon 2★ (+20% fire dbm, STAT_DmgMultFire — same
-  // shape as sibling Cryologist's/Poisoner's). Attach Point was left null on
-  // the old bounty record and never touched by the patch (confirmed via
-  // diff.json field_changes — Attach Point absent from the changed-fields
-  // list), so the record fails classifyOmodRecordExclusion's live checks yet
-  // silently drops out at the `if (!attachPoint) continue` gate below.
-  // User-confirmed (2026-07-15): this legendary is NOT actually craftable
-  // in-game right now, despite a real, correctly-formed COBJ recipe existing
-  // (co_mod_Legendary_Weapon2_Fire, 0x00849303, `Created Object` →
-  // 0x00849316) and legendary crafting attaching via a scripted mechanism
-  // (COBJ_Legendary_Attach_Scrip) that doesn't read Attach Point directly —
-  // the null Attach Point evidently still breaks something in the live
-  // crafting flow this ESM-only check can't see. So this rescue exists ONLY
-  // to keep the record + its real modifiers in the generated dataset (for
-  // reference/future re-evaluation, e.g. if Bethesda ever backfills the
-  // field) — it's hidden from the player-facing picker via
-  // `hiddenOmodIds` (src/data/overrides/corrections.ts).
-  const ATTACH_POINT_OVERRIDES: Record<string, string> = {
-    '0x00849316': '0x004E89A8', // mod_Legendary_Weapon2_Fire ("Pyro-Technician's") → ap_Legendary2
-  };
   const unnamedTemplateMembers: ExcludedRecordDetail[] = [];
-  const variantContainers: Record<string, GeneratedOmod[]> = {};
   const variantChildFormIds = new Set<string>();
   for (const record of records) {
     if (!isVariantContainer(record)) continue;
@@ -649,7 +627,7 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
     if (variantChildFormIds.has(r.header.form_id)) return false;
     if (isVariantContainer(r)) return false;
     const exclusion = classifyOmodRecordExclusion(r, OMOD_ALLOWED_FORM_TYPES);
-    if (exclusion === 'junkEdid') excluded.omodJunkEdid.push(r.editor_id);
+    if (exclusion === 'junkEdid') junkEdids.push(r.editor_id);
     if (exclusion === 'unnamed') {
       const data = omodData(r);
       const props = data['Properties'];
@@ -689,508 +667,584 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
     }
   }
 
-  const omods: GeneratedOmod[] = [];
-  const armorOmods: GeneratedOmod[] = [];
-  for (const job of emitJobs) {
-    const record = job.record;
-    const data = omodData(record);
-    // Form Type buckets this record into the weapon or armor output array —
-    // OMOD_ALLOWED_FORM_TYPES already restricted `named` to exactly these two
-    // values (see classifyOmodRecordExclusion's doc comment).
-    const formType = ((data['Form Type'] as Record<string, unknown>)?.['name'] as string) ?? '';
-    const targetList = formType === 'Armor' ? armorOmods : omods;
-    const attachPoint =
-      (data['Attach Point'] as string) ?? ATTACH_POINT_OVERRIDES[record.header.form_id] ?? null;
-    if (!attachPoint) continue;
+  return { emitJobs, junkEdids, unnamedTemplateMembers };
+}
 
-    const targetKeywords = await Promise.all(
-      (Array.isArray(record.fields['Target OMOD Keywords'])
-        ? (record.fields['Target OMOD Keywords'] as string[])
-        : []
-      ).map((k) => client.resolveEdid(k)),
-    );
+/** The extraction-wide inputs and sinks every OMOD's translation shares. */
+interface OmodTranslationContext {
+  client: EsmSource;
+  mgefDeps: MgefTranslationDeps;
+  projectileChaseDeps: ProjectileChaseDeps;
+  avifRoutes: Map<string, AvifRoute[]>;
+  edidByFormId: Map<string, string>;
+  crossFamilyRank: ExtractOmodsOptions['crossFamilyRank'];
+  byFormId: Map<string, EsmRecord>;
+  unknownProperties: Set<string>;
+  notes: Set<string>;
+}
 
-    const properties = collectProperties(job.propertyRootFormId, byFormId);
-    const modifiers: Modifier[] = [];
-    const addedKeywords: string[] = [];
-    const modNotes = new Set<string>();
-    let hasEnchantments = false;
-    const hasModArmorPenEnchant = properties.some(
-      (p) =>
-        p.property === 'Enchantments' &&
-        p.functionType !== 'REM' &&
-        p.value1 === MOD_ARMOR_PEN_ENCH,
+/** What translating one OMOD's properties has accumulated so far. */
+interface OmodTranslationState {
+  record: EsmRecord;
+  source: Modifier['source'];
+  hasModArmorPenEnchant: boolean;
+  modifiers: Modifier[];
+  addedKeywords: string[];
+  modNotes: Set<string>;
+  procs: GeneratedProc[];
+  auras: GeneratedAura[];
+  hasEnchantments: boolean;
+  explosionChase?: GeneratedExplosionSwap;
+  chainSuppressesExplosion: boolean;
+}
+
+function modifierOp(prop: RawProperty): 'SET' | 'MUL_ADD' | 'ADD' {
+  return prop.functionType === 'SET' ? 'SET' : prop.functionType === 'MUL_ADD' ? 'MUL_ADD' : 'ADD';
+}
+
+/** A `baseDamage` modifier; a curve table overrides the flat value (Y at X = item level). */
+function baseDamageModifier(
+  state: OmodTranslationState,
+  prop: RawProperty,
+  op: Modifier['op'],
+  flatValue: number,
+  conditions: Modifier['conditions'],
+): Modifier {
+  const { record, source, modifiers } = state;
+  return prop.curvePoints != null
+    ? {
+        id: `${record.header.form_id}:${modifiers.length}`,
+        source,
+        bucket: 'baseDamage',
+        op,
+        curve: { input: 'itemLevel', points: prop.curvePoints },
+        curveScale: 1,
+        conditions,
+      }
+    : {
+        id: `${record.header.form_id}:${modifiers.length}`,
+        source,
+        bucket: 'baseDamage',
+        op,
+        value: flatValue,
+        conditions,
+      };
+}
+
+async function translateEnchantmentsProperty(
+  prop: RawProperty,
+  state: OmodTranslationState,
+  ctx: OmodTranslationContext,
+): Promise<void> {
+  const { source, modifiers, modNotes, procs, auras } = state;
+  const { client, projectileChaseDeps } = ctx;
+  state.hasEnchantments = true;
+  if (typeof prop.value1 === 'string') {
+    if (prop.functionType === 'REM') {
+      // REM removes an ench the OMOD's own parent/base weapon carries
+      // (Slow-Burner REMs Cremator's base fire-hit ench) — it must
+      // never be WALKED as if it were still active (that was the bug:
+      // the base weapon's PVP-only branch was silently kept while its
+      // real NPC branch was dropped, see the GetIsPlayer fix above).
+      // Note-only; no modifier.
+      modNotes.add(`removes enchantment ${await client.resolveEdid(prop.value1)}`);
+    } else {
+      // ADD/SET: this OMOD grants the enchantment.
+      const { procs: enchProcs, auras: enchAuras } = await enchantmentModifiers(
+        prop.value1,
+        source,
+        modifiers,
+        modNotes,
+        projectileChaseDeps,
+      );
+      procs.push(...enchProcs);
+      auras.push(...enchAuras);
+    }
+  }
+}
+
+async function translateOverrideProjectileProperty(
+  prop: RawProperty,
+  state: OmodTranslationState,
+  ctx: OmodTranslationContext,
+): Promise<void> {
+  const { source, modifiers, modNotes } = state;
+  const { client, projectileChaseDeps } = ctx;
+  // Lobber Barrel / Polar Lobber-style launcher-hazard chase — see
+  // overrideProjectileModifiers's doc comment. Mirrors the Enchantments
+  // REM/ADD fix above: mutually-exclusive projectile variants sharing
+  // this one property (e.g. Cremator's flame-color Receiver mods each
+  // REM the previously-included default/other-color projectile before
+  // SETting their own) must have their REM skipped, never walked —
+  // verified 2026-07-14 on Lithium (Pink)/(Blue)/(Green), which REM
+  // ProjectileCremator (the shared default) while SETting their own
+  // color variant.
+  if (typeof prop.value1 === 'string') {
+    if (prop.functionType === 'REM') {
+      modNotes.add(`removes projectile override ${await client.resolveEdid(prop.value1)}`);
+    } else {
+      const result = await overrideProjectileModifiers(
+        prop.value1,
+        source,
+        modifiers,
+        modNotes,
+        projectileChaseDeps,
+      );
+      if (result.chase) state.explosionChase = result.chase;
+      if (result.chainSuppressesExplosion) state.chainSuppressesExplosion = true;
+    }
+  }
+}
+
+async function translateAttachedPerkProperty(
+  prop: RawProperty,
+  state: OmodTranslationState,
+  ctx: OmodTranslationContext,
+): Promise<void> {
+  const { record, source, modifiers, modNotes, procs, auras } = state;
+  const { mgefDeps } = ctx;
+  // Property 116, decoded above by propertyName(): Value 1 = PERK
+  // formid, Value 2 = 1 (ADD) — attach this perk to the wielder
+  // (unique-mod rework). Decode it exactly like a legendary's
+  // Script-archetype "Perk to Apply" chase (mgef.ts's
+  // translateGrantedPerk): Entry Point effects with a formula bucket
+  // become modifiers on THIS omod; effects with none (e.g. "Mod
+  // Incoming Weapon Damage" — damage TAKEN, out of scope) become a
+  // note, never a silent drop.
+  if (typeof prop.value1 === 'string') {
+    const result = await translateGrantedPerk(mgefDeps, record.editor_id, prop.value1);
+    result.notes.forEach((n) => modNotes.add(n));
+    for (const fragment of result.modifiers) {
+      modifiers.push({
+        id: `${record.header.form_id}:perk:${modifiers.length}`,
+        source,
+        ...fragment,
+      });
+    }
+    if (result.procs) procs.push(...result.procs);
+    if (result.auras) auras.push(...result.auras);
+  }
+}
+
+async function translateActorValuesProperty(
+  prop: RawProperty,
+  state: OmodTranslationState,
+  ctx: OmodTranslationContext,
+): Promise<void> {
+  const { record, source, hasModArmorPenEnchant, modifiers, modNotes } = state;
+  const { client, avifRoutes, edidByFormId, crossFamilyRank } = ctx;
+  // Value 1 = AV formid, Value 2 = amount (Anti-Armor: ArmorPenetration
+  // 50.0). A curve table OVERRIDES Value 2: Y by item level (the DmgVs
+  // family carries flat (1,50)→(100,50) curves with Value 2 = 0).
+  if (typeof prop.value1 === 'string' && typeof prop.value2 === 'number') {
+    const avEdid = await client.resolveEdid(prop.value1);
+    if (avEdid === 'ArmorPenetration' && hasModArmorPenEnchant) {
+      // Composed via enchModArmorPenetration → ModArmorPenetrationPerk chase.
+      return;
+    }
+    const flatValue = prop.value2;
+    const curvePoints = prop.curvePoints;
+    // Bug fix (2026-07-16): this used to collapse every non-MUL_ADD
+    // function to 'ADD', silently downgrading SET (Final Word's
+    // `ActorValues SET EnableAmmoSpenderOnKill 1.0` — see
+    // ACTOR_VALUE_BUCKETS' doc comment). Same three-way mapping the
+    // DamageTypeValues handler below already uses.
+    const op =
+      prop.functionType === 'SET'
+        ? ('SET' as const)
+        : prop.functionType === 'MUL_ADD'
+          ? ('MUL_ADD' as const)
+          : ('ADD' as const);
+    const pushAv = (
+      bucket: Bucket,
+      scale: number,
+      conditions: Modifier['conditions'],
+      modOp: Modifier['op'] = op,
+    ) => {
+      modifiers.push(
+        curvePoints
+          ? {
+              id: `${record.header.form_id}:${modifiers.length}`,
+              source,
+              bucket,
+              op: modOp,
+              curve: { input: 'itemLevel', points: curvePoints },
+              curveScale: scale,
+              conditions,
+            }
+          : {
+              id: `${record.header.form_id}:${modifiers.length}`,
+              source,
+              bucket,
+              op: modOp,
+              value: flatValue * scale,
+              conditions,
+            },
+      );
+    };
+    // 1) Plumbing-perk routes (STAT_DamageVsPerk & co.) — bucket, scale,
+    //    AND conditions (enemy-type gates) are data-driven, same as the
+    //    MGEF path. This is how the DmgVs* legendary family feeds dbm.
+    //    Mirrors mgef.ts's `translate()` route-consumption exactly
+    //    (issue #48 double-stack fix): appends the entry point's
+    //    `extraConditions` (manual gating with no ESM condition row,
+    //    e.g. Concentrated Fire's `vatsOnly`/`stacks`) and honors its
+    //    `op` override (e.g. Concentrated Fire's hit-chance half is
+    //    MUL_ADD, not the OMOD property's own ADD function type) —
+    //    falls back to this property's own `op` when the route
+    //    specifies neither, so every other plumbed AV route (DmgVs*
+    //    family, which sets neither map) is byte-for-byte unchanged.
+    const plumbed = avifRoutes.get(prop.value1);
+    const fallback = FALLBACK_AVIF_ROUTES[avEdid];
+    const avMapping = ACTOR_VALUE_BUCKETS[avEdid];
+    if (plumbed) {
+      for (const route of plumbed) {
+        const { conditions, unresolved } = translateConditions(route.rawConditions, {
+          edidByFormId,
+          crossFamilyRank,
+        });
+        if (conditions === null) continue;
+        unresolved.forEach((u) => modNotes.add(`route(${avEdid}): ${u}`));
+        pushAv(
+          route.bucket,
+          route.scale,
+          [...conditions, ...(route.extraConditions ?? [])],
+          route.op ?? op,
+        );
+      }
+    } else if (fallback) {
+      pushAv(fallback.bucket, fallback.scale, [...(fallback.conditions ?? [])]);
+    } else if (avMapping) {
+      pushAv(avMapping.bucket, avMapping.scale, []);
+    } else if (avEdid in ACTOR_VALUE_SKIP) {
+      modNotes.add(ACTOR_VALUE_SKIP[avEdid]);
+    } else {
+      modNotes.add(`ActorValues on ${avEdid} — unmapped`);
+    }
+  }
+}
+
+// Base-damage scaling (user-confirmed): MUL+ADDs on AttackDamage /
+// DamageTypeValues multiply the component's BASE damage before the dbm
+// parenthesis (automatic receivers: −30% on phys and every damage type).
+// A curve table OVERRIDES the flat value: Y at X = item level (heated
+// melee mods) — emitted as itemLevel-input curve modifiers.
+// Note: DamageTypeValues on dtPhysical ≡ AttackDamage (both phys-only).
+function translateAttackDamageProperty(prop: RawProperty, state: OmodTranslationState): void {
+  const { modNotes } = state;
+  const curved = prop.curvePoints != null;
+  if ((curved || typeof prop.value1 === 'number') && prop.functionType !== 'SET') {
+    const op = prop.functionType === 'MUL_ADD' ? ('MUL_ADD' as const) : ('ADD' as const);
+    const conditions: Modifier['conditions'] = [{ kind: 'damageTypeScope', types: ['ballistic'] }];
+    state.modifiers.push(baseDamageModifier(state, prop, op, prop.value1 as number, conditions));
+  } else if (prop.hasCurveTable && !curved) {
+    modNotes.add(`AttackDamage carries an unparsed curve table — not modeled`);
+  } else {
+    modNotes.add(
+      `AttackDamage ${prop.functionType} with value ${JSON.stringify(prop.value1)} — unhandled`,
     );
-    const armorPenAvWrite = properties.find(
-      (p) =>
-        p.property === 'ActorValues' &&
-        p.value1 === ARMOR_PENETRATION_AV &&
-        typeof p.value2 === 'number',
-    )?.value2;
-    mgefDeps.armorPenetrationAvMagnitude =
-      hasModArmorPenEnchant && typeof armorPenAvWrite === 'number' ? armorPenAvWrite : undefined;
-    let explosionChase: GeneratedExplosionSwap | undefined;
-    let chainSuppressesExplosion = false;
-    const procs: GeneratedProc[] = [];
-    const auras: GeneratedAura[] = [];
-    const source: Modifier['source'] = {
+  }
+}
+
+async function translateDamageTypeValuesProperty(
+  prop: RawProperty,
+  state: OmodTranslationState,
+  ctx: OmodTranslationContext,
+): Promise<void> {
+  const { modNotes } = state;
+  // Value 1 = damage-type formid, Value 2 = amount — for all three
+  // operators (SET/MUL_ADD/ADD, verified via raw `esm get`); a curve
+  // table overrides Value 2. SET/ADD emit the matching op alongside
+  // MUL_ADD — resolve.ts's foldOps owns the fold per damage-type-scoped
+  // component, so all three land the same way AttackDamage's phys-only
+  // MUL/ADD does above.
+  if (typeof prop.value1 === 'string') {
+    const dtEdid = await ctx.client.resolveEdid(prop.value1);
+    const damageType = DAMAGE_TYPE_EDID_MAP[dtEdid];
+    const curved = prop.curvePoints != null;
+    if (damageType && damageType !== 'unknown' && (curved || typeof prop.value2 === 'number')) {
+      const conditions: Modifier['conditions'] = [{ kind: 'damageTypeScope', types: [damageType] }];
+      state.modifiers.push(
+        baseDamageModifier(state, prop, modifierOp(prop), prop.value2 as number, conditions),
+      );
+    } else {
+      modNotes.add(`DamageTypeValues ${prop.functionType} on unmapped type ${dtEdid}`);
+    }
+  } else {
+    modNotes.add(
+      `DamageTypeValues ${prop.functionType} with non-formid value1 ${JSON.stringify(prop.value1)} — unhandled`,
+    );
+  }
+}
+
+/** The properties with a direct bucket mapping, or none at all. */
+function translateMappedProperty(
+  prop: RawProperty,
+  state: OmodTranslationState,
+  ctx: OmodTranslationContext,
+): void {
+  const { record, source, modifiers, modNotes } = state;
+  const { unknownProperties, notes } = ctx;
+  const mapping = PROPERTY_BUCKETS[prop.property];
+  if (!mapping) {
+    if (!PROPERTY_IGNORED.has(prop.property)) unknownProperties.add(prop.property);
+    return;
+  }
+  const op = modifierOp(prop);
+  const bucket = op === 'ADD' && mapping.addBucket ? mapping.addBucket : mapping.bucket;
+  if (prop.curvePoints) {
+    // A curve table overrides the hardcoded value: Y at X = item level.
+    modifiers.push({
+      id: `${record.header.form_id}:${modifiers.length}`,
+      source,
+      bucket,
+      op,
+      curve: { input: 'itemLevel', points: prop.curvePoints },
+      curveScale: 1,
+      conditions: [],
+    });
+    return;
+  }
+  if (prop.hasCurveTable) {
+    modNotes.add(`${prop.property} carries an unparsed curve table — not modeled`);
+    return;
+  }
+
+  let value: number;
+  if (typeof prop.value1 === 'number') {
+    value = prop.value1;
+  } else if (typeof prop.value1 === 'boolean') {
+    value = prop.value1 ? 1 : 0;
+  } else if (prop.value1 && typeof prop.value1 === 'object' && 'value' in (prop.value1 as object)) {
+    value = ((prop.value1 as Record<string, unknown>)['value'] as number) ?? 0;
+  } else {
+    notes.add(`${record.editor_id}: ${prop.property} has non-numeric value`);
+    return;
+  }
+
+  modifiers.push({
+    id: `${record.header.form_id}:${modifiers.length}`,
+    source,
+    bucket,
+    op,
+    value,
+    conditions: [],
+  });
+}
+
+async function translateOmodProperty(
+  prop: RawProperty,
+  state: OmodTranslationState,
+  ctx: OmodTranslationContext,
+): Promise<void> {
+  switch (prop.property) {
+    case 'Keywords':
+      if (prop.functionType === 'ADD' && typeof prop.value1 === 'string') {
+        state.addedKeywords.push(await ctx.client.resolveEdid(prop.value1));
+      }
+      return;
+    case 'Enchantments':
+      return translateEnchantmentsProperty(prop, state, ctx);
+    case 'OverrideProjectile':
+      return translateOverrideProjectileProperty(prop, state, ctx);
+    case 'AttachedPerk':
+      return translateAttachedPerkProperty(prop, state, ctx);
+    case 'ActorValues':
+      return translateActorValuesProperty(prop, state, ctx);
+    case 'AttackDamage':
+      return translateAttackDamageProperty(prop, state);
+    case 'DamageTypeValues':
+      return translateDamageTypeValuesProperty(prop, state, ctx);
+    default:
+      return translateMappedProperty(prop, state, ctx);
+  }
+}
+
+// Self-worn tier gates: an attached perk's rows gated on
+// WornHasKeyword(K) where the carrier OMOD itself ADDs K are per-tier
+// variants of one shared perk (Nitro Fortunate's 4Mod/6Mod ×0.21/0.14 —
+// walked 2026-08-28). Resolve against this record's own addedKeywords:
+// K added here → gate satisfied, strip it; K names a sibling tier this
+// record doesn't add (another row of the same bucket IS satisfied) →
+// drop the row. Gates on keywords this OMOD family never adds (Voice of
+// Set's Eye of Ra armor check) are genuine worn-armor state — untouched.
+function resolveSelfWornTierGates(
+  modifiers: Modifier[],
+  addedKeywords: readonly string[],
+  modNotes: Set<string>,
+): void {
+  const wornGate = (c: Modifier['conditions'][number]): string | null =>
+    c.kind === 'unresolved' ? (/^WornHasKeyword\((\w+)\)=1$/.exec(c.raw)?.[1] ?? null) : null;
+  const satisfied = (m: Modifier): boolean =>
+    m.conditions.some((c) => {
+      const k = wornGate(c);
+      return k !== null && addedKeywords.includes(k);
+    });
+  const resolvedKeywords = new Set<string>();
+  // Classify BEFORE mutating: stripping a satisfied row's gate first
+  // would make the sibling check below miss it (hit live 2026-08-28).
+  const satisfiedRows = new Set(modifiers.filter((m) => satisfied(m)));
+  for (let i = modifiers.length - 1; i >= 0; i--) {
+    const m = modifiers[i];
+    const gates = m.conditions.map(wornGate).filter((k): k is string => k !== null);
+    if (gates.length === 0) continue;
+    if (satisfiedRows.has(m)) {
+      gates.forEach((k) => resolvedKeywords.add(k));
+      m.conditions = m.conditions.filter((c) => wornGate(c) === null);
+    } else if ([...satisfiedRows].some((o) => o !== m && o.bucket === m.bucket)) {
+      gates.forEach((k) => resolvedKeywords.add(k));
+      modifiers.splice(i, 1);
+    }
+  }
+  for (const note of [...modNotes]) {
+    for (const k of resolvedKeywords) {
+      if (note.includes(`WornHasKeyword(${k})=1`)) modNotes.delete(note);
+    }
+  }
+}
+
+/** Drops the shared PA arm enchantment's Rusty Knuckles DoT from an arm that writes only energy damage. */
+function dropForeignRustyKnucklesDot(
+  properties: readonly RawProperty[],
+  modifiers: Modifier[],
+  modNotes: Set<string>,
+): void {
+  const sharesPaCommonArmEnch = properties.some(
+    (p) =>
+      p.property === 'Enchantments' &&
+      p.value1 === ENCH_POWER_ARMOR_COMMON_ARM &&
+      p.functionType !== 'REM',
+  );
+  const writesRustyKnucklesAv = properties.some(
+    (p) =>
+      p.property === 'ActorValues' && p.value1 === PA_RUSTY_KNUCKLES_AV && p.functionType === 'ADD',
+  );
+  const writesUnarmedEnergyDmg = properties.some(
+    (p) => p.property === 'ActorValues' && p.value1 === UNARMED_ENERGY_DAMAGE_AV,
+  );
+  if (sharesPaCommonArmEnch && writesUnarmedEnergyDmg && !writesRustyKnucklesAv) {
+    for (let i = modifiers.length - 1; i >= 0; i--) {
+      if (modifiers[i].bucket === 'dotDamage') modifiers.splice(i, 1);
+    }
+    for (const note of [...modNotes]) {
+      if (
+        note.includes('PA_RustyKnuckles_AV') ||
+        (note.includes('PA_CommonArmPerk') && note.includes('GetValue(PA_RustyKnuckles_AV)'))
+      ) {
+        modNotes.delete(note);
+      }
+    }
+  }
+}
+
+async function emitOmod(
+  job: OmodEmitJob,
+  ctx: OmodTranslationContext,
+  cobjIndex: CobjIndex,
+): Promise<{ generated: GeneratedOmod; isArmor: boolean } | null> {
+  const { client, mgefDeps, notes } = ctx;
+  const { record } = job;
+  const data = omodData(record);
+  // Form Type buckets this record into the weapon or armor output array —
+  // OMOD_ALLOWED_FORM_TYPES already restricted `named` to exactly these two
+  // values (see classifyOmodRecordExclusion's doc comment).
+  const formType = ((data['Form Type'] as Record<string, unknown>)?.['name'] as string) ?? '';
+  const attachPoint =
+    (data['Attach Point'] as string) ?? ATTACH_POINT_OVERRIDES[record.header.form_id] ?? null;
+  if (!attachPoint) return null;
+
+  const targetKeywords = await Promise.all(
+    (Array.isArray(record.fields['Target OMOD Keywords'])
+      ? (record.fields['Target OMOD Keywords'] as string[])
+      : []
+    ).map((k) => client.resolveEdid(k)),
+  );
+
+  const properties = collectProperties(job.propertyRootFormId, ctx.byFormId);
+  const hasModArmorPenEnchant = properties.some(
+    (p) =>
+      p.property === 'Enchantments' && p.functionType !== 'REM' && p.value1 === MOD_ARMOR_PEN_ENCH,
+  );
+  const armorPenAvWrite = properties.find(
+    (p) =>
+      p.property === 'ActorValues' &&
+      p.value1 === ARMOR_PENETRATION_AV &&
+      typeof p.value2 === 'number',
+  )?.value2;
+  mgefDeps.armorPenetrationAvMagnitude =
+    hasModArmorPenEnchant && typeof armorPenAvWrite === 'number' ? armorPenAvWrite : undefined;
+  const state: OmodTranslationState = {
+    record,
+    source: {
       kind: 'omod',
       formId: record.header.form_id,
       edid: record.editor_id,
       name: job.nameOverride ?? omodDisplayName(record),
-    };
+    },
+    hasModArmorPenEnchant,
+    modifiers: [],
+    addedKeywords: [],
+    modNotes: new Set(),
+    procs: [],
+    auras: [],
+    hasEnchantments: false,
+    chainSuppressesExplosion: false,
+  };
+  for (const prop of properties) await translateOmodProperty(prop, state, ctx);
 
-    for (const prop of properties) {
-      if (prop.property === 'Keywords') {
-        if (prop.functionType === 'ADD' && typeof prop.value1 === 'string') {
-          addedKeywords.push(await client.resolveEdid(prop.value1));
-        }
-        continue;
-      }
-      if (prop.property === 'Enchantments') {
-        hasEnchantments = true;
-        if (typeof prop.value1 === 'string') {
-          if (prop.functionType === 'REM') {
-            // REM removes an ench the OMOD's own parent/base weapon carries
-            // (Slow-Burner REMs Cremator's base fire-hit ench) — it must
-            // never be WALKED as if it were still active (that was the bug:
-            // the base weapon's PVP-only branch was silently kept while its
-            // real NPC branch was dropped, see the GetIsPlayer fix above).
-            // Note-only; no modifier.
-            modNotes.add(`removes enchantment ${await client.resolveEdid(prop.value1)}`);
-          } else {
-            // ADD/SET: this OMOD grants the enchantment.
-            const { procs: enchProcs, auras: enchAuras } = await enchantmentModifiers(
-              prop.value1,
-              source,
-              modifiers,
-              modNotes,
-              projectileChaseDeps,
-            );
-            procs.push(...enchProcs);
-            auras.push(...enchAuras);
-          }
-        }
-        continue;
-      }
-      if (prop.property === 'OverrideProjectile') {
-        // Lobber Barrel / Polar Lobber-style launcher-hazard chase — see
-        // overrideProjectileModifiers's doc comment. Mirrors the Enchantments
-        // REM/ADD fix above: mutually-exclusive projectile variants sharing
-        // this one property (e.g. Cremator's flame-color Receiver mods each
-        // REM the previously-included default/other-color projectile before
-        // SETting their own) must have their REM skipped, never walked —
-        // verified 2026-07-14 on Lithium (Pink)/(Blue)/(Green), which REM
-        // ProjectileCremator (the shared default) while SETting their own
-        // color variant.
-        if (typeof prop.value1 === 'string') {
-          if (prop.functionType === 'REM') {
-            modNotes.add(`removes projectile override ${await client.resolveEdid(prop.value1)}`);
-          } else {
-            const result = await overrideProjectileModifiers(
-              prop.value1,
-              source,
-              modifiers,
-              modNotes,
-              projectileChaseDeps,
-            );
-            if (result.chase) explosionChase = result.chase;
-            if (result.chainSuppressesExplosion) chainSuppressesExplosion = true;
-          }
-        }
-        continue;
-      }
-      if (prop.property === 'AttachedPerk') {
-        // Property 116, decoded above by propertyName(): Value 1 = PERK
-        // formid, Value 2 = 1 (ADD) — attach this perk to the wielder
-        // (unique-mod rework). Decode it exactly like a legendary's
-        // Script-archetype "Perk to Apply" chase (mgef.ts's
-        // translateGrantedPerk): Entry Point effects with a formula bucket
-        // become modifiers on THIS omod; effects with none (e.g. "Mod
-        // Incoming Weapon Damage" — damage TAKEN, out of scope) become a
-        // note, never a silent drop.
-        if (typeof prop.value1 === 'string') {
-          const result = await translateGrantedPerk(mgefDeps, record.editor_id, prop.value1);
-          result.notes.forEach((n) => modNotes.add(n));
-          for (const fragment of result.modifiers) {
-            modifiers.push({
-              id: `${record.header.form_id}:perk:${modifiers.length}`,
-              source,
-              ...fragment,
-            });
-          }
-          if (result.procs) procs.push(...result.procs);
-          if (result.auras) auras.push(...result.auras);
-        }
-        continue;
-      }
-      if (prop.property === 'ActorValues') {
-        // Value 1 = AV formid, Value 2 = amount (Anti-Armor: ArmorPenetration
-        // 50.0). A curve table OVERRIDES Value 2: Y by item level (the DmgVs
-        // family carries flat (1,50)→(100,50) curves with Value 2 = 0).
-        if (typeof prop.value1 === 'string' && typeof prop.value2 === 'number') {
-          const avEdid = await client.resolveEdid(prop.value1);
-          if (avEdid === 'ArmorPenetration' && hasModArmorPenEnchant) {
-            // Composed via enchModArmorPenetration → ModArmorPenetrationPerk chase.
-            continue;
-          }
-          const flatValue = prop.value2;
-          const curvePoints = prop.curvePoints;
-          // Bug fix (2026-07-16): this used to collapse every non-MUL_ADD
-          // function to 'ADD', silently downgrading SET (Final Word's
-          // `ActorValues SET EnableAmmoSpenderOnKill 1.0` — see
-          // ACTOR_VALUE_BUCKETS' doc comment). Same three-way mapping the
-          // DamageTypeValues handler below already uses.
-          const op =
-            prop.functionType === 'SET'
-              ? ('SET' as const)
-              : prop.functionType === 'MUL_ADD'
-                ? ('MUL_ADD' as const)
-                : ('ADD' as const);
-          const pushAv = (
-            bucket: Bucket,
-            scale: number,
-            conditions: Modifier['conditions'],
-            modOp: Modifier['op'] = op,
-          ) => {
-            modifiers.push(
-              curvePoints
-                ? {
-                    id: `${record.header.form_id}:${modifiers.length}`,
-                    source,
-                    bucket,
-                    op: modOp,
-                    curve: { input: 'itemLevel', points: curvePoints },
-                    curveScale: scale,
-                    conditions,
-                  }
-                : {
-                    id: `${record.header.form_id}:${modifiers.length}`,
-                    source,
-                    bucket,
-                    op: modOp,
-                    value: flatValue * scale,
-                    conditions,
-                  },
-            );
-          };
-          // 1) Plumbing-perk routes (STAT_DamageVsPerk & co.) — bucket, scale,
-          //    AND conditions (enemy-type gates) are data-driven, same as the
-          //    MGEF path. This is how the DmgVs* legendary family feeds dbm.
-          //    Mirrors mgef.ts's `translate()` route-consumption exactly
-          //    (issue #48 double-stack fix): appends the entry point's
-          //    `extraConditions` (manual gating with no ESM condition row,
-          //    e.g. Concentrated Fire's `vatsOnly`/`stacks`) and honors its
-          //    `op` override (e.g. Concentrated Fire's hit-chance half is
-          //    MUL_ADD, not the OMOD property's own ADD function type) —
-          //    falls back to this property's own `op` when the route
-          //    specifies neither, so every other plumbed AV route (DmgVs*
-          //    family, which sets neither map) is byte-for-byte unchanged.
-          const plumbed = avifRoutes.get(prop.value1);
-          const fallback = FALLBACK_AVIF_ROUTES[avEdid];
-          const avMapping = ACTOR_VALUE_BUCKETS[avEdid];
-          if (plumbed) {
-            for (const route of plumbed) {
-              const { conditions, unresolved } = translateConditions(route.rawConditions, {
-                edidByFormId,
-                crossFamilyRank,
-              });
-              if (conditions === null) continue;
-              unresolved.forEach((u) => modNotes.add(`route(${avEdid}): ${u}`));
-              pushAv(
-                route.bucket,
-                route.scale,
-                [...conditions, ...(route.extraConditions ?? [])],
-                route.op ?? op,
-              );
-            }
-          } else if (fallback) {
-            pushAv(fallback.bucket, fallback.scale, [...(fallback.conditions ?? [])]);
-          } else if (avMapping) {
-            pushAv(avMapping.bucket, avMapping.scale, []);
-          } else if (avEdid in ACTOR_VALUE_SKIP) {
-            modNotes.add(ACTOR_VALUE_SKIP[avEdid]);
-          } else {
-            modNotes.add(`ActorValues on ${avEdid} — unmapped`);
-          }
-        }
-        continue;
-      }
-      // Base-damage scaling (user-confirmed): MUL+ADDs on AttackDamage /
-      // DamageTypeValues multiply the component's BASE damage before the dbm
-      // parenthesis (automatic receivers: −30% on phys and every damage type).
-      // A curve table OVERRIDES the flat value: Y at X = item level (heated
-      // melee mods) — emitted as itemLevel-input curve modifiers.
-      // Note: DamageTypeValues on dtPhysical ≡ AttackDamage (both phys-only).
-      if (prop.property === 'AttackDamage') {
-        const curved = prop.curvePoints != null;
-        if ((curved || typeof prop.value1 === 'number') && prop.functionType !== 'SET') {
-          const op = prop.functionType === 'MUL_ADD' ? ('MUL_ADD' as const) : ('ADD' as const);
-          const conditions: Modifier['conditions'] = [
-            { kind: 'damageTypeScope', types: ['ballistic'] },
-          ];
-          modifiers.push(
-            curved
-              ? {
-                  id: `${record.header.form_id}:${modifiers.length}`,
-                  source,
-                  bucket: 'baseDamage',
-                  op,
-                  curve: { input: 'itemLevel', points: prop.curvePoints! },
-                  curveScale: 1,
-                  conditions,
-                }
-              : {
-                  id: `${record.header.form_id}:${modifiers.length}`,
-                  source,
-                  bucket: 'baseDamage',
-                  op,
-                  value: prop.value1 as number,
-                  conditions,
-                },
-          );
-        } else if (prop.hasCurveTable && !curved) {
-          modNotes.add(`AttackDamage carries an unparsed curve table — not modeled`);
-        } else {
-          modNotes.add(
-            `AttackDamage ${prop.functionType} with value ${JSON.stringify(prop.value1)} — unhandled`,
-          );
-        }
-        continue;
-      }
-      if (prop.property === 'DamageTypeValues') {
-        // Value 1 = damage-type formid, Value 2 = amount — for all three
-        // operators (SET/MUL_ADD/ADD, verified via raw `esm get`); a curve
-        // table overrides Value 2. SET/ADD emit the matching op alongside
-        // MUL_ADD — resolve.ts's foldOps owns the fold per damage-type-scoped
-        // component, so all three land the same way AttackDamage's phys-only
-        // MUL/ADD does above.
-        if (typeof prop.value1 === 'string') {
-          const dtEdid = await client.resolveEdid(prop.value1);
-          const damageType = DAMAGE_TYPE_EDID_MAP[dtEdid];
-          const curved = prop.curvePoints != null;
-          if (
-            damageType &&
-            damageType !== 'unknown' &&
-            (curved || typeof prop.value2 === 'number')
-          ) {
-            const op =
-              prop.functionType === 'SET'
-                ? ('SET' as const)
-                : prop.functionType === 'MUL_ADD'
-                  ? ('MUL_ADD' as const)
-                  : ('ADD' as const);
-            const conditions: Modifier['conditions'] = [
-              { kind: 'damageTypeScope', types: [damageType] },
-            ];
-            modifiers.push(
-              curved
-                ? {
-                    id: `${record.header.form_id}:${modifiers.length}`,
-                    source,
-                    bucket: 'baseDamage',
-                    op,
-                    curve: { input: 'itemLevel', points: prop.curvePoints! },
-                    curveScale: 1,
-                    conditions,
-                  }
-                : {
-                    id: `${record.header.form_id}:${modifiers.length}`,
-                    source,
-                    bucket: 'baseDamage',
-                    op,
-                    value: prop.value2 as number,
-                    conditions,
-                  },
-            );
-          } else {
-            modNotes.add(`DamageTypeValues ${prop.functionType} on unmapped type ${dtEdid}`);
-          }
-        } else {
-          modNotes.add(
-            `DamageTypeValues ${prop.functionType} with non-formid value1 ${JSON.stringify(prop.value1)} — unhandled`,
-          );
-        }
-        continue;
-      }
+  const { modifiers, addedKeywords, modNotes, procs, auras } = state;
+  const { hasEnchantments, explosionChase, chainSuppressesExplosion } = state;
+  resolveSelfWornTierGates(modifiers, addedKeywords, modNotes);
+  dropForeignRustyKnucklesDot(properties, modifiers, modNotes);
 
-      const mapping = PROPERTY_BUCKETS[prop.property];
-      if (!mapping) {
-        if (!PROPERTY_IGNORED.has(prop.property)) unknownProperties.add(prop.property);
-        continue;
-      }
-      if (prop.curvePoints) {
-        // A curve table overrides the hardcoded value: Y at X = item level.
-        const op =
-          prop.functionType === 'SET' ? 'SET' : prop.functionType === 'MUL_ADD' ? 'MUL_ADD' : 'ADD';
-        const bucket = op === 'ADD' && mapping.addBucket ? mapping.addBucket : mapping.bucket;
-        modifiers.push({
-          id: `${record.header.form_id}:${modifiers.length}`,
-          source,
-          bucket,
-          op,
-          curve: { input: 'itemLevel', points: prop.curvePoints },
-          curveScale: 1,
-          conditions: [],
-        });
-        continue;
-      }
-      if (prop.hasCurveTable) {
-        modNotes.add(`${prop.property} carries an unparsed curve table — not modeled`);
-        continue;
-      }
-
-      let value: number;
-      if (typeof prop.value1 === 'number') {
-        value = prop.value1;
-      } else if (typeof prop.value1 === 'boolean') {
-        value = prop.value1 ? 1 : 0;
-      } else if (
-        prop.value1 &&
-        typeof prop.value1 === 'object' &&
-        'value' in (prop.value1 as object)
-      ) {
-        value = ((prop.value1 as Record<string, unknown>)['value'] as number) ?? 0;
-      } else {
-        notes.add(`${record.editor_id}: ${prop.property} has non-numeric value`);
-        continue;
-      }
-
-      const op =
-        prop.functionType === 'SET' ? 'SET' : prop.functionType === 'MUL_ADD' ? 'MUL_ADD' : 'ADD';
-      const bucket = op === 'ADD' && mapping.addBucket ? mapping.addBucket : mapping.bucket;
-      modifiers.push({
-        id: `${record.header.form_id}:${modifiers.length}`,
-        source,
-        bucket,
-        op,
-        value,
-        conditions: [],
-      });
-    }
-
-    // Self-worn tier gates: an attached perk's rows gated on
-    // WornHasKeyword(K) where the carrier OMOD itself ADDs K are per-tier
-    // variants of one shared perk (Nitro Fortunate's 4Mod/6Mod ×0.21/0.14 —
-    // walked 2026-08-28). Resolve against this record's own addedKeywords:
-    // K added here → gate satisfied, strip it; K names a sibling tier this
-    // record doesn't add (another row of the same bucket IS satisfied) →
-    // drop the row. Gates on keywords this OMOD family never adds (Voice of
-    // Set's Eye of Ra armor check) are genuine worn-armor state — untouched.
-    {
-      const wornGate = (c: Modifier['conditions'][number]): string | null =>
-        c.kind === 'unresolved' ? (/^WornHasKeyword\((\w+)\)=1$/.exec(c.raw)?.[1] ?? null) : null;
-      const satisfied = (m: Modifier): boolean =>
-        m.conditions.some((c) => {
-          const k = wornGate(c);
-          return k !== null && addedKeywords.includes(k);
-        });
-      const resolvedKeywords = new Set<string>();
-      // Classify BEFORE mutating: stripping a satisfied row's gate first
-      // would make the sibling check below miss it (hit live 2026-08-28).
-      const satisfiedRows = new Set(modifiers.filter((m) => satisfied(m)));
-      for (let i = modifiers.length - 1; i >= 0; i--) {
-        const m = modifiers[i];
-        const gates = m.conditions.map(wornGate).filter((k): k is string => k !== null);
-        if (gates.length === 0) continue;
-        if (satisfiedRows.has(m)) {
-          gates.forEach((k) => resolvedKeywords.add(k));
-          m.conditions = m.conditions.filter((c) => wornGate(c) === null);
-        } else if ([...satisfiedRows].some((o) => o !== m && o.bucket === m.bucket)) {
-          gates.forEach((k) => resolvedKeywords.add(k));
-          modifiers.splice(i, 1);
-        }
-      }
-      for (const note of [...modNotes]) {
-        for (const k of resolvedKeywords) {
-          if (note.includes(`WornHasKeyword(${k})=1`)) modNotes.delete(note);
-        }
-      }
-    }
-
-    const sharesPaCommonArmEnch = properties.some(
-      (p) =>
-        p.property === 'Enchantments' &&
-        p.value1 === ENCH_POWER_ARMOR_COMMON_ARM &&
-        p.functionType !== 'REM',
-    );
-    const writesRustyKnucklesAv = properties.some(
-      (p) =>
-        p.property === 'ActorValues' &&
-        p.value1 === PA_RUSTY_KNUCKLES_AV &&
-        p.functionType === 'ADD',
-    );
-    const writesUnarmedEnergyDmg = properties.some(
-      (p) => p.property === 'ActorValues' && p.value1 === UNARMED_ENERGY_DAMAGE_AV,
-    );
-    if (sharesPaCommonArmEnch && writesUnarmedEnergyDmg && !writesRustyKnucklesAv) {
-      for (let i = modifiers.length - 1; i >= 0; i--) {
-        if (modifiers[i].bucket === 'dotDamage') modifiers.splice(i, 1);
-      }
-      for (const note of [...modNotes]) {
-        if (
-          note.includes('PA_RustyKnuckles_AV') ||
-          (note.includes('PA_CommonArmPerk') && note.includes('GetValue(PA_RustyKnuckles_AV)'))
-        ) {
-          modNotes.delete(note);
-        }
-      }
-    }
-
-    for (const note of modNotes) notes.add(`${record.editor_id}: ${note}`);
-    const hasGrantingCobj = (cobjIndex.byCreatedObject.get(record.header.form_id) ?? []).some(
-      (c) => !isNonGrantingCobj(c, c.edid),
-    );
-    const generated: GeneratedOmod = {
-      id: record.editor_id,
-      formId: record.header.form_id,
-      name: job.nameOverride ?? omodDisplayName(record),
-      description: (record.fields['Description'] as string) ?? '',
-      attachPointFormId: attachPoint,
-      attachPointEdid: await client.resolveEdid(attachPoint),
-      targetKeywords,
-      modifiers,
-      addedKeywords,
-      hasEnchantments,
-      ...(hasGrantingCobj ? { hasGrantingCobj } : {}),
-      ...(explosionChase ? { explosionChase } : {}),
-      ...(chainSuppressesExplosion ? { chainSuppressesExplosion } : {}),
-      ...(procs.length > 0 ? { procChase: procs } : {}),
-      ...(auras.length > 0 ? { auraChase: auras } : {}),
-      ...(job.variantOf ? { variantOf: job.variantOf } : {}),
-      notes: [...modNotes].sort(),
-    };
-    targetList.push(generated);
-    if (job.variantOf) {
-      const containerFormId = records.find((r) => r.editor_id === job.variantOf)?.header.form_id;
-      if (containerFormId) {
-        (variantContainers[containerFormId] ??= []).push(generated);
-      }
-    }
-  }
-
-  await attachWellTunedKeywordHooks(client, omods, mgefDeps, notes);
-
-  // Obtainability derivation (see extract-weapons.ts for the flag semantics:
-  // failures stay in the data as obtainable:false for app-side hiding/rescue).
-  // One classifier + one classify() call over BOTH weapon and armor OMODs
-  // together (armor OMODs additionally ride on obtainableArmorFormIds via the
-  // ARMO branch in obtainability.ts, parallel to the WEAP branch).
-  const classifier = new ObtainabilityClassifier(
-    client,
-    obtainableWeaponFormIds,
-    cobjIndex,
-    obtainableArmorFormIds,
+  for (const note of modNotes) notes.add(`${record.editor_id}: ${note}`);
+  const hasGrantingCobj = (cobjIndex.byCreatedObject.get(record.header.form_id) ?? []).some(
+    (c) => !isNonGrantingCobj(c, c.edid),
   );
-  const allOmods = [...omods, ...armorOmods];
+  const generated: GeneratedOmod = {
+    id: record.editor_id,
+    formId: record.header.form_id,
+    name: job.nameOverride ?? omodDisplayName(record),
+    description: (record.fields['Description'] as string) ?? '',
+    attachPointFormId: attachPoint,
+    attachPointEdid: await client.resolveEdid(attachPoint),
+    targetKeywords,
+    modifiers,
+    addedKeywords,
+    hasEnchantments,
+    ...(hasGrantingCobj ? { hasGrantingCobj } : {}),
+    ...(explosionChase ? { explosionChase } : {}),
+    ...(chainSuppressesExplosion ? { chainSuppressesExplosion } : {}),
+    ...(procs.length > 0 ? { procChase: procs } : {}),
+    ...(auras.length > 0 ? { auraChase: auras } : {}),
+    ...(job.variantOf ? { variantOf: job.variantOf } : {}),
+    notes: [...modNotes].sort(),
+  };
+  return { generated, isArmor: formType === 'Armor' };
+}
+
+interface OmodObtainabilityResult {
+  unobtainableIds: string[];
+  unobtainableDetails: ExcludedRecordDetail[];
+  weakEvidence: ExcludedRecordDetail[];
+}
+
+// Obtainability derivation (see extract-weapons.ts for the flag semantics:
+// failures stay in the data as obtainable:false for app-side hiding/rescue).
+// One classifier + one classify() call over BOTH weapon and armor OMODs
+// together (armor OMODs additionally ride on obtainableArmorFormIds via the
+// ARMO branch in obtainability.ts, parallel to the WEAP branch).
+async function applyObtainability(
+  allOmods: GeneratedOmod[],
+  classifier: ObtainabilityClassifier,
+  defaultModFormIds: ReadonlySet<string>,
+): Promise<OmodObtainabilityResult> {
   const verdicts = await classifier.classify(
     allOmods.map((o) => ({ formId: o.formId, edid: o.id })),
   );
-  const excludedDetailed: Record<string, ExcludedRecordDetail[]> = { omodUnobtainable: [] };
-  const reviewFlagged: Record<string, ExcludedRecordDetail[]> = {
-    omodWeakEvidence: [],
-    omodUnnamedTemplateMember: unnamedTemplateMembers,
-  };
+  const unobtainableIds: string[] = [];
+  const unobtainableDetails: ExcludedRecordDetail[] = [];
+  const weakEvidence: ExcludedRecordDetail[] = [];
   for (const omod of allOmods) {
     const verdict = verdicts.get(omod.formId);
     let obtainable = verdict?.obtainable ?? false;
@@ -1207,36 +1261,134 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
     }
     omod.obtainable = obtainable;
     if (!omod.obtainable) {
-      (excluded.omodUnobtainable ??= []).push(omod.id);
-      excludedDetailed.omodUnobtainable.push({ id: omod.id, name: omod.name, signals });
+      unobtainableIds.push(omod.id);
+      unobtainableDetails.push({ id: omod.id, name: omod.name, signals });
     } else if (
       isWeakEvidence(verdict?.signals ?? []) &&
       !defaultModFormIds.has(omod.formId) &&
       !NON_CRAFT_SLOT_RE.test(omod.attachPointEdid)
     ) {
-      reviewFlagged.omodWeakEvidence.push({
+      weakEvidence.push({
         id: omod.id,
         name: omod.name,
         signals: verdict?.signals,
       });
     }
   }
+  return { unobtainableIds, unobtainableDetails, weakEvidence };
+}
 
-  // Power-armor-exclusive armor OMODs (attach point prefix `ap_PowerArmor*`)
-  // aren't gated in the ESM itself — PA-exclusivity is expressed structurally
-  // via the attach point / Target OMOD Keywords, not a perk condition — so the
-  // app supplies the gate here. General rule, not special-cased to any one
-  // mod: verified 2026-08-03 that no visible armor-effect NAME GROUP mixes a
-  // non-PA and a PA record (armor-modifiers.ts dedupes OMODs by display name
-  // and picks one alphabetical representative per group — if a group ever
-  // mixed variants, gating only the PA ones here could under- or over-gate the
-  // group's representative; today it can't happen).
+// Power-armor-exclusive armor OMODs (attach point prefix `ap_PowerArmor*`)
+// aren't gated in the ESM itself — PA-exclusivity is expressed structurally
+// via the attach point / Target OMOD Keywords, not a perk condition — so the
+// app supplies the gate here. General rule, not special-cased to any one
+// mod: verified 2026-08-03 that no visible armor-effect NAME GROUP mixes a
+// non-PA and a PA record (armor-modifiers.ts dedupes OMODs by display name
+// and picks one alphabetical representative per group — if a group ever
+// mixed variants, gating only the PA ones here could under- or over-gate the
+// group's representative; today it can't happen).
+function gatePowerArmorOmods(armorOmods: GeneratedOmod[]): void {
   for (const omod of armorOmods) {
     if (!omod.attachPointEdid.startsWith('ap_PowerArmor')) continue;
     for (const m of omod.modifiers) {
       m.conditions.push({ kind: 'inPowerArmor', value: true });
     }
   }
+}
+
+export async function extractOmods(options: ExtractOmodsOptions): Promise<ExtractOmodsResult> {
+  const {
+    client,
+    obtainableWeaponFormIds,
+    cobjIndex = emptyCobjIndex(),
+    defaultModFormIds = new Set(),
+    templateModFormIds = new Set(),
+    crossFamilyRank,
+    obtainableArmorFormIds = new Set(),
+  } = options;
+  const rows = await client.list('OMOD');
+  const records = await mapPool(rows, 8, (r) => client.get(r.form_id));
+  const byFormId = new Map(records.map((r) => [r.header.form_id, r]));
+
+  const unknownProperties = new Set<string>();
+  const notes = new Set<string>();
+
+  // Legendary effects carry their stats via ADD Enchantments → ENCH → MGEF.
+  const routePool = new Set<string>();
+  const avifRoutes: Map<string, AvifRoute[]> = await buildAvifRoutes(client, routePool);
+  const edidByFormId = new Map<string, string>();
+  for (const id of routePool) edidByFormId.set(id, await client.resolveEdid(id));
+
+  const mgefDeps: MgefTranslationDeps = {
+    client,
+    routes: avifRoutes,
+    edidByFormId,
+    timedIsActive: true,
+    noteUnroutedAvs: true,
+    // Cross-family HasPerk gates on unique-mod chains (Mechanic's Best
+    // Friend's granted perk on MakeshiftWarrior0N) resolve to runtime
+    // perkFamilyRank conditions via every path sharing these deps.
+    crossFamilyRank,
+  };
+
+  const projectileChaseDeps: ProjectileChaseDeps = { client, mgefDeps };
+  const { emitJobs, junkEdids, unnamedTemplateMembers } = selectOmodEmitJobs(
+    records,
+    byFormId,
+    templateModFormIds,
+  );
+  const excluded: Record<string, string[]> = { omodJunkEdid: junkEdids };
+  const ctx: OmodTranslationContext = {
+    client,
+    mgefDeps,
+    projectileChaseDeps,
+    avifRoutes,
+    edidByFormId,
+    crossFamilyRank,
+    byFormId,
+    unknownProperties,
+    notes,
+  };
+
+  const variantContainers: Record<string, GeneratedOmod[]> = {};
+  const omods: GeneratedOmod[] = [];
+  const armorOmods: GeneratedOmod[] = [];
+  for (const job of emitJobs) {
+    const emitted = await emitOmod(job, ctx, cobjIndex);
+    if (!emitted) continue;
+    const { generated, isArmor } = emitted;
+    (isArmor ? armorOmods : omods).push(generated);
+    if (job.variantOf) {
+      const containerFormId = records.find((r) => r.editor_id === job.variantOf)?.header.form_id;
+      if (containerFormId) {
+        (variantContainers[containerFormId] ??= []).push(generated);
+      }
+    }
+  }
+
+  await attachWellTunedKeywordHooks(client, omods, mgefDeps, notes);
+
+  const classifier = new ObtainabilityClassifier(
+    client,
+    obtainableWeaponFormIds,
+    cobjIndex,
+    obtainableArmorFormIds,
+  );
+  const { unobtainableIds, unobtainableDetails, weakEvidence } = await applyObtainability(
+    [...omods, ...armorOmods],
+    classifier,
+    defaultModFormIds,
+  );
+  if (unobtainableIds.length > 0) excluded.omodUnobtainable = unobtainableIds;
+  const excludedDetailed: Record<string, ExcludedRecordDetail[]> = {
+    omodUnobtainable: unobtainableDetails,
+  };
+  const reviewFlagged: Record<string, ExcludedRecordDetail[]> = {
+    omodWeakEvidence: weakEvidence,
+    omodUnnamedTemplateMember: unnamedTemplateMembers,
+  };
+
+  gatePowerArmorOmods(armorOmods);
 
   omods.sort((a, b) => a.id.localeCompare(b.id));
   armorOmods.sort((a, b) => a.id.localeCompare(b.id));
