@@ -4,7 +4,7 @@ A Fallout 76 outgoing-DPS calculator. Configure your player build — perks, wea
 
 **Live app:** <https://mapekz.github.io/dps-76/>
 
-> **Scope**: outgoing DPS plus enemy defenses (resist mitigation). The Live/PTS toggle UI is present but disabled until a PTS ESM dump lands. Deferred work is tracked as [GitHub Issues](https://github.com/Mapekz/dps-76/issues).
+> **Scope**: outgoing DPS plus enemy defenses (resist mitigation). The app is PTS-only for now, so the Live/PTS toggle is locked to PTS. Deferred work is tracked as [GitHub Issues](https://github.com/Mapekz/dps-76/issues).
 
 ## Tech stack
 

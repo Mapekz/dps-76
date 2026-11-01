@@ -23,9 +23,9 @@ comprehensive.md `zzz_` cut-marker section per the 20260724 lesson.
 ## 1. Baselines, then extract
 
 ```bash
-cp src/data/live/generated/_meta.json /tmp/meta-<old>.json   # gitignored — only baseline
-bun run audit:inert --mode live > /tmp/inert-before.txt
-bun run extract --mode live          # ~3.5 min warm; --esm only if FO76_ESM_PATH is stale
+cp src/data/pts/generated/_meta.json /tmp/meta-<old>.json   # gitignored — only baseline
+bun run audit:inert --mode pts > /tmp/inert-before.txt
+bun run extract --mode pts          # ~3.5 min warm; --esm only if FO76_ESM_PATH is stale
 ```
 
 A shell opened before the snapshot landed still has the old `FO76_ESM_PATH`.
@@ -36,18 +36,18 @@ A shell opened before the snapshot landed still has the old `FO76_ESM_PATH`.
 | checkpoint | pass condition |
 |---|---|
 | `_meta.json` | `esmDate` == new snapshot; `counts` deltas explained; `unresolved` **set-diff vs baseline** (see below) |
-| `bun run extract:diff` | weapons/omods roster+visibility churn all explained (covers ONLY those two files — `git diff --stat src/data/live/generated/` for the rest) |
+| `bun run extract:diff` | weapons/omods roster+visibility churn all explained (covers ONLY those two files — `git diff --stat src/data/pts/generated/` for the rest) |
 | `bun run vet:weapons` | exit 0, else adjudicate via the **weapon-vetting** skill |
 | `bun run wire-dict:build -- --dry-run` | no RENAMED/MISSING, else decide; removals: delete the id key AND add to `acknowledgedRemovals` (test requires both). MISSING also hides same-FormID edid renames (the builder resolves FormIDs from current data only): map each via HEAD's generated `formId` → `esm get` → new edid, and rename the key in place. A rename that also moves `attachPointEdid` is re-homed at decode (`readWeapon`) |
 | `bun run audit:records` | tier-1/2 clean; tier-3 findings adjudicated (see §4) |
-| `bun run audit:inert --mode live` diff | badge-count moves explained |
+| `bun run audit:inert --mode pts` diff | badge-count moves explained |
 
 **The unresolved set-diff is the fastest truth** about what a dump or an
 extractor change actually did:
 
 ```bash
 bun -e 'const a=JSON.parse(require("fs").readFileSync("/tmp/meta-<old>.json","utf8")).unresolved;
-const b=JSON.parse(require("fs").readFileSync("src/data/live/generated/_meta.json","utf8")).unresolved;
+const b=JSON.parse(require("fs").readFileSync("src/data/pts/generated/_meta.json","utf8")).unresolved;
 const sa=new Set(a),sb=new Set(b);
 console.log("GONE:",a.filter(x=>!sb.has(x)).length,"NEW:",b.filter(x=>!sa.has(x)).length);
 b.filter(x=>!sa.has(x)).slice(0,40).forEach(x=>console.log(" +",x))'

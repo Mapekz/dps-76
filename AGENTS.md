@@ -99,9 +99,9 @@ and `s=` (SPECIAL as 7 hex digits). The PerkId registry joins to ESM perk famili
 normalized display name in `src/data/perk-modifiers.ts`. Misses get patched in
 `overrides/perk-overrides.ts` and reported by `getUnjoinedPerkIds()`.
 
-Only one ESM is extracted today. PTS records re-export `live`, and the Header's mode toggle
-stays disabled until a PTS dump lands. Curves are read by mode, and the checked-in PTS
-creature and player-armor tables differ from Live's, so re-extract them with the dump.
+dps-76 is PTS-only for now. `FO76_ESM_PATH` points at a PTS dump, extraction writes to
+`src/data/pts/`, and the Header's mode toggle stays locked to PTS. `src/data/live/` doesn't
+exist, so the `live` mode resolves to the PTS data until a Live dump is extracted.
 
 ## Share links during alpha
 

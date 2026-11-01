@@ -29,15 +29,15 @@ not from memory. Untracked until the skill ships.
 Sequence run:
 
 ```bash
-cp src/data/live/generated/_meta.json <scratch>/meta-<old>.json   # gitignored — only baseline
-bun run audit:inert --mode live > <scratch>/inert-before.txt
-bun run extract --mode live          # --esm omitted; FO76_ESM_PATH already new snapshot
+cp src/data/pts/generated/_meta.json <scratch>/meta-<old>.json   # gitignored — only baseline
+bun run audit:inert --mode pts > <scratch>/inert-before.txt
+bun run extract --mode pts          # --esm omitted; FO76_ESM_PATH already new snapshot
 # review: _meta.json esmDate/counts/unresolved vs baseline
 bun run extract:diff                 # weapons+omods only; pair with git diff --stat
-git diff --stat src/data/live/generated/ src/data/live/curvetables/
+git diff --stat src/data/pts/generated/ src/data/pts/curvetables/
 bun run vet:weapons                  # exit 1 = roster delta needs adjudication
 bun run wire-dict:build -- --dry-run # exit 1 = RENAMED/MISSING needs decision
-bun run audit:inert --mode live > <scratch>/inert-after.txt && diff them
+bun run audit:inert --mode pts > <scratch>/inert-after.txt && diff them
 ```
 
 Outcome: **byte-identical generated output**; no commit made (do not manufacture

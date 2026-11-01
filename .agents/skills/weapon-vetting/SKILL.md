@@ -23,7 +23,7 @@ requires reviewing the **delta**, not re-vetting the whole roster.
    rarely change) and note the copy — or re-run the curvetable dump step.
    The daemon caches the loose-file view — `esm-cli` skill covers the
    `esm daemon stop` requirement after adding curvetables.
-2. `bun run extract --esm <dump> --mode live` then `bun run extract:diff` — review
+2. `bun run extract --esm <dump> --mode pts` then `bun run extract:diff` — review
    record-level changes (real balance changes vs extraction artifacts;
    `Data/notes/<old>_to_<new>/comprehensive.md` says which records the patch
    actually touched, if that diff pipeline has been run for this sync).
