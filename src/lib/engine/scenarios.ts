@@ -648,6 +648,13 @@ function bodyPartBlendedHit(
   return bodyPartWeighted(atTarget, atTorso, rate);
 }
 
+/** Mitigated DPS of the damage streams parallel to the hit (DoT, proc, aura). */
+interface MitigatedStreamDps {
+  dot: number;
+  proc: number;
+  aura: number;
+}
+
 /**
  * Post-mitigation `ScenarioResult.effective` (Phase 2 — Enemy defenses),
  * undefined when no target is selected. `cycleHit` is whichever HitBreakdown
@@ -665,9 +672,7 @@ function bodyPartBlendedHit(
 function effectiveAgainstEnemy(
   cycleHit: HitBreakdown,
   sustainedDps: number,
-  mitigatedDotDps: number,
-  mitigatedProcDps: number,
-  mitigatedAuraDps: number,
+  mitigatedStreamDps: MitigatedStreamDps,
   defenses: EnemyDefenses | undefined,
   armorPenTotal: number,
   armorPenFlatTotal: number,
@@ -683,7 +688,11 @@ function effectiveAgainstEnemy(
   );
   const retainedFraction = cycleHit.total > 0 ? mitigated.total / cycleHit.total : 1;
   const mitigatedSustainedDps = sustainedDps * retainedFraction;
-  const totalDps = mitigatedSustainedDps + mitigatedDotDps + mitigatedProcDps + mitigatedAuraDps;
+  const totalDps =
+    mitigatedSustainedDps +
+    mitigatedStreamDps.dot +
+    mitigatedStreamDps.proc +
+    mitigatedStreamDps.aura;
   return {
     perHit: mitigated,
     sustainedDps: mitigatedSustainedDps,
@@ -1284,9 +1293,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const freeEffective = effectiveAgainstEnemy(
     freeCycleHit,
     freeSustain.sustainedDps,
-    freeMitigatedDot,
-    freeMitigatedProc,
-    freeMitigatedAura,
+    { dot: freeMitigatedDot, proc: freeMitigatedProc, aura: freeMitigatedAura },
     defenses,
     armorPenTotal,
     armorPenFlatTotal,
@@ -1295,9 +1302,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const vatsEffectiveRaw = effectiveAgainstEnemy(
     vatsCycleHit,
     vatsSustain.sustainedDps,
-    vatsMitigatedDot,
-    vatsMitigatedProc,
-    vatsMitigatedAura,
+    { dot: vatsMitigatedDot, proc: vatsMitigatedProc, aura: vatsMitigatedAura },
     defenses,
     armorPenTotal,
     armorPenFlatTotal,
