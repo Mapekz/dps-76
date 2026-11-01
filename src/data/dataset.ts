@@ -293,17 +293,22 @@ export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset
     source.generatedArmorOmods,
     source.armorLegendaryValueOverrides,
   );
-  const mergedWeaponCorrections = {
+  const mergedWeaponCorrections: Record<string, Partial<Weapon>> = {
     ...source.weaponCorrections,
     ...buildSplashReliantCorrections(source.splashReliantWeaponIds ?? new Set()),
   };
+  for (const id of streamDeliveryWeaponIds) {
+    mergedWeaponCorrections[id] = { ...mergedWeaponCorrections[id], deliversStream: true };
+  }
   return {
     weapons: buildWeapons(
       source.generatedWeapons,
       { hidden: source.hiddenWeaponIds, forceVisible: source.forceVisibleWeaponIds },
       mergedWeaponCorrections,
     ),
-    omods: mergedOmods,
+    omods: mergedOmods.map((omod) =>
+      streamConvertingOmodIds.has(omod.id) ? { ...omod, convertsToStream: true } : omod,
+    ),
     armorOmods: mergedArmorOmods,
     uniques: [...source.generatedUniques].sort(
       (a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id),

@@ -15,8 +15,6 @@ import {
   SUSTAIN_CHANCE_BUCKETS,
   WEAPON_STAT_BUCKETS,
 } from '@/types/modifiers';
-import { streamConvertingOmodIds } from '@/data/overrides/omod-corrections';
-import { streamDeliveryWeaponIds } from '@/data/overrides/weapon-corrections';
 import { effectiveValue, foldBucket, foldRegisteredBucket, type ResolveContext } from './resolve';
 
 export { SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS };
@@ -573,8 +571,7 @@ export function buildEffectiveWeapon(
   // too. Lifted only by a REAL explosive-conversion OMOD (`explosionChase`,
   // e.g. Cryolator's Polar Lobber Barrel) — checked together below.
   const streamSuppressesExplosion =
-    streamDeliveryWeaponIds.has(weapon.id) ||
-    equippedOmods.some((o) => streamConvertingOmodIds.has(o.id));
+    weapon.deliversStream === true || equippedOmods.some((o) => o.convertsToStream);
 
   // OMOD `OverrideProjectile` chase (docs/assumptions.md "OMOD-chased
   // launcher payloads"): an equipped OMOD's EXPL chase can REPLACE the

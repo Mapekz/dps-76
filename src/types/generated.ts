@@ -420,6 +420,11 @@ export interface GeneratedOmod {
    */
   chainSuppressesExplosion?: boolean;
   /**
+   * Equipping this OMOD turns the weapon into a continuous stream. Set by the
+   * dataset from `streamConvertingOmodIds`, never by extraction.
+   */
+  convertsToStream?: boolean;
+  /**
    * Proc-triggered damage chased off this OMOD's Enchantments/AttachedPerk
    * chain (Electrician's, Fracturer's, Circuit Breaker — issue #42). Present
    * only when the chase found at least one classified trigger with real

@@ -959,6 +959,7 @@ describe('stream-delivery suppression (Cryolator/Flamer defaults, Plasma thrower
     return makeWeapon({
       id,
       name: id,
+      deliversStream: id === 'Cryolator' || id === 'Flamer',
       ...(explosionBaseWeaponDamageMult !== undefined ? { explosionBaseWeaponDamageMult } : {}),
     });
   }
@@ -1012,6 +1013,7 @@ describe('stream-delivery suppression (Cryolator/Flamer defaults, Plasma thrower
   it('Plasma Gun with a Thrower Barrel equipped: suppressed even though the weapon itself is not in the default-stream list', () => {
     const throwerBarrel = makeOmod({
       id: 'mod_PlasmaGun_barrel_Flamer_Base',
+      convertsToStream: true,
       attachPointEdid: 'ap_gun_Barrel',
     });
     const { modifiers } = effective(makeNamedWeapon('PlasmaGun'), [

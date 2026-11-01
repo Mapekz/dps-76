@@ -230,3 +230,15 @@ describe('generated uniques resolve', () => {
     }
   });
 });
+
+describe('stream-delivery overlays', () => {
+  it('flags the listed weapons and OMODs on the merged dataset', () => {
+    const { weapons, omods } = getDataset('live');
+    expect(weapons.Flamer.deliversStream).toBe(true);
+    expect(weapons.Cryolator.deliversStream).toBe(true);
+    expect(omods.find((o) => o.id === 'mod_PlasmaGun_barrel_Flamer_Base')?.convertsToStream).toBe(
+      true,
+    );
+    expect(omods.filter((o) => o.convertsToStream).every((o) => /flamer/i.test(o.id))).toBe(true);
+  });
+});

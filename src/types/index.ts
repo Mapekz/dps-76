@@ -272,6 +272,11 @@ export interface Weapon {
    * legendary ADDs on top of it).
    */
   explosionBaseWeaponDamageMult?: number;
+  /**
+   * Fires a continuous stream with no projectile impact, so explosive effects
+   * don't apply. Set by the dataset from `streamDeliveryWeaponIds`.
+   */
+  deliversStream?: boolean;
 
   // ── Charging (Gauss family, bows, tesla/gamma/laser via charging-barrel OMODs) ──
   /**
