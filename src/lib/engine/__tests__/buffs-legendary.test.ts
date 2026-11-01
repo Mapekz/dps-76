@@ -740,6 +740,54 @@ describe('3★ elemental weapon legendaries', () => {
     expect(strong.dotDps).toBeCloseTo(19, 6);
   });
 
+  it('body-part-gated DBM, outgoing damage multipliers and melee STR do not reach the DoT', () => {
+    const run = (extra: Partial<PlayerConfig>, weaponId = 'CombatRifle_Fixer') =>
+      computeScenarios(
+        resolveLoadout(
+          {
+            ...createDefaultPlayerConfig(),
+            weapon: { weaponId, mods: {}, legendaryEffects: [BURNING] },
+            ...extra,
+          },
+          createDefaultEnemyConfig(),
+          'live',
+        )!,
+      ).freeAim;
+    // Center Masochist is torso-gated dbm: it raises the torso hit, not the DoT.
+    const masochist = run({ perks: [{ perkId: PerkId.CenterMasochist, rank: 3 }] });
+    expect(masochist.perHit.total).toBeGreaterThan(run({}).perHit.total);
+    expect(masochist.dotDps).toBeCloseTo(19, 6);
+
+    // An outgoing damage multiplier doubles the hit, not the DoT.
+    const { weapon, modifiers } = withOmod(BURNING);
+    const doubled = computeScenarios(
+      base({
+        weapon,
+        modifiers: [
+          ...modifiers,
+          {
+            id: 'test:whole',
+            source: { kind: 'perk', formId: '0x0', edid: 'test', name: 'test', rank: 1 },
+            bucket: 'wholeDamage',
+            op: 'ADD',
+            value: 1,
+            conditions: [],
+          },
+        ],
+      }),
+    ).freeAim;
+    expect(doubled.perHit.total).toBeCloseTo(stockTotal * 2, 6);
+    expect(doubled.dotDps).toBeCloseTo(19, 6);
+
+    // STR scales the bat's hit, not its DoT.
+    const conditions = createDefaultPlayerConfig().conditions;
+    const stronger = run({ conditions: { ...conditions, strength: 15 } }, 'BaseballBat');
+    expect(stronger.perHit.total).toBeGreaterThan(
+      run({ conditions: { ...conditions, strength: 1 } }, 'BaseballBat').perHit.total,
+    );
+    expect(stronger.dotDps).toBeCloseTo(19, 6);
+  });
+
   it('a faster fire rate adds no DoT damage: refreshing never ticks early (max one tick/s)', () => {
     // Rapid raises fire rate; the DoT still ticks its curve value once a second.
     const faster = dps(['mod_Legendary_Weapon2_Guns_RoF', BURNING]);

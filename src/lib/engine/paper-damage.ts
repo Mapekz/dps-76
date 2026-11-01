@@ -394,13 +394,17 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
 
 /**
  * The multiplier on a DoT tick of one damage type (user-confirmed
- * 2026-10-30): the same `dbm` fold a hit uses, so general bonuses, bonuses
- * scoped to the DoT's element, and Tenderizer all apply. The crit, sneak,
- * power-attack, STR and body-part/weakpoint terms sit outside `dbm`, so they
- * don't reach DoTs, and neither do strong points.
+ * 2026-10-30/11-01): the `dbm` fold a hit uses, so general bonuses, bonuses
+ * scoped to the DoT's element, and Tenderizer apply. No body-part calculation
+ * reaches a DoT, so body-part-gated dbm (Center Masochist, Central Receivers)
+ * is dropped here. Crit, sneak, power attack, weakpoint, strong point, STR and
+ * the outer `wholeDamage` multipliers sit outside this fold.
  */
 function dotDbmFold(modifiers: Modifier[], weapon: Weapon, typeCtx: ResolveContext): number {
-  return foldBucket(modifiers, 'dbm', weapon.damageBonusMult ?? 1.0, typeCtx);
+  const dotDbm = modifiers.filter(
+    (m) => m.bucket === 'dbm' && !m.conditions.some((c) => c.kind === 'bodyPart'),
+  );
+  return foldBucket(dotDbm, 'dbm', weapon.damageBonusMult ?? 1.0, typeCtx);
 }
 
 /**
