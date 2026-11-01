@@ -962,9 +962,9 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
         // Value 1 = damage-type formid, Value 2 = amount — for all three
         // operators (SET/MUL_ADD/ADD, verified via raw `esm get`); a curve
         // table overrides Value 2. SET/ADD emit the matching op alongside
-        // MUL_ADD — paper-damage.ts folds SET → ×Π(1+MUL_ADD) → +ΣADD per
-        // damage-type-scoped component, so all three land the same way
-        // AttackDamage's phys-only MUL/ADD does above.
+        // MUL_ADD — resolve.ts's foldOps owns the fold per damage-type-scoped
+        // component, so all three land the same way AttackDamage's phys-only
+        // MUL/ADD does above.
         if (typeof prop.value1 === 'string') {
           const dtEdid = await client.resolveEdid(prop.value1);
           const damageType = DAMAGE_TYPE_EDID_MAP[dtEdid];
