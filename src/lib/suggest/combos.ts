@@ -2,19 +2,17 @@ import type { GameMode, Perk } from '@/types';
 import type { Bucket, Condition, Modifier, StaticLoadoutContext } from '@/types/modifiers';
 import { getPerks, getWeapons } from '@/data';
 import { getLegendaryOmodSlots, getOmodSlots } from '@/data/omods';
-import { computePerkBudget } from '@/data/perk-budget';
+import {
+  computePerkBudget,
+  legendarySlotsAtLevel,
+  specialAllocationPool,
+} from '@/data/perk-budget';
 import { getGeneratedPerk, getLoadoutModifiers, perkHasEngineEffect } from '@/data/perk-modifiers';
 import { allocationOf } from '@/lib/build-rules';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
-import {
-  perkCardCostAtRank,
-  SPECIAL_ALLOCATION_POOL,
-  SPECIAL_POINTS_CAP,
-  type PerkBudget,
-} from '@/lib/player-stats';
+import { perkCardCostAtRank, SPECIAL_POINTS_CAP, type PerkBudget } from '@/lib/player-stats';
 import { Special } from '@/data/special';
 import {
-  LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS,
   type BuildAction,
   type BuildState,
   type ScenarioKey,
@@ -75,10 +73,10 @@ interface Piece {
   modifiers?: readonly Modifier[];
 }
 
-function allocationPoolFree(allocation: Record<SpecialKey, number>): number {
+function allocationPoolFree(mode: GameMode, allocation: Record<SpecialKey, number>): number {
   let sum = 0;
   for (const v of Object.values(allocation)) sum += v;
-  return SPECIAL_ALLOCATION_POOL - sum;
+  return specialAllocationPool(mode) - sum;
 }
 
 function unionPerkModifiers(mode: GameMode, perkId: string): Modifier[] {
@@ -262,8 +260,11 @@ function discoverMagazinePiece(
   };
 }
 
-function luckAllocationPiece(allocation: Record<SpecialKey, number>): Piece | undefined {
-  const poolFree = allocationPoolFree(allocation);
+function luckAllocationPiece(
+  mode: GameMode,
+  allocation: Record<SpecialKey, number>,
+): Piece | undefined {
+  const poolFree = allocationPoolFree(mode, allocation);
   if (poolFree <= 0 || allocation.luck >= SPECIAL_POINTS_CAP) return undefined;
   const raise = Math.min(SPECIAL_POINTS_CAP - allocation.luck, poolFree);
   return {
@@ -371,9 +372,9 @@ function assembleBundle(
     cardBudget,
     budgetPerStat: { ...cardBudget.budgetPerStat },
     allocation,
-    poolFree: allocationPoolFree(allocation),
+    poolFree: allocationPoolFree(mode, allocation),
     legendarySlotsUsed: player.legendaryPerks.length,
-    legendarySlotsMax: LEGENDARY_SLOTS,
+    legendarySlotsMax: legendarySlotsAtLevel(mode),
   };
 
   for (const piece of ordered) {
@@ -458,7 +459,7 @@ export function enumerateCombos(
         ...discoverUnequippedPerkPieces(state, mode, loadoutCtx, critClassify),
         ...discoverUnequippedLegendaryPieces(state, mode, weapon, critClassify),
       ];
-      const luckPiece = luckAllocationPiece(allocation);
+      const luckPiece = luckAllocationPiece(mode, allocation);
       if (luckPiece) pieces.push(luckPiece);
     } else if (mechanism.id === 'bullet-storm') {
       pieces = [

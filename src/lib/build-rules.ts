@@ -2,12 +2,16 @@ import type { GameMode, Perk, PerkLoadout, PlayerConfig, PlayerInput } from '@/t
 import { getPerks } from '@/data';
 import type { PerkId } from '@/data/perk-ids';
 import { Special } from '@/data/special';
-import { computePerkBudget, perkCardCostDelta, perkSpecialKey } from '@/data/perk-budget';
+import {
+  computePerkBudget,
+  perkCardCostDelta,
+  perkSpecialKey,
+  specialAllocationPool,
+} from '@/data/perk-budget';
 import { perkRaceRestriction } from '@/data/perk-race';
 import {
   canSlotCardPoints,
   perkCardCostAtRank,
-  SPECIAL_ALLOCATION_POOL,
   SPECIAL_KEYS,
   SPECIAL_POINTS_CAP,
   type PerkBudget,
@@ -224,8 +228,9 @@ export function clampSpecialStat(value: number): number {
   return Math.max(1, Math.min(SPECIAL_POINTS_CAP, value));
 }
 
-/** Can `stat` be raised to `value` without exceeding the 56-point pool? */
+/** Can `stat` be raised to `value` without exceeding the allocation pool? */
 export function canRaiseSpecialAllocation(
+  mode: GameMode,
   conditions: PlayerInput,
   stat: SpecialKey,
   value: number,
@@ -233,11 +238,14 @@ export function canRaiseSpecialAllocation(
   const clamped = clampSpecialStat(value);
   const next = { ...conditions, [stat]: clamped };
   const total = SPECIAL_KEYS.reduce((sum, k) => sum + next[k], 0);
-  return !(clamped > conditions[stat] && total > SPECIAL_ALLOCATION_POOL);
+  return !(clamped > conditions[stat] && total > specialAllocationPool(mode));
 }
 
-/** Trim SPECIAL stats until the 56-point pool is satisfied (hydration/import). */
-export function clampSpecialAllocationPool(conditions: PlayerInput): {
+/** Trim SPECIAL stats until the allocation pool is satisfied (hydration/import). */
+export function clampSpecialAllocationPool(
+  mode: GameMode,
+  conditions: PlayerInput,
+): {
   conditions: PlayerInput;
   changed: boolean;
 } {
@@ -250,7 +258,8 @@ export function clampSpecialAllocationPool(conditions: PlayerInput): {
       changed = true;
     }
   }
-  while (SPECIAL_KEYS.reduce((sum, k) => sum + next[k], 0) > SPECIAL_ALLOCATION_POOL) {
+  const pool = specialAllocationPool(mode);
+  while (SPECIAL_KEYS.reduce((sum, k) => sum + next[k], 0) > pool) {
     const key = [...SPECIAL_KEYS].sort((a, b) => next[b] - next[a]).find((k) => next[k] > 1);
     if (!key) break;
     next[key] -= 1;
@@ -391,10 +400,10 @@ export function normalizeBuildState(
   const player = { ...input.player, conditions: { ...input.player.conditions } };
   const enemy = { ...input.enemy, conditions: { ...input.enemy.conditions } };
 
-  const special = clampSpecialAllocationPool(player.conditions);
+  const special = clampSpecialAllocationPool(mode, player.conditions);
   if (special.changed) {
     player.conditions = special.conditions;
-    warnings.push('SPECIAL allocation exceeded the 56-point pool — values were reduced');
+    warnings.push('SPECIAL allocation exceeded the point pool — values were reduced');
   }
 
   const snappedPlayerHp = snapPlayerHealthPercent(player.conditions.healthPercent);

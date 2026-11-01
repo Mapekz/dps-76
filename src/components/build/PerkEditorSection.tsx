@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { matchesQuery } from '@/lib/filter-query';
 import { useFilterQuery } from '@/hooks/useFilterQuery';
 import { useGameMode } from '@/hooks/useGameMode';
+import { legendarySlotsAtLevel } from '@/data/perk-budget';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getPerks } from '@/data';
 import { getLoadoutModifiers, perkHasEngineEffect } from '@/data/perk-modifiers';
@@ -30,7 +31,7 @@ import { legendaryPerkIds } from '@/lib/nukes-dragons';
 import { canSlotCardPoints, perkCardCostAtRank, type PerkBudget } from '@/lib/player-stats';
 import { isPerkPickerBlocked, isPerkRaceBlocked } from '@/lib/build-rules';
 import type { GameMode, Perk, PerkLoadout } from '@/types';
-import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type SpecialKey } from '@/state/build-reducer';
+import type { SpecialKey } from '@/state/build-reducer';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { NoEffectBadge } from './OptionBadge';
 import { CountStepper } from './CountStepper';
@@ -235,11 +236,12 @@ function PerkAddCombobox({
   const { regular, legendary, noEffect } = usePerkRegistry();
   const { player } = useBuild();
   const dispatch = useBuildDispatch();
+  const { mode } = useGameMode();
 
   const equipped = new Map(
     [...player.perks, ...player.legendaryPerks].map((p) => [p.perkId, p.rank]),
   );
-  const legendarySlotsFull = player.legendaryPerks.length >= LEGENDARY_SLOTS;
+  const legendarySlotsFull = player.legendaryPerks.length >= legendarySlotsAtLevel(mode);
 
   // A card locked to the other race can't be added — the picker greys it out with a lock.
   const raceBlocked = (perk: Perk): boolean =>
@@ -491,7 +493,7 @@ export function PerkEditor() {
   const legendaryEntries = resolve(player.legendaryPerks).sort(byName);
   const { budget } = usePerkStatus();
 
-  const legendaryOver = legendaryEntries.length > LEGENDARY_SLOTS;
+  const legendaryOver = legendaryEntries.length > legendarySlotsAtLevel(mode);
 
   const raiseBlockedFor = (entry: PerkEntry) =>
     entry.perk.special
@@ -604,7 +606,7 @@ export function PerkEditor() {
       <div className="flex items-center justify-between">
         <SectionLabel>Legendary perks</SectionLabel>
         <Readout size="sm" className={legendaryOver ? 'text-negative' : 'text-muted-foreground'}>
-          {legendaryEntries.length}/{LEGENDARY_SLOTS} slots
+          {legendaryEntries.length}/{legendarySlotsAtLevel(mode)} slots
         </Readout>
       </div>
       <PerkAddCombobox budget={budget} scope="legendary" triggerLabel="Add legendary perk…" />

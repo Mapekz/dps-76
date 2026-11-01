@@ -7,7 +7,11 @@ import {
 } from '@/data/armor-modifiers';
 import { getConsumables, getMutations } from '@/data/buffs';
 import { getLegendaryOmodSlots, getOmodSlots } from '@/data/omods';
-import { computePerkBudget } from '@/data/perk-budget';
+import {
+  computePerkBudget,
+  legendarySlotsAtLevel,
+  specialAllocationPool,
+} from '@/data/perk-budget';
 import { manualUptimePerkSuggestible } from '@/data/manual-uptime';
 import { perkHasEngineEffect } from '@/data/perk-modifiers';
 import {
@@ -17,13 +21,8 @@ import {
   storedArmorEffectCount,
 } from '@/lib/build-rules';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
+import { perkCardCostAtRank, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
 import {
-  perkCardCostAtRank,
-  SPECIAL_ALLOCATION_POOL,
-  SPECIAL_POINTS_CAP,
-} from '@/lib/player-stats';
-import {
-  LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS,
   type BuildAction,
   type BuildState,
   type ScenarioKey,
@@ -72,10 +71,10 @@ function armorTypeEligible(effect: ArmorEffectEntry, armorWorn: ArmorWorn): bool
   return effect.armorType === 'bodyArmor';
 }
 
-function allocationPoolFree(allocation: Record<SpecialKey, number>): number {
+function allocationPoolFree(mode: GameMode, allocation: Record<SpecialKey, number>): number {
   let sum = 0;
   for (const v of Object.values(allocation)) sum += v;
-  return SPECIAL_ALLOCATION_POOL - sum;
+  return specialAllocationPool(mode) - sum;
 }
 
 export function perkAddAction(perkId: string, rank: number, legendary: boolean): BuildAction {
@@ -102,9 +101,10 @@ function tryEmitPerkMove(
     extraCost: number;
     cardBudget: ReturnType<typeof computePerkBudget>;
     allocation: Record<SpecialKey, number>;
+    mode: GameMode;
   },
 ): void {
-  const { id, action, label, family, cost, perk, extraCost, cardBudget, allocation } = params;
+  const { id, action, label, family, cost, perk, extraCost, cardBudget, allocation, mode } = params;
   const budget = perkMoveBudget(cardBudget, perk, extraCost);
   if (budget.legal) {
     out.push({ id, action, label, group: 'perk', family, cost });
@@ -113,7 +113,7 @@ function tryEmitPerkMove(
   if (!budget.special || budget.deficit === undefined) return;
   const special = budget.special;
   const d = budget.deficit;
-  const poolFree = allocationPoolFree(allocation);
+  const poolFree = allocationPoolFree(mode, allocation);
   if (poolFree < d || allocation[special] + d > SPECIAL_POINTS_CAP) return;
   out.push({
     id: `${id}:alloc`,
@@ -224,11 +224,12 @@ export function enumerateVariants(
             extraCost,
             cardBudget,
             allocation,
+            mode,
           });
         }
       }
     } else if (isLegendary) {
-      if (player.legendaryPerks.length < LEGENDARY_SLOTS) {
+      if (player.legendaryPerks.length < legendarySlotsAtLevel(mode)) {
         for (let rank = 1; rank <= perk.maxRank; rank++) {
           out.push({
             id: `perk-add:${perkId}:${rank}`,
@@ -255,6 +256,7 @@ export function enumerateVariants(
           extraCost,
           cardBudget,
           allocation,
+          mode,
         });
       }
     }
@@ -270,7 +272,7 @@ export function enumerateVariants(
   // the same compound pattern as Allocation Suggestions). If the build is
   // ALREADY over-budget, the gate is skipped — pre-existing illegality
   // shouldn't suppress every swap.
-  if (player.legendaryPerks.length >= LEGENDARY_SLOTS) {
+  if (player.legendaryPerks.length >= legendarySlotsAtLevel(mode)) {
     for (const old of player.legendaryPerks) {
       const oldPerk = registry[old.perkId];
       const oldName = oldPerk?.name ?? old.perkId;
@@ -304,7 +306,7 @@ export function enumerateVariants(
                   needed += d;
                 }
               }
-              const poolFree = allocationPoolFree(allocation);
+              const poolFree = allocationPoolFree(mode, allocation);
               const fixable =
                 needed > 0 &&
                 needed <= poolFree &&

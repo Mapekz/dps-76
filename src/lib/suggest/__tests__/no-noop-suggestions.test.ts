@@ -7,7 +7,7 @@ import { allocationOf } from '@/lib/build-rules';
 import { getPerks, getWeapons } from '@/data';
 import { computePerkBudget, perkSpecialKey } from '@/data/perk-budget';
 import { perkHasEngineEffect } from '@/data/perk-modifiers';
-import { SPECIAL_ALLOCATION_POOL } from '@/lib/player-stats';
+import { specialAllocationPool } from '@/data/perk-budget';
 import { evaluateSuggestions, topSuggestions } from '@/lib/suggest/evaluate';
 import type { EvaluatedSuggestion, SuggestionReport } from '@/lib/suggest/types';
 import { buildStaticLoadoutContext } from '@/lib/suggest/loadout-context';
@@ -46,7 +46,7 @@ describe('over-budget perk with NO free pool points', () => {
     ]);
 
     const allocated = Object.values(allocationOf(state.player)).reduce((sum, v) => sum + v, 0);
-    expect(allocated).toBe(SPECIAL_ALLOCATION_POOL);
+    expect(allocated).toBe(specialAllocationPool('live'));
 
     const report = evaluateSuggestions(state, MODE, 'vats');
     const luckAdds = surfaced(report).filter((s) => s.family === `perk:${PerkId.BetterCriticals}`);

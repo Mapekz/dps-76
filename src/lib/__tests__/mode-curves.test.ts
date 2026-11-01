@@ -27,12 +27,30 @@ vi.mock('@/data/pts/curvetables/legendarymods/weapon_chargedmeleeattack.json', (
   },
 }));
 
+vi.mock('@/data/pts/curvetables/player/special/levelrewardcurve.json', () => ({
+  default: {
+    curve: [
+      { x: 1, y: 0 },
+      { x: 50, y: 60 },
+    ],
+  },
+}));
+vi.mock('@/data/pts/curvetables/player/perks/legendaryperkslotcount.json', () => ({
+  default: {
+    curve: [
+      { x: 1, y: 50 },
+      { x: 2, y: 75 },
+    ],
+  },
+}));
+
 const { computeCritMeter } = await import('@/lib/engine/crit-meter');
 const { rangeFalloffMult } = await import('@/lib/distance');
 const { getChargedMeleeCurve } = await import('@/lib/curve-tables');
 const { makeCtx } = await import('@/lib/engine/__tests__/engine-fixture');
 const { makeResolvedPlayer } = await import('@/lib/engine/__tests__/resolved-player-fixture');
 const { getWeapons } = await import('@/data');
+const { specialAllocationPool, legendarySlotsAtLevel } = await import('@/data/perk-budget');
 
 describe('mode-keyed engine curves', () => {
   it('fills the crit meter from the requested mode', () => {
@@ -55,5 +73,12 @@ describe('mode-keyed engine curves', () => {
   it('selects the requested mode for the charged cycle', () => {
     expect(getChargedMeleeCurve('pts').at(-1)).toEqual({ x: 5, y: 9 });
     expect(getChargedMeleeCurve('live').at(-1)?.x).toBe(3);
+  });
+
+  it('reads progression limits from the requested mode', () => {
+    expect(specialAllocationPool('pts')).toBe(67);
+    expect(specialAllocationPool('live')).toBe(56);
+    expect(legendarySlotsAtLevel('pts')).toBe(2);
+    expect(legendarySlotsAtLevel('live')).toBe(6);
   });
 });

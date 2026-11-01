@@ -3,8 +3,9 @@ import { Button } from '@/components/ui/button';
 import { HelperText } from '@/components/ui/helper-text';
 import { Readout, SectionLabel } from '@/components/ui/typography';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
-import { legendaryBonusOf } from '@/data/perk-budget';
-import { SPECIAL_ALLOCATION_POOL, SPECIAL_KEYS, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
+import { useGameMode } from '@/hooks/useGameMode';
+import { legendaryBonusOf, specialAllocationPool } from '@/data/perk-budget';
+import { SPECIAL_KEYS, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
 import { cn } from '@/lib/utils';
 import { MinusIcon, PlusIcon } from 'lucide-react';
 
@@ -19,9 +20,11 @@ import { MinusIcon, PlusIcon } from 'lucide-react';
 export function SpecialAllocationEditor() {
   const { player } = useBuild();
   const dispatch = useBuildDispatch();
+  const { mode } = useGameMode();
+  const allocationPool = specialAllocationPool(mode);
 
   const total = SPECIAL_KEYS.reduce((sum, k) => sum + player.conditions[k], 0);
-  const poolLeft = SPECIAL_ALLOCATION_POOL - total;
+  const poolLeft = allocationPool - total;
   const legendaryBonus = legendaryBonusOf(player.legendaryPerks);
 
   return (
@@ -82,7 +85,7 @@ export function SpecialAllocationEditor() {
         size="sm"
         className={cn('mt-2', poolLeft < 0 ? 'text-negative' : 'text-muted-foreground')}
       >
-        Points allocated: {total}/{SPECIAL_ALLOCATION_POOL}
+        Points allocated: {total}/{allocationPool}
       </Readout>
       <HelperText className="mt-1">
         Base allocation caps at 15 per stat; Legendary SPECIAL cards add up to +5 on top (green) and

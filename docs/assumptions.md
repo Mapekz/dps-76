@@ -781,7 +781,7 @@ Rules (**USER-CONFIRMED**):
   not hand-copied; full derivation and the `PLAYER_LEVEL = 300` modeling
   choice at `player-stats.ts`.
 - **Legendary perk slots are curve-derived** — 6 at `PLAYER_LEVEL`;
-  `player-stats.ts`'s `legendarySlotsAtLevel`.
+  `perk-budget.ts`'s `legendarySlotsAtLevel`.
 - **Legendary SPECIAL cards** add ON TOP of base (may exceed 15) AND grant
   extra perk points — budget per stat is `min(15, base + legendary
   bonus)`.

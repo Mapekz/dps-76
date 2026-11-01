@@ -28,7 +28,7 @@ import armorTier22 from './fixtures/curv-creatures-armor-tier22.json';
 // `SPECIAL_LevelRewardCurve` (0x004F473F, 20260717 ESM, the level→SPECIAL
 // points curve behind `src/lib/player-stats.ts`'s allocation pool), and
 // `LegendaryPerkSlotCount` (0x005B67A0, 20260717 ESM, the slot→unlock-level
-// curve behind `src/state/build-reducer.ts`'s LEGENDARY_PERK_SLOTS).
+// curve behind `src/data/perk-budget.ts`'s legendarySlotsAtLevel).
 
 describe('tierFromEdid', () => {
   it('parses a plain tier suffix', () => {

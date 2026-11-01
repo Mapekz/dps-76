@@ -561,7 +561,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     default: PLAYER_INPUT_DEFAULTS.strength,
     label: 'Strength',
     clamp: { min: 1, max: 15 },
-    clampRef: 'build-rules:clampSpecialStat + SPECIAL_ALLOCATION_POOL',
+    clampRef: 'build-rules:clampSpecialStat + specialAllocationPool',
   },
   perception: {
     key: 'perception',
@@ -572,7 +572,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     default: PLAYER_INPUT_DEFAULTS.perception,
     label: 'Perception',
     clamp: { min: 1, max: 15 },
-    clampRef: 'build-rules:clampSpecialStat + SPECIAL_ALLOCATION_POOL',
+    clampRef: 'build-rules:clampSpecialStat + specialAllocationPool',
   },
   endurance: {
     key: 'endurance',
@@ -583,7 +583,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     default: PLAYER_INPUT_DEFAULTS.endurance,
     label: 'Endurance',
     clamp: { min: 1, max: 15 },
-    clampRef: 'build-rules:clampSpecialStat + SPECIAL_ALLOCATION_POOL',
+    clampRef: 'build-rules:clampSpecialStat + specialAllocationPool',
   },
   charisma: {
     key: 'charisma',
@@ -594,7 +594,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     default: PLAYER_INPUT_DEFAULTS.charisma,
     label: 'Charisma',
     clamp: { min: 1, max: 15 },
-    clampRef: 'build-rules:clampSpecialStat + SPECIAL_ALLOCATION_POOL',
+    clampRef: 'build-rules:clampSpecialStat + specialAllocationPool',
   },
   intelligence: {
     key: 'intelligence',
@@ -605,7 +605,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     default: PLAYER_INPUT_DEFAULTS.intelligence,
     label: 'Intelligence',
     clamp: { min: 1, max: 15 },
-    clampRef: 'build-rules:clampSpecialStat + SPECIAL_ALLOCATION_POOL',
+    clampRef: 'build-rules:clampSpecialStat + specialAllocationPool',
   },
   agility: {
     key: 'agility',
@@ -616,7 +616,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     default: PLAYER_INPUT_DEFAULTS.agility,
     label: 'Agility',
     clamp: { min: 1, max: 15 },
-    clampRef: 'build-rules:clampSpecialStat + SPECIAL_ALLOCATION_POOL',
+    clampRef: 'build-rules:clampSpecialStat + specialAllocationPool',
   },
   luck: {
     key: 'luck',
@@ -627,7 +627,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     default: PLAYER_INPUT_DEFAULTS.luck,
     label: 'Luck',
     clamp: { min: 1, max: 15 },
-    clampRef: 'build-rules:clampSpecialStat + SPECIAL_ALLOCATION_POOL',
+    clampRef: 'build-rules:clampSpecialStat + specialAllocationPool',
   },
   junkItemCount: {
     key: 'junkItemCount',

@@ -26,7 +26,8 @@ import {
   targetBodyPartSelection,
   targetRaceSelection,
 } from '@/lib/build-rules';
-import { legendarySlotsAtLevel, PLAYER_LEVEL, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
+import { legendarySlotsAtLevel } from '@/data/perk-budget';
+import { SPECIAL_POINTS_CAP } from '@/lib/player-stats';
 import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
 import { CARNIVORE_MUTATION_ID, HERBIVORE_MUTATION_ID } from '@/lib/diet-mutations';
 import {
@@ -145,13 +146,6 @@ function withPlayer(state: BuildState, player: PlayerConfig): BuildState {
 
 /** Sentinel picker value for "no part picked" — must match TargetSection's DEFAULT_OPTION. */
 export const TARGET_DEFAULT_BODY_PART = '__default_body_part__';
-
-/**
- * Legendary perk card slots unlocked at `PLAYER_LEVEL` (6 at the hardcoded
- * endgame 300 — unlock levels 50/75/100/150/200/300 per the ESM's
- * `LegendaryPerkSlotCount` curve; see `legendarySlotsAtLevel`).
- */
-export const LEGENDARY_PERK_SLOTS = legendarySlotsAtLevel(PLAYER_LEVEL);
 
 /**
  * Builds the reducer for `mode` — the active editing mode, NOT build data
@@ -288,10 +282,11 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
       const list = action.legendary ? 'legendaryPerks' : 'perks';
       if (player[list].some((p) => p.perkId === action.perkId)) return state;
       const rank = Math.max(1, action.rank);
-      // Enforce the game's limits: LEGENDARY_PERK_SLOTS legendary slots (6 at
+      // Enforce the game's limits: the mode's legendary slots (6 at
       // endgame); regular cards must fit
       // the stat's perk-point budget (min(15, base + Legendary SPECIAL bonus)).
-      if (action.legendary && player.legendaryPerks.length >= LEGENDARY_PERK_SLOTS) return state;
+      if (action.legendary && player.legendaryPerks.length >= legendarySlotsAtLevel(mode))
+        return state;
       if (!action.legendary && regularSlotBlocked(player, action.perkId, 0, rank, mode))
         return state;
       // A card locked to the other race can't be added — the picker greys it
@@ -339,7 +334,7 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
 
     case 'special/set': {
       const value = clampSpecialStat(action.value);
-      if (!canRaiseSpecialAllocation(player.conditions, action.stat, value)) return state;
+      if (!canRaiseSpecialAllocation(mode, player.conditions, action.stat, value)) return state;
       return withPlayer(state, {
         ...player,
         conditions: { ...player.conditions, [action.stat]: value },

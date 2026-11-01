@@ -8,6 +8,10 @@ import liveLuckCritCharge from '@/data/live/curvetables/player/vats/luckvatscrit
 import ptsLuckCritCharge from '@/data/pts/curvetables/player/vats/luckvatscriticalcharge.json';
 import liveMinToMaxRange from '@/data/live/curvetables/player/range/percentofmintomaxrangedamagemult.json';
 import ptsMinToMaxRange from '@/data/pts/curvetables/player/range/percentofmintomaxrangedamagemult.json';
+import liveLevelReward from '@/data/live/curvetables/player/special/levelrewardcurve.json';
+import ptsLevelReward from '@/data/pts/curvetables/player/special/levelrewardcurve.json';
+import liveLegendarySlots from '@/data/live/curvetables/player/perks/legendaryperkslotcount.json';
+import ptsLegendarySlots from '@/data/pts/curvetables/player/perks/legendaryperkslotcount.json';
 
 // Barrel modules at ../data/<mode>/curvetables/player/damage/index.generated.ts
 // export a Record<number, CurveFile> indexed by tier number.
@@ -17,6 +21,16 @@ import ptsMinToMaxRange from '@/data/pts/curvetables/player/range/percentofminto
 /** Return the sorted curve points for the given mode + tier, or null if not found. */
 function getCurve(mode: GameMode, tier: number): CurvePoint[] | null {
   return (mode === 'pts' ? ptsDamage : liveDamage)[tier]?.curve ?? null;
+}
+
+/** `SPECIAL_LevelRewardCurve`: player level → cumulative level-up SPECIAL points. */
+export function getSpecialLevelRewardCurve(mode: GameMode): CurvePoint[] {
+  return (mode === 'pts' ? ptsLevelReward : liveLevelReward).curve;
+}
+
+/** `LegendaryPerkSlotCount`: slot number → the player level that unlocks it. */
+export function getLegendarySlotCurve(mode: GameMode): CurvePoint[] {
+  return (mode === 'pts' ? ptsLegendarySlots : liveLegendarySlots).curve;
 }
 
 /** `CT_Legendary_Weapon_ChargedUpWeapon`: charge count → bonus damage. */

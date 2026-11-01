@@ -1,10 +1,14 @@
 import type { GameMode, PerkLoadout } from '@/types';
-import { getPerks } from '@/data';
+import { getPerks, getSpecialClamp } from '@/data';
+import {
+  getLegendarySlotCurve,
+  getSpecialLevelRewardCurve,
+  interpolateCurve,
+} from '@/lib/curve-tables';
 import { PerkId } from '@/data/perk-ids';
 import { Special } from '@/data/special';
 import {
   derivePerkBudget,
-  legendarySlotsAtLevel,
   legendarySpecialBonus,
   perkCardCostAtRank,
   PLAYER_LEVEL,
@@ -12,6 +16,32 @@ import {
   type PerkBudget,
   type SpecialKey,
 } from '@/lib/player-stats';
+
+/**
+ * SPECIAL allocation pool (user-confirmed 2026-07-12; ESM-derived 2026-07-21):
+ * one starting point per stat at the AVIFs' Minimum Value, plus the
+ * `SPECIAL_LevelRewardCurve` value at `playerLevel`. The player allocates
+ * 1–15 per stat from this pool, 56 points at level 50 and beyond. Legendary
+ * SPECIAL cards add on top of that and grant matching perk points, still
+ * capped at 15 per stat; other SPECIAL boosts grant none. Slotting past a
+ * stat's budget is blocked in-app, and imported builds that violate it are
+ * flagged instead.
+ */
+export function specialAllocationPool(mode: GameMode, playerLevel = PLAYER_LEVEL): number {
+  return (
+    SPECIAL_KEYS.length * getSpecialClamp(mode).min +
+    interpolateCurve(getSpecialLevelRewardCurve(mode), playerLevel)
+  );
+}
+
+/**
+ * Legendary card slots unlocked at `playerLevel`. The curve maps slot number
+ * to its unlock level (50/75/100/150/200/300), so this counts points at or
+ * below the level instead of interpolating.
+ */
+export function legendarySlotsAtLevel(mode: GameMode, playerLevel = PLAYER_LEVEL): number {
+  return getLegendarySlotCurve(mode).filter((p) => p.y <= playerLevel).length;
+}
 
 /**
  * Bridges perk loadouts to the SPECIAL/perk-point budget rules
@@ -69,8 +99,13 @@ export function computePerkBudget(
       cards.push({ special: SPECIAL_TO_KEY[perk.special], cost: perkCardCostAtRank(perk, rank) });
   }
 
-  const budget = derivePerkBudget(cards, legendaryBonusOf(legendaryPerks), allocation);
-  const legendarySlotsOver = legendaryPerks.length > legendarySlotsAtLevel(PLAYER_LEVEL);
+  const budget = derivePerkBudget(
+    cards,
+    legendaryBonusOf(legendaryPerks),
+    allocation,
+    specialAllocationPool(mode),
+  );
+  const legendarySlotsOver = legendaryPerks.length > legendarySlotsAtLevel(mode);
   return { ...budget, overBudget: budget.overBudget || legendarySlotsOver };
 }
 

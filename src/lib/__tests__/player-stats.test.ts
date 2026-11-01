@@ -1,16 +1,16 @@
 import { describe, it, expect } from 'bun:test';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
-import { computePerkBudget } from '@/data/perk-budget';
+import {
+  computePerkBudget,
+  legendarySlotsAtLevel,
+  specialAllocationPool,
+} from '@/data/perk-budget';
 import { PerkId } from '@/data/perk-ids';
 import {
   derivePlayerStats,
   deriveClassFreakRank,
-  legendarySlotsAtLevel,
-  specialAllocationPool,
   BASE_MAX_HP,
   MAX_HP_PER_ENDURANCE,
-  PLAYER_LEVEL,
-  SPECIAL_ALLOCATION_POOL,
 } from '@/lib/player-stats';
 import { applyClassFreakPenaltyScaling } from '@/lib/class-freak-mutations';
 import type { GeneratedBuff } from '@/types/generated';
@@ -422,21 +422,21 @@ describe('derivePlayerStats: condition-aware SPECIAL folds (2026-07-14)', () => 
 
 describe('level-derived allocation pools (DFOB-bridged curves)', () => {
   it('SPECIAL pool: 7 starting points + 49 level-ups = 56 at level 50 and beyond', () => {
-    expect(specialAllocationPool(50)).toBe(56);
-    expect(specialAllocationPool(300)).toBe(56); // curve clamps flat past its (50, 49) endpoint
-    expect(SPECIAL_ALLOCATION_POOL).toBe(56); // the PLAYER_LEVEL=300 default consumers read
+    expect(specialAllocationPool('live', 50)).toBe(56);
+    expect(specialAllocationPool('live', 300)).toBe(56); // curve clamps flat past its (50, 49) endpoint
+    expect(specialAllocationPool('live')).toBe(56); // the PLAYER_LEVEL=300 default consumers read
   });
 
   it('SPECIAL pool grows +1 per level from 7 at level 1', () => {
-    expect(specialAllocationPool(1)).toBe(7);
-    expect(specialAllocationPool(2)).toBe(8);
-    expect(specialAllocationPool(25)).toBe(31);
+    expect(specialAllocationPool('live', 1)).toBe(7);
+    expect(specialAllocationPool('live', 2)).toBe(8);
+    expect(specialAllocationPool('live', 25)).toBe(31);
   });
 
   it('legendary slots: unlock levels 50/75/100/150/200/300 per the LegendaryPerkSlotCount curve', () => {
-    expect(legendarySlotsAtLevel(PLAYER_LEVEL)).toBe(6);
-    expect(legendarySlotsAtLevel(100)).toBe(3);
-    expect(legendarySlotsAtLevel(74)).toBe(1);
-    expect(legendarySlotsAtLevel(49)).toBe(0);
+    expect(legendarySlotsAtLevel('live')).toBe(6);
+    expect(legendarySlotsAtLevel('live', 100)).toBe(3);
+    expect(legendarySlotsAtLevel('live', 74)).toBe(1);
+    expect(legendarySlotsAtLevel('live', 49)).toBe(0);
   });
 });
