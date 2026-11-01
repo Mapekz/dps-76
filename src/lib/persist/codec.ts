@@ -1,7 +1,6 @@
 import { type GameMode } from '@/types';
 import { getWeapons } from '@/data';
 import { consumablesById, sanitizeConsumables } from '@/lib/consumable-rules';
-import { reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
 import { normalizeBuildState } from '@/lib/build-rules';
 import { BitReader, BitWriter } from '@/lib/persist/bitstream';
 import { buildShareSlug } from '@/lib/persist/slug';
@@ -113,14 +112,6 @@ function unpackState(bytes: Uint8Array, mode: GameMode, warnings: string[]): Bui
 
   state.player.perks = readPerks(r, mode, warnings);
   state.player.legendaryPerks = readLegendaryPerks(r, mode, warnings);
-  const reclassified = reclassifyPerkLoadouts(state.player.perks, state.player.legendaryPerks);
-  if (reclassified.migrated > 0) {
-    warnings.push(
-      `${reclassified.migrated} perk(s) moved between regular/legendary after a classification fix`,
-    );
-    state.player.perks = reclassified.perks;
-    state.player.legendaryPerks = reclassified.legendaryPerks;
-  }
 
   state.player.mutations = readMutations(r, mode, warnings);
   state.player.addictions = readAddictions(r, mode, warnings);

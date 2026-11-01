@@ -10,8 +10,8 @@ import {
   readBuildName,
   readConsumables,
   readEnemyConditions,
-  readLegendaryPerks,
   readMutations,
+  readLegendaryPerks,
   readPerks,
   readPlayerConditions,
   readView,
@@ -152,16 +152,36 @@ describe('wire-sections', () => {
 
   describe('perks', () => {
     it('round-trips rank 1 on a maxRank 4 card and a maxed card', () => {
-      const perks: PerkLoadout[] = [
-        { perkId: 'ActionDiet', rank: 1 },
-        { perkId: 'GunFu', rank: getPerks(mode).GunFu.maxRank },
-      ];
+      const legendaryPerks: PerkLoadout[] = [{ perkId: 'ActionDiet', rank: 1 }];
+      const perks: PerkLoadout[] = [{ perkId: 'GunFu', rank: getPerks(mode).GunFu.maxRank }];
       expect(getPerks(mode).ActionDiet.maxRank).toBe(4);
 
       roundTripBytes(
-        (w) => writePerks(w, perks),
+        (w) => {
+          writePerks(w, perks);
+          writeLegendaryPerks(w, legendaryPerks);
+        },
         (r) => {
           expect(readPerks(r, mode, [])).toEqual(perks);
+          expect(readLegendaryPerks(r, mode, [])).toEqual(legendaryPerks);
+        },
+      );
+    });
+
+    it('removes a perk decoded from the wrong section', () => {
+      roundTripBytes(
+        (w) => {
+          writePerks(w, [{ perkId: 'ActionDiet', rank: 1 }]);
+          writeLegendaryPerks(w, [{ perkId: 'GunFu', rank: 1 }]);
+        },
+        (r) => {
+          const warnings: string[] = [];
+          expect(readPerks(r, mode, warnings)).toEqual([]);
+          expect(readLegendaryPerks(r, mode, warnings)).toEqual([]);
+          expect(warnings).toEqual([
+            'perk "ActionDiet" no longer fits its perk section — removed',
+            'perk "GunFu" no longer fits its perk section — removed',
+          ]);
         },
       );
     });

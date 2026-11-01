@@ -17,6 +17,7 @@ import { getArmorEffectById } from '@/data/armor-modifiers';
 import { getOmodById } from '@/data/omods';
 import { wireIdForIndex, wireIndexForId, type WireDomain } from '@/data/wire-dictionary';
 import { buildDelta } from '@/lib/build-delta';
+import { legendaryPerkIds } from '@/lib/nukes-dragons';
 import {
   ENEMY_HEALTH_PERCENT_STOPS,
   healthPercentIndex,
@@ -310,8 +311,21 @@ export function writePerks(w: BitWriter, perks: PerkLoadout[]): void {
   writePerkLoadout(w, perks, 'pts');
 }
 
+/** Keeps a decoded perk list to the perks its section holds, so a misfiled card can't take a slot. */
+function keepPerksOfSection(
+  perks: PerkLoadout[],
+  legendary: boolean,
+  warnings: string[],
+): PerkLoadout[] {
+  return perks.filter(({ perkId }) => {
+    if (legendaryPerkIds.has(perkId) === legendary) return true;
+    warnings.push(`perk "${perkId}" no longer fits its perk section — removed`);
+    return false;
+  });
+}
+
 export function readPerks(r: BitReader, mode: GameMode, warnings: string[]): PerkLoadout[] {
-  return readPerkLoadout(r, mode, warnings);
+  return keepPerksOfSection(readPerkLoadout(r, mode, warnings), false, warnings);
 }
 
 export function writeLegendaryPerks(w: BitWriter, perks: PerkLoadout[]): void {
@@ -323,7 +337,7 @@ export function readLegendaryPerks(
   mode: GameMode,
   warnings: string[],
 ): PerkLoadout[] {
-  return readPerkLoadout(r, mode, warnings);
+  return keepPerksOfSection(readPerkLoadout(r, mode, warnings), true, warnings);
 }
 
 // ── Mutations / addictions ──────────────────────────────────────────────────

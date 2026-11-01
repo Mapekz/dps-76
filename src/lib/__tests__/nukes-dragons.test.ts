@@ -4,7 +4,6 @@ import {
   legendaryPerkIds,
   nukesDragonsPerks,
   parseBuildUrl,
-  reclassifyPerkLoadouts,
 } from '@/lib/nukes-dragons';
 import { PerkId } from '@/data/perk-ids';
 
@@ -72,37 +71,5 @@ describe('parseBuildUrl', () => {
       { key: 'xp', name: PerkId.TakingOneForTheTeam, rank: 4 },
       { key: 'xm', name: PerkId.FollowThrough, rank: 2 },
     ]);
-  });
-});
-
-describe('reclassifyPerkLoadouts', () => {
-  it('moves ghoul cards out of legendaryPerks and legendary perks out of perks', () => {
-    const result = reclassifyPerkLoadouts(
-      [
-        { perkId: PerkId.BloodyMess, rank: 3 },
-        { perkId: PerkId.TakingOneForTheTeam, rank: 2 },
-      ],
-      [
-        { perkId: PerkId.RadSpecialist, rank: 1 },
-        { perkId: PerkId.LegendaryLuck, rank: 4 },
-      ],
-    );
-    expect(result.migrated).toBe(2);
-    expect(result.perks).toEqual([
-      { perkId: PerkId.BloodyMess, rank: 3 },
-      { perkId: PerkId.RadSpecialist, rank: 1 },
-    ]);
-    expect(result.legendaryPerks).toEqual([
-      { perkId: PerkId.TakingOneForTheTeam, rank: 2 },
-      { perkId: PerkId.LegendaryLuck, rank: 4 },
-    ]);
-  });
-
-  it('reports zero migrations for a correctly-split loadout', () => {
-    const result = reclassifyPerkLoadouts(
-      [{ perkId: PerkId.BloodyMess, rank: 3 }],
-      [{ perkId: PerkId.FollowThrough, rank: 4 }],
-    );
-    expect(result.migrated).toBe(0);
   });
 });

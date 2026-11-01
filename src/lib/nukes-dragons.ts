@@ -405,27 +405,6 @@ export function parsedPerksToLoadout(parsedPerks: ParsedPerk[]): PerkLoadout[] {
 }
 
 /**
- * Re-sorts a decoded perk/legendaryPerk split against the CURRENT
- * legendaryPerkIds set. Builds encoded before the ghoul-card/legendary-perk
- * reclassification stored now-regular PerkIds (e.g. RadSpecialist) under
- * legendaryPerks; this moves every perk to the list its PerkId belongs in.
- */
-export function reclassifyPerkLoadouts(
-  perks: PerkLoadout[],
-  legendaryPerks: PerkLoadout[],
-): { perks: PerkLoadout[]; legendaryPerks: PerkLoadout[]; migrated: number } {
-  const all = [...perks, ...legendaryPerks];
-  const migrated =
-    perks.filter((p) => legendaryPerkIds.has(p.perkId)).length +
-    legendaryPerks.filter((p) => !legendaryPerkIds.has(p.perkId)).length;
-  return {
-    perks: all.filter((p) => !legendaryPerkIds.has(p.perkId)),
-    legendaryPerks: all.filter((p) => legendaryPerkIds.has(p.perkId)),
-    migrated,
-  };
-}
-
-/**
  * Parse the `s=` param: 7 hex digits in S-P-E-C-I-A-L order (a–f = 10–15).
  * Returns null when the param is absent/malformed.
  */

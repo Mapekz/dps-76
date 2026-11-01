@@ -17,7 +17,7 @@ import {
   writeWeapon,
 } from '@/lib/persist/wire-sections';
 import { normalizeBuildState } from '@/lib/build-rules';
-import { reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
+import { legendaryPerkIds } from '@/lib/nukes-dragons';
 import { nukesDragonsPerks } from '@/lib/nukes-dragons';
 import { createDefaultBuildState, type BuildState } from '@/state/build-reducer';
 import { buildReducer, stateFrom } from '@/state/__tests__/build-state-fixture';
@@ -120,9 +120,9 @@ async function deflateRaw(bytes: Uint8Array): Promise<Uint8Array> {
 
 function prepareHeavyBuild(): BuildState {
   const raw = buildHeavyBuild();
-  const reclassified = reclassifyPerkLoadouts(raw.player.perks, raw.player.legendaryPerks);
-  raw.player.perks = reclassified.perks;
-  raw.player.legendaryPerks = reclassified.legendaryPerks;
+  const all = [...raw.player.perks, ...raw.player.legendaryPerks];
+  raw.player.perks = all.filter((p) => !legendaryPerkIds.has(p.perkId));
+  raw.player.legendaryPerks = all.filter((p) => legendaryPerkIds.has(p.perkId));
   return normalizeBuildState(mode, raw).state;
 }
 
@@ -501,14 +501,16 @@ describe('derived condition fields', () => {
     }
   });
 
-  it('reclassifies a legacy build that stored a ghoul card under legendaryPerks', async () => {
-    const legacy = createDefaultBuildState();
-    legacy.player.conditions.isGhoul = true;
-    legacy.player.legendaryPerks = [{ perkId: 'RadSpecialist', rank: 1 }];
-    const decoded = await decodeBuild(await encodeBuild(legacy, mode), mode);
+  it('removes a perk stored in the wrong perk section', async () => {
+    const misfiled = createDefaultBuildState();
+    misfiled.player.conditions.isGhoul = true;
+    misfiled.player.legendaryPerks = [{ perkId: 'RadSpecialist', rank: 1 }];
+    const decoded = await decodeBuild(await encodeBuild(misfiled, mode), mode);
     expect(decoded!.state.player.legendaryPerks).toEqual([]);
-    expect(decoded!.state.player.perks).toEqual([{ perkId: 'RadSpecialist', rank: 1 }]);
-    expect(decoded!.warnings.some((w) => w.includes('classification'))).toBe(true);
+    expect(decoded!.state.player.perks).toEqual([]);
+    expect(decoded!.warnings).toContainEqual(
+      'perk "RadSpecialist" no longer fits its perk section — removed',
+    );
   });
 });
 
