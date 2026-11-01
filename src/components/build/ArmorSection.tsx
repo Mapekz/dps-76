@@ -25,6 +25,7 @@ import {
   getArmorEffects,
   getArmorSlotUsage,
   getArmorTierUsage,
+  armorTypeEligible,
   MAX_LEGENDARY_COUNT,
   wrongArmorTypeEffects,
   type ArmorEffectEntry,
@@ -78,13 +79,6 @@ const ARMOR_WORN_LABELS: Record<ArmorWorn, string> = {
   body: 'Body Armor',
   power: 'Power Armor',
 };
-
-function armorTypeEligible(effect: ArmorEffectEntry, armorWorn: ArmorWorn): boolean {
-  if (armorWorn === 'none') return false;
-  if (effect.armorType === 'both') return true;
-  if (armorWorn === 'power') return effect.armorType === 'powerArmor';
-  return effect.armorType === 'bodyArmor';
-}
 
 function matchesFilterChip(effect: ArmorEffectEntry, chip: FilterChip | null): boolean {
   if (chip === null) return true;

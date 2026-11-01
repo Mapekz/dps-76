@@ -1,6 +1,7 @@
-import type { ArmorWorn, GameMode, Perk, PlayerConfig } from '@/types';
+import type { GameMode, Perk, PlayerConfig } from '@/types';
 import { getPerks, getWeapons } from '@/data';
 import {
+  armorTypeEligible,
   type ArmorEffectEntry,
   getArmorEffects,
   maxFeasibleArmorEffectCount,
@@ -62,13 +63,6 @@ const SPECIAL_ABBR: Record<SpecialKey, string> = {
 /** An armor effect is damage-relevant when its per-piece modifiers reach the engine at all. */
 function isArmorEffectRelevant(effect: ArmorEffectEntry): boolean {
   return hasAnyEngineEffect(effect.modifiers);
-}
-
-function armorTypeEligible(effect: ArmorEffectEntry, armorWorn: ArmorWorn): boolean {
-  if (armorWorn === 'none') return false;
-  if (effect.armorType === 'both') return true;
-  if (armorWorn === 'power') return effect.armorType === 'powerArmor';
-  return effect.armorType === 'bodyArmor';
 }
 
 function allocationPoolFree(mode: GameMode, allocation: Record<SpecialKey, number>): number {

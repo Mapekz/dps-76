@@ -46,5 +46,6 @@ export {
   getArmorSlotUsage,
   getArmorTierUsage,
   maxFeasibleArmorEffectCount,
+  armorTypeEligible,
   wrongArmorTypeEffects,
 } from './armor-budget';

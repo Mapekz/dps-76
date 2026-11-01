@@ -7,6 +7,7 @@ import {
   clampArmorPieceCapacities,
   maxFeasibleArmorEffectCount,
   MAX_LEGENDARY_COUNT,
+  armorTypeEligible,
   wrongArmorTypeEffects,
 } from '@/data/armor-modifiers';
 import { resolveLoadout } from '@/lib/loadout';
@@ -244,6 +245,20 @@ describe('Number Cruncher exemption: armor selections never feed scaledByWeaponA
   });
 });
 
+describe('armorTypeEligible', () => {
+  it.each([
+    ['bodyArmor', 'body', true],
+    ['bodyArmor', 'power', false],
+    ['powerArmor', 'body', false],
+    ['powerArmor', 'power', true],
+    ['both', 'body', true],
+    ['both', 'power', true],
+    ['both', 'none', false],
+  ] as const)('%s while wearing %s → %s', (armorType, armorWorn, expected) => {
+    expect(armorTypeEligible({ armorType }, armorWorn)).toBe(expected);
+  });
+});
+
 describe('wrongArmorTypeEffects', () => {
   const PROPPELLING = 'mod_Legendary_PowerArmor4_Propelling';
   const CASUAL_STYLE = 'mod_armor_UnderArmor_style_Casual';
@@ -256,6 +271,12 @@ describe('wrongArmorTypeEffects', () => {
     };
     const removing = wrongArmorTypeEffects('live', armorEffects, 'none');
     expect(removing.sort()).toEqual([CASUAL_STYLE, PROPPELLING, UNYIELDING].sort());
+  });
+
+  it('removes only the effects the eligibility rule rejects', () => {
+    const armorEffects = { [UNYIELDING]: 1, [PROPPELLING]: 1, unknown_effect: 1 };
+    expect(wrongArmorTypeEffects('live', armorEffects, 'body')).toEqual([PROPPELLING]);
+    expect(wrongArmorTypeEffects('live', armorEffects, 'power')).toEqual([UNYIELDING]);
   });
 });
 

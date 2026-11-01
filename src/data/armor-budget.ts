@@ -320,7 +320,18 @@ export function getArmorSlotUsage(
   return usage;
 }
 
-/** Effect ids incompatible with the target armor-worn state. `both` never mismatches body/power. */
+/** Whether an effect can be worn in the given armor state. `both` fits body and power; nothing fits `none`. */
+export function armorTypeEligible(
+  effect: Pick<ArmorEffectEntry, 'armorType'>,
+  armorWorn: ArmorWorn,
+): boolean {
+  if (armorWorn === 'none') return false;
+  if (effect.armorType === 'both') return true;
+  if (armorWorn === 'power') return effect.armorType === 'powerArmor';
+  return effect.armorType === 'bodyArmor';
+}
+
+/** Effect ids incompatible with the target armor-worn state. Unknown records stay unless no armor is worn. */
 export function wrongArmorTypeEffects(
   mode: GameMode,
   armorEffects: Readonly<Record<string, number>>,
@@ -334,9 +345,7 @@ export function wrongArmorTypeEffects(
       continue;
     }
     const effect = getArmorEffectById(mode, id);
-    if (!effect || effect.armorType === 'both') continue;
-    if (armorWorn === 'power' && effect.armorType === 'bodyArmor') removing.push(id);
-    if (armorWorn === 'body' && effect.armorType === 'powerArmor') removing.push(id);
+    if (effect && !armorTypeEligible(effect, armorWorn)) removing.push(id);
   }
   return removing;
 }
