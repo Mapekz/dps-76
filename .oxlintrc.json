@@ -134,7 +134,7 @@
       }
     },
     {
-      "files": ["src/{components,hooks,lib,state,workers}/**/*.{ts,tsx}"],
+      "files": ["src/**/*.{ts,tsx}"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -172,7 +172,7 @@
       }
     },
     {
-      "files": ["src/lib/curve-tables.ts", "src/lib/creature-curves.ts"],
+      "files": ["src/data/**", "src/lib/curve-tables.ts", "src/lib/creature-curves.ts"],
       "rules": {
         "no-restricted-imports": "off"
       }
