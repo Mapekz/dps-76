@@ -154,8 +154,8 @@ describe('attribution trace', () => {
   });
 
   it('invariant holds over a real loadout (Fixer + perks)', () => {
-    const weapon = getWeapons('live')['CombatRifle_Fixer'];
-    const modifiers = getLoadoutModifiers('live', [
+    const weapon = getWeapons('pts')['CombatRifle_Fixer'];
+    const modifiers = getLoadoutModifiers('pts', [
       { perkId: PerkId.RiflemanExpert, rank: 3 },
       { perkId: PerkId.CenterMasochist, rank: 3 },
     ]);

@@ -16,7 +16,7 @@ export function getMutations(mode: GameMode): GeneratedBuff[] {
 
 /**
  * Visible consumables: obtainability + hand corrections, same filter idiom as
- * live/weapons.ts's weapon filter (`obtainable !== false || forceVisible`,
+ * pts/weapons.ts's weapon filter (`obtainable !== false || forceVisible`,
  * minus `hidden`). Hidden/unobtainable records stay in the dataset itself
  * (getBuffModifiers reads it unfiltered) so a stale build that already
  * selected one keeps computing — only the pickers stop offering them.

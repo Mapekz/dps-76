@@ -123,7 +123,7 @@ describe('applyClassFreakPenaltyScaling', () => {
 });
 
 describe('real extracted data (Egg Head, 2026-07-14 Class Freak audit)', () => {
-  const eggHead = getMutations('live').find((m) => m.id === 'Mutation_EggHead');
+  const eggHead = getMutations('pts').find((m) => m.id === 'Mutation_EggHead');
 
   it('exists and carries the expected penalty tags (STR/END flat ADDs, not the INT SIN variants)', () => {
     expect(eggHead).toBeDefined();

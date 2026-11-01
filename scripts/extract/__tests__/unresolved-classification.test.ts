@@ -109,7 +109,7 @@ describe('unresolvedClassifications schema', () => {
 const EXPECTED_UNCLASSIFIED = [] as const;
 
 describe('live _meta.json unresolved gate', () => {
-  const metaPath = path.join(import.meta.dirname, '../../../src/data/live/generated/_meta.json');
+  const metaPath = path.join(import.meta.dirname, '../../../src/data/pts/generated/_meta.json');
 
   it('unclassified remainder equals the pending target-sex gate set', () => {
     if (!existsSync(metaPath)) return;

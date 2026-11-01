@@ -92,12 +92,12 @@ describe('createPassContext', () => {
   it('memoryOf returns the in-memory result for a pass already run this session', () => {
     const stub = { weapons: ['stub'] } as never;
     const memory = new Map<ExtractorName, unknown>([['weapons', stub]]);
-    const ctx = createPassContext({} as never, 'live', outDir, memory);
+    const ctx = createPassContext({} as never, 'pts', outDir, memory);
     expect(ctx.memoryOf('weapons')).toBe(stub);
   });
 
   it('memoryOf returns undefined for a pass NOT run this session — no disk fallback here', () => {
-    const ctx = createPassContext({} as never, 'live', outDir, new Map());
+    const ctx = createPassContext({} as never, 'pts', outDir, new Map());
     expect(ctx.memoryOf('weapons')).toBeUndefined();
   });
 });
@@ -107,13 +107,13 @@ describe('createPassContext readGenerated (real filesystem)', () => {
 
   it('reads and parses a previously-written generated file', async () => {
     await writeOutput(dir(), { path: 'weapons.json', content: [{ id: 'w1' }] });
-    const ctx = createPassContext({} as never, 'live', dir(), new Map());
+    const ctx = createPassContext({} as never, 'pts', dir(), new Map());
     const result = await ctx.readGenerated<Array<{ id: string }>>('weapons.json');
     expect(result).toEqual([{ id: 'w1' }]);
   });
 
   it('returns undefined when the file is missing (soft-dep degrade path)', async () => {
-    const ctx = createPassContext({} as never, 'live', dir(), new Map());
+    const ctx = createPassContext({} as never, 'pts', dir(), new Map());
     const result = await ctx.readGenerated('missing.json');
     expect(result).toBeUndefined();
   });
@@ -167,7 +167,7 @@ describe('foldIntoMeta', () => {
     return {
       esmPath: '/fake.esm',
       esmDate: '20260101',
-      mode: 'live',
+      mode: 'pts',
       extractedAt: '2026-01-01T00:00:00.000Z',
       counts: {},
       excluded: {},

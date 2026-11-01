@@ -157,13 +157,13 @@ describe('applyDietScaling', () => {
 });
 
 describe('real extracted data (pins the 2026-07-13 ESM audit)', () => {
-  const byId = new Map(getConsumables('live').map((b) => [b.id, b]));
+  const byId = new Map(getConsumables('pts').map((b) => [b.id, b]));
 
   it('Aged Mirelurk Queen Steak (meat): +3 END doubles under Carnivore', () => {
     const steak = byId.get('MirelurkQueenMeatTasty');
     expect(steak).toBeDefined();
     expect(dietVerdict(steak!, [CARNIVORE_MUTATION_ID])).toBe('doubled');
-    const mods = getBuffModifiers('live', [CARNIVORE_MUTATION_ID], ['MirelurkQueenMeatTasty']);
+    const mods = getBuffModifiers('pts', [CARNIVORE_MUTATION_ID], ['MirelurkQueenMeatTasty']);
     const endMods = mods.filter((m) => m.bucket === 'specialEndurance');
     expect(endMods.map((m) => ('value' in m ? m.value : null)).sort()).toEqual([6, 7.5]);
   });
@@ -180,9 +180,9 @@ describe('real extracted data (pins the 2026-07-13 ESM audit)', () => {
     expect(soup).toBeDefined();
     expect(dietVerdict(soup!, [CARNIVORE_MUTATION_ID])).toBe('zeroed');
     expect(dietVerdict(soup!, [HERBIVORE_MUTATION_ID])).toBe('doubled');
-    expect(
-      getBuffModifiers('live', [CARNIVORE_MUTATION_ID], ['CarrotVegetableCookedSoup']),
-    ).toEqual([]);
+    expect(getBuffModifiers('pts', [CARNIVORE_MUTATION_ID], ['CarrotVegetableCookedSoup'])).toEqual(
+      [],
+    );
   });
 
   it('Wasteland Fish Sandwich (meat): zeroed under Herbivore, with an explicit suppression label', () => {
@@ -191,7 +191,7 @@ describe('real extracted data (pins the 2026-07-13 ESM audit)', () => {
     expect(dietVerdict(sandwich!, [HERBIVORE_MUTATION_ID])).toBe('zeroed');
     expect(dietSuppressionLabel(sandwich!, [HERBIVORE_MUTATION_ID])).toBe('Herbivore');
     const mods = getBuffModifiers(
-      'live',
+      'pts',
       [HERBIVORE_MUTATION_ID],
       ['SeasonalFish_Meal_SummerWastelandFishSandwich'],
     );

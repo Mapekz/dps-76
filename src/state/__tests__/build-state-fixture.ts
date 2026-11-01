@@ -6,7 +6,7 @@ import {
   type BuildState,
 } from '@/state/build-reducer';
 
-export const buildReducer = makeBuildReducer('live');
+export const buildReducer = makeBuildReducer('pts');
 
 export function stateFrom(
   actions: readonly BuildAction[],

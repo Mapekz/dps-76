@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { getWeapons } from '../src/data';
 import { VETTED_WEAPON_IDS } from '../src/data/vetted-weapons';
 
-const weapons = getWeapons('live');
+const weapons = getWeapons('pts');
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -27,7 +27,7 @@ interface MetaShape {
 }
 
 function loadMeta(): MetaShape | null {
-  const p = join(repoRoot, 'src/data/live/generated/_meta.json');
+  const p = join(repoRoot, 'src/data/pts/generated/_meta.json');
   if (!existsSync(p)) return null;
   return JSON.parse(readFileSync(p, 'utf8')) as MetaShape;
 }

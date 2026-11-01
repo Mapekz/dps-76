@@ -37,7 +37,7 @@ function makeOmodsCtx(
     ['weapons', weaponsMemory(weapons)],
     ...memoryExtras.entries(),
   ]);
-  return createPassContext(client, 'live', '/unused/out', memory);
+  return createPassContext(client, 'pts', '/unused/out', memory);
 }
 
 function weaponsMemory(weapons: GeneratedWeapon[]): ExtractWeaponsResult {
@@ -145,7 +145,7 @@ describe('omodsPass', () => {
       const weapon = minimalWeapon({ id: 'weap_perks', formId: '0x00WE0005' });
       const ctx = createPassContext(
         emptyOmodsClient(),
-        'live',
+        'pts',
         dir(),
         new Map([['weapons', weaponsMemory([weapon])]]),
       );
@@ -160,7 +160,7 @@ describe('omodsPass', () => {
       const weapon = minimalWeapon({ id: 'weap_no_perks', formId: '0x00WE0006' });
       const ctx = createPassContext(
         emptyOmodsClient(),
-        'live',
+        'pts',
         dir(),
         new Map([['weapons', weaponsMemory([weapon])]]),
       );
@@ -184,7 +184,7 @@ describe('omodsPass', () => {
       const weapon = minimalWeapon({ id: 'weap_armor', formId: '0x00WE0007' });
       const ctx = createPassContext(
         emptyOmodsClient(),
-        'live',
+        'pts',
         dir(),
         new Map([['weapons', weaponsMemory([weapon])]]),
       );
@@ -215,7 +215,7 @@ describe('pass smoke tests', () => {
       resolveEdidFallback: (formId) => `kw_${formId}`,
       getFallback: perkPlaceholder,
     });
-    const ctx = createPassContext(client, 'live', '/unused/out', new Map());
+    const ctx = createPassContext(client, 'pts', '/unused/out', new Map());
     const { raw, result } = await weaponsPass.run(ctx);
 
     expect(result.outputs).toEqual([{ path: 'weapons.json', content: raw.weapons }]);
@@ -225,7 +225,7 @@ describe('pass smoke tests', () => {
 
   it('bodypartsPass wires extractBodyParts → bodyparts.json output', async () => {
     const client = createInMemoryEsmSource({ records: humanBodyPartRecords() });
-    const ctx = createPassContext(client, 'live', '/unused/out', new Map());
+    const ctx = createPassContext(client, 'pts', '/unused/out', new Map());
     const { raw, result } = await bodypartsPass.run(ctx);
 
     expect(result.outputs).toEqual([{ path: 'bodyparts.json', content: raw.races }]);
@@ -239,7 +239,7 @@ describe('pass smoke tests', () => {
       '0x000002C2': avifStrength as unknown as EsmRecord,
     };
     const client = createInMemoryEsmSource({ records });
-    const ctx = createPassContext(client, 'live', '/unused/out', new Map());
+    const ctx = createPassContext(client, 'pts', '/unused/out', new Map());
     const { raw, result } = await constantsPass.run(ctx);
 
     expect(result.outputs).toEqual([{ path: 'constants.json', content: raw.constants }]);
@@ -253,7 +253,7 @@ describe('pass smoke tests', () => {
     ]);
     const outDir = '/unused/out';
     const curveDir = path.join(outDir, '..', 'curvetables');
-    const ctx = createPassContext(client, 'live', outDir, new Map());
+    const ctx = createPassContext(client, 'pts', outDir, new Map());
     const { raw, result } = await curvetablesPass.run(ctx);
 
     expect(

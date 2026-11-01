@@ -53,20 +53,20 @@ describe('derivePlayerStats', () => {
   });
 
   it('Lifegiver rank 1 adds its END-keyed curve (real extracted data)', () => {
-    const lifegiver = getLoadoutModifiers('live', [{ perkId: PerkId.LifeGiver, rank: 1 }]);
+    const lifegiver = getLoadoutModifiers('pts', [{ perkId: PerkId.LifeGiver, rank: 1 }]);
     const { maxHealth } = derivePlayerStats(lifegiver, baseSpecial({ endurance: 15 }), conditions);
     // Curve (15, 120): END 15 → +120 HP over the base formula.
     expect(maxHealth).toBe(BASE_MAX_HP + MAX_HP_PER_ENDURANCE * 15 + 120);
   });
 
   it('Lifegiver is a single live rank — an out-of-range rank clamps to rank 1 (ranks 2/3 are dead content)', () => {
-    const lifegiver = getLoadoutModifiers('live', [{ perkId: PerkId.LifeGiver, rank: 3 }]);
+    const lifegiver = getLoadoutModifiers('pts', [{ perkId: PerkId.LifeGiver, rank: 3 }]);
     const { maxHealth } = derivePlayerStats(lifegiver, baseSpecial({ endurance: 15 }), conditions);
     expect(maxHealth).toBe(BASE_MAX_HP + MAX_HP_PER_ENDURANCE * 15 + 120);
   });
 
   it('Lifegiver interpolates the curve between END points', () => {
-    const lifegiver = getLoadoutModifiers('live', [{ perkId: PerkId.LifeGiver, rank: 1 }]);
+    const lifegiver = getLoadoutModifiers('pts', [{ perkId: PerkId.LifeGiver, rank: 1 }]);
     const { maxHealth } = derivePlayerStats(lifegiver, baseSpecial({ endurance: 8 }), conditions);
     // Between (1,10) and (15,120): 10 + (8−1)/(15−1)×110 = 65.
     expect(maxHealth).toBe(BASE_MAX_HP + MAX_HP_PER_ENDURANCE * 8 + 65);
@@ -114,7 +114,7 @@ describe('derivePlayerStats', () => {
   });
 
   it('Barbarian rank 1 at STR 15: armored DR 61, unarmored DR 122 (curve ×2)', () => {
-    const barbarian = getLoadoutModifiers('live', [{ perkId: PerkId.Barbarian, rank: 1 }]);
+    const barbarian = getLoadoutModifiers('pts', [{ perkId: PerkId.Barbarian, rank: 1 }]);
     const armored = derivePlayerStats(barbarian, baseSpecial({ strength: 15 }), {
       ...conditions,
       armorWorn: 'body',
@@ -216,7 +216,7 @@ describe('derivePlayerStats: effective SPECIAL clamp', () => {
 describe('computePerkBudget (real card costs, not rank)', () => {
   it('Tenderizer rank 1 costs 2 Charisma points (its real PCRD cost, not rank 1)', () => {
     const budget = computePerkBudget(
-      'live',
+      'pts',
       [{ perkId: PerkId.Tenderizer, rank: 1 }],
       [],
       baseSpecial(),
@@ -226,7 +226,7 @@ describe('computePerkBudget (real card costs, not rank)', () => {
 
   it('a rank-2 Party Boy/Girl costs 3 (its rank-2 cost), not cumulative 2+3', () => {
     const budget = computePerkBudget(
-      'live',
+      'pts',
       [{ perkId: PerkId.PartyBoyGirl, rank: 2 }],
       [],
       baseSpecial(),
@@ -236,7 +236,7 @@ describe('computePerkBudget (real card costs, not rank)', () => {
 
   it('flags overBudget when legendary perk slots exceed the level cap', () => {
     const legal = computePerkBudget(
-      'live',
+      'pts',
       [],
       Array.from({ length: 6 }, () => ({ perkId: 'LegendaryLuck', rank: 1 })),
       baseSpecial(),
@@ -244,7 +244,7 @@ describe('computePerkBudget (real card costs, not rank)', () => {
     expect(legal.overBudget).toBe(false);
 
     const tooMany = computePerkBudget(
-      'live',
+      'pts',
       [],
       Array.from({ length: 7 }, () => ({ perkId: 'LegendaryLuck', rank: 1 })),
       baseSpecial(),
@@ -422,21 +422,21 @@ describe('derivePlayerStats: condition-aware SPECIAL folds (2026-07-14)', () => 
 
 describe('level-derived allocation pools (DFOB-bridged curves)', () => {
   it('SPECIAL pool: 7 starting points + 49 level-ups = 56 at level 50 and beyond', () => {
-    expect(specialAllocationPool('live', 50)).toBe(56);
-    expect(specialAllocationPool('live', 300)).toBe(56); // curve clamps flat past its (50, 49) endpoint
-    expect(specialAllocationPool('live')).toBe(56); // the PLAYER_LEVEL=300 default consumers read
+    expect(specialAllocationPool('pts', 50)).toBe(56);
+    expect(specialAllocationPool('pts', 300)).toBe(56); // curve clamps flat past its (50, 49) endpoint
+    expect(specialAllocationPool('pts')).toBe(56); // the PLAYER_LEVEL=300 default consumers read
   });
 
   it('SPECIAL pool grows +1 per level from 7 at level 1', () => {
-    expect(specialAllocationPool('live', 1)).toBe(7);
-    expect(specialAllocationPool('live', 2)).toBe(8);
-    expect(specialAllocationPool('live', 25)).toBe(31);
+    expect(specialAllocationPool('pts', 1)).toBe(7);
+    expect(specialAllocationPool('pts', 2)).toBe(8);
+    expect(specialAllocationPool('pts', 25)).toBe(31);
   });
 
   it('legendary slots: unlock levels 50/75/100/150/200/300 per the LegendaryPerkSlotCount curve', () => {
-    expect(legendarySlotsAtLevel('live')).toBe(6);
-    expect(legendarySlotsAtLevel('live', 100)).toBe(3);
-    expect(legendarySlotsAtLevel('live', 74)).toBe(1);
-    expect(legendarySlotsAtLevel('live', 49)).toBe(0);
+    expect(legendarySlotsAtLevel('pts')).toBe(6);
+    expect(legendarySlotsAtLevel('pts', 100)).toBe(3);
+    expect(legendarySlotsAtLevel('pts', 74)).toBe(1);
+    expect(legendarySlotsAtLevel('pts', 49)).toBe(0);
   });
 });

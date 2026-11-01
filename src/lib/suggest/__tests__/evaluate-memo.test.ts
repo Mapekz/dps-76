@@ -25,7 +25,7 @@ import type { DpsSnapshot, EvaluatedSuggestion, SuggestionGroup } from '@/lib/su
 /** Independent, un-memoized ground truth for one candidate's action list. */
 function naiveSnapshot(state: BuildState, actions: readonly BuildAction[]): DpsSnapshot | null {
   const next = stateFrom(actions, state);
-  const input = resolveLoadout(next.player, next.enemy, 'live'); // no memo
+  const input = resolveLoadout(next.player, next.enemy, 'pts'); // no memo
   return input ? snapshotOf(computeScenarios(input)) : null;
 }
 
@@ -66,7 +66,7 @@ const SAMPLE_PER_GROUP = 4;
 
 describe('evaluateSuggestions memoization correctness', () => {
   const state = richBuildState();
-  const report = evaluateSuggestions(state, 'live', 'freeAim');
+  const report = evaluateSuggestions(state, 'pts', 'freeAim');
 
   it('produces a non-empty, non-null baseline', () => {
     expect(report.baseline).not.toBeNull();
@@ -111,7 +111,7 @@ describe('evaluateSuggestions memoization correctness', () => {
       { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
       { type: 'special/set', stat: 'luck', value: 1 },
     ]);
-    const allocReport = evaluateSuggestions(allocState, 'live', 'vats');
+    const allocReport = evaluateSuggestions(allocState, 'pts', 'vats');
     const compound = allocReport.suggestions.find((s) => s.id.endsWith(':alloc'));
     expect(compound).toBeDefined();
     const naive = naiveSnapshot(allocState, compound!.action);
@@ -162,12 +162,12 @@ describe('addiction/toggle candidate — MemoScope key regression (see loadout.t
     // Warm the scope on the 0-addiction state first — this is what makes the
     // regression reachable: a fresh scope's first call can't hit a stale
     // cache, so the bug only shows up on a SECOND call sharing the scope.
-    const warm = evaluateActions(state, 'live', [], zero, scope);
+    const warm = evaluateActions(state, 'pts', [], zero, scope);
     expect(warm).not.toBeNull();
 
     const toggled = evaluateActions(
       state,
-      'live',
+      'pts',
       [{ type: 'addiction/toggle', id: 'AbAddictionAlcohol' }],
       zero,
       scope,

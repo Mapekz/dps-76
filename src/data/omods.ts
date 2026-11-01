@@ -278,7 +278,7 @@ function buildSlots(
     // (The extractor stopped emitting them; this guards pre-derivation data.)
     if (omod.id.startsWith('_PARENT_') || omod.name.startsWith('TEMPLATE')) continue;
     if (DEAD_MECHANIC_SLOT_EDIDS.has(omod.attachPointEdid)) continue;
-    // Obtainability verdicts + hand corrections (see live/weapons.ts). A
+    // Obtainability verdicts + hand corrections (see pts/weapons.ts). A
     // weapon's own standard parts are always visible: default mods are often
     // attached purely by template/keyword with no reverse reference — that
     // rescue is weapon-contextual (needs the weapon being modded), so it

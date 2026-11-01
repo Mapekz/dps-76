@@ -275,7 +275,7 @@ function censusSortKey(e: CollectedEntry): string {
 }
 
 function collectMoveSpeedSources(): CollectedEntry[] {
-  const dataset = getDataset('live');
+  const dataset = getDataset('pts');
   const hits: CollectedEntry[] = [];
 
   for (const perk of dataset.perks) {
@@ -360,9 +360,9 @@ describe('moveSpeedBonus census (live dataset)', () => {
         (e) => e.formId,
       ),
     );
-    const registry = getDataset('live').perkRegistry;
+    const registry = getDataset('pts').perkRegistry;
     for (const perkId of Object.keys(registry) as PerkId[]) {
-      const generated = getGeneratedPerk('live', perkId);
+      const generated = getGeneratedPerk('pts', perkId);
       if (!generated) continue;
       for (const formId of generated.formIds) {
         expect(excludedFormIds.has(formId), `${perkId} → ${formId}`).toBe(false);

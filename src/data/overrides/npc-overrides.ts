@@ -2,7 +2,7 @@ import type { GeneratedNpc } from '@/types/generated';
 
 /**
  * Hand-maintained corrections layered over ESM-extracted NPC stats
- * (scripts/extract/extract-npcs.ts → src/data/live/generated/npcs.json).
+ * (scripts/extract/extract-npcs.ts → src/data/pts/generated/npcs.json).
  * This file survives regeneration (`bun run extract`) — put anything here the
  * ESM can't express or gets wrong (e.g. a curated row whose representative
  * NPC_ template choice turns out to be a poor stand-in, or a stat that needs

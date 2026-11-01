@@ -307,7 +307,7 @@ function readPerkLoadout(r: BitReader, mode: GameMode, warnings: string[]): Perk
 }
 
 export function writePerks(w: BitWriter, perks: PerkLoadout[]): void {
-  writePerkLoadout(w, perks, 'live');
+  writePerkLoadout(w, perks, 'pts');
 }
 
 export function readPerks(r: BitReader, mode: GameMode, warnings: string[]): PerkLoadout[] {
@@ -315,7 +315,7 @@ export function readPerks(r: BitReader, mode: GameMode, warnings: string[]): Per
 }
 
 export function writeLegendaryPerks(w: BitWriter, perks: PerkLoadout[]): void {
-  writePerkLoadout(w, perks, 'live');
+  writePerkLoadout(w, perks, 'pts');
 }
 
 export function readLegendaryPerks(

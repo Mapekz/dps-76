@@ -13,16 +13,11 @@ import type {
 } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 
-import { buildWeapons, generatedWeaponsRaw as generatedWeaponsRawLive } from './live/weapons';
-import { perks as perkNamesLive } from './live/perks';
-import { bodyArmor as bodyArmorLive } from './live/armor';
-import { powerArmor as powerArmorLive } from './live/power-armor';
-import { generatedNpcsRaw as generatedNpcsRawLive } from './live/npcs';
-
-import { generatedWeaponsRaw as generatedWeaponsRawPts } from './pts/weapons';
+import { buildWeapons, generatedWeaponsRaw as generatedWeaponsRawPts } from './pts/weapons';
 import { perks as perkNamesPts } from './pts/perks';
 import { bodyArmor as bodyArmorPts } from './pts/armor';
 import { powerArmor as powerArmorPts } from './pts/power-armor';
+import { generatedNpcsRaw as generatedNpcsRawPts } from './pts/npcs';
 
 import { legendaryValueOverrides } from './overrides/legendary-values';
 import { armorLegendaryValueOverrides } from './overrides/armor-values';
@@ -58,16 +53,16 @@ import { mutationDescriptionOverrides } from './overrides/mutation-descriptions'
 import { npcOverrides } from './overrides/npc-overrides';
 import { armorPieceOverrides } from './overrides/armor-piece-overrides';
 import { derivePerkRegistry, type PerkNameEntry } from './perk-cards';
-import generatedOmodsLive from './live/generated/omods.json';
-import generatedArmorOmodsLive from './live/generated/armor-omods.json';
-import generatedPerksLive from './live/generated/perks.json';
-import generatedMutationsLive from './live/generated/mutations.json';
-import generatedConsumablesLive from './live/generated/consumables.json';
-import generatedAddictionsLive from './live/generated/addictions.json';
-import generatedBodyPartsLive from './live/generated/bodyparts.json';
-import generatedUniquesLive from './live/generated/uniques.json';
-import generatedConstantsLive from './live/generated/constants.json';
-import generatedHealingItemsLive from './live/generated/healing-items.json';
+import generatedOmodsPts from './pts/generated/omods.json';
+import generatedArmorOmodsPts from './pts/generated/armor-omods.json';
+import generatedPerksPts from './pts/generated/perks.json';
+import generatedMutationsPts from './pts/generated/mutations.json';
+import generatedConsumablesPts from './pts/generated/consumables.json';
+import generatedAddictionsPts from './pts/generated/addictions.json';
+import generatedBodyPartsPts from './pts/generated/bodyparts.json';
+import generatedUniquesPts from './pts/generated/uniques.json';
+import generatedConstantsPts from './pts/generated/constants.json';
+import generatedHealingItemsPts from './pts/generated/healing-items.json';
 
 /**
  * The single merged, mode-resolved view of the game data, and the one home
@@ -80,7 +75,7 @@ import generatedHealingItemsLive from './live/generated/healing-items.json';
  * - VISIBILITY overlay sets (`hidden*`/`forceVisible*`) are mode-resolved
  *   fields on the Dataset but are NOT folded into records here — they're
  *   applied downstream, in the mode-aware accessor for each
- *   collection (`live/weapons.ts`, `buffs.ts`, `omods.ts`), by design: hidden
+ *   collection (`pts/weapons.ts`, `buffs.ts`, `omods.ts`), by design: hidden
  *   omods/consumables must stay fully computable for a build that already
  *   selected one (only the picker should stop offering them), while hidden
  *   *weapon* records are dropped entirely (they were never real player
@@ -90,13 +85,13 @@ import generatedHealingItemsLive from './live/generated/healing-items.json';
  *   split honest: it validates every overlay table (value AND visibility)
  *   against the mode's real generated ids, wherever it's actually applied.
  * - FIELD overlays (`weaponCorrections`) apply in the adapter layer
- *   (`adaptWeapon`, `live/weapons.ts`) per ADR-0001 — that's the sanctioned
+ *   (`adaptWeapon`, `pts/weapons.ts`) per ADR-0001 — that's the sanctioned
  *   `GeneratedWeapon → Weapon` transform, not this chokepoint's job.
  *
- * This is the one place the dataset's live/pts split is decided. Only a single
- * ESM is extracted today, so both modes resolve to the same live-backed records;
- * when a PTS dump lands (`bun run extract --mode pts`), build a pts dataset here.
- * Curve tables resolve separately by mode in `curve-tables.ts` and
+ * This is the one place the dataset's live/pts split is decided. The app is
+ * PTS-only for now, so both modes resolve to the records under `src/data/pts/`;
+ * when a Live dump is extracted (`bun run extract --mode live`), build a Live
+ * dataset here. Curve tables follow the same rule in `curve-tables.ts` and
  * `creature-curves.ts`.
  */
 
@@ -182,8 +177,8 @@ export function applyNpcOverrides(
   return items.map((item) => overridesById[item.id] ?? item);
 }
 
-type BodyArmor = typeof bodyArmorLive;
-type PowerArmor = typeof powerArmorLive;
+type BodyArmor = typeof bodyArmorPts;
+type PowerArmor = typeof powerArmorPts;
 
 export interface Dataset {
   weapons: Record<string, Weapon>;
@@ -341,19 +336,19 @@ export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset
   };
 }
 
-const liveSource: DatasetSource = {
-  generatedWeapons: generatedWeaponsRawLive,
-  generatedOmods: generatedOmodsLive as GeneratedOmod[],
-  generatedArmorOmods: generatedArmorOmodsLive as GeneratedOmod[],
-  generatedPerks: generatedPerksLive as GeneratedPerk[],
-  generatedMutations: generatedMutationsLive as GeneratedBuff[],
-  generatedConsumables: generatedConsumablesLive as GeneratedBuff[],
-  generatedAddictions: generatedAddictionsLive as GeneratedAddiction[],
-  generatedBodyParts: generatedBodyPartsLive as GeneratedBodyPartRace[],
-  generatedUniques: generatedUniquesLive as unknown as GeneratedUnique[],
-  generatedNpcs: generatedNpcsRawLive,
-  constants: generatedConstantsLive as GeneratedConstants,
-  healingItems: generatedHealingItemsLive as GeneratedHealingItem[],
+const ptsSource: DatasetSource = {
+  generatedWeapons: generatedWeaponsRawPts,
+  generatedOmods: generatedOmodsPts as GeneratedOmod[],
+  generatedArmorOmods: generatedArmorOmodsPts as GeneratedOmod[],
+  generatedPerks: generatedPerksPts as GeneratedPerk[],
+  generatedMutations: generatedMutationsPts as GeneratedBuff[],
+  generatedConsumables: generatedConsumablesPts as GeneratedBuff[],
+  generatedAddictions: generatedAddictionsPts as GeneratedAddiction[],
+  generatedBodyParts: generatedBodyPartsPts as GeneratedBodyPartRace[],
+  generatedUniques: generatedUniquesPts as unknown as GeneratedUnique[],
+  generatedNpcs: generatedNpcsRawPts,
+  constants: generatedConstantsPts as GeneratedConstants,
+  healingItems: generatedHealingItemsPts as GeneratedHealingItem[],
   legendaryValueOverrides,
   armorLegendaryValueOverrides,
   buffValueOverrides,
@@ -377,24 +372,17 @@ const liveSource: DatasetSource = {
   omodModifierAdditions,
 };
 
-const datasets: Record<GameMode, Dataset> = {
-  live: buildDataset(
-    {
-      perkNames: perkNamesLive,
-      bodyArmor: bodyArmorLive,
-      powerArmor: powerArmorLive,
-    },
-    liveSource,
-  ),
-  pts: buildDataset(
-    {
-      perkNames: perkNamesPts,
-      bodyArmor: bodyArmorPts,
-      powerArmor: powerArmorPts,
-    },
-    { ...liveSource, generatedWeapons: generatedWeaponsRawPts },
-  ),
-};
+const ptsDataset = buildDataset(
+  {
+    perkNames: perkNamesPts,
+    bodyArmor: bodyArmorPts,
+    powerArmor: powerArmorPts,
+  },
+  ptsSource,
+);
+
+// PTS is the only extracted dataset, so Live resolves to the same records.
+const datasets: Record<GameMode, Dataset> = { live: ptsDataset, pts: ptsDataset };
 
 /**
  * The single mode-resolved view of all game data (CONTEXT.md's **Merged
@@ -417,7 +405,7 @@ export function getDataset(mode: GameMode): Dataset {
 // Every overlay table above is keyed by a generated id (edid) that can go
 // stale on re-extraction: an ESM rename orphans the override silently — it
 // just stops applying, with no error. Per-mode because the same override can
-// resolve on Live and drift on PTS (or vice versa) once PTS gets its own
+// resolve on Live and drift on PTS (or vice versa) once Live gets its own
 // extraction; each side needs to be checked against ITS OWN generated ids so
 // a Live-only or PTS-only break is attributable. Report-and-warn, not
 // throw: a stale key means "this one override is inert", not "the app is
@@ -431,10 +419,9 @@ export interface UnresolvedOverrideKey {
   key: string;
 }
 
-/** Raw (pre-visibility-filter) generated weapon ids for `mode` — see live/weapons.ts's `generatedWeaponsRaw`. */
-function generatedWeaponIdsFor(mode: GameMode): ReadonlySet<string> {
-  const raw = mode === 'live' ? generatedWeaponsRawLive : generatedWeaponsRawPts;
-  return new Set(raw.map((w) => w.id));
+/** Raw (pre-visibility-filter) generated weapon ids for `mode` — see pts/weapons.ts's `generatedWeaponsRaw`. */
+function generatedWeaponIdsFor(_mode: GameMode): ReadonlySet<string> {
+  return new Set(generatedWeaponsRawPts.map((w) => w.id));
 }
 
 /**
@@ -476,9 +463,9 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   // omods/perks/mutations/consumables have no live/pts split yet (single ESM
   // — see the HandAuthored comment above); read straight off the shared
   // generated collections, same as buildDataset does.
-  const omodIds = new Set(generatedOmodsLive.map((o) => o.id));
-  const attachPointEdids = new Set(generatedOmodsLive.map((o) => o.attachPointEdid));
-  const omodNamesById = new Map(generatedOmodsLive.map((o) => [o.id, o.name]));
+  const omodIds = new Set(generatedOmodsPts.map((o) => o.id));
+  const attachPointEdids = new Set(generatedOmodsPts.map((o) => o.attachPointEdid));
+  const omodNamesById = new Map(generatedOmodsPts.map((o) => [o.id, o.name]));
   check('legendaryValueOverrides', Object.keys(legendaryValueOverrides), omodIds);
   check('streamConvertingOmodIds', streamConvertingOmodIds, omodIds);
   check('omodModifierAdditions', Object.keys(omodModifierAdditions), omodIds);
@@ -504,7 +491,7 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
     );
   }
 
-  const armorOmods = generatedArmorOmodsLive as GeneratedOmod[];
+  const armorOmods = generatedArmorOmodsPts as GeneratedOmod[];
   const armorOmodIds = new Set(armorOmods.map((o) => o.id));
   check('armorLegendaryValueOverrides', Object.keys(armorLegendaryValueOverrides), armorOmodIds);
   check('hiddenArmorOmodIds', hiddenArmorOmodIds, armorOmodIds);
@@ -512,22 +499,20 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   const armorEffectNames = new Set(armorOmods.map((o) => o.name));
   check('armorPieceOverrides', Object.keys(armorPieceOverrides), armorEffectNames);
 
-  const mutationIds = new Set(generatedMutationsLive.map((b) => b.id));
-  const buffIds = new Set(
-    [...generatedMutationsLive, ...generatedConsumablesLive].map((b) => b.id),
-  );
+  const mutationIds = new Set(generatedMutationsPts.map((b) => b.id));
+  const buffIds = new Set([...generatedMutationsPts, ...generatedConsumablesPts].map((b) => b.id));
   check('buffValueOverrides', Object.keys(buffValueOverrides), buffIds);
   check('mutationDescriptionOverrides', Object.keys(mutationDescriptionOverrides), mutationIds);
   check('hiddenConsumableIds', hiddenConsumableIds, buffIds);
   check('forceVisibleConsumableIds', forceVisibleConsumableIds, buffIds);
-  const consumableIds = new Set(generatedConsumablesLive.map((b) => b.id));
+  const consumableIds = new Set(generatedConsumablesPts.map((b) => b.id));
   check(
     'consumableDescriptionOverrides',
     Object.keys(consumableDescriptionOverrides),
     consumableIds,
   );
   const generatedDescById = new Map<string, string>();
-  for (const b of generatedConsumablesLive as GeneratedBuff[]) {
+  for (const b of generatedConsumablesPts as GeneratedBuff[]) {
     if (b.description !== undefined) generatedDescById.set(b.id, b.description);
   }
   checkNoOpValue(
@@ -536,17 +521,17 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
     generatedDescById,
   );
   check('omodDescriptionOverrides', Object.keys(omodDescriptionOverrides), omodIds);
-  const generatedOmodDescById = new Map(generatedOmodsLive.map((o) => [o.id, o.description]));
+  const generatedOmodDescById = new Map(generatedOmodsPts.map((o) => [o.id, o.description]));
   checkNoOpValue('omodDescriptionOverrides', omodDescriptionOverrides, generatedOmodDescById);
 
-  const perkIds = new Set(Object.keys(perkNamesLive) as PerkId[]);
+  const perkIds = new Set(Object.keys(perkNamesPts) as PerkId[]);
   check('perkForceEffectivePerkIds', perkForceEffectivePerkIds, perkIds);
-  const familyIds = new Set(generatedPerksLive.map((p) => p.family));
+  const familyIds = new Set(generatedPerksPts.map((p) => p.family));
   check('perkFamilyOverrides (PerkId key)', Object.keys(perkFamilyOverrides), perkIds);
   check('perkFamilyOverrides (target family)', Object.values(perkFamilyOverrides), familyIds);
   check('extraPerkModifiers', Object.keys(extraPerkModifiers), familyIds);
 
-  const npcIds = new Set(generatedNpcsRawLive.map((n) => n.id));
+  const npcIds = new Set(generatedNpcsRawPts.map((n) => n.id));
   check('npcOverrides', Object.keys(npcOverrides), npcIds);
 
   return out;

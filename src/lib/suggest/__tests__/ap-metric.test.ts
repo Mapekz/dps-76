@@ -29,8 +29,8 @@ const fixerState = fixerOnlyState();
 let vatsReport: ReturnType<typeof evaluateSuggestions>;
 let scenarios: ReturnType<typeof computeScenarios>;
 beforeAll(() => {
-  vatsReport = evaluateSuggestions(fixerState, 'live', 'vats');
-  scenarios = computeScenarios(resolveLoadout(fixerState.player, fixerState.enemy, 'live')!);
+  vatsReport = evaluateSuggestions(fixerState, 'pts', 'vats');
+  scenarios = computeScenarios(resolveLoadout(fixerState.player, fixerState.enemy, 'pts')!);
 });
 
 describe('canonical VATS metric (AP-limited when throttled)', () => {
@@ -47,7 +47,7 @@ describe('canonical VATS metric (AP-limited when throttled)', () => {
   });
 
   it('an apRegen-boosting consumable outranks a genuine no-op once the VATS metric is AP-limited', () => {
-    // Company Tea: apRegenFlat +10 (src/data/live/generated/consumables.json,
+    // Company Tea: apRegenFlat +10 (src/data/pts/generated/consumables.json,
     // CompanyTea_RSVP02) — moves ap.apLimitedDps but never touches raw
     // sustain.sustainedDps, so it was invisible to the pre-fix metric.
     // Carnivore: 0 modifiers in generated data — a true no-op for every
@@ -82,7 +82,7 @@ describe('canonical ranking objective (ADR 0007)', () => {
   });
 
   it('metric: freeAim reports use totalDps as the ranking objective', () => {
-    const report = evaluateSuggestions(fixerState, 'live', 'freeAim');
+    const report = evaluateSuggestions(fixerState, 'pts', 'freeAim');
     const metricBase = report.baseline!.freeAim.totalDps;
     for (const s of report.suggestions) {
       const expected = metricBase > 0 ? s.delta.freeAim.totalDps / metricBase : 0;

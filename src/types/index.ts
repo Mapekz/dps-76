@@ -235,7 +235,7 @@ export interface Weapon {
   /**
    * Levels the weapon actually drops/crafts at (WEAP Eligible Levels —
    * Enclave Plasma [25,35,45], Fixer [24,50], ...). Empty on ~44 records;
-   * `weaponLevelStops` (src/data/live/weapons.ts) falls back to the full
+   * `weaponLevelStops` (src/data/pts/weapons.ts) falls back to the full
    * 1..50 range then. Drives the item-level slider stops and the
    * select-time default (`maxEligibleLevel`).
    */

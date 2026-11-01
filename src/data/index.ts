@@ -5,7 +5,7 @@ import { getDataset } from './dataset';
 // owns the live/pts resolution and applies overrides once.
 
 // Pure Weapon helpers (item-level slider stops + select-time default).
-export { DEFAULT_LEVEL_STOPS, maxEligibleLevel, weaponLevelStops } from './live/weapons';
+export { DEFAULT_LEVEL_STOPS, maxEligibleLevel, weaponLevelStops } from './pts/weapons';
 
 export function getPerks(mode: GameMode): Record<PerkId, Perk> {
   return getDataset(mode).perkRegistry;

@@ -20,5 +20,5 @@ export function loadoutFor(
   overrides: Partial<PlayerConfig> = {},
   enemy: EnemyConfig = createDefaultEnemyConfig(),
 ) {
-  return resolveLoadout({ ...createDefaultPlayerConfig(), ...overrides }, enemy, 'live');
+  return resolveLoadout({ ...createDefaultPlayerConfig(), ...overrides }, enemy, 'pts');
 }

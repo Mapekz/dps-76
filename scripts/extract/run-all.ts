@@ -19,7 +19,7 @@ async function main() {
   const { values } = parseArgs({
     options: {
       esm: { type: 'string' },
-      mode: { type: 'string', default: 'live' },
+      mode: { type: 'string', default: 'pts' },
       only: { type: 'string' },
       // Default ON since 2026-08-28 (the backlog reached zero): a new dump's
       // unclassified gap fails the run where someone can act on it.

@@ -8,9 +8,9 @@ import { perkCardOverrides } from './overrides/perk-overrides';
 
 /**
  * Derives the full `Perk` registry (special/maxRank/costs) from the
- * name-only PerkId → display-name map (src/data/live/perks.ts) joined
+ * name-only PerkId → display-name map (src/data/pts/perks.ts) joined
  * against the ESM-generated perk families' PCRD card data
- * (src/data/live/generated/perks.json). Wired into the dataset at
+ * (src/data/pts/generated/perks.json). Wired into the dataset at
  * `src/data/dataset.ts` so every accessor keeps reading `Record<PerkId, Perk>`.
  *
  * The join itself (perkFamilyOverrides first, else normalized-display-name)

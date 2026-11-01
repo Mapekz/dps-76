@@ -3,7 +3,7 @@ import { getArmorEffects } from '@/data/armor-modifiers';
 import { BODY_JETPACK, DEEP_POCKETED } from '@/data/__tests__/armor-test-helpers';
 
 describe("ArmorStarTier: derived from the representative record's ap_LegendaryN attach point", () => {
-  const effects = getArmorEffects('live');
+  const effects = getArmorEffects('pts');
 
   it(
     'Powered is a pre-existing data ambiguity: a non-obtainable tier-1 twin ' +
@@ -25,7 +25,7 @@ describe("ArmorStarTier: derived from the representative record's ap_LegendaryN 
 });
 
 describe('ArmorSlotGroup: material/lining/misc split', () => {
-  const effects = getArmorEffects('live');
+  const effects = getArmorEffects('pts');
   const byName = new Map(effects.map((e) => [e.name, e]));
 
   it('ap_armor_Tier records land in material; PA lining materials are excluded', () => {
@@ -67,7 +67,7 @@ describe('ArmorSlotGroup: material/lining/misc split', () => {
 });
 
 describe('pieceReach, maxCount, and armorType derivation', () => {
-  const effects = getArmorEffects('live');
+  const effects = getArmorEffects('pts');
   const byName = new Map(effects.map((e) => [e.name, e]));
 
   const CUSHIONED = 'DLC03_mod_armor_Marine_Lining_LimbLeg_ReducedFallingDamage';

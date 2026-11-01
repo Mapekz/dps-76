@@ -12,7 +12,7 @@ import { evaluateSuggestions, topSuggestions } from '@/lib/suggest/evaluate';
 import type { EvaluatedSuggestion, SuggestionReport } from '@/lib/suggest/types';
 import { buildStaticLoadoutContext } from '@/lib/suggest/loadout-context';
 
-const MODE: GameMode = 'live';
+const MODE: GameMode = 'pts';
 const BIG_LIMIT = 500;
 
 function surfaced(report: SuggestionReport, groups?: ReadonlySet<EvaluatedSuggestion['group']>) {
@@ -46,7 +46,7 @@ describe('over-budget perk with NO free pool points', () => {
     ]);
 
     const allocated = Object.values(allocationOf(state.player)).reduce((sum, v) => sum + v, 0);
-    expect(allocated).toBe(specialAllocationPool('live'));
+    expect(allocated).toBe(specialAllocationPool('pts'));
 
     const report = evaluateSuggestions(state, MODE, 'vats');
     const luckAdds = surfaced(report).filter((s) => s.family === `perk:${PerkId.BetterCriticals}`);

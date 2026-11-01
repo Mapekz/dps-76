@@ -6,7 +6,7 @@ import type { WeaponConfig } from '@/types';
 
 describe('getUniques', () => {
   it('returns presets with identity mod ids and base weapon refs', () => {
-    const uniques = getUniques('live');
+    const uniques = getUniques('pts');
     expect(uniques.length).toBeGreaterThan(50);
     const salt = uniques.find((u) => u.id === 'mod_Custom_SaltOfTheEarth');
     // `mods` is asserted separately, not nested via `expect.objectContaining`
@@ -20,18 +20,18 @@ describe('getUniques', () => {
       legendaryEffects: [null, null, 'mod_Legendary_Weapon3_Guns_ReloadSpeed'],
     });
     expect(salt!.mods.ap_customName).toBe('mod_Custom_SaltOfTheEarth');
-    expect(getOmodById('live', salt!.id)?.name).toBeTruthy();
+    expect(getOmodById('pts', salt!.id)?.name).toBeTruthy();
   });
 
   it('every unique baseWeaponId resolves to a weapon in the dataset', () => {
-    const weapons = getWeapons('live');
-    for (const unique of getUniques('live')) {
+    const weapons = getWeapons('pts');
+    for (const unique of getUniques('pts')) {
       expect(weapons[unique.baseWeaponId]).toBeDefined();
     }
   });
 
   it('returns uniques sorted non-descending by name', () => {
-    const names = getUniques('live').map((u) => u.name);
+    const names = getUniques('pts').map((u) => u.name);
     const sorted = [...names].sort((a, b) => a.localeCompare(b));
     expect(names).toEqual(sorted);
   });
@@ -45,12 +45,12 @@ describe('getEquippedUnique', () => {
   };
 
   it('derives the equipped unique from ap_customName', () => {
-    expect(getEquippedUnique('live', weapon)?.id).toBe('mod_Custom_SaltOfTheEarth');
+    expect(getEquippedUnique('pts', weapon)?.id).toBe('mod_Custom_SaltOfTheEarth');
   });
 
   it('returns undefined when no identity mod is equipped', () => {
     expect(
-      getEquippedUnique('live', {
+      getEquippedUnique('pts', {
         weaponId: 'DoubleBarrelShotgun',
         mods: {},
         legendaryEffects: [],
@@ -61,7 +61,7 @@ describe('getEquippedUnique', () => {
 
 describe('getUniquesForWeapon', () => {
   it('groups presets by base weapon', () => {
-    const forDbs = getUniquesForWeapon('live', 'DoubleBarrelShotgun');
+    const forDbs = getUniquesForWeapon('pts', 'DoubleBarrelShotgun');
     expect(forDbs.map((u) => u.id)).toEqual(
       expect.arrayContaining(['mod_Custom_SaltOfTheEarth', 'mod_custom_Coldshoulder_DmgvsCryptid']),
     );
@@ -88,7 +88,7 @@ describe('getEquippedUnique (variant container presets)', () => {
 
   it('resolves every Camden Whacker variant id to the same unique preset', () => {
     for (const variantId of camdenVariantIds) {
-      const equipped = getEquippedUnique('live', weaponWithIdentityMod(variantId));
+      const equipped = getEquippedUnique('pts', weaponWithIdentityMod(variantId));
       expect(equipped?.id).toBe('mod_Custom_CamdenWhacker_Bleed');
       expect(equipped?.name).toBe('Camden Whacker');
       expect(equipped?.variantIds).toHaveLength(6);

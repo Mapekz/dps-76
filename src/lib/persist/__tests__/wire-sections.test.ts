@@ -33,7 +33,7 @@ import { stateFrom } from '@/state/__tests__/build-state-fixture';
 import { ENEMY_KNOB_REGISTRY, PLAYER_KNOB_REGISTRY } from '@/types/knob-registry';
 import { createDefaultPlayerConfig, type PerkLoadout, type PlayerConfig } from '@/types';
 
-const mode = 'live' as const;
+const mode = 'pts' as const;
 
 function roundTripBytes(write: (w: BitWriter) => void, read: (r: BitReader) => void): void {
   const w = new BitWriter();

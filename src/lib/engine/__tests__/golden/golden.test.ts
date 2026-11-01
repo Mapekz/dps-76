@@ -90,7 +90,7 @@ describe('golden cases (in-game measurements)', () => {
         conditions: { ...createDefaultEnemyConditions(), ...c.enemyConditions },
       };
 
-      const input = resolveLoadout(playerConfig, enemyConfig, 'live');
+      const input = resolveLoadout(playerConfig, enemyConfig, 'pts');
       expect(input, `weapon ${c.weaponId} exists`).not.toBeNull();
 
       const scenarios = computeScenarios(input!);

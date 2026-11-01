@@ -9,7 +9,7 @@ import {
 } from '@/data/__tests__/armor-test-helpers';
 
 describe('getArmorEffects (curated inventory)', () => {
-  const effects = getArmorEffects('live');
+  const effects = getArmorEffects('pts');
 
   it('includes the named priority effects with the expected classification', () => {
     const byId = new Map(effects.map((e) => [e.id, e]));
@@ -101,7 +101,7 @@ describe('wornPieces stacking curves (armor legendaries)', () => {
   // curve may leak past assembly into the engine.
   it("Hunter's evaluates its piece-count curve at the selected count", () => {
     const valueAt = (n: number): number => {
-      const m = getArmorEffectModifiers('live', { mod_Legendary_Armor1_LessDMGAnimals: n })[0];
+      const m = getArmorEffectModifiers('pts', { mod_Legendary_Armor1_LessDMGAnimals: n })[0];
       // Assembly emits the value arm of the union — narrow before reading.
       if (!m || !('value' in m) || typeof m.value !== 'number') throw new Error('no flat value');
       return m.value;
@@ -115,8 +115,8 @@ describe('wornPieces stacking curves (armor legendaries)', () => {
 
   it('no wornPieces curve survives assembly for any full selection', () => {
     const all: Record<string, number> = {};
-    for (const e of getArmorEffects('live')) all[e.id] = e.maxCount;
-    for (const m of getArmorEffectModifiers('live', all)) {
+    for (const e of getArmorEffects('pts')) all[e.id] = e.maxCount;
+    for (const m of getArmorEffectModifiers('pts', all)) {
       expect(m.curve?.input === 'wornPieces').toBe(false);
     }
   });

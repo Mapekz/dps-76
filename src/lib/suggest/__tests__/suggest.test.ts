@@ -32,7 +32,7 @@ const ARMOR_MISC = 'mod_armor_UnderArmor_style_Casual'; // Casual Style (misc, m
 describe('enumerateVariants', () => {
   let fixerCmVariants: ReturnType<typeof enumerateVariants>;
   beforeAll(() => {
-    fixerCmVariants = enumerateVariants(fixerCmState, 'live', 'vats');
+    fixerCmVariants = enumerateVariants(fixerCmState, 'pts', 'vats');
   });
 
   it('emits omod alternatives per slot but never the equipped option', () => {
@@ -46,7 +46,7 @@ describe('enumerateVariants', () => {
       ],
       fixerCmState,
     );
-    const variants = enumerateVariants(withReceiver, 'live', 'vats');
+    const variants = enumerateVariants(withReceiver, 'pts', 'vats');
     const receiverMods = variants.filter((v) => v.id.startsWith('mod:ap_gun_Receiver'));
     expect(receiverMods.length).toBeGreaterThan(0);
     expect(receiverMods.some((v) => v.id.endsWith('mod_CombatRifle_Receiver_Damage-Auto'))).toBe(
@@ -67,7 +67,7 @@ describe('enumerateVariants', () => {
       fixerCmState,
     );
     expect(
-      enumerateVariants(maxed, 'live', 'vats').some(
+      enumerateVariants(maxed, 'pts', 'vats').some(
         (v) => v.family === `perk:${PerkId.CenterMasochist}`,
       ),
     ).toBe(false);
@@ -95,7 +95,7 @@ describe('enumerateVariants', () => {
     // Center Masochist: maxRank 3, costs [1, 2, 3] — rank 1 is equipped in
     // fixerCmState, so ranks 2 and 3 should both be offered, same family, with
     // point deltas 1 (2-1) and 2 (3-1) respectively.
-    const perk = getPerks('live')[PerkId.CenterMasochist];
+    const perk = getPerks('pts')[PerkId.CenterMasochist];
     expect(perk.maxRank).toBe(3);
 
     const rank2 = fixerCmVariants.find(
@@ -130,7 +130,7 @@ describe('enumerateVariants', () => {
       byPerk.set(perkId, list);
     }
 
-    const registry = getPerks('live');
+    const registry = getPerks('pts');
     for (const [perkId, candidates] of byPerk) {
       const perk = registry[perkId as PerkId];
       expect(perk).toBeDefined();
@@ -156,7 +156,7 @@ describe('enumerateVariants', () => {
       ],
       fixerCmState,
     );
-    const drops = enumerateVariants(withMutation, 'live', 'vats').filter(
+    const drops = enumerateVariants(withMutation, 'pts', 'vats').filter(
       (v) => v.group === 'mutation' && v.label.startsWith('Drop'),
     );
     expect(drops.length).toBe(1);
@@ -169,7 +169,7 @@ describe('enumerateVariants', () => {
         [{ type: 'armorEffect/setCount', id: ARMOR_A, count: 5 }],
         fixerCmState,
       );
-      fullTierVariants = enumerateVariants(fullTier, 'live', 'vats');
+      fullTierVariants = enumerateVariants(fullTier, 'pts', 'vats');
     });
 
     it('caps plain increases to the remaining per-tier budget and offers same-tier swaps', () => {
@@ -177,7 +177,7 @@ describe('enumerateVariants', () => {
         [{ type: 'armorEffect/setCount', id: ARMOR_A, count: 3 }],
         fixerCmState,
       );
-      const variants = enumerateVariants(withA, 'live', 'vats');
+      const variants = enumerateVariants(withA, 'pts', 'vats');
 
       // free = 5 - 3 = 2: B (currently 0) can only step up to 1 and 2.
       const bIncreases = variants.filter((v) => v.id.startsWith(`armor-count:${ARMOR_B}:`));
@@ -219,7 +219,7 @@ describe('enumerateVariants', () => {
     });
 
     it('never proposes counts above feasible piece limits or wrong-armor-type effects', () => {
-      const ULTRA_LIGHT = getArmorEffects('live').find((e) => e.name === 'Ultra-Light Build')!.id;
+      const ULTRA_LIGHT = getArmorEffects('pts').find((e) => e.name === 'Ultra-Light Build')!.id;
       const BODY_JETPACK = 'mod_armor_BOSInfantry_JetPack';
       const UNYIELDING = 'mod_Legendary_Armor1_LowHealthIncreasesStats';
 
@@ -227,14 +227,14 @@ describe('enumerateVariants', () => {
         [{ type: 'armorEffect/setCount', id: BODY_JETPACK, count: 1 }],
         fixerCmState,
       );
-      const increases = enumerateVariants(withJetpack, 'live', 'vats').filter((v) =>
+      const increases = enumerateVariants(withJetpack, 'pts', 'vats').filter((v) =>
         v.id.startsWith(`armor-count:${ULTRA_LIGHT}:`),
       );
       expect(increases.length).toBeGreaterThan(0);
       expect(increases.every((v) => Number(v.id.split(':')[2]) <= 4)).toBe(true);
 
       const inPa = stateFrom([{ type: 'armorType/set', armorWorn: 'power' }], fixerCmState);
-      const paVariants = enumerateVariants(inPa, 'live', 'vats');
+      const paVariants = enumerateVariants(inPa, 'pts', 'vats');
       expect(paVariants.some((v) => v.id.includes(UNYIELDING))).toBe(false);
       expect(
         paVariants.some((v) => v.id.startsWith('armor-count:') && v.id.includes(BODY_JETPACK)),
@@ -250,10 +250,10 @@ describe('evaluateSuggestions', () => {
 
   beforeAll(() => {
     baselineScenarios = computeScenarios(
-      resolveLoadout(fixerCmState.player, fixerCmState.enemy, 'live')!,
+      resolveLoadout(fixerCmState.player, fixerCmState.enemy, 'pts')!,
     );
-    freeAimReport = evaluateSuggestions(fixerCmState, 'live', 'freeAim');
-    vatsReport = evaluateSuggestions(fixerCmState, 'live', 'vats');
+    freeAimReport = evaluateSuggestions(fixerCmState, 'pts', 'freeAim');
+    vatsReport = evaluateSuggestions(fixerCmState, 'pts', 'vats');
   });
 
   it('baseline equals a direct computeScenarios of the unpatched config (drift guard)', () => {
@@ -279,7 +279,7 @@ describe('evaluateSuggestions', () => {
   });
 
   it('returns an empty report with no weapon equipped', () => {
-    const report = evaluateSuggestions(createDefaultBuildState(), 'live', 'vats');
+    const report = evaluateSuggestions(createDefaultBuildState(), 'pts', 'vats');
     expect(report.baseline).toBeNull();
     expect(report.suggestions).toEqual([]);
   });
@@ -323,7 +323,7 @@ describe('evaluateSuggestions', () => {
     expect(electrician!.primaryDeltaPct).toBeGreaterThan(0);
 
     const patched = stateFrom(electrician!.action, fixerCmState);
-    const withProc = computeScenarios(resolveLoadout(patched.player, patched.enemy, 'live')!);
+    const withProc = computeScenarios(resolveLoadout(patched.player, patched.enemy, 'pts')!);
     expect(withProc.freeAim.procDps).toBeGreaterThan(0);
     expect(withProc.freeAim.sustain.sustainedDps).toBeCloseTo(
       baselineScenarios.freeAim.sustain.sustainedDps,
@@ -447,8 +447,8 @@ describe('manual-uptime sneak gate (Follow Through / Taking One for the Team)', 
   let notSneakingCandidates: ReturnType<typeof enumerateVariants>;
   let sneakingCandidates: ReturnType<typeof enumerateVariants>;
   beforeAll(() => {
-    notSneakingCandidates = enumerateVariants(sneaking(fixerCmState, false), 'live', 'vats');
-    sneakingCandidates = enumerateVariants(sneaking(fixerCmState, true), 'live', 'vats');
+    notSneakingCandidates = enumerateVariants(sneaking(fixerCmState, false), 'pts', 'vats');
+    sneakingCandidates = enumerateVariants(sneaking(fixerCmState, true), 'pts', 'vats');
   });
 
   it('never suggests Follow Through while not sneaking', () => {
@@ -485,7 +485,7 @@ describe('manual-uptime sneak gate (Follow Through / Taking One for the Team)', 
       ],
       sneaking(fixerCmState, true),
     );
-    const candidates = enumerateVariants(sixLegendaries, 'live', 'vats');
+    const candidates = enumerateVariants(sixLegendaries, 'pts', 'vats');
     expect(candidates.some((c) => c.id.startsWith('leg-perk-swap:TakingOneForTheTeam->'))).toBe(
       true,
     );
@@ -500,7 +500,7 @@ describe('legendary swap budget soundness', () => {
   // allocation fix folded in when that makes it legal.
   // A STR perk slotted at a rank whose cost fits base 1 + Legendary Strength 4
   // (+5 budget) but NOT base 1 alone — removing the legendary orphans it.
-  const registry = getPerks('live');
+  const registry = getPerks('pts');
   const strEntry = Object.entries(registry).find(([, p]) => {
     if (p.special !== 'Strength') return false;
     for (let r = 1; r <= p.maxRank; r++) {
@@ -564,11 +564,11 @@ describe('legendary swap budget soundness', () => {
 
   let withPoolCandidates: ReturnType<typeof enumerateVariants>;
   beforeAll(() => {
-    withPoolCandidates = enumerateVariants(withPool, 'live', 'vats');
+    withPoolCandidates = enumerateVariants(withPool, 'pts', 'vats');
   });
 
   it('skips Legendary Strength swap-outs when the orphaned STR cards cannot be re-funded', () => {
-    const candidates = enumerateVariants(exhausted, 'live', 'vats');
+    const candidates = enumerateVariants(exhausted, 'pts', 'vats');
     expect(
       candidates.some((c) => c.id.startsWith(`leg-perk-swap:${PerkId.LegendaryStrength}->`)),
     ).toBe(false);
@@ -600,7 +600,7 @@ describe('legendary swap budget soundness', () => {
       number
     >;
     const budget = computePerkBudget(
-      'live',
+      'pts',
       applied.player.perks,
       applied.player.legendaryPerks,
       allocation,

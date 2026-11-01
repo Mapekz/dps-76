@@ -18,7 +18,7 @@ import { getWeapons, maxEligibleLevel } from '@/data';
  * revision it only ever restated the same 3-scenario description that's now
  * in the issue body — no concrete perk/weapon list was ever authored. So the
  * actual perk/weapon/SPECIAL choices below are AGENT-AUTHORED from the live
- * dataset (`src/data/live/perks.ts`'s registry, `getWeapons('live')`), not
+ * dataset (`src/data/pts/perks.ts`'s registry, `getWeapons('pts')`), not
  * recovered from history — every pick is a judgment call pending user
  * review, same as any `overrides/*` entry that lacks a verified-in-ESM
  * source comment would be flagged for. Swap perks/mods/SPECIAL freely; nothing

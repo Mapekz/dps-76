@@ -106,7 +106,7 @@ export function paper(
   overrides: Partial<PaperDamageInput> = {},
 ) {
   return computePaperDamage({
-    mode: 'live',
+    mode: 'pts',
     weapon,
     itemLevel: 50,
     modifiers,
@@ -123,7 +123,7 @@ export function scenarioInput(
   overrides: Partial<ScenarioInput> = {},
 ): ScenarioInput {
   return {
-    mode: 'live',
+    mode: 'pts',
     weapon,
     itemLevel: 50,
     modifiers: [],

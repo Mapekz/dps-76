@@ -105,7 +105,7 @@ describe('magazine/bobblehead wiring (overrides & extracted modifiers → resolv
         consumables: ['Magazine_LiveAndLove05_Potion'],
       },
       createDefaultEnemyConfig(),
-      'live',
+      'pts',
     );
     const alcoholOnly = resolveStats(
       {
@@ -114,7 +114,7 @@ describe('magazine/bobblehead wiring (overrides & extracted modifiers → resolv
         consumables: ['Brew_BlackwaterBrew'],
       },
       createDefaultEnemyConfig(),
-      'live',
+      'pts',
     );
     const magazineAndAlcohol = resolveStats(
       {
@@ -123,7 +123,7 @@ describe('magazine/bobblehead wiring (overrides & extracted modifiers → resolv
         consumables: ['Magazine_LiveAndLove05_Potion', 'Brew_BlackwaterBrew'],
       },
       createDefaultEnemyConfig(),
-      'live',
+      'pts',
     );
 
     expect(magazineOnly.special.luck).toBe(15);

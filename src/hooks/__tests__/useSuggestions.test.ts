@@ -23,7 +23,7 @@ function inputs(overrides: Partial<Inputs> = {}): Inputs {
   return {
     player: createDefaultPlayerConfig(),
     enemy: createDefaultEnemyConfig(),
-    mode: 'live',
+    mode: 'pts',
     metric: 'vats',
     ...overrides,
   };
@@ -46,7 +46,7 @@ describe('isReportStale', () => {
   it.each([
     ['player', () => ({ player: createDefaultPlayerConfig() })],
     ['enemy', () => ({ enemy: createDefaultEnemyConfig() })],
-    ['mode', () => ({ mode: 'pts' as const })],
+    ['mode', () => ({ mode: 'live' as const })],
     ['metric', () => ({ metric: 'freeAim' as const })],
   ])('is stale when %s alone differs', (_name, change) => {
     const current = inputs();

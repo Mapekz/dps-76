@@ -539,7 +539,7 @@ describe('armorEffect/setCount: per-star-tier budget', () => {
   });
 
   it('a misc effect (no starTier) is unaffected by legendary tier occupancy, even with the tier full', () => {
-    const misc = getArmorEffects('live').find((e) => e.group === 'misc' && e.maxCount > 1);
+    const misc = getArmorEffects('pts').find((e) => e.group === 'misc' && e.maxCount > 1);
     if (!misc)
       throw new Error('expected a misc armor effect with maxCount > 1 in the live dataset');
 

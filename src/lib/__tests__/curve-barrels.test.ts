@@ -3,11 +3,7 @@ import { readdirSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-// Static imports of all 8 barrels
-import creaturesHealthLive from '@/data/live/curvetables/creatures/health/index.generated';
-import creaturesArmorLive from '@/data/live/curvetables/creatures/armor/index.generated';
-import playerDamageLive from '@/data/live/curvetables/player/damage/index.generated';
-import playerArmorLive from '@/data/live/curvetables/player/armor/index.generated';
+// Static imports of all 4 barrels
 import creaturesHealthPts from '@/data/pts/curvetables/creatures/health/index.generated';
 import creaturesArmorPts from '@/data/pts/curvetables/creatures/armor/index.generated';
 import playerDamagePts from '@/data/pts/curvetables/player/damage/index.generated';
@@ -21,28 +17,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
  * reduce tier coverage (e.g. a zzz-prefixed rename in the game editor that
  * bypasses a naive prefix search).
  *
- * The 8 barrels cover 4 families (creatures health/armor, player damage/armor)
- * × 2 modes (live, pts).
+ * The 4 barrels cover the creature health/armor and player damage/armor families.
  */
 
-// All 8 barrel locations and their imported modules
+// All 4 barrel locations and their imported modules
 const BARREL_TEST_CASES = [
-  {
-    path: 'src/data/live/curvetables/creatures/health',
-    module: creaturesHealthLive,
-  },
-  {
-    path: 'src/data/live/curvetables/creatures/armor',
-    module: creaturesArmorLive,
-  },
-  {
-    path: 'src/data/live/curvetables/player/damage',
-    module: playerDamageLive,
-  },
-  {
-    path: 'src/data/live/curvetables/player/armor',
-    module: playerArmorLive,
-  },
   {
     path: 'src/data/pts/curvetables/creatures/health',
     module: creaturesHealthPts,

@@ -20,16 +20,16 @@ import {
 // Phase 7 milestone: legendary effects, mutations, and consumables move the
 // numbers per wiki values (pending in-game golden validation).
 
-const fixer = getWeapons('live')['CombatRifle_Fixer'];
+const fixer = getWeapons('pts')['CombatRifle_Fixer'];
 
-const bat = getWeapons('live')['BaseballBat'];
+const bat = getWeapons('pts')['BaseballBat'];
 
 function base(overrides: Partial<ScenarioInput> = {}): ScenarioInput {
   return scenarioInput(fixer, { critRate: 0, ...overrides });
 }
 
 function withOmod(id: string, weapon = fixer) {
-  return effective(weapon, [getOmodById('live', id)!]);
+  return effective(weapon, [getOmodById('pts', id)!]);
 }
 
 const stock = computeScenarios(base());
@@ -98,7 +98,7 @@ describe('legendary weapon effects', () => {
   });
 
   it('Adrenaline perk follows its extracted curve: +10%/kill-streak stack (distinct from mutation/legendary)', () => {
-    const adrenaline = getLoadoutModifiers('live', [{ perkId: PerkId.Adrenaline, rank: 1 }]);
+    const adrenaline = getLoadoutModifiers('pts', [{ perkId: PerkId.Adrenaline, rank: 1 }]);
     const at10 = computeScenarios(
       base({
         modifiers: adrenaline,
@@ -199,7 +199,7 @@ describe('legendary weapon effects (2026-07-11 condition kinds)', () => {
       ['mod_Legendary_Weapon4_Pyromaniac', 'isBurning'],
       ['mod_Legendary_Weapon4_Vipers', 'isPoisoned'],
     ] as const) {
-      const omod = getOmodById('live', id)!;
+      const omod = getOmodById('pts', id)!;
       const { weapon, modifiers } = effective(fixer, [omod]);
       const clean = computeScenarios(base({ weapon, modifiers }));
       expect(clean.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
@@ -221,11 +221,11 @@ describe('AP economy (Stage B, real data)', () => {
   it('keeps fractional VATS AP cost after OMOD fold — does not round to the Pip-Boy display', () => {
     // Plasma Gun 16 × (1 − 0.3 thrower − 0.1 aligned − 0.1 stock + 0.2 calib)
     // = 11.2; Pip-Boy shows round(11.2) = 11 (user-measured 2026-07-29).
-    const plasma = getWeapons('live')['PlasmaGun'];
+    const plasma = getWeapons('pts')['PlasmaGun'];
     const omods = [
-      getOmodById('live', 'mod_PlasmaGun_Barrel_Flamer_Recoil-HipAccuracy')!,
-      getOmodById('live', 'mod_PlasmaGun_Grip_Recoil-HipAccuracy')!,
-      getOmodById('live', 'mod_PlasmaGun_Receiver_CritDMG')!,
+      getOmodById('pts', 'mod_PlasmaGun_Barrel_Flamer_Recoil-HipAccuracy')!,
+      getOmodById('pts', 'mod_PlasmaGun_Grip_Recoil-HipAccuracy')!,
+      getOmodById('pts', 'mod_PlasmaGun_Receiver_CritDMG')!,
     ];
     const { weapon } = effective(plasma, omods);
     expect(weapon.apCost).toBeCloseTo(11.2, 10);
@@ -300,7 +300,7 @@ describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
   });
 
   it('Guerrilla (rank 3) adds +20% dbm to ranged weapons only against close-range targets', () => {
-    const guerrilla3 = getLoadoutModifiers('live', [{ perkId: PerkId.Guerrilla, rank: 3 }]);
+    const guerrilla3 = getLoadoutModifiers('pts', [{ perkId: PerkId.Guerrilla, rank: 3 }]);
     const none = computeScenarios(base({ modifiers: guerrilla3 }));
     expect(none.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
     const close = computeScenarios(
@@ -348,7 +348,7 @@ describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
 
 describe("Thrill-Seeker's (Stage C3, real data)", () => {
   it('reload speed scales with kill-streak count (0/5/10 stacks), raising sustained DPS', () => {
-    const thrillSeeker = getOmodById('live', 'RA_mod_Legendary_Weapon4_ThrillSeeker')!;
+    const thrillSeeker = getOmodById('pts', 'RA_mod_Legendary_Weapon4_ThrillSeeker')!;
     const at0 = { ...makeResolvedPlayer(), killStreak: 0 };
     const at5 = { ...makeResolvedPlayer(), killStreak: 5 };
     const at10 = { ...makeResolvedPlayer(), killStreak: 10 };
@@ -373,7 +373,7 @@ describe("Thrill-Seeker's (Stage C3, real data)", () => {
 describe('Action Boy/Girl (Stage C4, cross-family rank gate fix)', () => {
   it('rank 3 (+45% AP regen) raises regenPerSec, and feeds uptime ONLY through the reload window (2026-07-15 reload-regen model)', () => {
     const withoutActionBoy = stock;
-    const actionBoy3 = getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 3 }]);
+    const actionBoy3 = getLoadoutModifiers('pts', [{ perkId: PerkId.ActionBoyGirl, rank: 3 }]);
     const withActionBoy = computeScenarios(base({ modifiers: actionBoy3 }));
 
     expect(withActionBoy.vats.ap).toBeDefined();
@@ -396,13 +396,13 @@ describe('Action Boy/Girl (Stage C4, cross-family rank gate fix)', () => {
 
   it('each rank grants its OWN flat tier, not a cumulative stack (15%/30%/45%) — regenPerSec and the reload-regen credit both monotonic', () => {
     const rank1 = computeScenarios(
-      base({ modifiers: getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 1 }]) }),
+      base({ modifiers: getLoadoutModifiers('pts', [{ perkId: PerkId.ActionBoyGirl, rank: 1 }]) }),
     );
     const rank2 = computeScenarios(
-      base({ modifiers: getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 2 }]) }),
+      base({ modifiers: getLoadoutModifiers('pts', [{ perkId: PerkId.ActionBoyGirl, rank: 2 }]) }),
     );
     const rank3 = computeScenarios(
-      base({ modifiers: getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 3 }]) }),
+      base({ modifiers: getLoadoutModifiers('pts', [{ perkId: PerkId.ActionBoyGirl, rank: 3 }]) }),
     );
     // regenPerSec is monotonic in the AP regen bonus (15% < 30% < 45%) —
     // were the tiers cumulative, the gaps would compound instead.
@@ -428,8 +428,8 @@ describe('Lock and Load → Bullet Storm reload speed (cross-family perkFamilyRa
   // and `effectiveBulletStormStacks` now clamps the reload curve's input to
   // 0 with it. These tests splice in a synthetic ADD 10 cap alongside the
   // real perk-derived modifiers instead of depending on regenerated JSON.
-  const fiftyCal = getWeapons('live')['50CalMachineGun'];
-  const bulletStorm = getLoadoutModifiers('live', [{ perkId: PerkId.BulletStorm, rank: 1 }]);
+  const fiftyCal = getWeapons('pts')['50CalMachineGun'];
+  const bulletStorm = getLoadoutModifiers('pts', [{ perkId: PerkId.BulletStorm, rank: 1 }]);
   const syntheticMax: Modifier = {
     id: 'synthetic-bulletstorm-max',
     source: {
@@ -468,11 +468,11 @@ describe('Lock and Load → Bullet Storm reload speed (cross-family perkFamilyRa
     };
     const withoutLnLPerks = playerConfig.perks;
     const withLnLPerks = [...playerConfig.perks, { perkId: PerkId.LockAndLoad, rank: 1 }];
-    const withoutLnL = resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live')!;
+    const withoutLnL = resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'pts')!;
     const withLnL = resolveLoadout(
       { ...playerConfig, perks: withLnLPerks },
       createDefaultEnemyConfig(),
-      'live',
+      'pts',
     )!;
     expect(withLnL.player.equippedPerkRanks).toMatchObject({ LockAndLoad: 1, HeavyGunner: 1 });
 
@@ -482,11 +482,11 @@ describe('Lock and Load → Bullet Storm reload speed (cross-family perkFamilyRa
     // synthetic cap spliced in, to confirm the cross-family gate still
     // activates the curve end-to-end once real data supplies the cap.
     const reloadWithout = effective(fiftyCal, [], { ...withoutLnL.player, bulletStormStacks: 10 }, [
-      ...getLoadoutModifiers('live', withoutLnLPerks),
+      ...getLoadoutModifiers('pts', withoutLnLPerks),
       syntheticMax,
     ]).weapon.reloadSpeed!;
     const reloadWith = effective(fiftyCal, [], { ...withLnL.player, bulletStormStacks: 10 }, [
-      ...getLoadoutModifiers('live', withLnLPerks),
+      ...getLoadoutModifiers('pts', withLnLPerks),
       syntheticMax,
     ]).weapon.reloadSpeed!;
     expect(reloadWith).toBeGreaterThan(reloadWithout);
@@ -560,7 +560,7 @@ describe('Onslaught (2026-07-12, real data)', () => {
   });
 
   it("Guerrilla Master's ranged+close-range dbm curve now resolves (previously the unresolved 0x00000395 input) and its own +5 max stacks apply", () => {
-    const guerrillaMaster = getLoadoutModifiers('live', [
+    const guerrillaMaster = getLoadoutModifiers('pts', [
       { perkId: PerkId.GuerrillaMaster, rank: 1 },
     ]);
     const none = computeScenarios(base({ modifiers: guerrillaMaster }));
@@ -581,7 +581,7 @@ describe('Onslaught (2026-07-12, real data)', () => {
   });
 
   it('Gunslinger Expert adds weak-spot damage per stack (ranged only) at its own +3 max', () => {
-    const gunslingerExpert = getLoadoutModifiers('live', [
+    const gunslingerExpert = getLoadoutModifiers('pts', [
       { perkId: PerkId.GunslingerExpert, rank: 1 },
     ]);
     const noWeakpoint = computeScenarios(base({ modifiers: gunslingerExpert }));
@@ -613,9 +613,9 @@ describe('Onslaught (2026-07-12, real data)', () => {
     // SuperSledge's templateModFormIds) — use base SuperSledge, which is
     // stat-identical except speed (1 vs the legacy record's 1.5), which
     // doesn't factor into per-hit damage.
-    const whackerWeapon = getWeapons('live')['SuperSledge'];
+    const whackerWeapon = getWeapons('pts')['SuperSledge'];
     expect(whackerWeapon).toBeDefined();
-    const whackerEffect = getOmodById('live', 'E09B_mod_Custom_WhackerSmacker')!;
+    const whackerEffect = getOmodById('pts', 'E09B_mod_Custom_WhackerSmacker')!;
     const paPlayer = { ...makeResolvedPlayer(), isPowerAttacking: true };
 
     const aloneEff = effective(whackerWeapon, [whackerEffect]);
@@ -629,7 +629,7 @@ describe('Onslaught (2026-07-12, real data)', () => {
 
     // Pair with Furious (a separate legendary slot) to grant a real max (9) —
     // demonstrates the shared-cap mechanic combining two independent sources.
-    const furious = getOmodById('live', 'mod_Legendary_Weapon1_DmgConsecutiveHits')!;
+    const furious = getOmodById('pts', 'mod_Legendary_Weapon1_DmgConsecutiveHits')!;
     const paired = effective(whackerWeapon, [whackerEffect, furious]);
     const withMax = computeScenarios(
       base({
@@ -653,7 +653,7 @@ describe('Onslaught (2026-07-12, real data)', () => {
     const { weapon, modifiers: omodModifiers } = withOmod(
       'mod_Legendary_Weapon1_DmgConsecutiveHits',
     );
-    const guerrillaExpert = getLoadoutModifiers('live', [
+    const guerrillaExpert = getLoadoutModifiers('pts', [
       { perkId: PerkId.GuerrillaExpert, rank: 1 },
     ]);
     const result = computeScenarios(
@@ -673,7 +673,7 @@ describe('3★ elemental weapon legendaries', () => {
       weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects },
       armorEffects: burningArmor ? { [ARMOR_BURNING]: burningArmor } : {},
     };
-    return computeScenarios(resolveLoadout(config, createDefaultEnemyConfig(), 'live')!).freeAim;
+    return computeScenarios(resolveLoadout(config, createDefaultEnemyConfig(), 'pts')!).freeAim;
   }
 
   it.each([
@@ -691,7 +691,7 @@ describe('3★ elemental weapon legendaries', () => {
 
   it('matching armor without the weapon legendary adds no DoT (its own proc stays #88)', () => {
     expect(dps([], 5).dotDps).toBe(0);
-    const armor = getArmorEffectById('live', ARMOR_BURNING)!;
+    const armor = getArmorEffectById('pts', ARMOR_BURNING)!;
     expect(armor.modifiers.map((m) => m.bucket)).toEqual(['burningLegendaryCount']);
   });
 
@@ -731,7 +731,7 @@ describe('3★ elemental weapon legendaries', () => {
             conditions: { ...createDefaultPlayerConfig().conditions, ...conditions },
           },
           createDefaultEnemyConfig(),
-          'live',
+          'pts',
         )!,
       ).freeAim;
     expect(run({ tenderizerStacks: 500 }).dotDps).toBeCloseTo(19 * 1.5, 6);
@@ -750,7 +750,7 @@ describe('3★ elemental weapon legendaries', () => {
             ...extra,
           },
           createDefaultEnemyConfig(),
-          'live',
+          'pts',
         )!,
       ).freeAim;
     // Center Masochist is torso-gated dbm: it raises the torso hit, not the DoT.
@@ -798,13 +798,13 @@ describe('3★ elemental weapon legendaries', () => {
 
 describe('mutations and consumables', () => {
   it('Psychobuff adds +25% dbm', () => {
-    const mods = getBuffModifiers('live', [], ['Psychobuff']);
+    const mods = getBuffModifiers('pts', [], ['Psychobuff']);
     const result = computeScenarios(base({ modifiers: mods }));
     expect(result.freeAim.perHit.total).toBeCloseTo(stockTotal * 1.25, 6);
   });
 
   it('Adrenal Reaction (extracted ESM curves) scales with kill streak: +5%/stack, ×1.25 with Strange in Numbers', () => {
-    const mods = getBuffModifiers('live', ['Mutation_AdrenalReaction'], []);
+    const mods = getBuffModifiers('pts', ['Mutation_AdrenalReaction'], []);
     const player = { ...makeResolvedPlayer(), killStreak: 10 };
     const solo = computeScenarios(base({ modifiers: mods, player }));
     expect(solo.freeAim.perHit.total).toBeCloseTo(stockTotal * 1.5, 6);
@@ -818,7 +818,7 @@ describe('mutations and consumables', () => {
   it('Nerd Rage follows its extracted curve: +60% damage at or below 20% HP, 0 at full HP', () => {
     // 20261026 curve (0.2, 60)(0.8, 1)(1, 0); through 20260821 it peaked at
     // (0.05, 80). 5% HP clamps to the curve's lowest-x point.
-    const nerdRage = getLoadoutModifiers('live', [{ perkId: PerkId.NerdRage, rank: 1 }]);
+    const nerdRage = getLoadoutModifiers('pts', [{ perkId: PerkId.NerdRage, rank: 1 }]);
     const at5 = computeScenarios(
       base({
         modifiers: nerdRage,
@@ -831,7 +831,7 @@ describe('mutations and consumables', () => {
   });
 
   it('Eagle Eyes adds +50% crit damage (+62.5% with Strange in Numbers)', () => {
-    const mods = getBuffModifiers('live', ['Mutation_EagleEyes'], []);
+    const mods = getBuffModifiers('pts', ['Mutation_EagleEyes'], []);
     // full-crit VATS parenthesis = 1 + (critMult − 1); crit mult 2.0 → 2.5 solo, 2.625 team.
     const solo = computeScenarios(base({ modifiers: mods, critRate: 1 }));
     const none = computeScenarios(base({ critRate: 1 }));
@@ -854,7 +854,7 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
     // effect, their flat "20/30% AP regen" descriptions are stale legacy
     // text): CHA curve (1,10)(15,30)(30,45)(60,70)(100,85), teammateCount 0
     // gate. Default CHA 15 → +30% on the race base: 210 × 6/100 × 1.30 = 16.38.
-    const lw = getLoadoutModifiers('live', [{ perkId: PerkId.LoneWanderer, rank: 3 }]);
+    const lw = getLoadoutModifiers('pts', [{ perkId: PerkId.LoneWanderer, rank: 3 }]);
     const solo = computeScenarios(base({ modifiers: lw }));
     expect(solo.vats.ap!.regenPerSec).toBeCloseTo(16.38, 6);
     const teamed = computeScenarios(
@@ -865,7 +865,7 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
 
   it('Number Cruncher scales dbm by the EFFECTIVE weapon AP cost, in free aim too', () => {
     // +2% per AP point (STAT_DmgAP route): stock Fixer costs 16 AP → +32%.
-    const nc = getLoadoutModifiers('live', [{ perkId: PerkId.NumberCruncher, rank: 1 }]);
+    const nc = getLoadoutModifiers('pts', [{ perkId: PerkId.NumberCruncher, rank: 1 }]);
     const plain = computeScenarios(base({ modifiers: nc }));
     expect(plain.freeAim.perHit.total / stockTotal).toBeCloseTo(1 + 0.02 * 16, 6);
 
@@ -881,19 +881,19 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
 
   it('Company Tea adds +10 onto the race-base rate stat (percent of max AP per second)', () => {
     // 210 pool × (6 + 10)/100 = 33.6 AP/s.
-    const tea = getBuffModifiers('live', [], ['CompanyTea_RSVP02']);
+    const tea = getBuffModifiers('pts', [], ['CompanyTea_RSVP02']);
     const result = computeScenarios(base({ modifiers: tea }));
     expect(result.vats.ap!.regenPerSec).toBeCloseTo(33.6, 6);
 
     // Stacked with Packin' Light (+25% ActionPointsRateMult, always-on under
     // the never-over-encumbered assumption): 33.6 × 1.25 = 42.
-    const pl = getLoadoutModifiers('live', [{ perkId: PerkId.PackinLight, rank: 1 }]);
+    const pl = getLoadoutModifiers('pts', [{ perkId: PerkId.PackinLight, rank: 1 }]);
     const stacked = computeScenarios(base({ modifiers: [...tea, ...pl] }));
     expect(stacked.vats.ap!.regenPerSec).toBeCloseTo(42, 6);
   });
 
   it("Scaly Skin's −50 max AP penalty shrinks the pool AND its regen proportionally (%-of-max rate)", () => {
-    const ss = getBuffModifiers('live', ['Mutation_ScalySkin'], []);
+    const ss = getBuffModifiers('pts', ['Mutation_ScalySkin'], []);
     const withMutation = computeScenarios(base({ modifiers: ss }));
     const without = stock;
     expect(withMutation.vats.ap!.maxAp).toBe(without.vats.ap!.maxAp - 50);
@@ -912,7 +912,7 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
           conditions: { ...makeResolvedPlayer(), drinkTier: 0, ...conditions },
         },
         createDefaultEnemyConfig(),
-        'live',
+        'pts',
       )!;
     // Ladder: 0/15/15/25/35% for drinkTier 0..4 — no separate toggle.
     expect(computeScenarios(resolve({ drinkTier: 0 })).vats.ap!.regenPerSec).toBeCloseTo(12.6, 6);
@@ -950,7 +950,7 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
           conditions: { ...makeResolvedPlayer(), drinkTier },
         },
         createDefaultEnemyConfig(),
-        'live',
+        'pts',
       )!;
     expect(computeScenarios(resolve(1, 4)).vats.ap!.regenPerSec).toBeCloseTo(12.6 * 1.45, 6);
     expect(computeScenarios(resolve(2, 4)).vats.ap!.regenPerSec).toBeCloseTo(12.6 * 1.6, 6);
@@ -968,7 +968,7 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
           conditions: { ...makeResolvedPlayer(), foodTier: 0, ...conditions },
         },
         createDefaultEnemyConfig(),
-        'live',
+        'pts',
       );
     // Ladder: +0/15/15/25/35 HP for foodTier 0..4 — no separate toggle.
     expect(resolve({ foodTier: 0 }).maxHealth).toBe(320);
@@ -988,7 +988,7 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
           conditions: { ...makeResolvedPlayer(), foodTier },
         },
         createDefaultEnemyConfig(),
-        'live',
+        'pts',
       );
     expect(resolve(1, 4).maxHealth).toBe(365);
     expect(resolve(2, 4).maxHealth).toBe(380);
@@ -1016,7 +1016,7 @@ describe('consumables overhaul integration (2026-07-13, real extracted data)', (
         },
         ...overrides,
       };
-      const result = resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live');
+      const result = resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'pts');
       expect(result).not.toBeNull();
       return result!;
     };

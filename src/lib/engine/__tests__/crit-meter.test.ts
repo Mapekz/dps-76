@@ -11,7 +11,7 @@ import { makeCtx } from '@/lib/engine/__tests__/engine-fixture';
 /** Limit-Breaking Armor's checklist id (5-tier critConsumption, wornPieceCount-gated). */
 const LIMIT_BREAKING_ID = 'mod_Legendary_Armor4_LimitBreak';
 
-const fixer = getWeapons('live')['CombatRifle_Fixer'];
+const fixer = getWeapons('pts')['CombatRifle_Fixer'];
 
 function ctx(overrides: Partial<ResolveContext['player']> = {}): ResolveContext {
   return makeCtx(fixer, {
@@ -22,7 +22,7 @@ function ctx(overrides: Partial<ResolveContext['player']> = {}): ResolveContext 
 
 describe('computeCritMeter', () => {
   it('baseline: 15 LCK, no perks → crit every 5th shot', () => {
-    const result = computeCritMeter('live', [], fixer, ctx());
+    const result = computeCritMeter('pts', [], fixer, ctx());
     // 5 (base) + 1 (Fixer's Crit Charge Bonus) + 21 (CT_LuckVATSCriticalCharge
     // Y at X=15, an exact curve point) — see crit-meter.ts's module doc.
     expect(result.fillPerHit).toBeCloseTo(27, 6);
@@ -37,11 +37,11 @@ describe('computeCritMeter', () => {
     // carry their own wornPieceCount tiers) MUL_ADDs −50%.
     const selections = { [LIMIT_BREAKING_ID]: 5 };
     const mods = [
-      ...getLoadoutModifiers('live', [{ perkId: PerkId.CriticalSavvy, rank: 3 }]),
-      ...getArmorEffectModifiers('live', selections),
+      ...getLoadoutModifiers('pts', [{ perkId: PerkId.CriticalSavvy, rank: 3 }]),
+      ...getArmorEffectModifiers('pts', selections),
     ];
-    const wornPieceCounts = getArmorEffectWornPieceCounts('live', selections);
-    const result = computeCritMeter('live', mods, fixer, ctx({ luck: 16, wornPieceCounts }));
+    const wornPieceCounts = getArmorEffectWornPieceCounts('pts', selections);
+    const result = computeCritMeter('pts', mods, fixer, ctx({ luck: 16, wornPieceCounts }));
     // 5 + 1 + curveY(16) = 5 + 1 + 21.8 (linear interp between (15,21)/(20,25)).
     expect(result.fillPerHit).toBeCloseTo(27.8, 6);
     expect(result.consumption).toBeCloseTo(27.5, 6);
@@ -51,10 +51,10 @@ describe('computeCritMeter', () => {
 
   it('crit rate never exceeds every-other-shot', () => {
     const selections = { [LIMIT_BREAKING_ID]: 5 };
-    const wornPieceCounts = getArmorEffectWornPieceCounts('live', selections);
+    const wornPieceCounts = getArmorEffectWornPieceCounts('pts', selections);
     const result = computeCritMeter(
-      'live',
-      getArmorEffectModifiers('live', selections),
+      'pts',
+      getArmorEffectModifiers('pts', selections),
       fixer,
       ctx({ luck: 100, wornPieceCounts }),
     );

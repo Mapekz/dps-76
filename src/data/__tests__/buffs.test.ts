@@ -10,7 +10,7 @@ import {
 
 describe('consumable picker', () => {
   it('keeps known junk hidden (quest-bound items stripped on completion)', () => {
-    const ids = getConsumables('live').map((c) => c.id);
+    const ids = getConsumables('pts').map((c) => c.id);
     for (const id of [
       // Nuclear Don's Custom Chem Blend: "The Ol' Weston Shuffle" quest item,
       // auto-removed from inventory on quest completion if unconsumed — not a
@@ -22,11 +22,11 @@ describe('consumable picker', () => {
   });
 
   it('the Wasteland Fish Sandwich is visible as a selectable food, not badged "no effect yet" (its only modifier feeds Fast Fighter conditionally)', () => {
-    const sandwich = getConsumables('live').find(
+    const sandwich = getConsumables('pts').find(
       (c) => c.id === 'SeasonalFish_Meal_SummerWastelandFishSandwich',
     );
     expect(sandwich).toBeDefined();
-    expect(consumablesById('live').has('SeasonalFish_Meal_SummerWastelandFishSandwich')).toBe(true);
+    expect(consumablesById('pts').has('SeasonalFish_Meal_SummerWastelandFishSandwich')).toBe(true);
     expect(sandwich!.category).toBe('food');
     expect(sandwich!.obtainable).not.toBe(false);
     expect(hasAnyEngineEffect(sandwich!.modifiers)).toBe(true);
@@ -34,7 +34,7 @@ describe('consumable picker', () => {
 });
 
 describe('consumable "no effect yet" badge (hasAnyEngineEffect over item.modifiers)', () => {
-  const byId = (id: string) => getConsumables('live').find((c) => c.id === id);
+  const byId = (id: string) => getConsumables('pts').find((c) => c.id === id);
 
   it('flags Med-X as engine-effective now that damageResistGain folds onto playerDamageResist', () => {
     const medX = byId('MedX');
@@ -70,14 +70,14 @@ describe('consumable "no effect yet" badge (hasAnyEngineEffect over item.modifie
 
 describe('addiction suppression helpers', () => {
   it('getSuppressedAddictions is the key set of getAddictionSuppressors', () => {
-    const suppressors = getAddictionSuppressors('live', ['Psycho']);
-    const suppressed = getSuppressedAddictions('live', ['Psycho']);
+    const suppressors = getAddictionSuppressors('pts', ['Psycho']);
+    const suppressed = getSuppressedAddictions('pts', ['Psycho']);
     expect(suppressed).toEqual(new Set(suppressors.keys()));
     expect(suppressors.get('AbAddictionPsycho')?.id).toBe('Psycho');
   });
 
   it('getAddictionSuppressors maps each active addiction family to its consumable', () => {
-    const suppressors = getAddictionSuppressors('live', ['Psycho', 'Brew_BeerBottleStandard01']);
+    const suppressors = getAddictionSuppressors('pts', ['Psycho', 'Brew_BeerBottleStandard01']);
     expect(suppressors.get('AbAddictionPsycho')?.name).toBe('Psycho');
     expect(suppressors.get('AbAddictionAlcohol')?.category).toBe('alcohol');
   });
@@ -85,8 +85,8 @@ describe('addiction suppression helpers', () => {
 
 describe('readsAddictionCount', () => {
   it("is true for Junkie's and false for unrelated legendaries", () => {
-    expect(readsAddictionCount('live', ['mod_Legendary_Weapon1_DamageAddiction'])).toBe(true);
-    expect(readsAddictionCount('live', [null, undefined, ''])).toBe(false);
-    expect(readsAddictionCount('live', [])).toBe(false);
+    expect(readsAddictionCount('pts', ['mod_Legendary_Weapon1_DamageAddiction'])).toBe(true);
+    expect(readsAddictionCount('pts', [null, undefined, ''])).toBe(false);
+    expect(readsAddictionCount('pts', [])).toBe(false);
   });
 });

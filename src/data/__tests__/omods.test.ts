@@ -13,9 +13,9 @@ import {
 import { isOmodEligibleForWeapon } from '@/data/omod-eligibility';
 
 const slotsOf = (weaponId: string) => {
-  const weapon = getWeapons('live')[weaponId];
+  const weapon = getWeapons('pts')[weaponId];
   expect(weapon, weaponId).toBeDefined();
-  return getOmodSlots('live', weapon);
+  return getOmodSlots('pts', weapon);
 };
 
 const optionIdsOf = (weaponId: string): string[] =>
@@ -51,7 +51,7 @@ describe('Unique mod slot (ap_customName)', () => {
   });
 
   it('Tone Death carries +20% dbm gated on wellTuned (instrument buff, default off)', () => {
-    const omod = getOmodById('live', 'E08B_mod_Custom_ToneDeath');
+    const omod = getOmodById('pts', 'E08B_mod_Custom_ToneDeath');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([
       expect.objectContaining({
@@ -204,8 +204,8 @@ describe('show-all-mods display policy against live data', () => {
 
   it('enemy-type-gated mods are unbadged conditionals, not "needs enemy DR"', () => {
     // Assassin's (1★ legendary, GetIsRace HumanRace) — legendary picker path.
-    const fixer = getWeapons('live')['CombatRifle_Fixer'];
-    const star1 = getLegendaryOmodSlots('live', fixer).find(
+    const fixer = getWeapons('pts')['CombatRifle_Fixer'];
+    const star1 = getLegendaryOmodSlots('pts', fixer).find(
       (s) => /Weapon1/i.test(s.slot) || s.options.some((o) => o.id.includes('Weapon1')),
     );
     const assassins = star1?.options.find((o) => o.id === 'mod_Legendary_Weapon1_DmgVsPlayers');
@@ -232,8 +232,8 @@ describe('show-all-mods display policy against live data', () => {
     // GeneratedOmod.modifiers — classifyOmodDisplay must treat a real
     // procChase as an engine effect, same as it already does for ordinary
     // modifiers (omods.ts).
-    const fixer = getWeapons('live')['CombatRifle_Fixer'];
-    const star4 = getLegendaryOmodSlots('live', fixer).find(
+    const fixer = getWeapons('pts')['CombatRifle_Fixer'];
+    const star4 = getLegendaryOmodSlots('pts', fixer).find(
       (s) => /Weapon4/i.test(s.slot) || s.options.some((o) => o.id.includes('Weapon4')),
     );
     const fracturers = star4?.options.find((o) => o.id === 'mod_Legendary_Weapon4_Fracturers');
@@ -252,8 +252,8 @@ describe('show-all-mods display policy against live data', () => {
   });
 
   it('dead-mechanic slots and legendary-reroll placeholders never surface anywhere in the roster', () => {
-    for (const weapon of Object.values(getWeapons('live'))) {
-      const slots = [...getOmodSlots('live', weapon), ...getLegendaryOmodSlots('live', weapon)];
+    for (const weapon of Object.values(getWeapons('pts'))) {
+      const slots = [...getOmodSlots('pts', weapon), ...getLegendaryOmodSlots('pts', weapon)];
       for (const slot of slots) {
         expect(slot.slot, weapon.id).not.toBe('ap_Gun_UniversalOffset_Range');
         expect(slot.slot, weapon.id).not.toBe('ap_Weapon_Model_Replacement');
@@ -272,8 +272,8 @@ describe('show-all-mods display policy against live data', () => {
 // ap_customName and legendary slots are exempt from both rules.
 
 describe('countEquippedMods', () => {
-  const v63 = getWeapons('live')['Stormcutter'];
-  const shown = getOmodSlots('live', v63);
+  const v63 = getWeapons('pts')['Stormcutter'];
+  const shown = getOmodSlots('pts', v63);
   // Mods as the V63-Z Custom preset sets them. Only the Unique slot is shown;
   // the blade and the two "No Mod" placeholders sit in hidden slots.
   const mods = {
@@ -287,24 +287,24 @@ describe('countEquippedMods', () => {
   it('counts the same for a preset (padded stars) and its reloaded link (trimmed stars)', () => {
     const preset = { mods, legendaryEffects: [...stars, null] };
     const reloaded = { mods, legendaryEffects: stars };
-    expect(countEquippedMods('live', v63, preset, shown)).toBe(3);
-    expect(countEquippedMods('live', v63, reloaded, shown)).toBe(3);
+    expect(countEquippedMods('pts', v63, preset, shown)).toBe(3);
+    expect(countEquippedMods('pts', v63, reloaded, shown)).toBe(3);
   });
 
   it("doesn't count a shown slot holding its standard part", () => {
-    const hatchet = getWeapons('live')['Hatchet'];
-    const slots = getOmodSlots('live', hatchet);
+    const hatchet = getWeapons('pts')['Hatchet'];
+    const slots = getOmodSlots('pts', hatchet);
     const slot = slots.find((s) => s.slot === 'ap_melee_MeleeMod')!;
     const real = slot.options.find((o) => o.id === 'mod_melee_Hatchet_ElectroFusion')!;
     expect(
       countEquippedMods(
-        'live',
+        'pts',
         hatchet,
         { mods: { [slot.slot]: real.id }, legendaryEffects: [] },
         slots,
       ),
     ).toBe(1);
-    expect(countEquippedMods('live', hatchet, { mods: {}, legendaryEffects: [] }, slots)).toBe(0);
+    expect(countEquippedMods('pts', hatchet, { mods: {}, legendaryEffects: [] }, slots)).toBe(0);
   });
 });
 
@@ -492,16 +492,16 @@ describe('unique & cursed mods against live data', () => {
   });
 
   it('cursed mods ride a slot labeled "Cursed" and rename the weapon', () => {
-    const broadsider = getWeapons('live')['Broadsider'];
-    const slot = getOmodSlots('live', broadsider).find((s) => s.slot === 'ap_curse');
+    const broadsider = getWeapons('pts')['Broadsider'];
+    const slot = getOmodSlots('pts', broadsider).find((s) => s.slot === 'ap_curse');
     expect(slot?.label).toBe('Cursed');
     expect(slot?.options.map((o) => o.id)).toContain('EN06_mod_Ranged_Broadsider_Custom_Cursed');
     expect(
-      effectiveWeaponName('live', broadsider, {
+      effectiveWeaponName('pts', broadsider, {
         ap_curse: 'EN06_mod_Ranged_Broadsider_Custom_Cursed',
       }),
     ).toBe('Cursed Broadsider');
-    expect(effectiveWeaponName('live', broadsider, {})).toBe(broadsider.name);
+    expect(effectiveWeaponName('pts', broadsider, {})).toBe(broadsider.name);
   });
 
   it("Voice of Set's identity mod shows under a per-weapon 'Unique' label with its real name", () => {

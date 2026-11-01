@@ -1,51 +1,48 @@
 import type { GameMode } from '@/types';
 import type { CurvePoint } from '@/types/curves';
-import liveDamage from '@/data/live/curvetables/player/damage/index.generated';
 import ptsDamage from '@/data/pts/curvetables/player/damage/index.generated';
-import liveChargedMelee from '@/data/live/curvetables/legendarymods/weapon_chargedmeleeattack.json';
 import ptsChargedMelee from '@/data/pts/curvetables/legendarymods/weapon_chargedmeleeattack.json';
-import liveLuckCritCharge from '@/data/live/curvetables/player/vats/luckvatscriticalcharge.json';
 import ptsLuckCritCharge from '@/data/pts/curvetables/player/vats/luckvatscriticalcharge.json';
-import liveMinToMaxRange from '@/data/live/curvetables/player/range/percentofmintomaxrangedamagemult.json';
 import ptsMinToMaxRange from '@/data/pts/curvetables/player/range/percentofmintomaxrangedamagemult.json';
-import liveLevelReward from '@/data/live/curvetables/player/special/levelrewardcurve.json';
 import ptsLevelReward from '@/data/pts/curvetables/player/special/levelrewardcurve.json';
-import liveLegendarySlots from '@/data/live/curvetables/player/perks/legendaryperkslotcount.json';
 import ptsLegendarySlots from '@/data/pts/curvetables/player/perks/legendaryperkslotcount.json';
 
+// PTS is the only extracted dataset, so every mode reads these tables. The mode
+// arguments stay in place for when a Live dump is extracted.
+//
 // Barrel modules at ../data/<mode>/curvetables/player/damage/index.generated.ts
 // export a Record<number, CurveFile> indexed by tier number.
 // Shape per tier: { "curve": [{ "x": <level>, "y": <dmg> }, …] }
 // X values are at 1, 5, 10, 15, … 50 (not every integer — linear interpolation required).
 
 /** Return the sorted curve points for the given mode + tier, or null if not found. */
-function getCurve(mode: GameMode, tier: number): CurvePoint[] | null {
-  return (mode === 'pts' ? ptsDamage : liveDamage)[tier]?.curve ?? null;
+function getCurve(_mode: GameMode, tier: number): CurvePoint[] | null {
+  return ptsDamage[tier]?.curve ?? null;
 }
 
 /** `SPECIAL_LevelRewardCurve`: player level → cumulative level-up SPECIAL points. */
-export function getSpecialLevelRewardCurve(mode: GameMode): CurvePoint[] {
-  return (mode === 'pts' ? ptsLevelReward : liveLevelReward).curve;
+export function getSpecialLevelRewardCurve(_mode: GameMode): CurvePoint[] {
+  return ptsLevelReward.curve;
 }
 
 /** `LegendaryPerkSlotCount`: slot number → the player level that unlocks it. */
-export function getLegendarySlotCurve(mode: GameMode): CurvePoint[] {
-  return (mode === 'pts' ? ptsLegendarySlots : liveLegendarySlots).curve;
+export function getLegendarySlotCurve(_mode: GameMode): CurvePoint[] {
+  return ptsLegendarySlots.curve;
 }
 
 /** `CT_Legendary_Weapon_ChargedUpWeapon`: charge count → bonus damage. */
-export function getChargedMeleeCurve(mode: GameMode): CurvePoint[] {
-  return (mode === 'pts' ? ptsChargedMelee : liveChargedMelee).curve;
+export function getChargedMeleeCurve(_mode: GameMode): CurvePoint[] {
+  return ptsChargedMelee.curve;
 }
 
 /** `CT_LuckVATSCriticalCharge`: Luck → VATS crit meter fill per hit. */
-export function getLuckCritChargeCurve(mode: GameMode): CurvePoint[] {
-  return (mode === 'pts' ? ptsLuckCritCharge : liveLuckCritCharge).curve;
+export function getLuckCritChargeCurve(_mode: GameMode): CurvePoint[] {
+  return ptsLuckCritCharge.curve;
 }
 
 /** `CT_Player_PercentOfMinToMaxRangeDMGMult`: range-span fraction → damage multiplier. */
-export function getMinToMaxRangeCurve(mode: GameMode): CurvePoint[] {
-  return (mode === 'pts' ? ptsMinToMaxRange : liveMinToMaxRange).curve;
+export function getMinToMaxRangeCurve(_mode: GameMode): CurvePoint[] {
+  return ptsMinToMaxRange.curve;
 }
 
 /**
@@ -91,10 +88,10 @@ function interpolate(points: CurvePoint[], x: number): number {
  *
  * @example
  * // The Fixer, tier 24, cap 50, at item level 50 → 103
- * getBaseDamage('live', 24, 50) === 103
+ * getBaseDamage('pts', 24, 50) === 103
  *
  * // Plasma Gun energy component, tier 16, cap 45, at item level 50 (clamped) → 42
- * getBaseDamage('live', 16, Math.min(50, 45)) === 42
+ * getBaseDamage('pts', 16, Math.min(50, 45)) === 42
  */
 export function getBaseDamage(mode: GameMode, tier: number, level: number): number {
   const curve = getCurve(mode, tier);

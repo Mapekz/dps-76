@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'bun:test';
 import { getDataset, getUnresolvedOverrideKeys } from '@/data/dataset';
-import generatedArmorOmodsLive from '@/data/live/generated/armor-omods.json';
-import generatedOmodsLive from '@/data/live/generated/omods.json';
-import generatedMutationsLive from '@/data/live/generated/mutations.json';
-import generatedConsumablesLive from '@/data/live/generated/consumables.json';
-import generatedUniquesLive from '@/data/live/generated/uniques.json';
-import { generatedWeaponsRaw as generatedWeaponsRawLive } from '@/data/live/weapons';
+import generatedArmorOmodsPts from '@/data/pts/generated/armor-omods.json';
+import generatedOmodsPts from '@/data/pts/generated/omods.json';
+import generatedMutationsPts from '@/data/pts/generated/mutations.json';
+import generatedConsumablesPts from '@/data/pts/generated/consumables.json';
+import generatedUniquesPts from '@/data/pts/generated/uniques.json';
+import { generatedWeaponsRaw as generatedWeaponsRawPts } from '@/data/pts/weapons';
 import { getOmodById } from '@/data/omods';
 import { armorLegendaryValueOverrides } from '@/data/overrides/armor-values';
 import { buffValueOverrides } from '@/data/overrides/buff-overrides';
@@ -21,10 +21,6 @@ import type { Modifier } from '@/types/modifiers';
  * overlay's own file for its source-comment convention).
  */
 describe('getUnresolvedOverrideKeys', () => {
-  it('has no stale overlay keys on live', () => {
-    expect(getUnresolvedOverrideKeys('live')).toEqual([]);
-  });
-
   it('has no stale overlay keys on pts', () => {
     expect(getUnresolvedOverrideKeys('pts')).toEqual([]);
   });
@@ -33,7 +29,7 @@ describe('getUnresolvedOverrideKeys', () => {
 describe('omod descriptions in the Merged Dataset', () => {
   it("serves the Medic's Heal-Allies / DoT interaction override", () => {
     expect(
-      getDataset('live').omods.find((o) => o.id === 'mod_Legendary_Weapon1_Medic')?.description,
+      getDataset('pts').omods.find((o) => o.id === 'mod_Legendary_Weapon1_Medic')?.description,
     ).toBe(
       'heals allies for a portion of base damage dealt — DoTs (bleed/burn/poison) never trigger it',
     );
@@ -42,7 +38,7 @@ describe('omod descriptions in the Merged Dataset', () => {
 
 describe('consumable descriptions in the Merged Dataset', () => {
   it('serves the polished house style, from derivation or override', () => {
-    const byId = new Map(getDataset('live').consumables.map((c) => [c.id, c]));
+    const byId = new Map(getDataset('pts').consumables.map((c) => [c.id, c]));
     // Mechanically derived (extract-buffs' STAT_XPMult percent rule) — no
     // override entry; pins the derivation's house style directly.
     expect(byId.get('BobbleHead_Leader_Potion')?.description).toBe('+5% XP');
@@ -55,9 +51,9 @@ describe('consumable descriptions in the Merged Dataset', () => {
 });
 
 describe('getDataset value overlays', () => {
-  it('folds a real legendary modifier override into the live Merged Dataset', () => {
+  it('folds a real legendary modifier override into the Merged Dataset', () => {
     const id = 'mod_Legendary_Weapon2_DmgLimbs';
-    expect(getDataset('live').omods.find((omod) => omod.id === id)?.modifiers).toEqual(
+    expect(getDataset('pts').omods.find((omod) => omod.id === id)?.modifiers).toEqual(
       legendaryValueOverrides[id],
     );
   });
@@ -130,7 +126,7 @@ function runMagnitudePolicyTests(
 runMagnitudePolicyTests(
   'armor value overrides',
   armorLegendaryValueOverrides,
-  new Map(generatedArmorOmodsLive.map((omod) => [omod.id, omod])),
+  new Map(generatedArmorOmodsPts.map((omod) => [omod.id, omod])),
   Object.fromEntries(
     Object.keys(armorLegendaryValueOverrides).map((id): [string, MagnitudePolicy] => [
       id,
@@ -171,7 +167,7 @@ const LEGENDARY_MAGNITUDE_POLICY = {
 runMagnitudePolicyTests(
   'legendary value overrides',
   legendaryValueOverrides,
-  new Map(generatedOmodsLive.map((omod) => [omod.id, omod])),
+  new Map(generatedOmodsPts.map((omod) => [omod.id, omod])),
   LEGENDARY_MAGNITUDE_POLICY,
 );
 describe('legendary value overrides magnitude policy coverage', () => {
@@ -210,7 +206,7 @@ const BUFF_MAGNITUDE_POLICY = {
 runMagnitudePolicyTests(
   'buff value overrides',
   buffValueOverrides,
-  new Map([...generatedMutationsLive, ...generatedConsumablesLive].map((buff) => [buff.id, buff])),
+  new Map([...generatedMutationsPts, ...generatedConsumablesPts].map((buff) => [buff.id, buff])),
   BUFF_MAGNITUDE_POLICY,
 );
 describe('buff value overrides magnitude policy coverage', () => {
@@ -222,10 +218,10 @@ describe('buff value overrides magnitude policy coverage', () => {
 });
 
 describe('generated uniques resolve', () => {
-  it('every unique id maps to an omod and baseWeaponId to a generated weapon (live)', () => {
-    const weaponIds = new Set(generatedWeaponsRawLive.map((w) => w.id));
-    for (const unique of generatedUniquesLive as unknown as GeneratedUnique[]) {
-      expect(getOmodById('live', unique.id), `${unique.id} omod`).toBeDefined();
+  it('every unique id maps to an omod and baseWeaponId to a generated weapon', () => {
+    const weaponIds = new Set(generatedWeaponsRawPts.map((w) => w.id));
+    for (const unique of generatedUniquesPts as unknown as GeneratedUnique[]) {
+      expect(getOmodById('pts', unique.id), `${unique.id} omod`).toBeDefined();
       expect(weaponIds.has(unique.baseWeaponId), `${unique.baseWeaponId} weapon`).toBe(true);
     }
   });
@@ -233,7 +229,7 @@ describe('generated uniques resolve', () => {
 
 describe('stream-delivery overlays', () => {
   it('flags the listed weapons and OMODs on the merged dataset', () => {
-    const { weapons, omods } = getDataset('live');
+    const { weapons, omods } = getDataset('pts');
     expect(weapons.Flamer.deliversStream).toBe(true);
     expect(weapons.Cryolator.deliversStream).toBe(true);
     expect(omods.find((o) => o.id === 'mod_PlasmaGun_barrel_Flamer_Base')?.convertsToStream).toBe(

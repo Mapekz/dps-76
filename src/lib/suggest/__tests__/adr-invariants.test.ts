@@ -23,7 +23,7 @@ describe('two-tier scope: STRUCTURAL_GROUPS excludes consumables', () => {
   });
 
   it('defaults topSuggestions to structural groups only, while an explicit consumable scope selects consumables', () => {
-    const report = evaluateSuggestions(fixerState, 'live', 'vats');
+    const report = evaluateSuggestions(fixerState, 'pts', 'vats');
 
     const { ranked, tied } = topSuggestions(report, 50);
     const structural = [...ranked, ...tied];
@@ -41,7 +41,7 @@ describe('two-tier scope: STRUCTURAL_GROUPS excludes consumables', () => {
 describe('ADR 0011: the sweep evaluates every candidate (no pruning)', () => {
   it('evaluates every enumerated candidate with real deltas — no placeholder skip path', () => {
     const state = fixerCenterMasochistState();
-    const report = evaluateSuggestions(state, 'live', 'vats');
+    const report = evaluateSuggestions(state, 'pts', 'vats');
     expect(report.baseline).not.toBeNull();
 
     for (const s of report.suggestions) {
@@ -53,8 +53,8 @@ describe('ADR 0011: the sweep evaluates every candidate (no pruning)', () => {
     const scope = createMemoScope();
     const baseline = report.baseline!;
     const evaluated: EvaluatedSuggestion[] = [];
-    for (const candidate of enumerateVariants(state, 'live', 'vats')) {
-      const result = evaluateActions(state, 'live', candidate.action, baseline, scope);
+    for (const candidate of enumerateVariants(state, 'pts', 'vats')) {
+      const result = evaluateActions(state, 'pts', candidate.action, baseline, scope);
       expect(result).not.toBeNull();
       const metricBase = baseline.vats.totalDps;
       const primaryDeltaPct = metricBase > 0 ? result!.delta.vats.totalDps / metricBase : 0;

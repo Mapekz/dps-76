@@ -28,7 +28,7 @@ import {
 
 describe('getArmorTierUsage', () => {
   it('sums selected counts within a tier and ignores misc/unknown ids', () => {
-    const usage = getArmorTierUsage('live', {
+    const usage = getArmorTierUsage('pts', {
       [UNYIELDING]: 3, // tier 1
       [STRENGTH_2STAR]: 2, // tier 2
       mod_armor_UnderArmor_style_BOS: 1, // misc — ignored
@@ -38,7 +38,7 @@ describe('getArmorTierUsage', () => {
   });
 
   it('sums multiple effects sharing the same tier', () => {
-    const usage = getArmorTierUsage('live', {
+    const usage = getArmorTierUsage('pts', {
       [BATTLE_LOADERS]: 3, // tier 4
       [LIMIT_BREAKING]: 2, // tier 4
     });
@@ -46,7 +46,7 @@ describe('getArmorTierUsage', () => {
   });
 
   it('returns all-zero for empty selections', () => {
-    expect(getArmorTierUsage('live', {})).toEqual({ 1: 0, 2: 0, 3: 0, 4: 0 });
+    expect(getArmorTierUsage('pts', {})).toEqual({ 1: 0, 2: 0, 3: 0, 4: 0 });
   });
 });
 
@@ -54,7 +54,7 @@ describe('clampArmorTierBudgets', () => {
   it('two same-tier effects summing over the budget: first-inserted keeps its full count, second is trimmed to the remainder', () => {
     // Battle-Loader's + Limit-Breaking are both tier 4; 3 + 4 = 7 > MAX_LEGENDARY_COUNT (5).
     const input = { [BATTLE_LOADERS]: 3, [LIMIT_BREAKING]: 4 };
-    const { armorEffects, changed } = clampArmorTierBudgets('live', input);
+    const { armorEffects, changed } = clampArmorTierBudgets('pts', input);
     expect(armorEffects).toEqual({ [BATTLE_LOADERS]: 3, [LIMIT_BREAKING]: 2 });
     expect(changed).toBe(true);
   });
@@ -62,7 +62,7 @@ describe('clampArmorTierBudgets', () => {
   it('an entry trimmed all the way to 0 is omitted from the result, not kept as an explicit zero', () => {
     // Strength fills the whole tier-2 budget; Powered (also tier 2) has nothing left.
     const input = { [STRENGTH_2STAR]: MAX_LEGENDARY_COUNT, mod_Legendary_Armor2_APRegen: 3 };
-    const { armorEffects, changed } = clampArmorTierBudgets('live', input);
+    const { armorEffects, changed } = clampArmorTierBudgets('pts', input);
     expect(armorEffects).toEqual({ [STRENGTH_2STAR]: MAX_LEGENDARY_COUNT });
     expect('mod_Legendary_Armor2_APRegen' in armorEffects).toBe(false);
     expect(changed).toBe(true);
@@ -70,7 +70,7 @@ describe('clampArmorTierBudgets', () => {
 
   it('a legal map (every tier under budget) is returned unchanged, with changed:false', () => {
     const input = { [UNYIELDING]: 3, [STRENGTH_2STAR]: 2, [BATTLE_LOADERS]: 5 };
-    const { armorEffects, changed } = clampArmorTierBudgets('live', input);
+    const { armorEffects, changed } = clampArmorTierBudgets('pts', input);
     expect(armorEffects).toEqual(input);
     expect(changed).toBe(false);
   });
@@ -81,7 +81,7 @@ describe('clampArmorTierBudgets', () => {
       mod_armor_UnderArmor_style_BOS: 1,
       not_a_real_armor_effect_id: 42,
     };
-    const { armorEffects, changed } = clampArmorTierBudgets('live', input);
+    const { armorEffects, changed } = clampArmorTierBudgets('pts', input);
     expect(armorEffects).toEqual(input);
     expect(changed).toBe(false);
   });
@@ -89,22 +89,22 @@ describe('clampArmorTierBudgets', () => {
 
 describe('getArmorEffectModifiers: per-piece scaling', () => {
   it('2★ Strength scales value ×count (flat ADD)', () => {
-    const at0 = getArmorEffectModifiers('live', { [STRENGTH_2STAR]: 0 });
+    const at0 = getArmorEffectModifiers('pts', { [STRENGTH_2STAR]: 0 });
     expect(at0).toHaveLength(0);
 
-    const at3 = getArmorEffectModifiers('live', { [STRENGTH_2STAR]: 3 });
+    const at3 = getArmorEffectModifiers('pts', { [STRENGTH_2STAR]: 3 });
     expect(at3).toHaveLength(1);
     expect(at3[0].bucket).toBe('specialStrength');
     expect(at3[0].curve).toBeUndefined();
     expect((at3[0] as { value: number }).value).toBeCloseTo(6, 10); // 2 × 3
 
     // Clamped to maxCount (5) even if a stale/adversarial selection asks for more.
-    const over = getArmorEffectModifiers('live', { [STRENGTH_2STAR]: 99 });
+    const over = getArmorEffectModifiers('pts', { [STRENGTH_2STAR]: 99 });
     expect((over[0] as { value: number }).value).toBeCloseTo(10, 10); // 2 × 5
   });
 
   it('Unyielding scales curveScale ×count, verified against the hand-computed curve at 0% HP', () => {
-    const at3 = getArmorEffectModifiers('live', { [UNYIELDING]: 3 });
+    const at3 = getArmorEffectModifiers('pts', { [UNYIELDING]: 3 });
     expect(at3).toHaveLength(6); // 6 SPECIALs (all but Endurance)
     const strengthMod = at3.find((m) => m.bucket === 'specialStrength')!;
     if (!strengthMod.curve) throw new Error('expected a curve-driven modifier');
@@ -120,14 +120,14 @@ describe('getArmorEffectModifiers: per-piece scaling', () => {
     expect(effectiveValue(strengthMod, atFullHp)).toBeCloseTo(0, 10);
 
     // count=1 (one piece) at 0% HP reads the raw per-piece value (3), not 9.
-    const at1 = getArmorEffectModifiers('live', { [UNYIELDING]: 1 });
+    const at1 = getArmorEffectModifiers('pts', { [UNYIELDING]: 1 });
     const strengthAt1 = at1.find((m) => m.bucket === 'specialStrength')!;
     expect(effectiveValue(strengthAt1, atZeroHp)).toBeCloseTo(3, 10);
   });
 });
 
 describe('Emergency Protocols: healthBelowPct + inPowerArmor gates', () => {
-  const modifiers = getArmorEffectModifiers('live', { [EMERGENCY_PROTOCOLS]: 1 });
+  const modifiers = getArmorEffectModifiers('pts', { [EMERGENCY_PROTOCOLS]: 1 });
 
   it('extracts a moveSpeedBonus +0.25 and an inert incomingDamageMult -0.5, both gated', () => {
     expect(modifiers).toHaveLength(2);
@@ -175,10 +175,10 @@ describe('Emergency Protocols: healthBelowPct + inPowerArmor gates', () => {
 describe('getArmorEffectModifiers + getArmorEffectWornPieceCounts: self-scaling effects', () => {
   it("Battle-Loader's: selections {battleLoaders: 3} activate exactly the count=3 tier (0.45), others inactive", () => {
     const selections = { [BATTLE_LOADERS]: 3 };
-    const modifiers = getArmorEffectModifiers('live', selections);
+    const modifiers = getArmorEffectModifiers('pts', selections);
     expect(modifiers).toHaveLength(5); // unscaled — all 5 tiers pass through
 
-    const wornPieceCounts = getArmorEffectWornPieceCounts('live', selections);
+    const wornPieceCounts = getArmorEffectWornPieceCounts('pts', selections);
     expect(wornPieceCounts).toMatchObject({ HasLegendary_Armor_BattleLoaders: 3 });
 
     const resolveCtx = ctx({ wornPieceCounts });
@@ -189,21 +189,21 @@ describe('getArmorEffectModifiers + getArmorEffectWornPieceCounts: self-scaling 
   });
 
   it("Battle-Loader's: modifiers carry the bash-triggered reloadSkipChanceBash bucket, not the passive reloadSkipChance channel (Phase C)", () => {
-    const modifiers = getArmorEffectModifiers('live', { [BATTLE_LOADERS]: 3 });
+    const modifiers = getArmorEffectModifiers('pts', { [BATTLE_LOADERS]: 3 });
     expect(modifiers.length).toBeGreaterThan(0);
     expect(modifiers.every((m) => m.bucket === 'reloadSkipChanceBash')).toBe(true);
     expect(modifiers.some((m) => m.bucket === 'reloadSkipChance')).toBe(false);
   });
 
   it("Battle-Loader's: 0 selected pieces activates nothing", () => {
-    const modifiers = getArmorEffectModifiers('live', {});
+    const modifiers = getArmorEffectModifiers('pts', {});
     expect(modifiers).toHaveLength(0); // count 0 → not even emitted
   });
 
   it("Battle-Loader's: 5 pieces activates the ≥5 (orMore) tier at 0.75, not the exact-4 tier", () => {
     const selections = { [BATTLE_LOADERS]: 5 };
-    const modifiers = getArmorEffectModifiers('live', selections);
-    const wornPieceCounts = getArmorEffectWornPieceCounts('live', selections);
+    const modifiers = getArmorEffectModifiers('pts', selections);
+    const wornPieceCounts = getArmorEffectWornPieceCounts('pts', selections);
     const resolveCtx = ctx({ wornPieceCounts });
     const activeValues = modifiers
       .map((m) => effectiveValue(m, resolveCtx))
@@ -213,7 +213,7 @@ describe('getArmorEffectModifiers + getArmorEffectWornPieceCounts: self-scaling 
 });
 
 describe('Number Cruncher exemption: armor selections never feed scaledByWeaponApCost', () => {
-  const nc = getLoadoutModifiers('live', [{ perkId: PerkId.NumberCruncher, rank: 1 }]);
+  const nc = getLoadoutModifiers('pts', [{ perkId: PerkId.NumberCruncher, rank: 1 }]);
 
   const fullArmor = () => ({ [BATTLE_LOADERS]: 5, [UNYIELDING]: 5, [STRENGTH_2STAR]: 5 });
 
@@ -224,7 +224,7 @@ describe('Number Cruncher exemption: armor selections never feed scaledByWeaponA
       perks,
       armorEffects,
     };
-    const result = resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live');
+    const result = resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'pts');
     expect(result).not.toBeNull();
     return result!;
   }
@@ -241,7 +241,7 @@ describe('Number Cruncher exemption: armor selections never feed scaledByWeaponA
     const withArmor = resolve(fullArmor(), perks);
     expect(withArmor.weapon.apCost).toBe(bare.weapon.apCost);
     expect(nc.length).toBeGreaterThan(0);
-    expect(getArmorEffectModifiers('live', fullArmor()).length).toBeGreaterThan(0);
+    expect(getArmorEffectModifiers('pts', fullArmor()).length).toBeGreaterThan(0);
   });
 });
 
@@ -269,14 +269,14 @@ describe('wrongArmorTypeEffects', () => {
       [PROPPELLING]: 2,
       [CASUAL_STYLE]: 1,
     };
-    const removing = wrongArmorTypeEffects('live', armorEffects, 'none');
+    const removing = wrongArmorTypeEffects('pts', armorEffects, 'none');
     expect(removing.sort()).toEqual([CASUAL_STYLE, PROPPELLING, UNYIELDING].sort());
   });
 
   it('removes only the effects the eligibility rule rejects', () => {
     const armorEffects = { [UNYIELDING]: 1, [PROPPELLING]: 1, unknown_effect: 1 };
-    expect(wrongArmorTypeEffects('live', armorEffects, 'body')).toEqual([PROPPELLING]);
-    expect(wrongArmorTypeEffects('live', armorEffects, 'power')).toEqual([UNYIELDING]);
+    expect(wrongArmorTypeEffects('pts', armorEffects, 'body')).toEqual([PROPPELLING]);
+    expect(wrongArmorTypeEffects('pts', armorEffects, 'power')).toEqual([UNYIELDING]);
   });
 });
 
@@ -284,9 +284,9 @@ describe('slot exclusivity feasibility', () => {
   const PA_JETPACK = 'mod_PowerArmor_Hellcat_Torso_Misc_JetPack';
 
   it('Jetpack=1 caps Deep Pocketed at 4', () => {
-    const max = maxFeasibleArmorEffectCount('live', DEEP_POCKETED, { [BODY_JETPACK]: 1 });
+    const max = maxFeasibleArmorEffectCount('pts', DEEP_POCKETED, { [BODY_JETPACK]: 1 });
     expect(max).toBe(4);
-    const clamped = clampArmorPieceCapacities('live', {
+    const clamped = clampArmorPieceCapacities('pts', {
       [BODY_JETPACK]: 1,
       [DEEP_POCKETED]: 5,
     });
@@ -295,7 +295,7 @@ describe('slot exclusivity feasibility', () => {
   });
 
   it('Emergency Protocols=1 forces Jet Pack max to 0', () => {
-    const max = maxFeasibleArmorEffectCount('live', PA_JETPACK, {
+    const max = maxFeasibleArmorEffectCount('pts', PA_JETPACK, {
       [EMERGENCY_PROTOCOLS]: 1,
     });
     expect(max).toBe(0);

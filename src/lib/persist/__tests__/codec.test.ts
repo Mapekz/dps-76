@@ -29,7 +29,7 @@ import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
 // runs — it stands in for `importOriginal()`.
 import * as actualBuffs from '@/data/buffs';
 
-const mode = 'live' as const;
+const mode = 'pts' as const;
 
 // A real N&D key → PerkId pair to exercise the dictionary path.
 const [ndKey, ndPerkId] = Object.entries(nukesDragonsPerks).find(([k]) => !k.startsWith('0'))!;

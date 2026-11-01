@@ -39,7 +39,7 @@ function fixerAutoState(): BuildState {
 describe('enumerateCombos', () => {
   describe('onslaught discovery', () => {
     it('discovers expected forward pieces on a clean sniper Plasma Caster, with Gunslinger Master only in the reverse variant', () => {
-      const combos = enumerateCombos(sniperCasterState(), 'live', 'vats');
+      const combos = enumerateCombos(sniperCasterState(), 'pts', 'vats');
       const forward = combos.find((c) => c.id === 'combo:onslaught-forward');
       const reverse = combos.find((c) => c.id === 'combo:onslaught-reverse');
       expect(forward).toBeDefined();
@@ -64,7 +64,7 @@ describe('enumerateCombos', () => {
           { type: 'special/set', stat: 'perception', value: 3 },
           { type: 'special/set', stat: 'agility', value: 4 },
         ]),
-        'live',
+        'pts',
         'vats',
       );
       expect(report.baseline).not.toBeNull();
@@ -88,7 +88,7 @@ describe('enumerateCombos', () => {
   describe('fast-weapon policy semantics', () => {
     let report: ReturnType<typeof evaluateSuggestions>;
     beforeAll(() => {
-      report = evaluateSuggestions(fixerAutoState(), 'live', 'vats');
+      report = evaluateSuggestions(fixerAutoState(), 'pts', 'vats');
     });
 
     it('comboCharts: door-closed / margin / positive on auto Fixer where Furious alone charts', () => {
@@ -126,7 +126,7 @@ describe('enumerateCombos', () => {
         { type: 'perk/add', perkId: GUERRILLA_MASTER, rank: 3, legendary: false },
         { type: 'perk/add', perkId: GUNSLINGER_EXPERT, rank: 3, legendary: false },
       ]);
-      const combos = enumerateCombos(state, 'live', 'vats');
+      const combos = enumerateCombos(state, 'pts', 'vats');
       expect(combos.find((c) => c.id === 'combo:onslaught-forward')).toBeUndefined();
 
       const onlyGsmMissing = sniperCasterState([
@@ -137,14 +137,14 @@ describe('enumerateCombos', () => {
         { type: 'perk/add', perkId: GUERRILLA_MASTER, rank: 3, legendary: false },
         { type: 'perk/add', perkId: GUNSLINGER_EXPERT, rank: 3, legendary: false },
       ]);
-      const reverseOnlyGsm = enumerateCombos(onlyGsmMissing, 'live', 'vats');
+      const reverseOnlyGsm = enumerateCombos(onlyGsmMissing, 'pts', 'vats');
       expect(reverseOnlyGsm.find((c) => c.id === 'combo:onslaught-reverse')).toBeUndefined();
     });
   });
 
   describe('metric gating', () => {
     it('omits crit-cadence when metric is freeAim', () => {
-      const combos = enumerateCombos(sniperCasterState(), 'live', 'freeAim');
+      const combos = enumerateCombos(sniperCasterState(), 'pts', 'freeAim');
       expect(combos.some((c) => c.id === 'combo:crit-cadence')).toBe(false);
     });
   });
@@ -155,7 +155,7 @@ describe('enumerateCombos', () => {
         { type: 'weapon/select', weaponId: PLASMA_CASTER },
         { type: 'special/set', stat: 'luck', value: 1 },
       ]);
-      const combo = enumerateCombos(state, 'live', 'vats').find(
+      const combo = enumerateCombos(state, 'pts', 'vats').find(
         (c) => c.id === 'combo:crit-cadence',
       );
       expect(combo).toBeDefined();
@@ -178,7 +178,7 @@ describe('enumerateCombos', () => {
         { type: 'weapon/select', weaponId: GATLING_GUN },
         { type: 'special/set', stat: 'strength', value: 3 },
       ]);
-      const combo = enumerateCombos(state, 'live', 'vats').find(
+      const combo = enumerateCombos(state, 'pts', 'vats').find(
         (c) => c.id === 'combo:bullet-storm',
       );
       expect(combo).toBeDefined();
@@ -198,7 +198,7 @@ describe('enumerateCombos', () => {
         { type: 'special/set', stat: 'perception', value: 3 },
         { type: 'special/set', stat: 'agility', value: 4 },
       ]);
-      const forward = enumerateCombos(state, 'live', 'vats').find(
+      const forward = enumerateCombos(state, 'pts', 'vats').find(
         (c) => c.id === 'combo:onslaught-forward',
       );
       expect(forward).toBeDefined();

@@ -18,14 +18,14 @@ import { baseSpecial } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 describe('perk card registry — join coverage', () => {
   it('every non-legendary carded generated family is claimed by a registry PerkId, except the known gender-twin "Girl" cards', () => {
-    const registry = getPerks('live');
+    const registry = getPerks('pts');
     const claimedFamilies = new Set<string>();
     for (const perkId of Object.keys(registry)) {
-      const generated = getGeneratedPerk('live', perkId);
+      const generated = getGeneratedPerk('pts', perkId);
       if (generated) claimedFamilies.add(generated.family);
     }
 
-    const orphans = getDataset('live')
+    const orphans = getDataset('pts')
       .perks.filter((f) => f.card && !f.card.isLegendaryCard && !claimedFamilies.has(f.family))
       .map((f) => f.family)
       .sort();
@@ -50,7 +50,7 @@ describe('perk card registry — join coverage', () => {
   });
 
   it('every registry display name matches its joined family card name, except the combined gender-twin names', () => {
-    const registry = getPerks('live');
+    const registry = getPerks('pts');
     // Combined "Boy/Girl" PerkIds intentionally diverge from the per-gender
     // ESM card names ("Action Boy", "Aquaboy", "Party Boy") they join.
     const combinedGenderTwins = new Set<string>([
@@ -65,7 +65,7 @@ describe('perk card registry — join coverage', () => {
       .map(([perkId, perk]) => ({
         perkId,
         name: perk.name,
-        generated: getGeneratedPerk('live', perkId),
+        generated: getGeneratedPerk('pts', perkId),
       }))
       .filter(
         ({ name, generated }) => generated && name.toLowerCase() !== generated.name.toLowerCase(),
@@ -79,7 +79,7 @@ describe('perk card registry — join coverage', () => {
 
   it('every perkCardOverrides entry is for a PerkId that cannot otherwise derive a card (no stale overrides)', () => {
     const staleOverrides = Object.keys(perkCardOverrides).filter(
-      (perkId) => !!getGeneratedPerk('live', perkId)?.card,
+      (perkId) => !!getGeneratedPerk('pts', perkId)?.card,
     );
     expect(staleOverrides).toEqual([]);
   });
@@ -87,7 +87,7 @@ describe('perk card registry — join coverage', () => {
 
 describe('perk card registry — internal consistency', () => {
   it('maxRank equals costs.length for every registry perk', () => {
-    const registry = getPerks('live');
+    const registry = getPerks('pts');
     const mismatches = Object.entries(registry)
       .filter(([, perk]) => perk.maxRank !== perk.costs.length)
       .map(([id, perk]) => `${id} (maxRank=${perk.maxRank}, costs.length=${perk.costs.length})`);
@@ -95,7 +95,7 @@ describe('perk card registry — internal consistency', () => {
   });
 
   it('legendary perks carry no `special` (never SPECIAL-slotted)', () => {
-    const registry = getPerks('live');
+    const registry = getPerks('pts');
     for (const perkId of legendaryPerkIds) {
       const perk = registry[perkId as PerkId];
       expect(perk, `legendary PerkId "${perkId}" is missing from the registry`).toBeDefined();
@@ -108,7 +108,7 @@ describe('perk card registry — internal consistency', () => {
 
   it('a legendary card never contributes to the SPECIAL perk-point budget', () => {
     const budget = computePerkBudget(
-      'live',
+      'pts',
       [], // legendary cards belong in the legendaryPerks list, not perks
       [{ perkId: PerkId.LegendaryStrength, rank: 4 }],
       baseSpecial(),
@@ -120,7 +120,7 @@ describe('perk card registry — internal consistency', () => {
 });
 
 describe('perk card registry — pinned real values (20260710 ESM)', () => {
-  const registry = getPerks('live');
+  const registry = getPerks('pts');
 
   it('Tenderizer: single rank costing 2 Charisma points', () => {
     expect(registry[PerkId.Tenderizer]).toMatchObject({
@@ -213,16 +213,16 @@ describe('perk card registry — pinned real values (20260710 ESM)', () => {
   });
 
   it("Starched Genes resolves its single live rank through rankSources to the family's rank-2 record", () => {
-    const generated = getGeneratedPerk('live', PerkId.StarchedGenes);
+    const generated = getGeneratedPerk('pts', PerkId.StarchedGenes);
     expect(generated?.card?.rankSources).toEqual([2]);
     expect(registry[PerkId.StarchedGenes]?.maxRank).toBe(1);
     // The modifiers served for card rank 1 must be the family's rank-2 set.
-    const served = getLoadoutModifiers('live', [{ perkId: PerkId.StarchedGenes, rank: 1 }]);
+    const served = getLoadoutModifiers('pts', [{ perkId: PerkId.StarchedGenes, rank: 1 }]);
     expect(served).toEqual(generated!.ranks[1].modifiers);
   });
 
   it('every joined card has rankSources aligned with costs and within the family rank range', () => {
-    const broken = getDataset('live')
+    const broken = getDataset('pts')
       .perks.filter(
         (f) =>
           f.card &&

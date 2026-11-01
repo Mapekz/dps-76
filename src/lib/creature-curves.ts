@@ -1,9 +1,7 @@
 import type { GameMode } from '@/types';
 import type { CurvePoint, CurveFile } from '@/types/curves';
 import { interpolateCurve } from './curve-tables';
-import liveHealth from '@/data/live/curvetables/creatures/health/index.generated';
 import ptsHealth from '@/data/pts/curvetables/creatures/health/index.generated';
-import liveArmor from '@/data/live/curvetables/creatures/armor/index.generated';
 import ptsArmor from '@/data/pts/curvetables/creatures/armor/index.generated';
 
 /**
@@ -39,8 +37,7 @@ function getCurve(curves: Record<number, CurveFile>, tier: number): CurvePoint[]
  * @param effectiveLevel - The target's already-clamped effective level (see module doc)
  */
 export function getCreatureHealth(mode: GameMode, tier: number, effectiveLevel: number): number {
-  const curves = mode === 'pts' ? ptsHealth : liveHealth;
-  const curve = getCurve(curves, tier);
+  const curve = getCurve(ptsHealth, tier);
   if (!curve) {
     console.warn(`[creature-curves] No health curve found for mode=${mode} tier=${tier}`);
     return 0;
@@ -59,8 +56,7 @@ export function getCreatureHealth(mode: GameMode, tier: number, effectiveLevel: 
  * @param effectiveLevel - The target's already-clamped effective level (see module doc)
  */
 export function getCreatureResist(mode: GameMode, tier: number, effectiveLevel: number): number {
-  const curves = mode === 'pts' ? ptsArmor : liveArmor;
-  const curve = getCurve(curves, tier);
+  const curve = getCurve(ptsArmor, tier);
   if (!curve) {
     console.warn(`[creature-curves] No armor(resist) curve found for mode=${mode} tier=${tier}`);
     return 0;

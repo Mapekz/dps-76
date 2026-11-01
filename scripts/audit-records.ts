@@ -1810,7 +1810,7 @@ async function main() {
   const { values } = parseArgs({
     options: {
       esm: { type: 'string' },
-      mode: { type: 'string', default: 'live' },
+      mode: { type: 'string', default: 'pts' },
       domain: { type: 'string' },
       tier: { type: 'string' },
       json: { type: 'string' },

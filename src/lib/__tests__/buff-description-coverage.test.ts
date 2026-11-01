@@ -5,10 +5,10 @@
  * that introduces an unmapped keyword must fail here).
  */
 import { describe, it, expect } from 'bun:test';
-import consumables from '@/data/live/generated/consumables.json';
-import perks from '@/data/live/generated/perks.json';
-import omods from '@/data/live/generated/omods.json';
-import mutations from '@/data/live/generated/mutations.json';
+import consumables from '@/data/pts/generated/consumables.json';
+import perks from '@/data/pts/generated/perks.json';
+import omods from '@/data/pts/generated/omods.json';
+import mutations from '@/data/pts/generated/mutations.json';
 import { buffValueOverrides } from '@/data/overrides/buff-overrides';
 import {
   ENEMY_KEYWORD_LABELS,

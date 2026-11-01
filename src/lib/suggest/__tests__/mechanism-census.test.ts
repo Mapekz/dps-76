@@ -48,7 +48,7 @@ function walkModifiers(
   }
 }
 
-function scanStackMechanisms(mode: 'live'): {
+function scanStackMechanisms(mode: 'pts'): {
   stackCounters: Set<StackCounter>;
   counterLikeCurveInputs: Set<CurveInput>;
 } {
@@ -97,7 +97,7 @@ function assertCovered(
 
 describe('stack mechanism census', () => {
   const { counters: coveredCounters, curveInputs: coveredCurves } = coveredFromRegistry();
-  const { stackCounters, counterLikeCurveInputs } = scanStackMechanisms('live');
+  const { stackCounters, counterLikeCurveInputs } = scanStackMechanisms('pts');
 
   it('covers or excludes every observed StackCounter', () => {
     for (const counter of stackCounters) {

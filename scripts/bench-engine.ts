@@ -69,11 +69,11 @@ const enemy = createDefaultEnemyConfig();
 // Hoisted above the bench() calls — the original vitest file relied on
 // `bench()` deferring its callback until run time to read a const declared
 // later in module scope; a straight-line script has no such deferral.
-const resolvedOnce = resolveLoadout(maxedConfig, enemy, 'live');
+const resolvedOnce = resolveLoadout(maxedConfig, enemy, 'pts');
 
 console.log('suggestion-engine hot path');
 bench('resolveLoadout + computeScenarios (one variant eval)', () => {
-  const input = resolveLoadout(maxedConfig, enemy, 'live');
+  const input = resolveLoadout(maxedConfig, enemy, 'pts');
   computeScenarios(input!);
 });
 
@@ -91,7 +91,7 @@ const maxedState: BuildState = {
   buildName: null,
   view: { emphasized: null, breakdownOpen: false },
 };
-console.log(`enumerateVariants: ${enumerateVariants(maxedState, 'live').length} raw candidates`);
+console.log(`enumerateVariants: ${enumerateVariants(maxedState, 'pts').length} raw candidates`);
 bench('evaluateSuggestions (full sweep, freeAim metric)', () => {
-  evaluateSuggestions(maxedState, 'live', 'freeAim');
+  evaluateSuggestions(maxedState, 'pts', 'freeAim');
 }, 200);

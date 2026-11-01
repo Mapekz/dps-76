@@ -20,7 +20,7 @@ import { getUniques } from '../src/data/uniques';
 
 const mode: GameMode = process.argv.includes('--mode')
   ? (process.argv[process.argv.indexOf('--mode') + 1] as GameMode)
-  : 'live';
+  : 'pts';
 
 function causeOf(mods: readonly Modifier[]): string {
   if (mods.length === 0) return 'NO-MODS';

@@ -4,8 +4,8 @@ import { normalizeBuildState, clampCrippledLimbCount } from '@/lib/build-rules';
 
 describe('clampCrippledLimbCount', () => {
   it('clamps to the race crippable-part count', () => {
-    expect(clampCrippledLimbCount('live', 'BlueDevilRace', 6)).toBe(0);
-    expect(clampCrippledLimbCount('live', null, 6)).toBe(6);
+    expect(clampCrippledLimbCount('pts', 'BlueDevilRace', 6)).toBe(0);
+    expect(clampCrippledLimbCount('pts', null, 6)).toBe(6);
   });
 });
 
@@ -15,21 +15,21 @@ describe('normalizeBuildState', () => {
     state.enemy.conditions.targetRace = 'BlueDevilRace';
     state.enemy.conditions.crippledLimbCount = 6;
 
-    const { state: normalized, warnings } = normalizeBuildState('live', state);
+    const { state: normalized, warnings } = normalizeBuildState('pts', state);
     expect(normalized.enemy.conditions.crippledLimbCount).toBe(0);
     expect(warnings.some((w) => w.includes('crippled limb count'))).toBe(true);
   });
 
   it('is a no-op with no warnings for a valid default build', () => {
     const state = createDefaultBuildState();
-    const { state: normalized, warnings } = normalizeBuildState('live', state);
+    const { state: normalized, warnings } = normalizeBuildState('pts', state);
     expect(normalized).toEqual(state);
     expect(warnings).toEqual([]);
   });
 });
 
 describe('build/hydrate and enemy/condition', () => {
-  const run = makeBuildReducer('live');
+  const run = makeBuildReducer('pts');
 
   it('build/hydrate runs normalization', () => {
     const bad = createDefaultBuildState();

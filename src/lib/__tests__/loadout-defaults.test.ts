@@ -86,7 +86,7 @@ describe('default mod folding (assemble-time)', () => {
     const input = loadout('DoubleBarrelShotgun', {
       ap_customName: 'mod_custom_Coldshoulder_DmgvsCryptid',
     });
-    const paranormal = getOmodById('live', 'mod_custom_Coldshoulder_DmgvsCryptid');
+    const paranormal = getOmodById('pts', 'mod_custom_Coldshoulder_DmgvsCryptid');
     expect(paranormal?.modifiers.length).toBe(3);
     expect(input!.modifiers.some((m) => m.source.edid === paranormal!.id)).toBe(true);
   });
@@ -217,10 +217,10 @@ describe('loadout weapon-stat folding (perk weapon-stat fold gap)', () => {
 
 describe('getDefaultOmodId', () => {
   it('resolves the Handmade slot defaults by their real in-game names', () => {
-    const handmade = getWeapons('live')['DLC04_HandMadeGun'];
+    const handmade = getWeapons('pts')['DLC04_HandMadeGun'];
     const nameOf = (slot: string) => {
-      const id = getDefaultOmodId('live', handmade, slot);
-      return id ? getOmodById('live', id)?.name : undefined;
+      const id = getDefaultOmodId('pts', handmade, slot);
+      return id ? getOmodById('pts', id)?.name : undefined;
     };
     expect(nameOf('ap_gun_Barrel')).toBe('Short Barrel');
     expect(nameOf('ap_gun_Grip')).toBe('Standard Stock');
@@ -229,7 +229,7 @@ describe('getDefaultOmodId', () => {
   });
 
   it('returns undefined for a slot with no known default', () => {
-    const handmade = getWeapons('live')['DLC04_HandMadeGun'];
-    expect(getDefaultOmodId('live', handmade, 'ap_gun_NotASlot')).toBeUndefined();
+    const handmade = getWeapons('pts')['DLC04_HandMadeGun'];
+    expect(getDefaultOmodId('pts', handmade, 'ap_gun_NotASlot')).toBeUndefined();
   });
 });

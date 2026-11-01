@@ -20,7 +20,7 @@ import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixtu
 
 describe('perk registry ↔ generated family join', () => {
   it('joins Center Masochist to the Commando ESM family', () => {
-    const perk = getGeneratedPerk('live', PerkId.CenterMasochist);
+    const perk = getGeneratedPerk('pts', PerkId.CenterMasochist);
     expect(perk?.family).toBe('Commando');
     expect(perk?.maxRank).toBe(3);
     // +25/50/75% ranged damage vs torso
@@ -31,7 +31,7 @@ describe('perk registry ↔ generated family join', () => {
 
   it('Tenderizer is target-side: no player modifier from the card', () => {
     // Equipping the card contributes nothing — the debuff lives on the target.
-    expect(getLoadoutModifiers('live', [{ perkId: PerkId.Tenderizer, rank: 1 }])).toHaveLength(0);
+    expect(getLoadoutModifiers('pts', [{ perkId: PerkId.Tenderizer, rank: 1 }])).toHaveLength(0);
   });
 
   /**
@@ -41,11 +41,11 @@ describe('perk registry ↔ generated family join', () => {
    * loudly and forces adjudication.
    */
   it('reports unjoined PerkIds without crashing (pinned review list)', () => {
-    expect([...getUnjoinedPerkIds('live')].sort()).toEqual([]);
+    expect([...getUnjoinedPerkIds('pts')].sort()).toEqual([]);
   });
 
   it('getEquippedPerkFamilyRanks maps a mixed loadout to family → highest owned rank (perkFamilyRank input)', () => {
-    const ranks = getEquippedPerkFamilyRanks('live', [
+    const ranks = getEquippedPerkFamilyRanks('pts', [
       { perkId: PerkId.LockAndLoad, rank: 1 },
       { perkId: PerkId.BulletStorm, rank: 2 },
       // Duplicate family at a lower rank must not downgrade the map.
@@ -59,20 +59,20 @@ describe('perk registry ↔ generated family join', () => {
   });
 
   it('joins the reclassified legendary perks to their LGN_ families', () => {
-    expect(getGeneratedPerk('live', PerkId.TakingOneForTheTeam)?.family).toBe(
+    expect(getGeneratedPerk('pts', PerkId.TakingOneForTheTeam)?.family).toBe(
       'LGN_TakingOneForTheTeam_Perk',
     );
     // Pinned via perkFamilyOverrides — two families share the name "Blood Sacrifice!".
-    expect(getGeneratedPerk('live', PerkId.BloodSacrifice)?.family).toBe('LGN_BloodSacrifice_Perk');
+    expect(getGeneratedPerk('pts', PerkId.BloodSacrifice)?.family).toBe('LGN_BloodSacrifice_Perk');
     // Registry name fixed from "Breath It In" — joins the GHL_ ghoul family.
-    expect(getGeneratedPerk('live', PerkId.BreathItIn)?.family).toBe('GHL_BreatheItIn');
-    expect(getGeneratedPerk('live', PerkId.ActionDiet)?.family).toBe('GHL_LGN_ActionDiet');
+    expect(getGeneratedPerk('pts', PerkId.BreathItIn)?.family).toBe('GHL_BreatheItIn');
+    expect(getGeneratedPerk('pts', PerkId.ActionDiet)?.family).toBe('GHL_LGN_ActionDiet');
   });
 });
 
 describe('perk effects through the engine (real data)', () => {
   const base = {
-    mode: 'live' as const,
+    mode: 'pts' as const,
     itemLevel: 50,
     player: makeResolvedPlayer(),
     enemy: createDefaultEnemyConditions(),
@@ -81,8 +81,8 @@ describe('perk effects through the engine (real data)', () => {
   };
 
   it('Center Masochist boosts Fixer torso hits but not weakpoint hits', () => {
-    const weapon = getWeapons('live')['CombatRifle_Fixer'];
-    const perk = getLoadoutModifiers('live', [{ perkId: PerkId.CenterMasochist, rank: 3 }]);
+    const weapon = getWeapons('pts')['CombatRifle_Fixer'];
+    const perk = getLoadoutModifiers('pts', [{ perkId: PerkId.CenterMasochist, rank: 3 }]);
     const weakpoint = { ...makeResolvedPlayer(), isAimingAtWeakpoint: true };
 
     const noPerk = computeScenarios({ ...base, weapon, modifiers: [] });
@@ -95,8 +95,8 @@ describe('perk effects through the engine (real data)', () => {
   });
 
   it('Center Masochist location is decoupled from the body-part mult (BPTD partType, not mult sign)', () => {
-    const weapon = getWeapons('live')['CombatRifle_Fixer'];
-    const perk = getLoadoutModifiers('live', [{ perkId: PerkId.CenterMasochist, rank: 3 }]);
+    const weapon = getWeapons('pts')['CombatRifle_Fixer'];
+    const perk = getLoadoutModifiers('pts', [{ perkId: PerkId.CenterMasochist, rank: 3 }]);
     const weakpoint = { ...makeResolvedPlayer(), isAimingAtWeakpoint: true };
 
     // A non-torso part at mult 1.0 (e.g. an arm) must NOT trigger Center
@@ -145,9 +145,9 @@ describe('perk effects through the engine (real data)', () => {
   });
 
   it('Ninja boosts sneak damage for melee but not for the Fixer', () => {
-    const fixer = getWeapons('live')['CombatRifle_Fixer'];
-    const sledge = getWeapons('live')['SuperSledge'];
-    const ninja = getLoadoutModifiers('live', [{ perkId: PerkId.Ninja, rank: 1 }]);
+    const fixer = getWeapons('pts')['CombatRifle_Fixer'];
+    const sledge = getWeapons('pts')['SuperSledge'];
+    const ninja = getLoadoutModifiers('pts', [{ perkId: PerkId.Ninja, rank: 1 }]);
     const sneaking = { ...makeResolvedPlayer(), isSneaking: true };
 
     const fixerBase = computeScenarios({ ...base, weapon: fixer, modifiers: [], player: sneaking });
@@ -175,7 +175,7 @@ describe('perk effects through the engine (real data)', () => {
   });
 
   it('Tenderizer stacks scale dbm through player conditions (no card equipped)', () => {
-    const weapon = getWeapons('live')['CombatRifle_Fixer'];
+    const weapon = getWeapons('pts')['CombatRifle_Fixer'];
     const mods = getTargetDebuffModifiers({});
     const stacked = computeScenarios({
       ...base,
@@ -189,8 +189,8 @@ describe('perk effects through the engine (real data)', () => {
   });
 
   it('Concentrated Fire stacks scale VATS dbm only (rank 2 x 10 stacks = +20%, freeAim untouched)', () => {
-    const weapon = getWeapons('live')['CombatRifle_Fixer'];
-    const perk = getLoadoutModifiers('live', [{ perkId: PerkId.ConcentratedFire, rank: 2 }]);
+    const weapon = getWeapons('pts')['CombatRifle_Fixer'];
+    const perk = getLoadoutModifiers('pts', [{ perkId: PerkId.ConcentratedFire, rank: 2 }]);
     const unstacked = computeScenarios({ ...base, weapon, modifiers: perk });
     const stacked = computeScenarios({
       ...base,
@@ -328,7 +328,7 @@ describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)'
 
   for (const row of rows) {
     it(row.name, () => {
-      expect(perkHasEngineEffect('live', row.perkId)).toBe(row.expected);
+      expect(perkHasEngineEffect('pts', row.perkId)).toBe(row.expected);
     });
   }
 
@@ -347,14 +347,14 @@ describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)'
 
   for (const row of extractRoutedRows) {
     it(row.name, () => {
-      const mods = getGeneratedPerk('live', row.perkId)?.ranks[0]?.modifiers ?? [];
+      const mods = getGeneratedPerk('pts', row.perkId)?.ranks[0]?.modifiers ?? [];
       expect(hasAnyEngineEffect(mods.filter((m) => m.bucket === row.bucket))).toBe(true);
-      expect(perkHasEngineEffect('live', row.perkId)).toBe(true);
+      expect(perkHasEngineEffect('pts', row.perkId)).toBe(true);
     });
   }
 
   it('the Gunslinger/Guerrilla onslaught line is exactly the six cards pinned above', () => {
-    const registry = getPerks('live');
+    const registry = getPerks('pts');
     const onslaughtLine = Object.keys(registry).filter((id) =>
       /Gunslinger|Guerrilla/i.test(registry[id as keyof typeof registry].name),
     );

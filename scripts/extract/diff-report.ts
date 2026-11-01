@@ -70,7 +70,7 @@ function section(title: string, items: Entry[], detail?: (e: Entry) => string): 
 async function main() {
   const { values } = parseArgs({
     options: {
-      mode: { type: 'string', default: 'live' },
+      mode: { type: 'string', default: 'pts' },
       base: { type: 'string', default: 'HEAD' },
     },
   });

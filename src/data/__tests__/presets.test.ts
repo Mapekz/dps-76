@@ -7,7 +7,7 @@ import { pickEmphasizedScenario } from '@/lib/scenario-emphasis';
 import { getPerks, getWeapons } from '@/data';
 import { getOmodById } from '@/data/omods';
 
-const MODE = 'live';
+const MODE = 'pts';
 
 describe('BUILD_PRESETS', () => {
   for (const preset of BUILD_PRESETS) {

@@ -72,11 +72,11 @@ function makeChainOmod() {
 // +0.25 dbm, SET Speed 0.8248, automatic fire, and MUL_ADD −20% crit/sneak base.
 
 describe('buildEffectiveWeapon with real OMOD data', () => {
-  const fixer = getWeapons('live')['CombatRifle_Fixer'];
-  const receiver = getOmodById('live', 'mod_CombatRifle_Receiver_Damage-Auto')!;
+  const fixer = getWeapons('pts')['CombatRifle_Fixer'];
+  const receiver = getOmodById('pts', 'mod_CombatRifle_Receiver_Damage-Auto')!;
 
   it('the receiver is offered in the Fixer receiver slot', () => {
-    const slots = getOmodSlots('live', fixer);
+    const slots = getOmodSlots('pts', fixer);
     const receiverSlot = slots.find((s) => s.slot === 'ap_gun_Receiver');
     expect(receiverSlot?.options.some((o) => o.id === receiver.id)).toBe(true);
     // Cosmetic and legendary slots are hidden from the standard picker — except
@@ -91,14 +91,14 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
   it('unique-effect mods on cosmetic slots surface only on their own weapons', () => {
     // Perfect Storm's payload rides ap_customName and is listed in the 10mm
     // SMG's templateModFormIds — offered there, never on the Fixer.
-    const smgSlots = getOmodSlots('live', getWeapons('live')['10mmSMG']);
+    const smgSlots = getOmodSlots('pts', getWeapons('pts')['10mmSMG']);
     const customSlot = smgSlots.find((s) => s.slot === 'ap_customName');
     expect(customSlot?.options.some((o) => o.id === 'mod_Custom_PerfectStorm')).toBe(true);
   });
 
   it('equipping Perfect Storm on the 10mm SMG changes freeAim.perHit.total vs stock', () => {
-    const smg = getWeapons('live')['10mmSMG'];
-    const perfectStorm = getOmodById('live', 'mod_Custom_PerfectStorm')!;
+    const smg = getWeapons('pts')['10mmSMG'];
+    const perfectStorm = getOmodById('pts', 'mod_Custom_PerfectStorm')!;
     const stock = computeScenarios(scenarioInput(smg, { critRate: 0 }));
     const { weapon, modifiers } = effective(smg, [perfectStorm]);
     const modded = computeScenarios(scenarioInput(weapon, { modifiers, critRate: 0 }));
@@ -224,7 +224,7 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
 });
 
 describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, docs/assumptions.md "Onslaught")', () => {
-  const fixer = getWeapons('live')['CombatRifle_Fixer'];
+  const fixer = getWeapons('pts')['CombatRifle_Fixer'];
   const base = fixer.reloadSpeed ?? 1.0;
   const perkSource = { kind: 'perk' as const, formId: '0x1', edid: 'test_perk', name: 'Test Perk' };
 
@@ -350,38 +350,38 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, docs/a
   });
 
   it('Gun Runner moveSpeedBonus feeds Fast Fighter on ranged weapons only', () => {
-    const fastFighter = getLoadoutModifiers('live', [{ perkId: PerkId.FastFighter, rank: 1 }]);
-    const gunRunner = getLoadoutModifiers('live', [{ perkId: PerkId.GunRunner, rank: 2 }]);
+    const fastFighter = getLoadoutModifiers('pts', [{ perkId: PerkId.FastFighter, rank: 1 }]);
+    const gunRunner = getLoadoutModifiers('pts', [{ perkId: PerkId.GunRunner, rank: 2 }]);
     const player = makeResolvedPlayer();
 
     const ranged = effective(fixer, [], player, [...fastFighter, ...gunRunner]);
     expect(ranged.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6); // +20% move → +10% reload
 
-    const melee = getWeapons('live')['DeathclawGauntlet'];
+    const melee = getWeapons('pts')['DeathclawGauntlet'];
     const meleeBase = melee.reloadSpeed ?? 1.0;
     const onMelee = effective(melee, [], player, [...fastFighter, ...gunRunner]);
     expect(onMelee.weapon.reloadSpeed).toBeCloseTo(meleeBase, 6);
   });
 
   it('Wasteland Fish Sandwich (real consumable data) feeds Fast Fighter reload speed', () => {
-    const mods = getBuffModifiers('live', [], ['SeasonalFish_Meal_SummerWastelandFishSandwich']);
+    const mods = getBuffModifiers('pts', [], ['SeasonalFish_Meal_SummerWastelandFishSandwich']);
     expect(mods).toEqual(
       expect.arrayContaining([expect.objectContaining({ bucket: 'moveSpeedBonus', value: 0.2 })]),
     );
-    const fastFighter = getLoadoutModifiers('live', [{ perkId: PerkId.FastFighter, rank: 1 }]);
+    const fastFighter = getLoadoutModifiers('pts', [{ perkId: PerkId.FastFighter, rank: 1 }]);
     const player = makeResolvedPlayer();
     const result = effective(fixer, [], player, [...fastFighter, ...mods]);
     expect(result.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6);
   });
 
   it('Emergency Protocols (real armor data) feeds Fast Fighter reload speed only below 20% HP in power armor', () => {
-    const mods = getArmorEffectModifiers('live', {
+    const mods = getArmorEffectModifiers('pts', {
       mod_PowerArmor_Excavator_Torso_Misc_Emergency: 1,
     });
     expect(mods).toEqual(
       expect.arrayContaining([expect.objectContaining({ bucket: 'moveSpeedBonus', value: 0.25 })]),
     );
-    const fastFighter = getLoadoutModifiers('live', [{ perkId: PerkId.FastFighter, rank: 1 }]);
+    const fastFighter = getLoadoutModifiers('pts', [{ perkId: PerkId.FastFighter, rank: 1 }]);
 
     // Full health, in power armor: gate fails on health, no reload-speed change.
     const healthyInPa = { ...makeResolvedPlayer(), isInPowerArmor: true };
@@ -406,7 +406,7 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, docs/a
 });
 
 describe('dual-site bootstrap folds', () => {
-  const fixer = getWeapons('live')['CombatRifle_Fixer'];
+  const fixer = getWeapons('pts')['CombatRifle_Fixer'];
   const source = {
     kind: 'perk' as const,
     formId: '0xB00',
@@ -478,11 +478,11 @@ describe('dual-site bootstrap folds', () => {
 });
 
 describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-13)', () => {
-  const fixer = getWeapons('live')['CombatRifle_Fixer']; // ballistic-only
-  const gaussMinigun = getWeapons('live')['GaussMinigun']; // ballistic-only, base 53 @ level 50
+  const fixer = getWeapons('pts')['CombatRifle_Fixer']; // ballistic-only
+  const gaussMinigun = getWeapons('pts')['GaussMinigun']; // ballistic-only, base 53 @ level 50
   // Tesla Coil Capacitor: baseDamage MUL_ADD −0.2 ballistic-scoped, +0.5
   // energy-scoped — the +0.5 used to silently no-op with no energy component.
-  const teslaCapacitor = getOmodById('live', 'mod_GaussMinigun_Tesla_Capacitor')!;
+  const teslaCapacitor = getOmodById('pts', 'mod_GaussMinigun_Tesla_Capacitor')!;
 
   /** A synthetic blanket "−30% on every damage type" barrel/receiver shape. */
   function blanketBaseDamageOmod(
@@ -614,8 +614,8 @@ describe('dotDamage-only foreign damage types (issue #83)', () => {
   // baseDamage property — before the fix, computeDotDps's componentTypes
   // scan (paper-damage.ts) never saw 'radiation' on the weapon and this
   // OMOD's DoT silently folded to 0.
-  const commieWhacker = getWeapons('live')['DLC04_CommieWhacker'];
-  const radMod = getOmodById('live', 'mod_Custom_CamdenWhacker_RAD')!;
+  const commieWhacker = getWeapons('pts')['DLC04_CommieWhacker'];
+  const radMod = getOmodById('pts', 'mod_Custom_CamdenWhacker_RAD')!;
 
   it('materializes a zero base-damage radiation component alongside the real ballistic one', () => {
     const { weapon } = effective(commieWhacker, [radMod]);
@@ -1226,7 +1226,7 @@ describe('procChase → Weapon.procs (issue #42, PROC_DAMAGE_PLAN.md commit 6)',
 });
 
 describe('charging weapon-stat buckets (chargeFullPowerSec/chargeFullPowerDamageMult)', () => {
-  const fixer = getWeapons('live')['CombatRifle_Fixer'];
+  const fixer = getWeapons('pts')['CombatRifle_Fixer'];
 
   it('an OMOD SET chargeFullPowerSec turns charging ON for a base weapon that has FPDM but FPS 0 (tesla pattern)', () => {
     // Tesla/gamma/laser charging-barrel shape: the base WEAP already carries
@@ -1255,12 +1255,12 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
     // ESM: Hunting Rifle minRange 2612, maxRange 5225, outOfRangeDamageMult
     // 0.5; mod_HuntingRifle_barrel_Long_Base MUL_ADD +0.5 on both range
     // fields, no OutOfRangeMult property (unchanged).
-    const huntingRifle = getWeapons('live')['HuntingRifle'];
+    const huntingRifle = getWeapons('pts')['HuntingRifle'];
     expect(huntingRifle.minRange).toBe(2612);
     expect(huntingRifle.maxRange).toBe(5225);
     expect(huntingRifle.outOfRangeDamageMult).toBe(0.5);
 
-    const longBarrel = getOmodById('live', 'mod_HuntingRifle_barrel_Long_Base')!;
+    const longBarrel = getOmodById('pts', 'mod_HuntingRifle_barrel_Long_Base')!;
     const { weapon } = effective(huntingRifle, [longBarrel]);
     expect(weapon.minRange).toBeCloseTo(2612 * 1.5, 6);
     expect(weapon.maxRange).toBeCloseTo(5225 * 1.5, 6);
@@ -1268,10 +1268,10 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
   });
 
   it('the Abraxo Barrel SETs weaponOutOfRangeMult to 0.7 (the one OMOD in the dump that touches it)', () => {
-    const plasmaGun = getWeapons('live')['PlasmaGun'];
+    const plasmaGun = getWeapons('pts')['PlasmaGun'];
     expect(plasmaGun.outOfRangeDamageMult).toBe(0.5);
 
-    const abraxoBarrel = getOmodById('live', 'mod_PlasmaGun_barrel_Flamer_Abraxo')!;
+    const abraxoBarrel = getOmodById('pts', 'mod_PlasmaGun_barrel_Flamer_Abraxo')!;
     const { weapon } = effective(plasmaGun, [abraxoBarrel]);
     expect(weapon.outOfRangeDamageMult).toBeCloseTo(0.7, 6);
   });
@@ -1281,8 +1281,8 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
     // exercising a bucket unrelated to range — the base ?? fallback in the
     // weaponMinRange/weaponMaxRange/weaponOutOfRangeMult folds should be a
     // no-op when nothing targets those buckets.
-    const huntingRifle = getWeapons('live')['HuntingRifle'];
-    const unrelatedMod = getOmodById('live', 'mod_HuntingRifle_Barrel_Short_Recoil')!; // real equipped OMOD, zero modifiers of its own
+    const huntingRifle = getWeapons('pts')['HuntingRifle'];
+    const unrelatedMod = getOmodById('pts', 'mod_HuntingRifle_Barrel_Short_Recoil')!; // real equipped OMOD, zero modifiers of its own
     const { weapon } = effective(huntingRifle, [unrelatedMod]);
     expect(weapon.minRange).toBe(2612);
     expect(weapon.maxRange).toBe(5225);
@@ -1290,7 +1290,7 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
   });
 
   it('Long Shot range MUL_ADD applies only when the weapon carries a scope keyword', () => {
-    const huntingRifle = getWeapons('live')['HuntingRifle'];
+    const huntingRifle = getWeapons('pts')['HuntingRifle'];
     const scopedMod = makeOmod({
       id: 'test_scope',
       attachPointEdid: 'ap_gun_Sights',
@@ -1339,7 +1339,7 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
 });
 
 describe('sustain chance buckets (foldChanceUnion)', () => {
-  const fixer = getWeapons('live')['CombatRifle_Fixer'];
+  const fixer = getWeapons('pts')['CombatRifle_Fixer'];
   const baseCapacity = fixer.capacity ?? 0;
   const sustainSource = { formId: '0x0', edid: 'test_sustain', name: 'Test Sustain Mod' };
   const perkSource = { kind: 'perk' as const, formId: '0x1', edid: 'test_perk', name: 'Test Perk' };

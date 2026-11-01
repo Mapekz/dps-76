@@ -4,9 +4,9 @@
  * hidden/forceVisible overlay (src/data/overrides/corrections.ts).
  *
  * A leaf module (no dependency on dataset.ts) so both the raw per-collection
- * adapters (live/weapons.ts, buffs.ts, omods.ts) and the dataset construction
+ * adapters (pts/weapons.ts, buffs.ts, omods.ts) and the dataset construction
  * / overlay-review layer (dataset.ts) share one predicate without a circular
- * import — dataset.ts itself imports from live/weapons.ts.
+ * import — dataset.ts itself imports from pts/weapons.ts.
  */
 
 export interface VisibilityOverlay {

@@ -22,7 +22,7 @@ const KILL_STREAK_IDENTITY_CURVE = {
 
 describe('AV pass-through (kill-streak SPECIAL grants, live dataset)', () => {
   it('Barbarian (3★ melee legendary) grants specialStrength via a killStreak identity curve, and is no longer badged inert', () => {
-    const dataset = getDataset('live');
+    const dataset = getDataset('pts');
     const omod = dataset.omods.find((o) => o.id === 'mod_Legendary_Weapon3_Melee_Barbarian');
     expect(omod).toBeDefined();
     expect(omod?.modifiers).toEqual([
@@ -38,7 +38,7 @@ describe('AV pass-through (kill-streak SPECIAL grants, live dataset)', () => {
   });
 
   it('Mind Over Matter perk grants specialIntelligence via the same identity curve', () => {
-    const dataset = getDataset('live');
+    const dataset = getDataset('pts');
     const perk = dataset.perks.find((p) => p.family === 'MindOverMatterPerk');
     expect(perk).toBeDefined();
     expect(perk?.ranks).toHaveLength(1);
@@ -54,7 +54,7 @@ describe('AV pass-through (kill-streak SPECIAL grants, live dataset)', () => {
   });
 
   it('Mind Over Matter unique plasma gun grants the same specialIntelligence curve, and is no longer badged inert', () => {
-    const dataset = getDataset('live');
+    const dataset = getDataset('pts');
     const omod = dataset.omods.find((o) => o.id === 'mod_Custom_PlasmaGun_MindOverMatter');
     expect(omod).toBeDefined();
     expect(omod?.modifiers).toEqual([
@@ -70,7 +70,7 @@ describe('AV pass-through (kill-streak SPECIAL grants, live dataset)', () => {
   });
 
   it('no equipped kill-streak source carries a "no route for AV EnableKillStreak" note anymore', () => {
-    const dataset = getDataset('live');
+    const dataset = getDataset('pts');
     const noteHits = [...dataset.omods, ...dataset.armorOmods]
       .flatMap((o) => o.notes ?? [])
       .filter((n) => n.includes('EnableKillStreak'));

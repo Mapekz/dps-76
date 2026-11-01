@@ -51,7 +51,7 @@ function npc(overrides: Partial<GeneratedNpc>): GeneratedNpc {
 describe('getEnemyDefenses — epic HP mult (Phase A, data-driven off GeneratedNpc.epicRank)', () => {
   it('rank present + epicAllowed true: HP scales by EPIC_CREATURE_RANK_MULTS[rank].healthMult (rank 3 → ×3.2)', () => {
     stubNpc = npc({ id: 'EpicRace', epicAllowed: true, epicRank: 3 });
-    const result = getEnemyDefenses('live', 'EpicRace', 100);
+    const result = getEnemyDefenses('pts', 'EpicRace', 100);
     expect(result!.hp).toBeCloseTo(BASE_HP * 3.2, 6);
   });
 
@@ -73,7 +73,7 @@ describe('getEnemyDefenses — epic HP mult (Phase A, data-driven off GeneratedN
   for (const row of plainHpRows) {
     it(row.name, () => {
       stubNpc = row.npc;
-      const result = getEnemyDefenses('live', row.npc.id, 100);
+      const result = getEnemyDefenses('pts', row.npc.id, 100);
       expect(result!.hp).toBe(BASE_HP);
     });
   }
@@ -88,14 +88,14 @@ describe('getEnemyDefenses — epic HP mult (Phase A, data-driven off GeneratedN
         { damageType: 'energy', flatValue: 50, curveTier: null },
       ],
     });
-    const result = getEnemyDefenses('live', 'ResistRace', 100);
+    const result = getEnemyDefenses('pts', 'ResistRace', 100);
     expect(result!.resists.physical).toBe(22); // stub getCreatureResist passthrough of the tier.
     expect(result!.resists.energy).toBe(50); // flat value, curveTier null.
   });
 
   it('unknown raceId or no npc row returns null (unchanged pre-existing behavior)', () => {
     stubNpc = undefined;
-    expect(getEnemyDefenses('live', null, 100)).toBeNull();
-    expect(getEnemyDefenses('live', 'NoSuchRace', 100)).toBeNull();
+    expect(getEnemyDefenses('pts', null, 100)).toBeNull();
+    expect(getEnemyDefenses('pts', 'NoSuchRace', 100)).toBeNull();
   });
 });

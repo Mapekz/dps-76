@@ -66,7 +66,7 @@ export interface EffectiveWeapon {
 // modifier list) is derived from BUCKET_REGISTRY (@/types/modifiers) and
 // re-exported above, not hand-maintained here.
 
-// Mirrors src/data/live/weapons.ts's adaptWeapon damage-type/component
+// Mirrors src/data/pts/weapons.ts's adaptWeapon damage-type/component
 // mapping — duplicated here (rather than imported) because the engine must
 // stay live/pts-mode-agnostic and never reaches into a mode-specific data
 // adapter. Keep both in sync if a new GeneratedDamageType is ever added.

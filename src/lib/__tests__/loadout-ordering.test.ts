@@ -51,11 +51,11 @@ describe('loadout assembly ordering', () => {
       rank: 1,
     };
 
-    const stock = resolveLoadout(base, createDefaultEnemyConfig(), 'live')!;
+    const stock = resolveLoadout(base, createDefaultEnemyConfig(), 'pts')!;
     const withSyntheticPerk = resolveLoadout(
       { ...base, perks: [syntheticPerk] },
       createDefaultEnemyConfig(),
-      'live',
+      'pts',
     )!;
 
     expect(withSyntheticPerk.weapon.speed).toBeCloseTo((stock.weapon.speed ?? 1) + 0.123, 10);

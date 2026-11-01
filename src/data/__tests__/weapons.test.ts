@@ -12,7 +12,7 @@ import { VETTED_WEAPON_IDS } from '../vetted-weapons';
  */
 
 describe('vetted weapon roster', () => {
-  const weapons = getWeapons('live');
+  const weapons = getWeapons('pts');
 
   it('has no unreviewed additions or removals', () => {
     expect(Object.keys(weapons).sort()).toEqual([...VETTED_WEAPON_IDS].sort());
