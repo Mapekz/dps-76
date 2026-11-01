@@ -46,30 +46,30 @@ describe('rangeFalloffMult — composite model (docs/assumptions.md "Target dist
   const outOfRangeMult = 0.5;
 
   it('is 1.0 at or below minRange', () => {
-    expect(rangeFalloffMult(0, min, max, outOfRangeMult)).toBe(1.0);
-    expect(rangeFalloffMult(min, min, max, outOfRangeMult)).toBe(1.0);
-    expect(rangeFalloffMult(min - 1, min, max, outOfRangeMult)).toBe(1.0);
+    expect(rangeFalloffMult('live', 0, min, max, outOfRangeMult)).toBe(1.0);
+    expect(rangeFalloffMult('live', min, min, max, outOfRangeMult)).toBe(1.0);
+    expect(rangeFalloffMult('live', min - 1, min, max, outOfRangeMult)).toBe(1.0);
   });
 
   it('interpolates linearly from 1.0 to outOfRangeMult between min and max', () => {
     const midpoint = (min + max) / 2;
-    expect(rangeFalloffMult(midpoint, min, max, outOfRangeMult)).toBeCloseTo(
+    expect(rangeFalloffMult('live', midpoint, min, max, outOfRangeMult)).toBeCloseTo(
       1.0 + (outOfRangeMult - 1.0) * 0.5,
       9,
     );
   });
 
   it('equals outOfRangeMult exactly at maxRange (continuous with the curve segment)', () => {
-    expect(rangeFalloffMult(max, min, max, outOfRangeMult)).toBeCloseTo(outOfRangeMult, 9);
+    expect(rangeFalloffMult('live', max, min, max, outOfRangeMult)).toBeCloseTo(outOfRangeMult, 9);
   });
 
   it('guards a non-positive maxRange (melee sentinel-ish data) to 1.0', () => {
-    expect(rangeFalloffMult(9999, 0, 0, 0.0)).toBe(1.0);
-    expect(rangeFalloffMult(9999, 0, -1, -1)).toBe(1.0);
+    expect(rangeFalloffMult('live', 9999, 0, 0, 0.0)).toBe(1.0);
+    expect(rangeFalloffMult('live', 9999, 0, -1, -1)).toBe(1.0);
   });
 
   it('guards a degenerate span (maxRange <= minRange) to 1.0', () => {
-    expect(rangeFalloffMult(9999, 1024, 1024, 0.7)).toBe(1.0);
+    expect(rangeFalloffMult('live', 9999, 1024, 1024, 0.7)).toBe(1.0);
   });
 });
 
@@ -81,23 +81,23 @@ describe('rangeFalloffMult — exact curve breakpoints at a clean maxRange = 2x 
   const outOfRangeMult = 0.5;
 
   it('at 1.25x maxRange (X=1.5) applies curveY(1.5) = 0.75', () => {
-    expect(rangeFalloffMult(1.25 * max, min, max, outOfRangeMult)).toBeCloseTo(
+    expect(rangeFalloffMult('live', 1.25 * max, min, max, outOfRangeMult)).toBeCloseTo(
       outOfRangeMult * 0.75,
       9,
     );
   });
 
   it('at 1.5x maxRange (X=2.0) applies curveY(2.0) = 0.2 (curve floor)', () => {
-    expect(rangeFalloffMult(1.5 * max, min, max, outOfRangeMult)).toBeCloseTo(
+    expect(rangeFalloffMult('live', 1.5 * max, min, max, outOfRangeMult)).toBeCloseTo(
       outOfRangeMult * 0.2,
       9,
     );
   });
 
   it('is flat beyond 1.5x maxRange (curve clamps to its own endpoint)', () => {
-    const at1_5x = rangeFalloffMult(1.5 * max, min, max, outOfRangeMult);
-    const at2x = rangeFalloffMult(2 * max, min, max, outOfRangeMult);
-    const at10x = rangeFalloffMult(10 * max, min, max, outOfRangeMult);
+    const at1_5x = rangeFalloffMult('live', 1.5 * max, min, max, outOfRangeMult);
+    const at2x = rangeFalloffMult('live', 2 * max, min, max, outOfRangeMult);
+    const at10x = rangeFalloffMult('live', 10 * max, min, max, outOfRangeMult);
     expect(at2x).toBeCloseTo(at1_5x, 9);
     expect(at10x).toBeCloseTo(at1_5x, 9);
   });

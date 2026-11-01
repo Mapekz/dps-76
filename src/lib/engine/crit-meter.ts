@@ -1,7 +1,6 @@
-import type { Weapon } from '@/types';
+import type { GameMode, Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
-import { interpolateCurve } from '@/lib/curve-tables';
-import luckCritChargeCurveFile from '@/data/live/curvetables/player/vats/luckvatscriticalcharge.json';
+import { getLuckCritChargeCurve, interpolateCurve } from '@/lib/curve-tables';
 import { effectiveValue, foldBucket, foldRegisteredBucket, type ResolveContext } from './resolve';
 import { lastTrace, type BucketTrace, type CritMeterTrace } from './trace';
 
@@ -59,8 +58,6 @@ function isSelfScalingCritConsumption(m: Modifier): boolean {
   );
 }
 
-const LUCK_CRIT_CHARGE_CURVE = luckCritChargeCurveFile.curve;
-
 /**
  * ESM-extracted `fVATSCriticalChargeBase` — `getVatsCritConstants` (`@/data`)
  * resolves the live value via `extract-constants.ts`; real callers
@@ -89,6 +86,7 @@ export interface CritMeterResult {
 }
 
 export function computeCritMeter(
+  mode: GameMode,
   modifiers: Modifier[],
   weapon: Weapon,
   ctx: ResolveContext,
@@ -99,7 +97,7 @@ export function computeCritMeter(
   const fillBase =
     constants.chargeBase +
     (weapon.critChargeBonus ?? 1.0) +
-    interpolateCurve(LUCK_CRIT_CHARGE_CURVE, luck);
+    interpolateCurve(getLuckCritChargeCurve(mode), luck);
   const fillCollect = trace ? ([] as BucketTrace[]) : undefined;
   const fillPerHit = foldBucket(modifiers, 'critFill', fillBase, ctx, fillCollect);
   if (trace && fillCollect) trace.fill = lastTrace(fillCollect);

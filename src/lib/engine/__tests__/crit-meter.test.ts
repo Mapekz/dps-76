@@ -22,7 +22,7 @@ function ctx(overrides: Partial<ResolveContext['player']> = {}): ResolveContext 
 
 describe('computeCritMeter', () => {
   it('baseline: 15 LCK, no perks → crit every 5th shot', () => {
-    const result = computeCritMeter([], fixer, ctx());
+    const result = computeCritMeter('live', [], fixer, ctx());
     // 5 (base) + 1 (Fixer's Crit Charge Bonus) + 21 (CT_LuckVATSCriticalCharge
     // Y at X=15, an exact curve point) — see crit-meter.ts's module doc.
     expect(result.fillPerHit).toBeCloseTo(27, 6);
@@ -41,7 +41,7 @@ describe('computeCritMeter', () => {
       ...getArmorEffectModifiers('live', selections),
     ];
     const wornPieceCounts = getArmorEffectWornPieceCounts('live', selections);
-    const result = computeCritMeter(mods, fixer, ctx({ luck: 16, wornPieceCounts }));
+    const result = computeCritMeter('live', mods, fixer, ctx({ luck: 16, wornPieceCounts }));
     // 5 + 1 + curveY(16) = 5 + 1 + 21.8 (linear interp between (15,21)/(20,25)).
     expect(result.fillPerHit).toBeCloseTo(27.8, 6);
     expect(result.consumption).toBeCloseTo(27.5, 6);
@@ -53,6 +53,7 @@ describe('computeCritMeter', () => {
     const selections = { [LIMIT_BREAKING_ID]: 5 };
     const wornPieceCounts = getArmorEffectWornPieceCounts('live', selections);
     const result = computeCritMeter(
+      'live',
       getArmorEffectModifiers('live', selections),
       fixer,
       ctx({ luck: 100, wornPieceCounts }),

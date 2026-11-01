@@ -2,8 +2,7 @@ import type { EnemyConditions, GameMode, Weapon } from '@/types';
 import type { AuraSource } from '@/types/auras';
 import type { ResolvedPlayer } from '@/types/player';
 import type { Modifier } from '@/types/modifiers';
-import { interpolateCurve } from '@/lib/curve-tables';
-import chargedMeleeCurveFile from '@/data/live/curvetables/legendarymods/weapon_chargedmeleeattack.json';
+import { getChargedMeleeCurve, interpolateCurve } from '@/lib/curve-tables';
 import { DEFAULT_DISTANCE_UNITS, rangeFalloffMult } from '@/lib/distance';
 import { getFireRate } from '@/lib/fire-rate';
 import {
@@ -480,20 +479,21 @@ function isMelee(weapon: Weapon): boolean {
  * deals 0 damage (docs/assumptions.md).
  *
  * 1-charge-per-light-attack is an INFERENCE — no rate field exists in ESM
- * data (docs/assumptions.md). Modeled cycle: `CHARGED_MAX_CHARGES` light
+ * data (docs/assumptions.md). Modeled cycle: `maxCharges` light
  * (non-power-attack) attacks bank charges, the next is a full-charge power
  * attack (race mult + powerAttackBonus bucket, C1) further multiplied by
- * `(1 + CHARGED_FULL_BONUS)`. Applies regardless of the isPowerAttacking
+ * `(1 + fullBonus)`. Applies regardless of the isPowerAttacking
  * toggle — the cadence IS the optimal play pattern for a Charged weapon
  * (docs/assumptions.md).
  */
 const CHARGED_KEYWORD = 'WeaponHasSecondaryCharging';
-const CHARGED_MELEE_CURVE = chargedMeleeCurveFile.curve;
-/** The curve's own X domain ceiling — the game's max chargeable stack count (3 in the 20260717 dump). */
-const CHARGED_MAX_CHARGES = CHARGED_MELEE_CURVE[CHARGED_MELEE_CURVE.length - 1].x;
-/** Curve Y at `CHARGED_MAX_CHARGES` — the full-charge damage bonus (3.0 in the 20260717 dump). */
-const CHARGED_FULL_BONUS = interpolateCurve(CHARGED_MELEE_CURVE, CHARGED_MAX_CHARGES);
-const CHARGED_CYCLE_LENGTH = CHARGED_MAX_CHARGES + 1; // CHARGED_MAX_CHARGES light attacks + 1 detonation
+
+/** The mode's charge curve: its X ceiling is the max charge count (3 in the 20260717 dump), its Y there the full-charge bonus (3.0). */
+function chargedCycleShape(mode: GameMode): { maxCharges: number; fullBonus: number } {
+  const curve = getChargedMeleeCurve(mode);
+  const maxCharges = curve[curve.length - 1].x;
+  return { maxCharges, fullBonus: interpolateCurve(curve, maxCharges) };
+}
 
 function isCharged(weapon: Weapon): boolean {
   return (weapon.keywords ?? []).includes(CHARGED_KEYWORD);
@@ -508,7 +508,7 @@ function scaleHit(b: HitBreakdown, mult: number): HitBreakdown {
 
 /**
  * The charged cycle's average hit: 3 normal (non-power-attack) hits + 1
- * detonation hit (full power-attack treatment × (1 + CHARGED_FULL_BONUS)),
+ * detonation hit (full power-attack treatment × (1 + fullBonus)),
  * each crit-weighted by the scenario's own steady-state crit rate (0 for
  * free aim, the VATS crit meter's rate for VATS) so the cycle composes with
  * crits the same way the scenario's ordinary perHit does.
@@ -521,6 +521,8 @@ function chargedCycleHit(
   onslaught: OnslaughtThread,
   bulletStorm: BulletStormThread,
 ): HitBreakdown {
+  const { maxCharges, fullBonus } = chargedCycleShape(input.mode);
+  const cycleLength = maxCharges + 1; // maxCharges light attacks + 1 detonation
   const normal = critWeighted(
     bodyPartBlendedHit(
       input,
@@ -556,15 +558,14 @@ function chargedCycleHit(
       ),
       critRate,
     ),
-    1 + CHARGED_FULL_BONUS,
+    1 + fullBonus,
   );
   return {
     components: normal.components.map((c, i) => ({
       ...c,
-      damage:
-        (c.damage * CHARGED_MAX_CHARGES + detonation.components[i].damage) / CHARGED_CYCLE_LENGTH,
+      damage: (c.damage * maxCharges + detonation.components[i].damage) / cycleLength,
     })),
-    total: (normal.total * CHARGED_MAX_CHARGES + detonation.total) / CHARGED_CYCLE_LENGTH,
+    total: (normal.total * maxCharges + detonation.total) / cycleLength,
   };
 }
 
@@ -850,6 +851,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const rangeMult = isMelee(input.weapon)
     ? 1.0
     : rangeFalloffMult(
+        input.mode,
         input.enemy.targetDistance ?? DEFAULT_DISTANCE_UNITS,
         input.weapon.minRange ?? 0,
         input.weapon.maxRange ?? 0,
@@ -1003,6 +1005,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     ? ({ fill: null, consumption: null } as CritMeterTrace)
     : undefined;
   const critMeter = computeCritMeter(
+    input.mode,
     input.modifiers,
     input.weapon,
     vatsCtx,

@@ -1,5 +1,5 @@
-import { interpolateCurve } from '@/lib/curve-tables';
-import minToMaxRangeCurveFile from '@/data/live/curvetables/player/range/percentofmintomaxrangedamagemult.json';
+import type { GameMode } from '@/types';
+import { getMinToMaxRangeCurve, interpolateCurve } from '@/lib/curve-tables';
 
 /**
  * Target-distance & range-falloff constants (Phase 1 — Range + falloff).
@@ -57,8 +57,6 @@ export function pipBoyToGameUnits(pipBoy: number): number {
  * clamps to the curve's own endpoints outside its domain (game-accurate —
  * curve-tables.ts), so X > 2.0 flattens at 0.2 rather than continuing to fall.
  */
-const MIN_TO_MAX_RANGE_CURVE = minToMaxRangeCurveFile.curve;
-
 /**
  * Composite range-falloff multiplier — USER-CONFIRMED reconciliation of two
  * ESM-proven pieces (docs/assumptions.md "Target distance (Close / Far)"):
@@ -83,6 +81,7 @@ const MIN_TO_MAX_RANGE_CURVE = minToMaxRangeCurveFile.curve;
  * (Shishkebab 0.0, Machete −1.0) and must never reach this function.
  */
 export function rangeFalloffMult(
+  mode: GameMode,
   distanceUnits: number,
   minRange: number,
   maxRange: number,
@@ -93,5 +92,5 @@ export function rangeFalloffMult(
 
   const x = (distanceUnits - minRange) / (maxRange - minRange);
   if (x <= 1) return 1.0 + (outOfRangeMult - 1.0) * x;
-  return outOfRangeMult * interpolateCurve(MIN_TO_MAX_RANGE_CURVE, x);
+  return outOfRangeMult * interpolateCurve(getMinToMaxRangeCurve(mode), x);
 }

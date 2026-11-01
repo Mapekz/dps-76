@@ -2,6 +2,12 @@ import type { GameMode } from '@/types';
 import type { CurvePoint } from '@/types/curves';
 import liveDamage from '@/data/live/curvetables/player/damage/index.generated';
 import ptsDamage from '@/data/pts/curvetables/player/damage/index.generated';
+import liveChargedMelee from '@/data/live/curvetables/legendarymods/weapon_chargedmeleeattack.json';
+import ptsChargedMelee from '@/data/pts/curvetables/legendarymods/weapon_chargedmeleeattack.json';
+import liveLuckCritCharge from '@/data/live/curvetables/player/vats/luckvatscriticalcharge.json';
+import ptsLuckCritCharge from '@/data/pts/curvetables/player/vats/luckvatscriticalcharge.json';
+import liveMinToMaxRange from '@/data/live/curvetables/player/range/percentofmintomaxrangedamagemult.json';
+import ptsMinToMaxRange from '@/data/pts/curvetables/player/range/percentofmintomaxrangedamagemult.json';
 
 // Barrel modules at ../data/<mode>/curvetables/player/damage/index.generated.ts
 // export a Record<number, CurveFile> indexed by tier number.
@@ -11,6 +17,21 @@ import ptsDamage from '@/data/pts/curvetables/player/damage/index.generated';
 /** Return the sorted curve points for the given mode + tier, or null if not found. */
 function getCurve(mode: GameMode, tier: number): CurvePoint[] | null {
   return (mode === 'pts' ? ptsDamage : liveDamage)[tier]?.curve ?? null;
+}
+
+/** `CT_Legendary_Weapon_ChargedUpWeapon`: charge count → bonus damage. */
+export function getChargedMeleeCurve(mode: GameMode): CurvePoint[] {
+  return (mode === 'pts' ? ptsChargedMelee : liveChargedMelee).curve;
+}
+
+/** `CT_LuckVATSCriticalCharge`: Luck → VATS crit meter fill per hit. */
+export function getLuckCritChargeCurve(mode: GameMode): CurvePoint[] {
+  return (mode === 'pts' ? ptsLuckCritCharge : liveLuckCritCharge).curve;
+}
+
+/** `CT_Player_PercentOfMinToMaxRangeDMGMult`: range-span fraction → damage multiplier. */
+export function getMinToMaxRangeCurve(mode: GameMode): CurvePoint[] {
+  return (mode === 'pts' ? ptsMinToMaxRange : liveMinToMaxRange).curve;
 }
 
 /**
