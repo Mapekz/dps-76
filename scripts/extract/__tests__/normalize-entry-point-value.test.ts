@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'bun:test';
 import type { CurveInput } from '@/types/modifiers';
-import type { EsmSource } from '../esm-client';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 import {
   normalizeEntryPointValue,
   type EntryPointValueInput,
@@ -14,17 +14,20 @@ import {
 const CHA = '0x000002C5';
 const curveInputAvs: Record<string, CurveInput> = { [CHA]: 'charisma' };
 
-/** Resolver over `edids`; every call is recorded, and `'throw'` makes a lookup fail. */
+/**
+ * In-memory source whose `resolveEdid` answers from `edids`, recording every
+ * lookup; a missing or `'throw'` entry makes the lookup fail.
+ */
 function resolver(edids: Record<string, string | 'throw'> = {}) {
   const calls: string[] = [];
-  const client: Pick<EsmSource, 'resolveEdid'> = {
-    async resolveEdid(formId) {
+  const client = createInMemoryEsmSource({
+    resolveEdidFallback: (formId) => {
       calls.push(formId);
       const edid = edids[formId];
       if (edid === undefined || edid === 'throw') throw new Error(`no edid for ${formId}`);
       return edid;
     },
-  };
+  });
   return { client, calls };
 }
 
