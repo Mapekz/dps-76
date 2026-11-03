@@ -231,6 +231,8 @@ describe('build codec', () => {
       },
       { type: 'weapon/itemLevel', value: 45 },
       { type: 'weapon/weakpointMult', value: 2.5 },
+      // Non-default, so the full codec must carry it from the weapon section.
+      { type: 'weapon/chargeTime', value: 1.5 },
       // Raise every stat to 8 (56 = exactly the pool) so any rank-3 card fits its stat's budget.
       ...(
         [
@@ -256,10 +258,12 @@ describe('build codec', () => {
         isGhoul: false,
       },
     ]);
+    expect(state.player.chargeTimeSec).toBe(1.5);
     const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded).not.toBeNull();
     // importNd with [] cleared perks; re-check the state actually round-trips.
     expect(decoded!.state).toEqual(state);
+    expect(decoded!.state.player.chargeTimeSec).toBe(1.5);
     expect(decoded!.warnings).toEqual([]);
   });
 
@@ -335,16 +339,6 @@ describe('build codec', () => {
     const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.weapon).toBeNull();
     expect(decoded!.warnings).toContain('unknown weapon "RemovedByPatch" — cleared');
-  });
-
-  it('round-trips chargeTimeSec when set', async () => {
-    const state = stateFrom([
-      { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
-      { type: 'weapon/chargeTime', value: 1.5 },
-    ]);
-    const encoded = await encodeBuild(state, mode);
-    const decoded = await decodeBuild(encoded, mode);
-    expect(decoded!.state.player.chargeTimeSec).toBe(1.5);
   });
 
   it('round-trips the all-default build with no warnings and a near-empty wire', async () => {
