@@ -89,8 +89,6 @@ export async function enchantmentModifiers(
  * engine today), but Lifetime is the more honest "how long this dot-like
  * field lasts" reading. Shared by every `overrideProjectileModifiers` call
  * whose EXPL carries a hazard, unconditional on the target weapon.
- *
- * Exported for direct testing; `overrideProjectileModifiers` is the sole caller.
  */
 async function hazardModifiers(
   hazdFormId: string,

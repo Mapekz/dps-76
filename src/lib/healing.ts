@@ -10,7 +10,7 @@
 import type { GeneratedHealingItem } from '@/types/generated';
 import type { DerivedPlayerStats } from './player-stats';
 
-interface ResolvedHealingLeg {
+export interface ResolvedHealingLeg {
   hpPerSec: number;
   durationSec: number;
 }

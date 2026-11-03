@@ -73,7 +73,7 @@ const ALL_DOMAINS = [
   'healing',
 ] as const;
 
-type AuditDomain = (typeof ALL_DOMAINS)[number];
+export type AuditDomain = (typeof ALL_DOMAINS)[number];
 export type AuditTier = 1 | 2 | 3;
 
 export type FindingKind = 'identity' | 'silent-drop' | 'field-mismatch';
@@ -94,7 +94,7 @@ interface TierStats {
   skipped?: number;
 }
 
-interface Tier3InfoBuckets {
+export interface Tier3InfoBuckets {
   /** Enchantment carriers credited by per-record needs-override/not-modeled/procChase ack. */
   'covered-by-note'?: number;
   /** Armor-omod cosmetic FX enchantments (ATX/paint/jetpack-skin/_FX/…). */
