@@ -498,8 +498,7 @@ function describeHealthFractionStaircase(
   for (const p of points) {
     const y = p.y * curveScale * scale;
     const last = steps[steps.length - 1];
-    if (last && last.y === y)
-      last.x = p.x; // extend the plateau's upper x bound
+    if (last && last.y === y) last.x = p.x; // extend the plateau's upper x bound
     else steps.push({ x: p.x, y });
   }
   return steps
