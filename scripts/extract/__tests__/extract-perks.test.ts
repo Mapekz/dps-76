@@ -7,19 +7,16 @@ import {
   resolveRankSources,
   toGeneratedPerkCard,
 } from '../extract-perks';
-import { flattenPerkConditionRows, translateConditions } from '../normalize/conditions';
 import { listRows, perkPlaceholder, stubRecord } from './esm-stubs';
 import tenderizerCard from './fixtures/pcrd-tenderizercard.json';
 import commandoCard from './fixtures/pcrd-commandocard.json';
 import actionBoyGirlCard from './fixtures/pcrd-actionboygirlcard.json';
 import lgnWhatRadsCard from './fixtures/pcrd-lgnwhatradscard.json';
-import ghlGlowingCriticals01 from './fixtures/perk-ghlglowingcriticals01.json';
 import quickHands01 from './fixtures/perk-quickhands01.json';
 import bandito01 from './fixtures/perk-bandito01.json';
 import gunFu01 from './fixtures/perk-gunfu01.json';
 import gunFu02 from './fixtures/perk-gunfu02.json';
 import gunFu03 from './fixtures/perk-gunfu03.json';
-import ghlMadScientist01 from './fixtures/perk-ghlmadscientist01.json';
 import ghlBombScientist01 from './fixtures/perk-ghl-bombscientist01.json';
 import abPerkBombScientist from './fixtures/spel-ghl-abperkbombscientist.json';
 import abPerkFortifyDmgGrenades from './fixtures/mgef-abperkfortifydmggrenades.json';
@@ -152,97 +149,6 @@ describe('effectiveFamilyMaxRank (cut-rank fix, 2026-07-16)', () => {
   it('keeps the full chain length when rankSources is empty (defensive — should not occur in practice)', () => {
     expect(effectiveFamilyMaxRank(3, [])).toBe(3);
   });
-});
-
-describe('translateConditions (glowAtLeast — Rads AV 0x000002E1, 2026-07-13)', () => {
-  it("translates a literal GetValue(Rads) >= 180 row to glowAtLeast (GHL_GlowingCriticals01's entry-point gate)", () => {
-    const effects = (ghlGlowingCriticals01 as unknown as EsmRecord).fields['Effects'] as Array<
-      Record<string, unknown>
-    >;
-    const perkConditions = (effects[0]['Effect'] as Record<string, unknown>)['Perk Conditions'];
-    const rows = flattenPerkConditionRows(perkConditions);
-    const { conditions } = translateConditions(rows, { edidByFormId: new Map() });
-    expect(conditions).toContainEqual({ kind: 'glowAtLeast', min: 180 });
-  });
-
-  it("resolves a GLOB-compared Rads row via globalValues (GHL_MadScientist01's ability grant: GetValue(Rads) >= GLOB GHL_BasicGlowUse=5)", () => {
-    const effects = (ghlMadScientist01 as unknown as EsmRecord).fields['Effects'] as Array<
-      Record<string, unknown>
-    >;
-    // Effects[1] is the "Ability" entry whose tab-0 Perk Conditions carry the
-    // GLOB-compared Rads gate (0x007F68B6 = GHL_BasicGlowUse, Value 5.0).
-    const abilityEffect = effects[1]['Effect'] as Record<string, unknown>;
-    const rows = flattenPerkConditionRows(abilityEffect['Perk Conditions']);
-    const { conditions } = translateConditions(rows, {
-      edidByFormId: new Map(),
-      globalValues: new Map([['0x007F68B6', 5]]),
-    });
-    expect(conditions).toContainEqual({ kind: 'glowAtLeast', min: 5 });
-  });
-
-  it('leaves a GLOB-compared Rads row unresolved when the global is not pre-resolved', () => {
-    const row = {
-      Function: 'GetValue',
-      'Parameter 1': '0x000002E1',
-      'Comparison Value': '0x007F68B6',
-      Operator: 'Greater Than Or Equal To',
-    };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([
-      { kind: 'unresolved', raw: 'GetValue(0x000002E1) Greater Than Or Equal To 0x007F68B6' },
-    ]);
-  });
-});
-
-describe('translateConditions (radResistAtLeast — RadResistExposure AV 0x000002EA, 20260724 Daisy Cutter rebuild)', () => {
-  const ladderRows: Array<{ name: string; min: number }> = [
-    {
-      name: "translates a literal GetValue(RadResistExposure) >= 1000 row to radResistAtLeast (Perk_Daisycutter's ladder, verified via esm chase 0x00471882)",
-      min: 1000,
-    },
-    { name: 'translates the top step of the ladder (>= 8000, the +160% cap)', min: 8000 },
-  ];
-  for (const row of ladderRows) {
-    it(row.name, () => {
-      const rawRow = {
-        Function: 'GetValue',
-        'Parameter 1': '0x000002EA',
-        'Comparison Value': row.min,
-        Operator: 'Greater Than Or Equal To',
-      };
-      const { conditions } = translateConditions([rawRow], { edidByFormId: new Map() });
-      expect(conditions).toEqual([{ kind: 'radResistAtLeast', min: row.min }]);
-    });
-  }
-});
-
-describe('translateConditions (non-≥ GetValue comparisons stay unresolved)', () => {
-  const nonGteRows: Array<{ name: string; av: string; value: number }> = [
-    {
-      name: 'leaves a Rads GetValue row unresolved for a non-≥ comparison (e.g. "Less Than")',
-      av: '0x000002E1',
-      value: 200,
-    },
-    {
-      name: 'leaves a RadResistExposure GetValue row unresolved for a non-≥ comparison (e.g. "Less Than")',
-      av: '0x000002EA',
-      value: 1000,
-    },
-  ];
-  for (const row of nonGteRows) {
-    it(row.name, () => {
-      const rawRow = {
-        Function: 'GetValue',
-        'Parameter 1': row.av,
-        'Comparison Value': row.value,
-        Operator: 'Less Than',
-      };
-      const { conditions } = translateConditions([rawRow], { edidByFormId: new Map() });
-      expect(conditions).toEqual([
-        { kind: 'unresolved', raw: `GetValue(${row.av}) Less Than ${row.value}` },
-      ]);
-    });
-  }
 });
 
 /**

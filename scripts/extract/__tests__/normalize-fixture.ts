@@ -1,5 +1,6 @@
 import type { EsmRecord, EsmSource } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
+import type { RawCondition } from '../normalize/conditions';
 import type { MgefInfo, SpellEffect } from '../normalize/mgef';
 
 // Shared plain-fixture builders for the normalize/* tests. Every call returns
@@ -35,6 +36,11 @@ export function effect(overrides: Partial<SpellEffect> = {}): SpellEffect {
     area: null,
     ...overrides,
   };
+}
+
+/** One `Equal To` condition row; `extra` adds or overrides fields. */
+export function eq(fn: string, cmp: number, extra: Partial<RawCondition> = {}): RawCondition {
+  return { Function: fn, 'Comparison Value': cmp, Operator: 'Equal To', ...extra };
 }
 
 /** Raw ESM `Conditions` node: `{ Conditions: [{ Condition: { 'Condition Data': row } }] }`. */
