@@ -67,6 +67,48 @@ export function getIsPlayerConditions(value: 0 | 1): Record<string, unknown> {
   };
 }
 
+/** One ENCH/SPEL `Effects[]` entry; `extra` adds `Curve Table`, `Conditions`, …. */
+export function magicEffect(
+  mgefFormId: string,
+  magnitude: number,
+  duration: number,
+  extra: Record<string, unknown> = {},
+): Record<string, unknown> {
+  return {
+    Effect: {
+      'Base Effect': mgefFormId,
+      'Effect Item Data': { Magnitude: magnitude, Duration: duration },
+      ...extra,
+    },
+  };
+}
+
+/** Contact-delivery ENCH; `effectData` adds fields such as `Cast Type`. */
+export function contactEnch(
+  formId: string,
+  editorId: string,
+  effects: Record<string, unknown>[],
+  effectData: Record<string, unknown> = {},
+): EsmRecord {
+  return stubRecord('ENCH', formId, editorId, {
+    'Effect Data': { 'Target Type': { name: 'Contact' }, ...effectData },
+    Effects: effects,
+  });
+}
+
+/** Damage-archetype MGEF whose element comes from its `Resist Value` AV. */
+export function damageMgef(formId: string, editorId: string, resistValue: string): EsmRecord {
+  return stubRecord('MGEF', formId, editorId, {
+    'Magic Effect Data': {
+      Data: {
+        Archetype: { name: 'Damage' },
+        'Resist Value': resistValue,
+        Flags: { value: '0x0', flags: [] },
+      },
+    },
+  });
+}
+
 export function cobjInfo(
   overrides: Partial<CobjInfo> & Pick<CobjInfo, 'formId' | 'edid'>,
 ): CobjInfo {

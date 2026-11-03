@@ -10,7 +10,14 @@ import {
   walkWeaponCombinations,
 } from '../extract-weapons';
 import type { AvifRoute } from '../normalize/mgef';
-import { getIsPlayerConditions, kywdPlaceholder } from './esm-stubs';
+import {
+  contactEnch,
+  damageMgef,
+  getIsPlayerConditions,
+  kywdPlaceholder,
+  magicEffect,
+  stubRecord,
+} from './esm-stubs';
 import fixer from './fixtures/weap-fixer.json';
 import huntingRifle from './fixtures/weap-huntingrifle.json';
 import gatlingPlasma from './fixtures/weap-gatling-plasma.json';
@@ -282,60 +289,26 @@ function makeWeaponEnchantmentStubClient(): EsmSource {
   const mgefFormId = '0xWEAPMGEF';
   const fireResistFormId = '0xFIRERESIST';
   const records: Record<string, EsmRecord> = {
-    [enchFormId]: {
-      header: { signature: 'ENCH', form_id: enchFormId },
-      editor_id: 'TestWeaponFireHitEnch',
-      fields: {
-        'Effect Data': {
-          'Target Type': { name: 'Contact' },
-          'Cast Type': { name: 'Fire and Forget' },
-        },
-        Effects: [
-          {
-            Effect: {
-              'Base Effect': mgefFormId,
-              'Effect Item Data': {
-                Magnitude: 10,
-                Duration: 6,
-              },
-              'Curve Table': {
-                curve_path: 'Player\\Damage\\Damage_Universal_Tier13.json',
-                curve: [
-                  { x: 1, y: 10 },
-                  { x: 50, y: 32 },
-                ],
-              },
-              Conditions: getIsPlayerConditions(0),
-            },
+    [enchFormId]: contactEnch(
+      enchFormId,
+      'TestWeaponFireHitEnch',
+      [
+        magicEffect(mgefFormId, 10, 6, {
+          'Curve Table': {
+            curve_path: 'Player\\Damage\\Damage_Universal_Tier13.json',
+            curve: [
+              { x: 1, y: 10 },
+              { x: 50, y: 32 },
+            ],
           },
-          {
-            Effect: {
-              'Base Effect': mgefFormId,
-              'Effect Item Data': { Magnitude: 3, Duration: 6 },
-              Conditions: getIsPlayerConditions(1),
-            },
-          },
-        ],
-      },
-    } as unknown as EsmRecord,
-    [mgefFormId]: {
-      header: { signature: 'MGEF', form_id: mgefFormId },
-      editor_id: 'TestWeaponFireHitMgef',
-      fields: {
-        'Magic Effect Data': {
-          Data: {
-            Archetype: { name: 'Damage' },
-            'Resist Value': fireResistFormId,
-            Flags: { value: '0x0', flags: [] },
-          },
-        },
-      },
-    } as unknown as EsmRecord,
-    [fireResistFormId]: {
-      header: { signature: 'AVIF', form_id: fireResistFormId },
-      editor_id: 'FireResist',
-      fields: {},
-    } as unknown as EsmRecord,
+          Conditions: getIsPlayerConditions(0),
+        }),
+        magicEffect(mgefFormId, 3, 6, { Conditions: getIsPlayerConditions(1) }),
+      ],
+      { 'Cast Type': { name: 'Fire and Forget' } },
+    ),
+    [mgefFormId]: damageMgef(mgefFormId, 'TestWeaponFireHitMgef', fireResistFormId),
+    [fireResistFormId]: stubRecord('AVIF', fireResistFormId, 'FireResist'),
   };
   return createInMemoryEsmSource({
     records,

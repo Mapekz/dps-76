@@ -39,11 +39,15 @@ import statDmgMeleeAvif from './fixtures/avif-stat-dmgmelee.json';
 import {
   cobjIndexOf,
   cobjInfo,
+  contactEnch,
+  damageMgef,
   getIsPlayerConditions,
   kywdPlaceholder,
   listRows,
+  magicEffect,
   omodRecord,
   refRow,
+  stubRecord,
 } from './esm-stubs';
 import { CONTAINER_ID, variantContainerClient } from './extract-fixtures';
 
@@ -426,56 +430,14 @@ function makeSlowBurnerStubClient(): EsmSource {
         },
       },
     } as unknown as EsmRecord,
-    ['0xBASEENCH']: {
-      header: { signature: 'ENCH', form_id: '0xBASEENCH' },
-      editor_id: 'BaseFireHitEnch',
-      fields: {
-        'Effect Data': { 'Target Type': { name: 'Contact' } },
-        Effects: [
-          {
-            Effect: {
-              'Base Effect': '0xBASEMGEF',
-              'Effect Item Data': { Magnitude: 3, Duration: 6 },
-              Conditions: getIsPlayerConditions(1),
-            },
-          },
-        ],
-      },
-    } as unknown as EsmRecord,
-    [newEnchFormId]: {
-      header: { signature: 'ENCH', form_id: newEnchFormId },
-      editor_id: 'NewSlowBurnEnch',
-      fields: {
-        'Effect Data': { 'Target Type': { name: 'Contact' } },
-        Effects: [
-          {
-            Effect: {
-              'Base Effect': newMgefFormId,
-              'Effect Item Data': { Magnitude: 16, Duration: 12 },
-              Conditions: getIsPlayerConditions(0),
-            },
-          },
-        ],
-      },
-    } as unknown as EsmRecord,
-    [newMgefFormId]: {
-      header: { signature: 'MGEF', form_id: newMgefFormId },
-      editor_id: 'NewSlowBurnMgef',
-      fields: {
-        'Magic Effect Data': {
-          Data: {
-            Archetype: { name: 'Damage' },
-            'Resist Value': fireResistFormId,
-            Flags: { value: '0x0', flags: [] },
-          },
-        },
-      },
-    } as unknown as EsmRecord,
-    [fireResistFormId]: {
-      header: { signature: 'AVIF', form_id: fireResistFormId },
-      editor_id: 'FireResist',
-      fields: {},
-    } as unknown as EsmRecord,
+    ['0xBASEENCH']: contactEnch('0xBASEENCH', 'BaseFireHitEnch', [
+      magicEffect('0xBASEMGEF', 3, 6, { Conditions: getIsPlayerConditions(1) }),
+    ]),
+    [newEnchFormId]: contactEnch(newEnchFormId, 'NewSlowBurnEnch', [
+      magicEffect(newMgefFormId, 16, 12, { Conditions: getIsPlayerConditions(0) }),
+    ]),
+    [newMgefFormId]: damageMgef(newMgefFormId, 'NewSlowBurnMgef', fireResistFormId),
+    [fireResistFormId]: stubRecord('AVIF', fireResistFormId, 'FireResist'),
   });
 }
 
@@ -575,24 +537,8 @@ function makeLobberStubClient(cosmetic = false): EsmSource {
         ],
       },
     } as unknown as EsmRecord,
-    [mgefFormId]: {
-      header: { signature: 'MGEF', form_id: mgefFormId },
-      editor_id: 'TestLobberHazardEffect',
-      fields: {
-        'Magic Effect Data': {
-          Data: {
-            Archetype: { name: 'Damage' },
-            'Resist Value': energyResistFormId,
-            Flags: { value: '0x0', flags: [] },
-          },
-        },
-      },
-    } as unknown as EsmRecord,
-    [energyResistFormId]: {
-      header: { signature: 'AVIF', form_id: energyResistFormId },
-      editor_id: 'EnergyResist',
-      fields: {},
-    } as unknown as EsmRecord,
+    [mgefFormId]: damageMgef(mgefFormId, 'TestLobberHazardEffect', energyResistFormId),
+    [energyResistFormId]: stubRecord('AVIF', energyResistFormId, 'EnergyResist'),
   });
 }
 
