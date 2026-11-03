@@ -41,7 +41,7 @@ const MANUAL_UPTIME_PERKS = {
   }
 >;
 
-export type ManualUptimePerkKey = keyof typeof MANUAL_UPTIME_PERKS;
+type ManualUptimePerkKey = keyof typeof MANUAL_UPTIME_PERKS;
 
 /**
  * Whether YOUR OWN card is worth suggesting under the current sneak state —

@@ -1388,7 +1388,7 @@ function conditionRulesOutLoadout(c: Condition, ctx: StaticLoadoutContext): bool
  * buckets into a number unconditionally, so `modifierHasEngineEffect` alone
  * can't tell "nothing reads this today" apart from a normally-read bucket.
  */
-export function modifierCouldApplyToLoadout(m: Modifier, ctx: StaticLoadoutContext): boolean {
+function modifierCouldApplyToLoadout(m: Modifier, ctx: StaticLoadoutContext): boolean {
   if (!modifierHasEngineEffect(m)) return false;
   if (m.conditions.some((c) => conditionRulesOutLoadout(c, ctx))) return false;
   if (m.bucket === 'lockpickSkill' && !ctx.consumedCurveInputs.has('lockpickSkill')) return false;

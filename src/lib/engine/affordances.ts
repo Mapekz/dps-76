@@ -17,7 +17,7 @@ export const KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS = [
   'Challenge_Lifetime_Fishing_SeasonalFish_Summer_LocalLegend',
 ] as const;
 
-export const KINGFISHER_LOCAL_LEGEND_CHALLENGE_SET = new Set<string>(
+const KINGFISHER_LOCAL_LEGEND_CHALLENGE_SET = new Set<string>(
   KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS,
 );
 

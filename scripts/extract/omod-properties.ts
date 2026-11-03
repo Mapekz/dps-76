@@ -56,7 +56,7 @@ export function propertyName(raw: unknown): string {
   return PROPERTY_NAME_ALIASES[named] ?? named;
 }
 
-export function parseProperties(data: Record<string, unknown>): RawProperty[] {
+function parseProperties(data: Record<string, unknown>): RawProperty[] {
   const props = data['Properties'];
   if (!Array.isArray(props)) return [];
   return (props as Array<Record<string, unknown>>).map((p) => {

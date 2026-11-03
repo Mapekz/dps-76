@@ -236,7 +236,7 @@ export const isWeaponFlavoredKeyword = (edid: string): boolean =>
 
 const collapseKey = (keywords: readonly string[]): string => [...keywords].sort().join('|');
 
-export const COLLAPSED_KEYWORD_SETS: Record<string, string> = {
+const COLLAPSED_KEYWORD_SETS: Record<string, string> = {
   // Grounded mutation, Charged penalty perk (alien blasters all carry the Energy keyword)
   [collapseKey(['WeaponTypeEnergy', 'WeaponTypeAlienBlaster'])]: 'energy weapons',
   // Tesla Science 2 magazine

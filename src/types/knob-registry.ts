@@ -20,7 +20,7 @@ import { createDefaultResolvedPlayer } from '@/types/player';
  */
 
 /** BuildColumn accordion id, ResultsPane scenario chips, or non-UI storage. */
-export type KnobSection =
+type KnobSection =
   | 'conditions'
   | 'attack-state'
   | 'target'
@@ -30,7 +30,7 @@ export type KnobSection =
   | 'scenario-chips'
   | 'none';
 
-export type KnobOrigin = 'input' | 'derived';
+type KnobOrigin = 'input' | 'derived';
 
 export interface KnobBadgeContext {
   /** Display clamp for ghoul Glow badge diff (engine clamps in resolveLoadout). */

@@ -51,7 +51,7 @@ function aurasFromOmod(
 }
 
 /** Armor checklist selections → equipped aura sources (Tesla Coils, Miasma). */
-export function getArmorEffectAuras(
+function getArmorEffectAuras(
   mode: GameMode,
   selections: Readonly<Record<string, number>>,
 ): AuraSource[] {
@@ -75,7 +75,7 @@ export function getArmorEffectAuras(
 }
 
 /** Active mutations → aura sources (Plague Walker). */
-export function getMutationAuras(mode: GameMode, mutationIds: readonly string[]): AuraSource[] {
+function getMutationAuras(mode: GameMode, mutationIds: readonly string[]): AuraSource[] {
   const out: AuraSource[] = [];
   for (const id of mutationIds) {
     const mutation = getMutations(mode).find((m) => m.id === id);

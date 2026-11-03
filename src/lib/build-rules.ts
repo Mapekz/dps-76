@@ -242,7 +242,7 @@ export function canRaiseSpecialAllocation(
 }
 
 /** Trim SPECIAL stats until the allocation pool is satisfied (hydration/import). */
-export function clampSpecialAllocationPool(
+function clampSpecialAllocationPool(
   mode: GameMode,
   conditions: PlayerInput,
 ): {
@@ -268,7 +268,7 @@ export function clampSpecialAllocationPool(
   return { conditions: next, changed };
 }
 
-export function resolveDietMutations(mutations: string[]): {
+function resolveDietMutations(mutations: string[]): {
   mutations: string[];
   changed: boolean;
 } {

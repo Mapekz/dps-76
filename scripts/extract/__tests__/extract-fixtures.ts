@@ -232,7 +232,7 @@ export function gmstUIntStub(formId: string, editorId: string, value: number): E
 }
 
 /** A full set of valid SPECIAL AVIF records (uniform [1, 100] stubs). */
-export function uniformSpecialRecords(): Record<string, EsmRecord> {
+function uniformSpecialRecords(): Record<string, EsmRecord> {
   const records: Record<string, EsmRecord> = {};
   for (const formId of SPECIAL_FORM_IDS) records[formId] = avifStub(formId, 'stub', 1, 100);
   return records;

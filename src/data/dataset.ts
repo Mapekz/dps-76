@@ -118,7 +118,7 @@ export function applyDescriptionOverride<T extends { id: string; description?: s
 }
 
 /** Concatenate additional modifiers onto an item's `.modifiers` when keyed by its id (omods). */
-export function applyModifierAddition<T extends { id: string; modifiers: Modifier[] }>(
+function applyModifierAddition<T extends { id: string; modifiers: Modifier[] }>(
   items: T[],
   additionsById: Readonly<Record<string, Modifier[]>>,
 ): T[] {
@@ -129,7 +129,7 @@ export function applyModifierAddition<T extends { id: string; modifiers: Modifie
 }
 
 /** Replace an item's display `.name` when an override is keyed by its id (omods — see omodNameOverrides). */
-export function applyNameOverride<T extends { id: string; name: string }>(
+function applyNameOverride<T extends { id: string; name: string }>(
   items: T[],
   namesById: Readonly<Record<string, string>>,
 ): T[] {
@@ -140,7 +140,7 @@ export function applyNameOverride<T extends { id: string; name: string }>(
 }
 
 /** Attach a picker badge override when keyed by omod id (omodBadgeOverrides). */
-export function applyBadgeOverride<T extends { id: string }>(
+function applyBadgeOverride<T extends { id: string }>(
   items: T[],
   badgesById: Readonly<Record<string, 'inert' | 'pendingMechanic'>>,
 ): (T & { badgeOverride?: 'inert' | 'pendingMechanic' })[] {
@@ -151,7 +151,7 @@ export function applyBadgeOverride<T extends { id: string }>(
 }
 
 /** Attach weapon-restriction rescue ids when keyed by omod id (omodWeaponRestrictions). */
-export function applyWeaponRestrictions<T extends { id: string }>(
+function applyWeaponRestrictions<T extends { id: string }>(
   items: T[],
   restrictionsById: Readonly<Record<string, readonly string[]>>,
 ): (T & { restrictedToWeaponIds?: readonly string[] })[] {
@@ -170,7 +170,7 @@ export type MergedOmod = GeneratedOmod & {
 };
 
 /** Replace an npc record wholesale when an override targets its id (npc-overrides.ts REPLACES, not patches — see that file's header). */
-export function applyNpcOverrides(
+function applyNpcOverrides(
   items: GeneratedNpc[],
   overridesById: Readonly<Record<string, GeneratedNpc>>,
 ): GeneratedNpc[] {

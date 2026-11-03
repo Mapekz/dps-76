@@ -92,7 +92,7 @@ export async function enchantmentModifiers(
  *
  * Exported for direct testing; `overrideProjectileModifiers` is the sole caller.
  */
-export async function hazardModifiers(
+async function hazardModifiers(
   hazdFormId: string,
   source: Modifier['source'],
   into: Modifier[],

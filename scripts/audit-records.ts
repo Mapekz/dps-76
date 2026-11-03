@@ -58,7 +58,7 @@ import { effectiveFamilyMaxRank, toGeneratedPerkCard } from './extract/extract-p
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BULK_CHUNK = 200;
 
-export const ALL_DOMAINS = [
+const ALL_DOMAINS = [
   'weapons',
   'omods',
   'armor-omods',
@@ -73,7 +73,7 @@ export const ALL_DOMAINS = [
   'healing',
 ] as const;
 
-export type AuditDomain = (typeof ALL_DOMAINS)[number];
+type AuditDomain = (typeof ALL_DOMAINS)[number];
 export type AuditTier = 1 | 2 | 3;
 
 export type FindingKind = 'identity' | 'silent-drop' | 'field-mismatch';
@@ -87,14 +87,14 @@ export interface AuditFinding {
   actual: string;
 }
 
-export interface TierStats {
+interface TierStats {
   checked: number;
   passed: number;
   failed: number;
   skipped?: number;
 }
 
-export interface Tier3InfoBuckets {
+interface Tier3InfoBuckets {
   /** Enchantment carriers credited by per-record needs-override/not-modeled/procChase ack. */
   'covered-by-note'?: number;
   /** Armor-omod cosmetic FX enchantments (ATX/paint/jetpack-skin/_FX/…). */
@@ -110,7 +110,7 @@ export interface Tier3AuditResult {
   info: Tier3InfoBuckets;
 }
 
-export interface DomainAuditResult {
+interface DomainAuditResult {
   domain: AuditDomain;
   tier1: TierStats;
   tier2: TierStats;
@@ -121,7 +121,7 @@ export interface DomainAuditResult {
   tier3Info?: Tier3InfoBuckets;
 }
 
-export interface AuditSummary {
+interface AuditSummary {
   mode: GameMode;
   esmPath: string;
   domains: DomainAuditResult[];
@@ -195,7 +195,7 @@ export function sortFindings(findings: AuditFinding[]): AuditFinding[] {
   });
 }
 
-export function formatValue(v: unknown): string {
+function formatValue(v: unknown): string {
   if (v === undefined) return '<undefined>';
   if (v === null) return '<null>';
   if (typeof v === 'string') return v;
@@ -355,7 +355,7 @@ export async function expandOmodIncludeGraph(
 }
 
 /** Variant-container records are not emitted but drive variant display names. */
-export async function fetchVariantContainerRecords(
+async function fetchVariantContainerRecords(
   client: EsmSource,
   omods: readonly Pick<GeneratedOmod, 'variantOf'>[],
   byFormId: Map<string, EsmRecord>,
@@ -440,7 +440,7 @@ export function auditWeaponTier2(
   return findings;
 }
 
-export const WEAPON_TIER2_SKIPPED =
+const WEAPON_TIER2_SKIPPED =
   'components.curve/tier/fromExplosion — curve resolution and explosion chase are extractor transforms (tier 3)';
 
 export async function extractOmodTier2Source(
@@ -518,19 +518,18 @@ export function auditOmodTier2(
   return findings;
 }
 
-export const OMOD_TIER2_SKIPPED =
-  'modifiers/procChase/explosionChase — transformed modifier IR (tier 3)';
+const OMOD_TIER2_SKIPPED = 'modifiers/procChase/explosionChase — transformed modifier IR (tier 3)';
 
-export function auditBuffTier2(buff: GeneratedBuff, esmName: string): AuditFinding[] {
+function auditBuffTier2(buff: GeneratedBuff, esmName: string): AuditFinding[] {
   const findings: AuditFinding[] = [];
   pushFieldMismatch(findings, buff.id, 'name', esmName, buff.name);
   return findings;
 }
 
-export const BUFF_TIER2_SKIPPED =
+const BUFF_TIER2_SKIPPED =
   'modifier magnitudes with curves/globals — MGEF translation is a tier-3 transform; flat value-only mods compared when present';
 
-export function auditNpcTier2(
+function auditNpcTier2(
   npc: GeneratedNpc,
   healthFlat: number,
   levelMin: number | null,
@@ -545,10 +544,10 @@ export function auditNpcTier2(
   return findings;
 }
 
-export const NPC_TIER2_SKIPPED =
+const NPC_TIER2_SKIPPED =
   'healthCurveTier/resists/epic* — curve-tier and merged RACE properties are extractor transforms';
 
-export async function extractNpcTier2Source(
+async function extractNpcTier2Source(
   client: EsmSource,
   npcRecord: EsmRecord,
   targetEdid: string,
@@ -654,7 +653,7 @@ export function hasExtractorAckNote(notes: readonly string[]): boolean {
   return notes.some((n) => EXTRACTOR_ACK_NOTE_RE.test(n));
 }
 
-export function hasProcChaseAck(procChase?: readonly GeneratedProc[]): boolean {
+function hasProcChaseAck(procChase?: readonly GeneratedProc[]): boolean {
   return procChase != null && procChase.length > 0;
 }
 
@@ -686,7 +685,7 @@ const DEFENSIVE_EP_RE =
 const OFFENSIVE_EP_RE =
   /\b(crit|damage|weapon|explosion|sneak attack|limb|vats|power attack|consecutive hit|ammo|reload|gun-fu|blitz|bash|bashing|outgoing|attack)\b/i;
 
-export function isOffensiveEntryPoint(name: string): boolean {
+function isOffensiveEntryPoint(name: string): boolean {
   if (DEFENSIVE_EP_RE.test(name)) return false;
   if (name in ENTRY_POINT_BUCKETS) return true;
   return OFFENSIVE_EP_RE.test(name);
@@ -723,10 +722,7 @@ async function spellAbilityIsOffensive(client: EsmSource, spell: EsmRecord): Pro
   return false;
 }
 
-export async function isAbilityOffensive(
-  client: EsmSource,
-  abilityFormId: string,
-): Promise<boolean> {
+async function isAbilityOffensive(client: EsmSource, abilityFormId: string): Promise<boolean> {
   try {
     const record = await client.get(abilityFormId);
     if (record.header.signature === 'SPEL') {
@@ -816,7 +812,7 @@ function perkEffectRows(record: EsmRecord): Array<Record<string, unknown>> {
   return effects.map((e) => (e as Record<string, unknown>)['Effect'] as Record<string, unknown>);
 }
 
-export function enumeratePerkCarriers(record: EsmRecord): SourceCarrier[] {
+function enumeratePerkCarriers(record: EsmRecord): SourceCarrier[] {
   const carriers: SourceCarrier[] = [];
   for (const effect of perkEffectRows(record)) {
     const header = (effect['Effect Header'] ?? {}) as Record<string, unknown>;
@@ -1017,7 +1013,7 @@ export async function auditTier3Carriers(
 
 // ── Bulk fetch ─────────────────────────────────────────────────────────────
 
-export async function bulkFetchRecords(
+async function bulkFetchRecords(
   client: EsmSource,
   formIds: string[],
 ): Promise<Map<string, EsmRecord>> {
@@ -1737,7 +1733,7 @@ function formatTier3Info(info: Tier3InfoBuckets | undefined): string[] {
   return lines;
 }
 
-export function formatMarkdownReport(summary: AuditSummary): string {
+function formatMarkdownReport(summary: AuditSummary): string {
   const lines: string[] = [
     '# ESM record audit',
     '',

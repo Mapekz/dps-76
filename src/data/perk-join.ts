@@ -21,7 +21,7 @@ import { perkFamilyOverrides } from './overrides/perk-overrides';
  * on ESM family "Commando"). Misses are patched via perkFamilyOverrides.
  */
 
-export function normalizeName(name: string): string {
+function normalizeName(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 

@@ -21,7 +21,7 @@ import type { EsmSource } from './esm-client';
  * exception (a formid chase with no string keying) and DO consume their DFOB
  * directly — `extract-curvetables.ts`'s `resolveSingletonRecord`.
  */
-export interface DfobBridge {
+interface DfobBridge {
   /** The DFOB record's formid. */
   dfobFormId: string;
   /** The DFOB record's editor_id (for readable notes). */
@@ -32,7 +32,7 @@ export interface DfobBridge {
   consumer: string;
 }
 
-export const DFOB_BRIDGES: ReadonlyArray<DfobBridge> = [
+const DFOB_BRIDGES: ReadonlyArray<DfobBridge> = [
   // Charged 4★ melee gate keyword (scenarios.ts CHARGED_KEYWORD).
   {
     dfobFormId: '0x0089A83B',

@@ -25,7 +25,7 @@ export function DeltaText({
   );
 }
 
-export function DiffRows({ delta, baseline }: { delta: DpsSnapshot; baseline: DpsSnapshot }) {
+function DiffRows({ delta, baseline }: { delta: DpsSnapshot; baseline: DpsSnapshot }) {
   return (
     <div className="grid grid-cols-[auto_auto] gap-x-3 gap-y-0.5 text-xs">
       <span className="text-muted-foreground">Free Aim</span>

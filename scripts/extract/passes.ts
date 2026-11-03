@@ -54,7 +54,7 @@ export const weaponsPass: ExtractionPass<'weapons'> = {
   },
 };
 
-export const perksPass: ExtractionPass<'perks'> = {
+const perksPass: ExtractionPass<'perks'> = {
   id: 'perks',
   async run(ctx) {
     console.log('Extracting perks…');
@@ -87,7 +87,7 @@ export const perksPass: ExtractionPass<'perks'> = {
   },
 };
 
-export const armorPass: ExtractionPass<'armor'> = {
+const armorPass: ExtractionPass<'armor'> = {
   id: 'armor',
   async run(ctx) {
     console.log('Extracting armor (obtainability grounding)…');
@@ -219,7 +219,7 @@ export const omodsPass: ExtractionPass<'omods'> = {
   },
 };
 
-export const uniquesPass: ExtractionPass<'uniques'> = {
+const uniquesPass: ExtractionPass<'uniques'> = {
   id: 'uniques',
   // Hard, on purpose (unlike omods' deps above): the variant-container
   // rewrite omods just did has NO on-disk representation, so reading
@@ -260,7 +260,7 @@ export const uniquesPass: ExtractionPass<'uniques'> = {
   },
 };
 
-export const buffsPass: ExtractionPass<'buffs'> = {
+const buffsPass: ExtractionPass<'buffs'> = {
   id: 'buffs',
   async run(ctx) {
     console.log('Extracting mutations & consumables…');
@@ -310,7 +310,7 @@ export const bodypartsPass: ExtractionPass<'bodyparts'> = {
   },
 };
 
-export const healingPass: ExtractionPass<'healing'> = {
+const healingPass: ExtractionPass<'healing'> = {
   id: 'healing',
   async run(ctx) {
     console.log('Extracting Stimpak/RadAway-adjacent healing items…');
@@ -362,7 +362,7 @@ export const curvetablesPass: ExtractionPass<'curvetables'> = {
   },
 };
 
-export const npcsPass: ExtractionPass<'npcs'> = {
+const npcsPass: ExtractionPass<'npcs'> = {
   id: 'npcs',
   async run(ctx) {
     console.log('Extracting curated-target NPC stats…');
@@ -407,7 +407,7 @@ export const constantsPass: ExtractionPass<'constants'> = {
   },
 };
 
-export const dfobsPass: ExtractionPass<'dfobs'> = {
+const dfobsPass: ExtractionPass<'dfobs'> = {
   id: 'dfobs',
   async run(ctx) {
     console.log(

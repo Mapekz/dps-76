@@ -26,7 +26,7 @@ import type { EsmListRow, EsmRecord, EsmSource } from './esm-client';
  * listed at `CURVE_TABLE_SINGLETONS` below, not repeated here.
  */
 
-export interface CurveTablePoint {
+interface CurveTablePoint {
   x: number;
   y: number;
 }

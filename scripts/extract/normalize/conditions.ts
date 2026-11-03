@@ -174,7 +174,7 @@ const TARGET_EXCLUSION_KEYWORDS = new Set([
  * side "is burning/poisoned" uses GetNumActiveEffectsWithKeyword →
  * enemyHasActiveEffect — do NOT route those through here.
  */
-export const DAMAGE_TYPE_KEYWORD_SCOPE: Record<string, DamageType> = {
+const DAMAGE_TYPE_KEYWORD_SCOPE: Record<string, DamageType> = {
   DamageTypeEnergy: 'energy',
   DamageTypeFire: 'fire',
   DamageTypeCryo: 'cryo',
@@ -186,7 +186,7 @@ export const DAMAGE_TYPE_KEYWORD_SCOPE: Record<string, DamageType> = {
 };
 
 /** Scope-mod keywords added to scoped weapons (verify omods.json addedKeywords). */
-export const SCOPE_WEAPON_KEYWORDS = ['HasScope', 'HasScopeRecon'] as const;
+const SCOPE_WEAPON_KEYWORDS = ['HasScope', 'HasScopeRecon'] as const;
 
 /** Per-weapon identity keywords checked via WornHasKeyword on wielder-side rows. */
 const WEAPON_IDENTITY_KEYWORDS = new Set([

@@ -80,10 +80,10 @@ export const SPECIAL_POINTS_CAP = 15;
  * are only the default for callers that don't pass one (tests, stray
  * 3-arg calls) and the extractor's own dump-too-old fallback.
  */
-export const SPECIAL_EFFECTIVE_MIN = 1;
-export const SPECIAL_EFFECTIVE_MAX = 100;
+const SPECIAL_EFFECTIVE_MIN = 1;
+const SPECIAL_EFFECTIVE_MAX = 100;
 /** Legendary SPECIAL card bonus by rank (index = rank − 1) — per the cards' own descriptions. */
-export const LEGENDARY_SPECIAL_BONUS_BY_RANK = [1, 2, 3, 5] as const;
+const LEGENDARY_SPECIAL_BONUS_BY_RANK = [1, 2, 3, 5] as const;
 
 export function legendarySpecialBonus(rank: number): number {
   return LEGENDARY_SPECIAL_BONUS_BY_RANK[Math.max(1, Math.min(4, rank)) - 1];

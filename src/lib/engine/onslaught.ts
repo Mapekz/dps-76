@@ -33,10 +33,10 @@ import { sustainTiming } from './sustain';
  */
 
 /** Reverse-onslaught regen rate (stacks/sec, continuous — docs/assumptions.md "Onslaught"). */
-export const ONSLAUGHT_REGEN_PER_SEC = 1;
+const ONSLAUGHT_REGEN_PER_SEC = 1;
 
 /** Forward-onslaught decay rate (stacks/sec, continuous through fire AND reload — docs/assumptions.md "Onslaught"). */
-export const ONSLAUGHT_DECAY_PER_SEC = 1;
+const ONSLAUGHT_DECAY_PER_SEC = 1;
 
 function clampStacks(stacks: number, max: number): number {
   return Math.max(0, Math.min(stacks, max));

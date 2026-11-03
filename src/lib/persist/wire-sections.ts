@@ -41,7 +41,7 @@ import {
 } from '@/types/knob-registry';
 
 /** Spec-constant dictionary group widths — never derive from live dictionary sizes. */
-export const WIRE_GROUP_WIDTHS = {
+const WIRE_GROUP_WIDTHS = {
   weapon: 9,
   omod: 13,
   attachPoint: 6,
@@ -53,9 +53,9 @@ export const WIRE_GROUP_WIDTHS = {
   perkDelta: 4,
 } as const;
 
-export const MUTATION_BITMASK_WIDTH = 24;
-export const ADDICTION_BITMASK_WIDTH = 16;
-export const CHALLENGE_ID_BITMASK_WIDTH = 16;
+const MUTATION_BITMASK_WIDTH = 24;
+const ADDICTION_BITMASK_WIDTH = 16;
+const CHALLENGE_ID_BITMASK_WIDTH = 16;
 
 const ITEM_LEVEL_BITS = 6;
 const WEAKPOINT_MULT_BITS = 8;

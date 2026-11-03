@@ -108,20 +108,20 @@ export const equippedOmodsFor = scoped(
   },
 );
 
-export const strangeInNumbersFor = scoped(
+const strangeInNumbersFor = scoped(
   (perks: PlayerConfig['perks'], conditions: PlayerConfig['conditions']): boolean =>
     deriveStrangeInNumbers(perks, conditions),
 );
 
-export const classFreakRankFor = scoped((perks: PlayerConfig['perks']): number =>
+const classFreakRankFor = scoped((perks: PlayerConfig['perks']): number =>
   deriveClassFreakRank(perks),
 );
 
-export const underAlcoholEffectFor = scoped((mode: GameMode, consumables: string[]): boolean =>
+const underAlcoholEffectFor = scoped((mode: GameMode, consumables: string[]): boolean =>
   consumables.some((id) => consumablesById(mode).get(id)?.category === 'alcohol'),
 );
 
-export const equippedPerkFamilyRanksFor = scoped(
+const equippedPerkFamilyRanksFor = scoped(
   (
     mode: GameMode,
     perks: PlayerConfig['perks'],
@@ -136,7 +136,7 @@ const wornPieceCountsRaw = scoped(
 /** Interns the raw counts (same trick as `internNonWeaponStatModifiers` below, for a Record instead of an array) so two candidates with the same worn-piece counts collapse to the SAME reference despite `getArmorEffectWornPieceCounts` allocating fresh each time. */
 const internWornPieceCounts = createRecordInterner<Record<string, number>>();
 
-export function wornPieceCountsFor(
+function wornPieceCountsFor(
   scope: MemoScope | undefined,
   mode: GameMode,
   armorEffects: Record<string, number>,
@@ -154,7 +154,7 @@ const countedAddictionsAgg = scoped((addictions: string[], suppressed: Set<strin
   addictions.filter((id) => !suppressed.has(id)),
 );
 
-export function countedAddictionsFor(
+function countedAddictionsFor(
   scope: MemoScope | undefined,
   mode: GameMode,
   addictions: string[],
@@ -165,12 +165,12 @@ export function countedAddictionsFor(
 }
 
 /** Shared by perk-family and legendary-perk-family loadout modifiers — one wrapper, two call sites distinguished by their own arguments. */
-export const perkFamilyModifiersFor = scoped(
+const perkFamilyModifiersFor = scoped(
   (mode: GameMode, loadouts: PlayerConfig['perks']): Modifier[] =>
     getLoadoutModifiers(mode, loadouts),
 );
 
-export const buffModifiersFor = scoped(
+const buffModifiersFor = scoped(
   (mode: GameMode, mutations: string[], consumables: string[]): Modifier[] =>
     getBuffModifiers(mode, mutations, consumables),
 );
@@ -179,7 +179,7 @@ const addictionModifiersAgg = scoped((mode: GameMode, counted: string[]): Modifi
   getAddictionModifiers(mode, counted),
 );
 
-export function addictionModifiersFor(
+function addictionModifiersFor(
   scope: MemoScope | undefined,
   mode: GameMode,
   addictions: string[],
@@ -201,22 +201,22 @@ export function addictionModifiersFor(
 // standalone convention to keep in sync by hand — the data-layer function's
 // own signature is the narrowing.
 
-export const manualUptimeModifiersFor = scoped(
+const manualUptimeModifiersFor = scoped(
   (followThroughPct: number | undefined, takingOneForTheTeamPct: number | undefined): Modifier[] =>
     getManualUptimeModifiers({ followThroughPct, takingOneForTheTeamPct }),
 );
 
-export const publicTeamModifiersFor = scoped(
+const publicTeamModifiersFor = scoped(
   (publicTeamType: PlayerInput['publicTeamType'], teammateCount: number): Modifier[] =>
     getPublicTeamModifiers(publicTeamType, teammateCount),
 );
 
-export const targetDebuffModifiersFor = scoped(
+const targetDebuffModifiersFor = scoped(
   (takingOneForTheTeamDrRank: PlayerInput['takingOneForTheTeamDrRank']): Modifier[] =>
     getTargetDebuffModifiers({ takingOneForTheTeamDrRank }),
 );
 
-export const armorEffectModifiersFor = scoped(
+const armorEffectModifiersFor = scoped(
   (mode: GameMode, armorEffects: Record<string, number>): Modifier[] =>
     getArmorEffectModifiers(mode, armorEffects),
 );

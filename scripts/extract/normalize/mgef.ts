@@ -219,7 +219,7 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
  * for Concentrated Fire's EP109, whose Float is authored in "accuracy
  * points" (see the ENTRY_POINT_BUCKETS comment above), not a fraction.
  */
-export const ENTRY_POINT_SCALE_MULTIPLIER: Record<string, number> = {
+const ENTRY_POINT_SCALE_MULTIPLIER: Record<string, number> = {
   'Mod VATS Concentrated Fire Chance Bonus': 0.01,
 };
 
@@ -1617,7 +1617,7 @@ export function translate(
 const EYE_OF_RA_PARALYZE_NOTE =
   'Eye of Ra upgrade proc 25% paralyze (ParalyzeEffect25) — CC note-only; docs/assumptions.md "Voice of Set robot shock proc"';
 
-export function hasEyeOfRaUpgradeGate(
+function hasEyeOfRaUpgradeGate(
   conditionRows: RawCondition[],
   edidByFormId: Map<string, string>,
 ): boolean {
