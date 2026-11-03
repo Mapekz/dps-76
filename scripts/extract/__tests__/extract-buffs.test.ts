@@ -490,6 +490,7 @@ describe('extractBuffs (consumable composition)', () => {
   const HUNGER_MGEF = '0x00F00D11';
   const ZETA_ADDICTION = '0x00F00D20';
   const LOST_ADDICTION = '0x00F00D21';
+  const DUD_ADDICTION = '0x00F00D22';
 
   function alch(
     formId: string,
@@ -549,6 +550,15 @@ describe('extractBuffs (consumable composition)', () => {
       [{ mgef: HUNGER_MGEF, magnitude: 5 }],
       ZETA_ADDICTION,
     ),
+    // Obtainable but discarded, and the only cause of its addiction family.
+    alch(
+      '0x00C0000A',
+      'Chem_Dud',
+      'Dud Chem',
+      [KW.chem],
+      [{ mgef: HUNGER_MGEF, magnitude: 5 }],
+      DUD_ADDICTION,
+    ),
     // Modeled but unobtainable (no reverse refs); its addiction family has no
     // obtainable cause.
     alch('0x00C00004', 'Chem_Lost', 'Lost Chem', [KW.chem], strength(4), LOST_ADDICTION),
@@ -604,6 +614,7 @@ describe('extractBuffs (consumable composition)', () => {
     stubRecord('AVIF', '0x00F00D31', 'Hunger'),
     stubRecord('SPEL', ZETA_ADDICTION, 'AddictionZeta', { Name: 'Zeta Addiction' }),
     stubRecord('SPEL', LOST_ADDICTION, 'AddictionLost', { Name: 'Lost Addiction' }),
+    stubRecord('SPEL', DUD_ADDICTION, 'AddictionDud', { Name: 'Dud Addiction' }),
   ];
 
   const obtainable = (edid: string) => [refRow('COBJ', '0x00C0FF00', `co_${edid}`)];
@@ -619,6 +630,7 @@ describe('extractBuffs (consumable composition)', () => {
       '0x00C00001': obtainable('Chem_Zeta'),
       '0x00C00002': obtainable('Chem_Alpha'),
       '0x00C00003': obtainable('Chem_Bland'),
+      '0x00C0000A': obtainable('Chem_Dud'),
       '0x00C00005': obtainable('Food_RadShield'),
       '0x00C00006': [refRow('QUST', '0x00C0FF01', 'BobbleheadQuest')],
       '0x00C00007': obtainable('Food_Hunger'),
@@ -682,13 +694,14 @@ describe('extractBuffs (consumable composition)', () => {
     const { consumables, excluded, excludedDetailed } = await run();
     expect(excluded.consumableJunkEdid).toEqual(['zzz_Chem_Cut']);
     expect(excluded.consumableNoCategory).toEqual(['Ingredient_Raw']);
-    expect(excluded.consumableNoDamageOrSpecial).toEqual(['Chem_Bland', 'Food_Hunger']);
+    expect(excluded.consumableNoDamageOrSpecial).toEqual(['Chem_Bland', 'Chem_Dud', 'Food_Hunger']);
     expect(excludedDetailed.consumableNoDamageOrSpecial).toEqual([
       { id: 'Chem_Bland', name: 'Bland Chem' },
+      { id: 'Chem_Dud', name: 'Dud Chem' },
       { id: 'Food_Hunger', name: 'Hunger Snack' },
     ]);
     const ids = consumables.map((c) => c.id);
-    for (const id of ['zzz_Chem_Cut', 'Ingredient_Raw', 'Chem_Bland', 'Food_Hunger']) {
+    for (const id of ['zzz_Chem_Cut', 'Ingredient_Raw', 'Chem_Bland', 'Chem_Dud', 'Food_Hunger']) {
       expect(ids).not.toContain(id);
     }
   });
@@ -707,9 +720,18 @@ describe('extractBuffs (consumable composition)', () => {
 
   it('builds the addiction catalog from obtainable causes, with causedBy limited to emitted consumables', async () => {
     const { addictions } = await run();
-    // Chem_Bland causes Zeta Addiction too but is not emitted; Lost Addiction's
-    // only cause is unobtainable, so the family stays out of the catalog.
+    // Chem_Bland causes Zeta Addiction too but is not emitted. Chem_Dud is not
+    // emitted either, yet its family stays selectable with no causes. Lost
+    // Addiction's only cause is unobtainable, so it stays out of the catalog.
     expect(addictions).toEqual([
+      {
+        id: 'AddictionDud',
+        formId: DUD_ADDICTION,
+        name: 'Dud Addiction',
+        causedBy: [],
+        modifiers: [],
+        notes: [],
+      },
       {
         id: 'AddictionZeta',
         formId: ZETA_ADDICTION,
