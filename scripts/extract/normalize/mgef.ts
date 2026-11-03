@@ -23,6 +23,7 @@ import {
 } from './conditions';
 import { decodeInstantDamageComponent, decodeProcComponentsFromExpl } from './proc';
 import { decodeAuraFromCloakMgef } from './aura';
+import { normalizeEntryPointValue } from './entry-point-value';
 
 /**
  * Shared MGEF → Modifier translation, driven by the hidden engine "plumbing"
@@ -2418,108 +2419,38 @@ export async function translateGrantedPerk(
         continue;
       }
 
-      // Entry-point Curve Table: ALWAYS beats the flat Float beside it
-      // (docs/assumptions.md "Curve tables override flat values") — Lone
-      // Wanderer's Mod Incoming Weapon Damage carries Float null with its
-      // real ×0.99→×0.8 values in a curve. Single-point curves collapse
-      // into the float (authored constants). A multi-point curve's input
-      // axis is the EP's OWN "Function Parameter 4 (Actor Value)" (LW:
-      // Charisma — USER-CORRECTED 2026-08-20 after a wrong player-level
-      // guess), resolved through the same CURVE_INPUT_AVS map SPEL-effect
-      // curves use; each Y then runs through the function shape's float
-      // transform (Multiply Value folds as MUL_ADD of y−1). An unmapped
-      // input AV (armor legendaries' per-effect stack counters, raw engine
-      // slots like 0x39E) notes and skips — a missing modifier is honest,
-      // a mislabeled axis is not.
+      // Curve-over-float precedence and the curve axis live in
+      // normalizeEntryPointValue, shared with direct perk entry points.
       const epCurveNode = e['Curve Table'] as
         | { curve?: Array<{ x: number; y: number }> }
         | null
         | undefined;
-      const epCurvePoints =
-        Array.isArray(epCurveNode?.curve) && epCurveNode.curve.length > 0
-          ? epCurveNode.curve
-          : null;
-      let epFloat = float;
-      let epCurve: ValueCurve | undefined;
-      if (epCurvePoints && epCurvePoints.length === 1) {
-        epFloat = epCurvePoints[0].y;
-      } else if (epCurvePoints) {
-        const curveAv = (e['Function Parameter 4 (Actor Value)'] as string) ?? null;
-        let input = curveAv ? CURVE_INPUT_AVS[curveAv] : undefined;
-        if (!input && curveAv) {
-          // Armor legendaries' per-effect piece counters (LGND_DmgFromAnimals,
-          // LGND_EquippedArmorCount_Sentinel, ...): each worn piece increments
-          // its LGND_* counter AV, and the curve IS the authored stacking
-          // table — x = worn pieces (domains 0/1..5), y = the TOTAL effect at
-          // that count (Hunter's 1−0.85ⁿ; USER-CONFIRMED 2026-08-20, no
-          // hand stacking math). Resolved at armor assembly
-          // (armor-roster.ts's scaleModifier), never engine-evaluated.
-          let curveAvEdid = edidByFormId.get(curveAv);
-          if (curveAvEdid === undefined) {
-            try {
-              curveAvEdid = await client.resolveEdid(curveAv);
-              edidByFormId.set(curveAv, curveAvEdid);
-            } catch {
-              curveAvEdid = curveAv;
-            }
-          }
-          const maxX = Math.max(...epCurvePoints.map((p) => p.x));
-          if (curveAvEdid.startsWith('LGND_') && maxX <= 5) {
-            input = 'wornPieces';
-          }
-        }
-        if (!input) {
-          result.notes.push(
-            `perk ${perkEdid}: entry point ${name} curve input AV ${
-              curveAv ? (edidByFormId.get(curveAv) ?? curveAv) : 'none'
-            } unmapped — needs mapping`,
-          );
-          continue;
-        }
-        epCurve = { input, points: epCurvePoints };
+      const value = await normalizeEntryPointValue(
+        {
+          functionName,
+          float,
+          curvePoints:
+            Array.isArray(epCurveNode?.curve) && epCurveNode.curve.length > 0
+              ? epCurveNode.curve
+              : null,
+          curveInputAv: (e['Function Parameter 4 (Actor Value)'] as string) ?? null,
+        },
+        { client, edidByFormId, curveInputAvs: CURVE_INPUT_AVS },
+      );
+      if (value.kind === 'unmappedCurveInput') {
+        result.notes.push(
+          `perk ${perkEdid}: entry point ${name} curve input AV ${value.inputLabel} unmapped — needs mapping`,
+        );
+        continue;
       }
 
-      if (functionName === 'Add Value') {
-        if (epCurve) {
-          result.modifiers.push({
-            bucket,
-            op: 'ADD',
-            curve: epCurve,
-            curveScale: 1,
-            conditions: epConditions,
-          });
-        } else {
-          result.modifiers.push({ bucket, op: 'ADD', value: epFloat, conditions: epConditions });
-        }
-      } else if (functionName === 'Set Value') {
-        if (epCurve) {
-          result.modifiers.push({
-            bucket,
-            op: 'SET',
-            curve: epCurve,
-            curveScale: 1,
-            conditions: epConditions,
-          });
-        } else {
-          result.modifiers.push({ bucket, op: 'SET', value: epFloat, conditions: epConditions });
-        }
-      } else if (functionName === 'Multiply Value') {
-        if (epCurve) {
-          result.modifiers.push({
-            bucket,
-            op: 'MUL_ADD',
-            curve: { ...epCurve, points: epCurve.points.map((p) => ({ x: p.x, y: p.y - 1 })) },
-            curveScale: 1,
-            conditions: epConditions,
-          });
-        } else {
-          result.modifiers.push({
-            bucket,
-            op: 'MUL_ADD',
-            value: epFloat - 1,
-            conditions: epConditions,
-          });
-        }
+      if (value.kind === 'modifier') {
+        result.modifiers.push({
+          bucket,
+          op: value.op,
+          ...value.payload,
+          conditions: epConditions,
+        });
       } else if (
         functionName === 'Add Actor Value Mult' &&
         name === 'Mod Damage on Consecutive Hits'

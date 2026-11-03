@@ -8,6 +8,7 @@ import {
   toGeneratedPerkCard,
 } from '../extract-perks';
 import { listRows, perkPlaceholder, stubRecord } from './esm-stubs';
+import { entryPointEffect } from './normalize-fixture';
 import tenderizerCard from './fixtures/pcrd-tenderizercard.json';
 import commandoCard from './fixtures/pcrd-commandocard.json';
 import actionBoyGirlCard from './fixtures/pcrd-actionboygirlcard.json';
@@ -651,5 +652,85 @@ describe('extractPerks (direct entry-point special cases, 2026-08-28)', () => {
         }),
       );
     }
+  });
+});
+
+describe('extractPerks (generic entry-point values)', () => {
+  // Adapter check for normalizeEntryPointValue: the helper's own suite owns
+  // the value rules. Here the direct path must keep its bucket extra
+  // conditions, modifier ids/order and unprefixed note wording.
+  const formId = '0x00ABC000';
+  const perk = stubRecord('PERK', formId, 'EpValueTest01', {
+    Name: 'EP Value Test',
+    Effects: [
+      entryPointEffect('Mod Player Explosion Damage', 'Multiply Value', {
+        Float: 9,
+        'Curve Table': {
+          curve: [
+            { x: 1, y: 1.25 },
+            { x: 10, y: 1.5 },
+          ],
+        },
+        'Function Parameter 4 (Actor Value)': '0x000002C5',
+      }),
+      entryPointEffect('Mod My Critical Hit Damage Mult', 'Add Value', {
+        'Curve Table': {
+          curve: [
+            { x: 0, y: 0 },
+            { x: 3, y: 30 },
+          ],
+        },
+        'Function Parameter 4 (Actor Value)': '0x00ABC001',
+      }),
+      entryPointEffect('Mod My Critical Hit Damage Mult', 'Set Value', { Float: 0.25 }),
+    ].map((e) => ({ Effect: e })),
+  });
+
+  it('converts curve and flat values in effect order and notes the unmapped axis', async () => {
+    const client = createInMemoryEsmSource({
+      records: {
+        [formId]: perk,
+        ...plumbingPerkRecords(),
+        '0x00ABC001': stubRecord('AVIF', '0x00ABC001', 'SomeCounter'),
+      },
+      rows: listRows([perk]),
+    });
+    const result = await extractPerks(client);
+    const family = result.perks.find((p) => p.family === 'EpValueTest');
+    const source = {
+      kind: 'perk' as const,
+      formId,
+      edid: 'EpValueTest',
+      name: 'EP Value Test',
+      rank: 1,
+    };
+    expect(family?.ranks[0].modifiers).toEqual([
+      {
+        id: `${formId}:r1:1:0`, // effect 1 (1-based), modifier 0
+        source,
+        bucket: 'baseDamage',
+        op: 'MUL_ADD',
+        curve: {
+          input: 'charisma',
+          points: [
+            { x: 1, y: 0.25 },
+            { x: 10, y: 0.5 },
+          ],
+        },
+        curveScale: 1,
+        conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+      },
+      {
+        id: `${formId}:r1:3:1`, // effect 3: effect 2 emitted nothing
+        source,
+        bucket: 'critDmgBonus',
+        op: 'SET',
+        value: 0.25,
+        conditions: [],
+      },
+    ]);
+    expect(family?.notes).toEqual([
+      'entry point Mod My Critical Hit Damage Mult curve input AV SomeCounter unmapped — needs mapping',
+    ]);
   });
 });

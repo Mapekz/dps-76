@@ -30,8 +30,9 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
   beats the hardcoded magnitude/duration/stat field next to it; the flat
   value is stale authoring residue (Alcohol_ResistRadiationExpose: flat 250,
   curve 100 — the game applies 100). **USER-CONFIRMED 2026-08-20.** Applies
-  in `translate()` and the description derivation
-  (`resolveEffectDescription`) alike. See **Single-point curve tables**.
+  in `translate()`, perk entry points (`normalizeEntryPointValue`), and the
+  description derivation (`resolveEffectDescription`) alike. See
+  **Single-point curve tables**.
 - **STR melee scaling** — STR/20 (1h/2h melee), STR/10 (unarmed).
   **ASSUMPTION** (user-specified, not ESM-confirmed) — rejected GMST
   candidates are in `paper-damage.ts`'s `strengthTerm` doc.

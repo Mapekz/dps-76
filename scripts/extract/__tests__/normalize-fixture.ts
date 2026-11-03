@@ -43,6 +43,19 @@ export function eq(fn: string, cmp: number, extra: Partial<RawCondition> = {}): 
   return { Function: fn, 'Comparison Value': cmp, Operator: 'Equal To', ...extra };
 }
 
+/** One PERK `Effects[].Effect` entry point; `fields` adds Float, Curve Table, conditions, …. */
+export function entryPointEffect(
+  epName: string,
+  functionName: string,
+  fields: Record<string, unknown> = {},
+): Record<string, unknown> {
+  return {
+    'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+    'Entry Point': { 'Entry Point': { name: epName }, Function: { name: functionName } },
+    ...fields,
+  };
+}
+
 /** Raw ESM `Conditions` node: `{ Conditions: [{ Condition: { 'Condition Data': row } }] }`. */
 export function esmEffectConditions(rows: object[]) {
   return {

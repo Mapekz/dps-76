@@ -21,7 +21,14 @@ import type { EsmRecord, EsmSource } from '../esm-client';
 import type { Bucket, Condition, CurveInput, ModifierFragment } from '@/types/modifiers';
 import { createInMemoryEsmSource } from '../esm-source-fake';
 import { extractPerks } from '../extract-perks';
-import { effect, eq, esmEffectConditions, fixtureClient, mgef } from './normalize-fixture';
+import {
+  effect,
+  entryPointEffect,
+  eq,
+  esmEffectConditions,
+  fixtureClient,
+  mgef,
+} from './normalize-fixture';
 import fortifyStrengthChemEffect from './fixtures/mgef-fortifystrengthchemeffect.json';
 import quickHands01 from './fixtures/perk-quickhands01.json';
 import bandito01 from './fixtures/perk-bandito01.json';
@@ -71,18 +78,6 @@ function perkConditions(...tabs: Array<RawCondition[] | { tab: number; rows: Raw
       ? { 'Perk Condition': esmEffectConditions(t) }
       : { 'Perk Condition': { 'Run On (Tab Index)': t.tab, ...esmEffectConditions(t.rows) } },
   );
-}
-
-function entryPointEffect(
-  epName: string,
-  functionName: string,
-  fields: Record<string, unknown> = {},
-): Record<string, unknown> {
-  return {
-    'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
-    'Entry Point': { 'Entry Point': { name: epName }, Function: { name: functionName } },
-    ...fields,
-  };
 }
 
 function perkRecord(editorId: string, ...effects: Record<string, unknown>[]) {
@@ -518,6 +513,62 @@ describe('parseMagicEffects (2026-07-11 A3/A4 routes)', () => {
     const [parsed] = parseMagicEffects(record);
     expect(parsed.magnitude).toBe(50);
     expect(parsed.magnitudeGlobal).toBeNull();
+  });
+});
+
+describe('translateGrantedPerk (generic entry-point values)', () => {
+  // Adapter check for normalizeEntryPointValue: the helper's own suite owns
+  // the value rules. Here the granted path must keep its bucket extra
+  // conditions, effect order and `perk <edid>:` note prefix.
+  const PERK = '0x00ABC000';
+  const records = {
+    [PERK]: perkRecord(
+      'EpValueTest',
+      entryPointEffect('Mod Player Explosion Damage', 'Multiply Value', {
+        Float: 9,
+        'Curve Table': {
+          curve: [
+            { x: 1, y: 1.25 },
+            { x: 10, y: 1.5 },
+          ],
+        },
+        'Function Parameter 4 (Actor Value)': '0x000002C5',
+      }),
+      entryPointEffect('Mod My Critical Hit Damage Mult', 'Add Value', {
+        'Curve Table': {
+          curve: [
+            { x: 0, y: 0 },
+            { x: 3, y: 30 },
+          ],
+        },
+        'Function Parameter 4 (Actor Value)': '0x00ABC001',
+      }),
+      entryPointEffect('Mod My Critical Hit Damage Mult', 'Set Value', { Float: 0.25 }),
+    ),
+    '0x00ABC001': { editor_id: 'SomeCounter', fields: {} },
+  };
+
+  it('converts curve and flat values in effect order and notes the unmapped axis', async () => {
+    const result = await runGrantedPerk(fixtureClient(records), 'ctx', PERK);
+    expect(result.modifiers).toEqual([
+      {
+        bucket: 'baseDamage',
+        op: 'MUL_ADD',
+        curve: {
+          input: 'charisma',
+          points: [
+            { x: 1, y: 0.25 },
+            { x: 10, y: 0.5 },
+          ],
+        },
+        curveScale: 1,
+        conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+      },
+      { bucket: 'critDmgBonus', op: 'SET', value: 0.25, conditions: [] },
+    ]);
+    expect(result.notes).toEqual([
+      'perk EpValueTest: entry point Mod My Critical Hit Damage Mult curve input AV SomeCounter unmapped — needs mapping',
+    ]);
   });
 });
 

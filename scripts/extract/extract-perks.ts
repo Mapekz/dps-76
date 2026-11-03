@@ -23,6 +23,7 @@ import {
   translateMagicEffect,
   type SpellEffect,
 } from './normalize/mgef';
+import { normalizeEntryPointValue } from './normalize/entry-point-value';
 
 /**
  * PERK extraction. Two effect styles exist:
@@ -622,83 +623,17 @@ export async function extractPerks(client: EsmSource): Promise<ExtractPerksResul
               ...(PERK_EP_EXTRA_CONDITIONS[record.editor_id] ?? []),
             ];
 
-            // EP Curve Table beats the flat Float (docs/assumptions.md
-            // "Curve tables override flat values"): single-point curves are
-            // authored constants; a multi-point curve's input axis is the
-            // EP's own Function Parameter 4 Actor Value (Lone Wanderer:
-            // Charisma — USER-CORRECTED 2026-08-20 after a wrong
-            // player-level guess), resolved through the same CURVE_INPUT_AVS
-            // map SPEL-effect curves use, with each Y run through the
-            // function shape's own float transform. Unmapped input AVs note
-            // and skip. Mirrors translateGrantedPerk's EP branch (mgef.ts).
-            let epFloat = ep.float;
-            let epCurve: Modifier['curve'] | undefined;
-            if (ep.curvePoints && ep.curvePoints.length === 1) {
-              epFloat = ep.curvePoints[0].y;
-            } else if (ep.curvePoints) {
-              let input = ep.curveInputAv ? CURVE_INPUT_AVS[ep.curveInputAv] : undefined;
-              if (!input && ep.curveInputAv) {
-                // LGND_* piece-counter axes → wornPieces (armor legendaries'
-                // authored stacking tables; see translateGrantedPerk's EP
-                // branch in normalize/mgef.ts for the full rationale). No
-                // direct PERK card carries one today — mirrored for parity.
-                let avEdid = edidByFormId.get(ep.curveInputAv);
-                if (avEdid === undefined) {
-                  try {
-                    avEdid = await client.resolveEdid(ep.curveInputAv);
-                    edidByFormId.set(ep.curveInputAv, avEdid);
-                  } catch {
-                    avEdid = ep.curveInputAv;
-                  }
-                }
-                const maxX = Math.max(...ep.curvePoints.map((p) => p.x));
-                if (avEdid.startsWith('LGND_') && maxX <= 5) input = 'wornPieces';
-              }
-              if (!input) {
-                notes.add(
-                  `entry point ${ep.name} curve input AV ${
-                    ep.curveInputAv
-                      ? (edidByFormId.get(ep.curveInputAv) ?? ep.curveInputAv)
-                      : 'none'
-                  } unmapped — needs mapping`,
-                );
-                continue;
-              }
-              epCurve = { input, points: ep.curvePoints };
-            }
-
-            if (ep.functionName === 'Add Value') {
-              pushModifier(
-                bucket,
-                'ADD',
-                epCurve ? { curve: epCurve, curveScale: 1 } : { value: epFloat },
-                conditions,
-                sourceIndex,
+            const value = await normalizeEntryPointValue(ep, {
+              client,
+              edidByFormId,
+              curveInputAvs: CURVE_INPUT_AVS,
+            });
+            if (value.kind === 'unmappedCurveInput') {
+              notes.add(
+                `entry point ${ep.name} curve input AV ${value.inputLabel} unmapped — needs mapping`,
               );
-            } else if (ep.functionName === 'Set Value') {
-              pushModifier(
-                bucket,
-                'SET',
-                epCurve ? { curve: epCurve, curveScale: 1 } : { value: epFloat },
-                conditions,
-                sourceIndex,
-              );
-            } else if (ep.functionName === 'Multiply Value') {
-              pushModifier(
-                bucket,
-                'MUL_ADD',
-                epCurve
-                  ? {
-                      curve: {
-                        ...epCurve,
-                        points: epCurve.points.map((p) => ({ x: p.x, y: p.y - 1 })),
-                      },
-                      curveScale: 1,
-                    }
-                  : { value: epFloat - 1 },
-                conditions,
-                sourceIndex,
-              );
+            } else if (value.kind === 'modifier') {
+              pushModifier(bucket, value.op, value.payload, conditions, sourceIndex);
             } else {
               // Actor-value-scaled entry points (SPECIAL-scaled perks) — not modeled yet.
               notes.add(`entry point ${ep.name} uses ${ep.functionName} — skipped`);
