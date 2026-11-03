@@ -2,6 +2,7 @@ import { describe, it, expect } from 'bun:test';
 import type { EsmRecord } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
 import {
+  extractBuffs,
   isExcludedConsumableEdid,
   classifyConsumableCategory,
   buildDispelKeys,
@@ -12,7 +13,7 @@ import {
   substituteMagTemplate,
 } from '../extract-buffs';
 import type { AvifRoute } from '../normalize/mgef';
-import { stubRecord } from './esm-stubs';
+import { listRows, perkPlaceholder, refRow, stubRecord } from './esm-stubs';
 import { effect } from './normalize-fixture';
 import mutationEggHead from './fixtures/spel-mutation-egghead.json';
 import mgefTreatedEffect from './fixtures/mgef-mutation-treatedeffect.json';
@@ -24,6 +25,7 @@ import addictionAlcohol from './fixtures/spel-abaddictionalcohol.json';
 import mgefReduceAgilityAlcohol from './fixtures/mgef-abreduceagilityalcoholaddiction.json';
 import mgefReduceCharismaAlcohol from './fixtures/mgef-abreducecharismaalcoholaddiction.json';
 import mgefAbAddictionCount from './fixtures/mgef-abaddictioncount.json';
+import fortifyStrengthChemEffect from './fixtures/mgef-fortifystrengthchemeffect.json';
 
 // In-memory source pattern: createInMemoryEsmSource implements only the
 // EsmSource methods each helper actually calls.
@@ -462,5 +464,284 @@ describe('extractAddictionEffects (2026-07-14)', () => {
     // abAddictionCount is bookkeeping-only: no "no route for AV" note leaks
     // through (it would if the skip-by-edid guard regressed).
     expect(notes.some((n) => n.includes('no route for AV'))).toBe(false);
+  });
+});
+
+describe('extractBuffs (consumable composition)', () => {
+  // One small ALCH graph run through the real extractor. The helpers above own
+  // description, dispel-key, addiction and mutation details; this suite pins
+  // how extractBuffs composes them into the final lists and diagnostics.
+  //
+  // FortifyStrengthChemEffect is the real MGEF (20260710 fixture); its three
+  // keywords and the category keywords carry their real formids and editor ids
+  // (`esm get`, 20261026 dump). Everything else is synthetic.
+  const KW = {
+    chem: '0x000F4AE7', // ObjectTypeChem
+    food: '0x00055ECC', // ObjectTypeFood
+    bobblehead: '0x00135E6C', // BobbleheadKeyword
+    chemEffect: '0x0004D897', // ChemEffect
+    stackStrength: '0x00246704', // StackBuffStrength
+    chemDispel: '0x0037E0BB', // ChemDispelEffects
+    foodEffect: '0x00F00D01',
+    foodDispelRadResist: '0x00F00D02',
+  };
+  const STRENGTH_MGEF = '0x002466E6';
+  const RAD_RESIST_MGEF = '0x00F00D10';
+  const HUNGER_MGEF = '0x00F00D11';
+  const ZETA_ADDICTION = '0x00F00D20';
+  const LOST_ADDICTION = '0x00F00D21';
+
+  function alch(
+    formId: string,
+    edid: string,
+    name: string,
+    keywords: string[],
+    effects: Array<{ mgef: string; magnitude: number }>,
+    addiction?: string,
+  ): EsmRecord {
+    return stubRecord('ALCH', formId, edid, {
+      Name: name,
+      Keywords: { Keywords: keywords },
+      Effects: effects.map((e) => ({
+        Effect: {
+          'Base Effect': e.mgef,
+          'Effect Item Data': { Magnitude: e.magnitude, Duration: 0 },
+        },
+      })),
+      ...(addiction ? { 'Effect Data': { Addiction: addiction } } : {}),
+    });
+  }
+
+  function valueMgef(
+    formId: string,
+    edid: string,
+    opts: {
+      name: string;
+      archetype: string;
+      actorValue: string;
+      keywords?: string[];
+      dispel?: boolean;
+    },
+  ): EsmRecord {
+    return stubRecord('MGEF', formId, edid, {
+      Name: opts.name,
+      Keywords: { Keywords: opts.keywords ?? [] },
+      'Magic Effect Data': {
+        Data: {
+          Archetype: { name: opts.archetype },
+          'Actor Value': opts.actorValue,
+          Flags: { flags: opts.dispel ? ['Dispel with Keywords'] : [] },
+        },
+      },
+    });
+  }
+
+  const strength = (magnitude: number) => [{ mgef: STRENGTH_MGEF, magnitude }];
+  const consumables = [
+    alch('0x00C00001', 'Chem_Zeta', 'Zeta Chem', [KW.chem], strength(2), ZETA_ADDICTION),
+    alch('0x00C00002', 'Chem_Alpha', 'Alpha Chem', [KW.chem], strength(3), ZETA_ADDICTION),
+    // Obtainable and addictive, but its only effect is hunger bookkeeping.
+    alch(
+      '0x00C00003',
+      'Chem_Bland',
+      'Bland Chem',
+      [KW.chem],
+      [{ mgef: HUNGER_MGEF, magnitude: 5 }],
+      ZETA_ADDICTION,
+    ),
+    // Modeled but unobtainable (no reverse refs); its addiction family has no
+    // obtainable cause.
+    alch('0x00C00004', 'Chem_Lost', 'Lost Chem', [KW.chem], strength(4), LOST_ADDICTION),
+    // An effect the engine does not model, kept for its dispel key and text.
+    alch(
+      '0x00C00005',
+      'Food_RadShield',
+      'Rad Shield Stew',
+      [KW.food],
+      [
+        { mgef: RAD_RESIST_MGEF, magnitude: 25 },
+        { mgef: RAD_RESIST_MGEF, magnitude: 10 },
+      ],
+    ),
+    alch('0x00C00006', 'Bobblehead_Luck', 'Bobblehead: Luck', [KW.bobblehead], []),
+    alch(
+      '0x00C00007',
+      'Food_Hunger',
+      'Hunger Snack',
+      [KW.food],
+      [{ mgef: HUNGER_MGEF, magnitude: 10 }],
+    ),
+    alch('0x00C00008', 'Ingredient_Raw', 'Raw Ingredient', [], []),
+  ];
+  // Listed by search() but never fetched: the edid pre-filter drops it.
+  const junkRow = stubRecord('ALCH', '0x00C00009', 'zzz_Chem_Cut', { Name: 'Cut Chem' });
+
+  const otherRecords = [
+    ...['STAT_DamagePerk', 'STAT_CritDamagePerk', 'STAT_DamageVsPerk'].map(perkPlaceholder),
+    stubRecord('KYWD', KW.chem, 'ObjectTypeChem'),
+    stubRecord('KYWD', KW.food, 'ObjectTypeFood'),
+    stubRecord('KYWD', KW.bobblehead, 'BobbleheadKeyword'),
+    stubRecord('KYWD', KW.chemEffect, 'ChemEffect'),
+    stubRecord('KYWD', KW.stackStrength, 'StackBuffStrength'),
+    stubRecord('KYWD', KW.chemDispel, 'ChemDispelEffects'),
+    stubRecord('KYWD', KW.foodEffect, 'FoodEffect'),
+    stubRecord('KYWD', KW.foodDispelRadResist, 'FoodDispelEffect_RadResist'),
+    fortifyStrengthChemEffect as unknown as EsmRecord,
+    valueMgef(RAD_RESIST_MGEF, 'FortifyRadResistFood', {
+      name: 'Fortify Radiation Resistance Food',
+      archetype: 'Peak Value Modifier',
+      actorValue: '0x00F00D30',
+      keywords: [KW.foodEffect, KW.foodDispelRadResist],
+      dispel: true,
+    }),
+    valueMgef(HUNGER_MGEF, 'SURV_AddHunger_Test', {
+      name: 'Hunger',
+      archetype: 'Value Modifier',
+      actorValue: '0x00F00D31',
+    }),
+    stubRecord('AVIF', '0x000002C2', 'Strength'),
+    stubRecord('AVIF', '0x00F00D30', 'RadResistIngestion'),
+    stubRecord('AVIF', '0x00F00D31', 'Hunger'),
+    stubRecord('SPEL', ZETA_ADDICTION, 'AddictionZeta', { Name: 'Zeta Addiction' }),
+    stubRecord('SPEL', LOST_ADDICTION, 'AddictionLost', { Name: 'Lost Addiction' }),
+  ];
+
+  const obtainable = (edid: string) => [refRow('COBJ', '0x00C0FF00', `co_${edid}`)];
+  const client = createInMemoryEsmSource({
+    records: Object.fromEntries(
+      [...consumables, ...otherRecords].flatMap((r) => [
+        [r.header.form_id, r],
+        [r.editor_id, r],
+      ]),
+    ),
+    rows: listRows([junkRow, ...consumables]),
+    refs: {
+      '0x00C00001': obtainable('Chem_Zeta'),
+      '0x00C00002': obtainable('Chem_Alpha'),
+      '0x00C00003': obtainable('Chem_Bland'),
+      '0x00C00005': obtainable('Food_RadShield'),
+      '0x00C00006': [refRow('QUST', '0x00C0FF01', 'BobbleheadQuest')],
+      '0x00C00007': obtainable('Food_Hunger'),
+    },
+  });
+  const run = () => extractBuffs(client);
+
+  it('emits a categorized modeled consumable with its translated modifiers', async () => {
+    const { consumables } = await run();
+    const zeta = consumables.find((c) => c.id === 'Chem_Zeta');
+    expect(zeta).toMatchObject({
+      formId: '0x00C00001',
+      name: 'Zeta Chem',
+      kind: 'consumable',
+      category: 'chem',
+      obtainable: true,
+      dispelKeys: ['ChemDispelEffects|ChemEffect|StackBuffStrength'],
+      addiction: { id: 'AddictionZeta', formId: ZETA_ADDICTION, name: 'Zeta Addiction' },
+      notes: [],
+    });
+    expect(zeta?.modifiers).toEqual([
+      expect.objectContaining({
+        bucket: 'specialStrength',
+        op: 'ADD',
+        value: 2,
+        conditions: [],
+        source: expect.objectContaining({ kind: 'consumable', edid: 'Chem_Zeta' }),
+      }),
+    ]);
+    expect(zeta?.description).toBeUndefined();
+  });
+
+  it('keeps an unmodeled consumable that has a dispel key and a derived description', async () => {
+    const { consumables } = await run();
+    expect(consumables.find((c) => c.id === 'Food_RadShield')).toMatchObject({
+      category: 'food',
+      obtainable: true,
+      modifiers: [],
+      dispelKeys: ['FoodDispelEffect_RadResist|FoodEffect'],
+      description: '+25 Rad Resist; +10 Rad Resist',
+      notes: [
+        'Food_RadShield: MGEF FortifyRadResistFood: no route for AV RadResistIngestion — needs mapping',
+      ],
+    });
+  });
+
+  it('keeps a collector-category consumable with no modifiers or dispel keys', async () => {
+    const { consumables } = await run();
+    const bobblehead = consumables.find((c) => c.id === 'Bobblehead_Luck');
+    expect(bobblehead).toMatchObject({
+      category: 'bobblehead',
+      obtainable: true,
+      modifiers: [],
+      dispelKeys: [],
+    });
+    expect(bobblehead?.addiction).toBeUndefined();
+    expect(bobblehead?.description).toBeUndefined();
+  });
+
+  it('routes junk, category-less and bookkeeping-only records to exclusion buckets, not the consumables list', async () => {
+    const { consumables, excluded, excludedDetailed } = await run();
+    expect(excluded.consumableJunkEdid).toEqual(['zzz_Chem_Cut']);
+    expect(excluded.consumableNoCategory).toEqual(['Ingredient_Raw']);
+    expect(excluded.consumableNoDamageOrSpecial).toEqual(['Chem_Bland', 'Food_Hunger']);
+    expect(excludedDetailed.consumableNoDamageOrSpecial).toEqual([
+      { id: 'Chem_Bland', name: 'Bland Chem' },
+      { id: 'Food_Hunger', name: 'Hunger Snack' },
+    ]);
+    const ids = consumables.map((c) => c.id);
+    for (const id of ['zzz_Chem_Cut', 'Ingredient_Raw', 'Chem_Bland', 'Food_Hunger']) {
+      expect(ids).not.toContain(id);
+    }
+  });
+
+  it('emits a relevant unobtainable consumable flagged obtainable:false and reports it in detail', async () => {
+    const { consumables, excluded, excludedDetailed } = await run();
+    expect(consumables.find((c) => c.id === 'Chem_Lost')).toMatchObject({
+      obtainable: false,
+      modifiers: [expect.objectContaining({ bucket: 'specialStrength', value: 4 })],
+    });
+    expect(excluded.consumableUnobtainable).toEqual(['Chem_Lost']);
+    expect(excludedDetailed.consumableUnobtainable).toEqual([
+      { id: 'Chem_Lost', name: 'Lost Chem', signals: ['noRefs'] },
+    ]);
+  });
+
+  it('builds the addiction catalog from obtainable causes, with causedBy limited to emitted consumables', async () => {
+    const { addictions } = await run();
+    // Chem_Bland causes Zeta Addiction too but is not emitted; Lost Addiction's
+    // only cause is unobtainable, so the family stays out of the catalog.
+    expect(addictions).toEqual([
+      {
+        id: 'AddictionZeta',
+        formId: ZETA_ADDICTION,
+        name: 'Zeta Addiction',
+        causedBy: ['Chem_Alpha', 'Chem_Zeta'],
+        modifiers: [],
+        notes: [],
+      },
+    ]);
+  });
+
+  it('orders consumables by name and keeps only notes from emitted consumables, without duplicates', async () => {
+    const result = await run();
+    expect(result.consumables.map((c) => c.id)).toEqual([
+      'Chem_Alpha',
+      'Bobblehead_Luck',
+      'Chem_Lost',
+      'Food_RadShield',
+      'Chem_Zeta',
+    ]);
+    expect(result.mutations).toEqual([]);
+    // No mutation SPELs are stocked: each whitelist miss is reported, not hidden.
+    const [mutationMisses, otherNotes] = [
+      result.notes.filter((n) => /^mutation Mutation_\w+: record not found$/.test(n)),
+      result.notes.filter((n) => !/^mutation Mutation_\w+: record not found$/.test(n)),
+    ];
+    expect(mutationMisses.length).toBeGreaterThan(0);
+    // Food_RadShield's two effects raise the same note once; the hunger
+    // records' unrouted-AV notes belong to discarded consumables.
+    expect(otherNotes).toEqual([
+      'Food_RadShield: MGEF FortifyRadResistFood: no route for AV RadResistIngestion — needs mapping',
+    ]);
+    expect(result.unmappedAvifs).toEqual([]);
   });
 });
